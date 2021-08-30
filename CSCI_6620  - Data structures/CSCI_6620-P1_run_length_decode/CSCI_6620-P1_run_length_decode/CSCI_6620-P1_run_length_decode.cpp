@@ -1,91 +1,94 @@
-// CSCI_6620-P1_run_length_decode.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// CSCI_6620 - Data Structure
+// Professor Thomas Shokite
 // 
-//HOWARD ZHOU 
+// CSCI_6620-P1_run_length_decode.cpp - Assignment 1
+// 
+// HOWARD ZHOU  - ID# 00748064
 
 #include <iostream>
 #include <iomanip>
-#include <fstream>
 #include <string>
+#include <fstream>
+#include <sstream>
 
 
-int logOutput(std::string &outputBuffer,  std::ofstream &outFile)
+// Helper function to display the output and write to output file
+int logOutput(std::ostringstream &outputBuffer,  std::ofstream &outFile)
 {
-    std::cerr << outputBuffer << std::endl;
-    outFile << outputBuffer;
+    std::cerr << outputBuffer.str() << std::flush;
+    outFile << outputBuffer.str() << std::flush;
+
+    outputBuffer.str(""); // Clear the stream buffer
+    outputBuffer.clear(); // Clear the stream errorbits
 
     return EXIT_SUCCESS;
 }
 
 int main()
 {
-    int myVar = 128;
+    char charBuffer = 0;
+    char my_character = 0;
+    unsigned short num_reps = 0;
+    std::ostringstream ssOutputBuffer{};
+
     
-    unsigned int myVar2 = 56;
-    char nextChar = 0;
-    std::string outputBuffer = "";
-   
-
-    std::cout << "Hello World!\n";
-    std::cout << std::hex << std::showbase << myVar << std::endl;
-    std::cout << std::resetiosflags(std::ios::basefield);
-    std::cout << myVar2 << std::endl;
-
     // Load the input file
     std::ifstream inFile("compressed1.txt", std::ios::in );
     std::ofstream outFile("console_out.ext", std::ios::trunc);
+   
+    
+    ssOutputBuffer  << "CSCI_6620-P1_run_length_decode.cpp - Assignment 1\n" << "HOWARD ZHOU  - ID# 00748064\n" << std::endl;
+    logOutput(ssOutputBuffer, outFile);
+
 
 
     if (!inFile || !outFile)
     {
-        outputBuffer = "Error handling stream file";
-        std::cerr << outputBuffer << std::endl;
+        ssOutputBuffer << "File descriptor initialization failed." << std::endl;
+        logOutput(ssOutputBuffer, outFile);
+
         return EXIT_FAILURE;
     }
     else 
     {
-        std::cerr << "Input text file loaded successfully!" << std::endl;
-
         while (!inFile.eof())
-        {
-            nextChar = inFile.get();
-            if (nextChar == EOF)
-            {
-                std::cout << outputBuffer << std::endl;
-                outFile << outputBuffer;
-                break;
-            }
-            if (nextChar < 0x41 || nextChar > 0x7A)
-            {
-                std::cout << std::dec << "NUmber detected: " << static_cast<std::int32_t>(nextChar) << std::endl;
-            }
-            else
-            {
-                std::cout <<std::hex << std::showbase <<  "Character read: " << nextChar << std::endl;
-            }
+        {   
+            // Load the next item
+            charBuffer = inFile.get();
             
-        
+            
+            if (charBuffer == 0x7F)
+            {
+             
+                // Get the proceding character
+                charBuffer = inFile.get();
+
+               // Validate check to see if buffer is displayable character
+                if ( (charBuffer > 0x1F) && (charBuffer < 0x7B) )
+                {
+                    // Assign the current buffer value to current placeholder variable
+                    my_character = charBuffer;
+
+                    // Get the next numerical value character
+                    num_reps = static_cast<unsigned short>(inFile.get());
+                    
+                    ssOutputBuffer << "Printing character: '" << charBuffer << "'; Number of repetitions: " << num_reps << std::endl;
+                    logOutput(ssOutputBuffer, outFile);
+                }
+
+            }
+            else if (charBuffer != EOF)
+            {
+                ssOutputBuffer << "Printing character: '" << charBuffer << "'" << std::endl;
+                logOutput(ssOutputBuffer, outFile);
+            }
         } 
     }
-
-
-
 
     // Close the filestream
     inFile.close();
     outFile.close();
 
     return EXIT_SUCCESS;
-
-
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
