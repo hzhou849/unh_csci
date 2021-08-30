@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# VStudio stuff
+Browse.VC.db
+ipch

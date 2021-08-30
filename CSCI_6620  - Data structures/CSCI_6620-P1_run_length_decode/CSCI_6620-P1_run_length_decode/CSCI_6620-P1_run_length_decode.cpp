@@ -1,56 +1,78 @@
 // CSCI_6620-P1_run_length_decode.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+// 
+//HOWARD ZHOU 
 
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <string>
 
+
+int logOutput(std::string &outputBuffer,  std::ofstream &outFile)
+{
+    std::cerr << outputBuffer << std::endl;
+    outFile << outputBuffer;
+
+    return EXIT_SUCCESS;
+}
 
 int main()
 {
     int myVar = 128;
     
     unsigned int myVar2 = 56;
-    char myChar;
-
+    char nextChar = 0;
+    std::string outputBuffer = "";
+   
 
     std::cout << "Hello World!\n";
     std::cout << std::hex << std::showbase << myVar << std::endl;
     std::cout << std::resetiosflags(std::ios::basefield);
     std::cout << myVar2 << std::endl;
 
-    std::fstream in_file{ "compressed1.txt", std::ios::in };
+    // Load the input file
+    std::ifstream inFile("compressed1.txt", std::ios::in );
+    std::ofstream outFile("console_out.ext", std::ios::trunc);
 
-    if (!in_file)
+
+    if (!inFile || !outFile)
     {
-        std::cerr << "Error loading input file" << std::endl;
+        outputBuffer = "Error handling stream file";
+        std::cerr << outputBuffer << std::endl;
         return EXIT_FAILURE;
     }
     else 
     {
         std::cerr << "Input text file loaded successfully!" << std::endl;
 
-        
-        while (!in_file.eof())
+        while (!inFile.eof())
         {
-            myChar = in_file.get();
-            if (myChar < 0x41 || myChar > 0x7B)
+            nextChar = inFile.get();
+            if (nextChar == EOF)
             {
-                std::cout << std::dec << "NUmber detected: " << static_cast<std::uint32_t>(myChar) << std::endl;
+                std::cout << outputBuffer << std::endl;
+                outFile << outputBuffer;
+                break;
+            }
+            if (nextChar < 0x41 || nextChar > 0x7A)
+            {
+                std::cout << std::dec << "NUmber detected: " << static_cast<std::int32_t>(nextChar) << std::endl;
             }
             else
             {
-                std::cout <<std::hex << std::showbase <<  "Character read: " << myChar << std::endl;
+                std::cout <<std::hex << std::showbase <<  "Character read: " << nextChar << std::endl;
             }
-        }
+            
         
+        } 
     }
 
 
 
 
     // Close the filestream
-    in_file.close();
+    inFile.close();
+    outFile.close();
 
     return EXIT_SUCCESS;
 
