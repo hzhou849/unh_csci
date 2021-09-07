@@ -6,84 +6,61 @@
 // HOWARD ZHOU  - ID# 00748064
 
 #include <iostream>
-#include <iomanip>
 #include <string>
 #include <fstream>
-#include <sstream>
 
-
-// Helper function to display the output and write to output file
-int logOutput(std::ostringstream &outputBuffer,  std::ofstream &outFile)
-{
-    std::cerr << outputBuffer.str() << std::flush;
-    outFile << outputBuffer.str() << std::flush;
-
-    outputBuffer.str(""); // Clear the stream buffer
-    outputBuffer.clear(); // Clear the stream errorbits
-
-    return EXIT_SUCCESS;
-}
 
 int main()
 {
     char charBuffer = 0;
     char my_character = 0;
-    unsigned short num_reps = 0;
-    std::ostringstream ssOutputBuffer{};
+    char num_reps = 0;
 
     
     // Load the input file
     std::ifstream inFile("compressed1.txt", std::ios::in );
     std::ofstream outFile("console_out.ext", std::ios::trunc);
-   
-    
-    ssOutputBuffer  << "CSCI_6620-P1_run_length_decode.cpp - Assignment 1\n" << "HOWARD ZHOU  - ID# 00748064\n" << std::endl;
-    logOutput(ssOutputBuffer, outFile);
-
-
 
     if (!inFile || !outFile)
     {
-        ssOutputBuffer << "File descriptor initialization failed." << std::endl;
-        logOutput(ssOutputBuffer, outFile);
-
+        if (!inFile)
+            std::cerr << "inFile descriptor initialization failed." << std::endl;
+        else
+            std::cerr << "outFile File descriptor initialization failed. " << std::endl;
         return EXIT_FAILURE;
     }
-    else 
-    {
-        while (!inFile.eof())
-        {   
-            // Load the next item
+    
+
+    while (!inFile.eof())
+    {   
+        // Load the next item
+        charBuffer = inFile.get();
+            
+        if (charBuffer == 0x7F)
+        {
+            // Get the proceding character
             charBuffer = inFile.get();
-            
-            
-            if (charBuffer == 0x7F)
+            // Get the next numerical value character
+            num_reps = inFile.get();
+
+            // Validate check to see if buffer is displayable character
+            for (unsigned short i=0; i < static_cast<unsigned short>(num_reps); i++)
             {
-             
-                // Get the proceding character
-                charBuffer = inFile.get();
-
-               // Validate check to see if buffer is displayable character
-                if ( (charBuffer > 0x1F) && (charBuffer < 0x7B) )
-                {
-                    // Assign the current buffer value to current placeholder variable
-                    my_character = charBuffer;
-
-                    // Get the next numerical value character
-                    num_reps = static_cast<unsigned short>(inFile.get());
-                    
-                    ssOutputBuffer << "Printing character: '" << charBuffer << "'; Number of repetitions: " << num_reps << std::endl;
-                    logOutput(ssOutputBuffer, outFile);
-                }
-
+                // Print out to terminal and output file 
+                std::cout << charBuffer;
+                outFile << charBuffer;
             }
-            else if (charBuffer != EOF)
-            {
-                ssOutputBuffer << "Printing character: '" << charBuffer << "'" << std::endl;
-                logOutput(ssOutputBuffer, outFile);
-            }
-        } 
-    }
+
+            // Flush write buffers
+            std::cout << std::flush;
+            outFile << std::flush;
+        }
+        else if (charBuffer != EOF)
+        {
+            std::cout << charBuffer << std::flush;
+            outFile << charBuffer << std::flush;
+        }
+    } 
 
     // Close the filestream
     inFile.close();
