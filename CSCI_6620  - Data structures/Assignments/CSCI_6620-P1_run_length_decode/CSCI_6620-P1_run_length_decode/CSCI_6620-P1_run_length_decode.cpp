@@ -32,10 +32,11 @@ int main()
     
 
     while (!inFile.eof())
-    {   
+    {
         // Load the next item
-        charBuffer = inFile.get();
-            
+        //charBuffer = inFile.get(); // Warning!!! This will not get the last 'w' will not recognize the last '+' character
+        inFile.get(charBuffer);      // THis method will parse the text file properly!
+
         if (charBuffer == 0x7F)
         {
             // Get the proceding character
@@ -43,8 +44,13 @@ int main()
             // Get the next numerical value character
             num_reps = inFile.get();
 
+            if (charBuffer == 0x7a)
+            {
+                num_reps = 10;
+            }
+
             // Validate check to see if buffer is displayable character
-            for (unsigned short i=0; i < static_cast<unsigned short>(num_reps); i++)
+            for (unsigned short i = 0; i < static_cast<unsigned short>(num_reps); i++)
             {
                 // Print out to terminal and output file 
                 std::cout << charBuffer;
@@ -55,10 +61,11 @@ int main()
             std::cout << std::flush;
             outFile << std::flush;
         }
+      
         else if (charBuffer != EOF)
         {
-            std::cout << charBuffer << std::flush;
             outFile << charBuffer << std::flush;
+            std::cout << charBuffer << std::flush;
         }
     } 
 
