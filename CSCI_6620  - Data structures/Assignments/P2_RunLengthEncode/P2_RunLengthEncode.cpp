@@ -15,13 +15,10 @@ int main()
 	char prevChar;
 	char currChar;
 	char escapeChar = 0x7F; // '\x7F'
-	//char someChar = 'z';
-
-
-	short int runCount = 255;
+	short int runCount = 0;
 
 	// Load the input file and create the output file.
-	std::ifstream inFile("uncompressed.txt", std::ios::in);
+	std::ifstream inFile("uncompressed.txt", std::ios::in); //********************Change this input file
 	std::ofstream outFile("console_out.ext", std::ios::trunc | std::ios::binary);
 
 	if (!inFile)
@@ -41,47 +38,62 @@ int main()
 	runCount++;
 	inFile.get(prevChar);		
 	
-
+	int wcount = 0;
 	while ( !inFile.eof() )
 	{
 		inFile.get(currChar);		// Read the next character into currentChar
 
+		/*if (currChar == 'w')
+		{
+			std::cout << "\nW FOUND: [" << currChar << ']' << std::flush;
+			wcount++;
+		}*/
 		if ( prevChar == currChar )
 		{
 			if (runCount == 255)	// If runCount of 255(0xFF) has been reached write a triplet set (Esc, char, count)
 			{
-				std::cout << escapeChar << static_cast<std::uint8_t>(runCount)  << prevChar <<  std::endl;
-				//outFile
+				std::cout << escapeChar << prevChar << static_cast<std::uint8_t>(runCount) << std::flush;
+				outFile << escapeChar << prevChar << static_cast<std::uint8_t>(runCount) << std::flush;
 				runCount = 1;
 			}
-			else
+			else if ( !inFile.eof() ) // ammend depending on output of EOF handling
 			{
+				
 				runCount++;
 			}
 		}
+
 		else
 		{
-			if (runCount < 4)
+			if (runCount < 4 )
 			{
 				// Write the character x runCount
-				for (short int i = 0; i <= runCount; i++)
+				for (short int i = 0; i < runCount; i++)
 				{
 					std::cout << prevChar << std::flush;
 					outFile << prevChar << std::flush;
+					wcount = 0;
 				}
 
-				runCount = 1;		// Reinitialize runcounter to 1;
 			}
 			else // runCount is 4 or more, writing triplet
 			{
-				std::cout << escapeChar << static_cast<std::uint8_t>(runCount) << prevChar << std::flush;
-				outFile << escapeChar << static_cast<std::uint8_t>(runCount) << prevChar << std::flush;
+				std::cout << escapeChar  << prevChar << static_cast<std::uint8_t>(runCount) << std::flush;
+				outFile << escapeChar  << prevChar << static_cast<std::uint8_t>(runCount) << std::flush;
 			}
+			runCount = 1;		// Reinitialize runcounter to 1;
 
 		}
 
 		prevChar = currChar;		// Assign the current character to the previous character
 
+	}
+
+	// Dump the remainder of the buffer after EOF is detected
+	for (short int i = 0; i < runCount; i++)
+	{
+		std::cout << prevChar << std::flush;
+		outFile << prevChar << std::flush;
 	}
 
 	outFile.close();
