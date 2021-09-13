@@ -15,28 +15,90 @@ int main()
 	char prevChar;
 	char currChar;
 	char escapeChar = 0x7F; // '\x7F'
-	short int runCount = 0;
+	//char someChar = 'z';
+
+
+	short int runCount = 255;
 
 	// Load the input file and create the output file.
 	std::ifstream inFile("uncompressed.txt", std::ios::in);
-	std::ofstream outFile("console_out.ext", std::ios::trunc);
+	std::ofstream outFile("console_out.ext", std::ios::trunc | std::ios::binary);
 
 	if (!inFile)
 	{
 		std::cerr << "Input file descriptor initialization failed." << std::endl;
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
+	if (!outFile)
+	{
+		std::cerr << "Output file descriptor initialization failed." << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	//outFile << escapeChar << static_cast<std::uint8_t>(runCount) << someChar << std::flush;
+
+	// Load the first character of this iteration into previousChar
+	runCount++;
+	inFile.get(prevChar);		
+	
+
+	while ( !inFile.eof() )
+	{
+		inFile.get(currChar);		// Read the next character into currentChar
+
+		if ( prevChar == currChar )
+		{
+			if (runCount == 255)	// If runCount of 255(0xFF) has been reached write a triplet set (Esc, char, count)
+			{
+				std::cout << escapeChar << static_cast<std::uint8_t>(runCount)  << prevChar <<  std::endl;
+				//outFile
+				runCount = 1;
+			}
+			else
+			{
+				runCount++;
+			}
+		}
+		else
+		{
+			if (runCount < 4)
+			{
+				// Write the character x runCount
+				for (short int i = 0; i <= runCount; i++)
+				{
+					std::cout << prevChar << std::flush;
+					outFile << prevChar << std::flush;
+				}
+
+				runCount = 1;		// Reinitialize runcounter to 1;
+			}
+			else // runCount is 4 or more, writing triplet
+			{
+				std::cout << escapeChar << static_cast<std::uint8_t>(runCount) << prevChar << std::flush;
+				outFile << escapeChar << static_cast<std::uint8_t>(runCount) << prevChar << std::flush;
+			}
+
+		}
+
+		prevChar = currChar;		// Assign the current character to the previous character
+
+	}
+
+	outFile.close();
 
 
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+//In this scheme, any “run” of the same character(4 or more identical consecutive bytes) is replaced by a triplet of bytes, consisting of
+//
+// 1) An escape character. We will use 0x7f, which is sometimes called “esc”.It is a non - printing ASCII character
+// 2) The letter that has been repeated
+// 3) A 1 - byte count = the number of repetitions 
+//    To make this work, any esc character, or run of them, that occurs 
+//	  in the input must also be replaced by a triplet : esc esc count .
+
+//	If the input file contains no “esc” characters :
+//		1) If one or more runs of length 4 or more exist : the output file will be shorter
+//		2) If the file contains no runs of length 4 or more : the output will be identical to the input file
+//	If the input file contains runs of 1 or 2 “esc” characters, the output file will be longer unless those short runs are balanced by longer runs
