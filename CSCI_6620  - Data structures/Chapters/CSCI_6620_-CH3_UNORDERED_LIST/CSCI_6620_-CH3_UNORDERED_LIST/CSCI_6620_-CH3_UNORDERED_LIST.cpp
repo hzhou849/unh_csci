@@ -17,6 +17,7 @@
 
 /// <summary>
 ///  Creates and test the unsorted list class
+/// Using arrays and linked list version
 /// </summary>
 void UnsortedList()
 {
@@ -72,6 +73,9 @@ void SortedList()
     ItemType item3(3);
     ItemType item4(4);
     ItemType item5(5);
+
+
+    //std::cout << "what the fuck" << std::endl;
 
     // Create the Sorted List object
     SortedType *sortedTest = new SortedType;
