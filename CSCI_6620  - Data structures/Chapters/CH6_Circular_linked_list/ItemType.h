@@ -19,12 +19,12 @@
 #ifndef _ITEMTYPE_H
 #define _ITEMTYPE_H
 
+enum RelationshipType{ LESS, GREATER, EQUAL };
 
 template <class T>
 class ItemType
 {
 public:
-	enum RelationshipType{ LESS, GREATER, EQUAL };
 	
 	ItemType();
 	ItemType(T initialValue);
@@ -49,7 +49,7 @@ template <class T>
 ItemType<T>::ItemType(T initialValue) : m_value(initialValue) {}
 
 template <class T>
-ItemType<T>::RelationshipType ItemType<T>::ComparedTo(ItemType item)
+RelationshipType ItemType<T>::ComparedTo(ItemType item)
 {
 	if (this->m_value < item.m_value)
 	{
