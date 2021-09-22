@@ -10,8 +10,25 @@
  * 
  */
 
+ /*
+  * Note with templates, The compiler cannot instantiate a fucntion template unless it knows the actual
+  * parameter to the template and teh this acutal parameter apperies in the client code
+  * Which is why you cannot put class definition in header and member function definition in cpp file
+  *
+  *
+  *
+  * A template is not like a function which can be compiled into byte code.
+  * It is just a pattern to generate such a function. If you put a template on its own into a *.cpp file,
+  * there is nothing to compile. Moreover, the explicite instanciation is actually not a template, but the
+  * starting point to make a function out of the template which ends up in the *.obj file.
+  *
+  * Compiler instantiates a template similar to a macro text replacement which is why the declaration/defintion
+  * must be placed in the same file.
+  */
+
 
 #pragma once
+#include <iostream>
 
 #ifndef _SORTEDTYPE_H
 #define _SORTEDTYPE_H
@@ -30,8 +47,9 @@ struct NodeType;	*/	// Private structures go in the cpp file, public in the head
 template <class ItemType>
 struct NodeType
 {
-	ItemType info; // The data of the value
-	NodeType *next // The pointer to the next linked item.
+	ItemType info; // node of data
+	NodeType *next; // The pointer to the next linked item.
+
 };
 
 
@@ -53,7 +71,7 @@ public:
 	bool IsFull() const;
 	bool GetLength() const;
 	ItemType GetItem(ItemType item, bool *found);
-	void PrintList(); const;
+	void PrintList() const;
 
 
 
@@ -69,6 +87,7 @@ private:
 };
 #endif // _SORTEDTYPE_H
 
+
 // CONSTRUCTOR:
 // SortedType - Implementation
 template <class ItemType>
@@ -77,10 +96,8 @@ SortedType<ItemType>::SortedType() : m_length(0), listData(nullptr) {}
 template <class ItemType>
 SortedType<ItemType>::~SortedType() 
 {
-	MakeEmpty();
+	//MakeEmpty();
 }
-
-
 
 // TRANSFORMER TYPES:
 template <class ItemType>
@@ -99,25 +116,78 @@ void SortedType<ItemType>::MakeEmpty()
 	m_length = 0;
 }
 
+
+// Circular List PUT
 template <class ItemType>
-void SortedType<ItemType>::PutItem(ItemType item)
+void SortedType<ItemType>::PutItem( ItemType item)
 {
 	NodeType<ItemType> *newNode;
 	NodeType<ItemType> *predLoc;
 	NodeType<ItemType> *location;
 	bool found; 
 
-	newNode = new NodeType<ItemType>;
-	newNode->info = item;
+	newNode = new NodeType<ItemType>; // Creates the Node struct
+	newNode->info = item;			  // Stores the ItemType item info is actually the node holder
 
-	if ((listData->info.ComparedTo(item) == RelationshipType::LESS))
+	if (listData != nullptr)
 	{
-		FindItem(listData, item, location, predLoc, found);
-		newNode->next = redLoc->next;
+		if (listData != nullptr && (listData->info.ComparedTo(item) == RelationshipType::LESS))
+		{
+			std::cout << "LESS" << std::endl;
+			FindItem(listData, item, location, predLoc, found);
+			newNode->next = predLoc->next;
+			predLoc->next = newNode;
 
-
+			// If this is the last node in the list, reassign listData.
+			if (listData->info.ComparedTo(item) == RelationshipType::LESS)
+				listData = newNode;
+		}
+		else if (listData != nullptr && listData->info.ComparedTo(item) == RelationshipType::GREATER)
+		{
+			FindItem(listData, item, location, predLoc, found);
+			newNode->next = predLoc->next;
+			predLoc->next = newNode;
+		}
 	}
+	else // Inserting in to an empty list.
+	{
+		listData = newNode;
+		newNode->next = newNode; 
+	}
+	m_length++;
+
+
 }
+
+template <class ItemType>
+void SortedType<ItemType>::DeleteItem(ItemType item)
+{
+	NodeType<ItemType>* location;
+	NodeType<ItemType>* predLoc;
+	bool found;
+	
+	FindItem(listData, item, location, predLoc, found);
+	
+	if (predLoc == location) // Only node in list?
+	{
+		listData = nullptr;
+	}
+	else
+	{
+		predLoc->next = location->next;
+		
+		if (location == listData) // Deleting last node in the list?
+		{
+			listData = predLoc;
+		}
+	}
+
+	delete location;
+	m_length--;
+}
+
+
+
 
 
 
@@ -138,15 +208,16 @@ void SortedType<ItemType>::FindItem(NodeType<ItemType>* listData, ItemType item,
 	predLoc  = listData;
 	found = false;
 
+	
 	while (moreToSearch && !found)
 	{
-		if (item.CompareTo(location->info) == RelationshipType::LESS)
+		if (item.ComparedTo(location->info) == RelationshipType::LESS)
 		{
 			moreToSearch = false;
 		}
-		else if (item.CompareTo(location->info) == RelationshipType::GREATER)
+		else if (item.ComparedTo(location->info) == RelationshipType::EQUAL)
 		{
-			found == True;
+			found = true;
 		}
 		else
 		{

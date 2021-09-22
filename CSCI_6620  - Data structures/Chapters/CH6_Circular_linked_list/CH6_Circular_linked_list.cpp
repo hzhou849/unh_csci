@@ -20,27 +20,39 @@
 /// 
 /// @Tparam - ItemType Template parameter
 /// 
-template <class ItemType>
-class StackType
-{
-public:
-    StackType() {}
-    ItemType initStack(ItemType value)
-    {
-        std::cout << "ItemType passed: " << value << std::endl;
-        
-        return value;
-    }
-};
+//template <class ItemType>
+//class StackType
+//{
+//public:
+//    StackType() {}
+//    ItemType initStack(ItemType value)
+//    {
+//        std::cout << "ItemType passed: " << value << std::endl;
+//        
+//        return value;
+//    }
+//};
 
 
 int main()
 {
-    // Testing of template class
-    StackType<int> myStack;
-    myStack.initStack(20);
+    //// Testing of template class
+    //StackType<int> myStack;
+    //myStack.initStack(20);
 
-    SortedType<ItemType>::
+    SortedType<ItemType> slist;
+
+    ItemType item1(1);
+    ItemType item2(2);
+    ItemType item3(3);
+
+    std::cout << "Item compare: " << item1.ComparedTo(item2) << std::endl;
+
+    slist.PutItem(item2);
+    slist.PutItem(item1);
+    slist.PutItem(item3);
+
+    slist.DeleteItem(item1);
    
 
 }

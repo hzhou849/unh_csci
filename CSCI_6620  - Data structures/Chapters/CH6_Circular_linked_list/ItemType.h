@@ -1,72 +1,52 @@
-/* 
- * Note with templates, The compiler cannot instantiate a fucntion template unless it knows the actual
- * parameter to the template and teh this acutal parameter apperies in the client code
- * Which is why you cannot put class definition in header and member function definition in cpp file
- * 
- * 
- * 
- * A template is not like a function which can be compiled into byte code. 
- * It is just a pattern to generate such a function. If you put a template on its own into a *.cpp file, 
- * there is nothing to compile. Moreover, the explicite instanciation is actually not a template, but the 
- * starting point to make a function out of the template which ends up in the *.obj file.
- * 
- * Compiler instantiates a template similar to a macro text replacement which is why the declaration/defintion
- * must be placed in the same file.
- */
-#pragma once
 
+#pragma once
 
 #ifndef _ITEMTYPE_H
 #define _ITEMTYPE_H
 
 enum RelationshipType{ LESS, GREATER, EQUAL };
 
-template <class T>
 class ItemType
 {
 public:
 	
 	ItemType();
-	ItemType(T initialValue);
+	ItemType(int initialValue);
 	RelationshipType ComparedTo(ItemType item);
-	T getValue() const;
+	int getValue() const;
 
 	// Member Variables
 	static const int MAX_ITEMS = 10;
 
 private:
 	// Member Vari
-	T m_value;
+	int  m_value;
 };
 #endif //_ITEMTYPE_H
 
 
-// TEMPLATE Definitions must be done in the same file as a header as this si a macro 
-template <class T> 
-ItemType<T>::ItemType() {}
+ItemType::ItemType():m_value(0) {}
 
-template <class T>
-ItemType<T>::ItemType(T initialValue) : m_value(initialValue) {}
+ItemType::ItemType(int  initialValue) : m_value(initialValue) {}
 
-template <class T>
-RelationshipType ItemType<T>::ComparedTo(ItemType item)
+RelationshipType ItemType::ComparedTo(ItemType item)
 {
-	if (this->m_value < item.m_value)
+	
+	if (this->m_value < item.getValue() )
 	{
 		return LESS;
 	}
-	else if (this->m_value > item.m_value)
+	else if (this->m_value > item.getValue() )
 	{
 		return GREATER;
 	}
-	else if (this->m_value == item.m_value)
+	else if (this->m_value == item.getValue() )
 	{
 		return EQUAL;
 	}
 }
 
-template <class T>
-T ItemType<T>::getValue() const
+int ItemType::getValue() const
 {
 	return this->m_value;
 }
