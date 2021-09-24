@@ -204,7 +204,9 @@ void SortedType<ItemType>::FindItem(NodeType<ItemType>* listData, ItemType item,
 {
 	// Set inital values
 	bool moreToSearch = true;
-	location = listData->next;
+
+	// ListData starting point for Circular linked list is the last item, for double linked list it will be the first (left-most) item.
+	location = listData->next; // This listData is the last node(right), listData->next loops it back to first node
 	predLoc  = listData;
 	found = false;
 
