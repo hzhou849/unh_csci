@@ -141,6 +141,11 @@
   <ItemGroup>
     <ClCompile Include="CH6_Copy_Constructor.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Deep.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Shallow.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

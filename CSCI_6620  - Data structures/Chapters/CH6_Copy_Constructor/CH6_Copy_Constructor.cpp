@@ -15,77 +15,97 @@
  *  - Provide a copy constructor with const and pass-by-reference parameter (either & or *pointer)
  *  - use STL classes as they already provide copy constructors
  *  - Avoid using raw pointer data members if possible and use smart pointers.
+ * 
+ * Default Copy consturctor:
+ *  - Memberwise copy
+ *  - Each data member is copied from the source object
+ *  - The pointer is copied, NOT what it is points to (shallow copy)
+ * 
+ *  - you will end up with a copy of the object both pointing to the same storage area in the heap
+ * PROBLEM: Notice that in the display_player(Player P) function, the object created P will
+ *          get deconstructed once it is out of scope. When we release the storage in the destructor, the other object
+ *          is still pointing to this area and thinks it is good - which will lead to problems.
+ *
+ * 
+ *  DEEP COPYING:
+ *  - Create a copy of the pointed-to data
+ *  - Each copy will have a pointer to unique storage in the heap
+ *  - Always want to have a copy constructor to have Deep copy when you have a raw pointer as a class data member
+ * 
  */
 
 #include <iostream>
 
-class Player
-{
-public:
-    std::string get_name() { return name; }
-    int get_health() { return health; }
-    int get_xp() { return xp; }
-
-    Player(std::string name_val = "None", int health_val = 0, int xp_val = 0);
-
-    // Copy Constructor
-    Player(const Player &source);
-    
-    // Destructor
-    ~Player() { std::cout << "Destructor called for: " << name << std::endl; }
-
-private:
-    std::string name;
-    int health;
-    int xp;
-};
+#include "Player.h"
+#include "Shallow.h"
+#include "Deep.h"
 
 
-// Implementation
 
-Player::Player(std::string name_val, int health_val, int xp_val)
-    :name{ name_val }, health{ health_val }, xp{ xp_val }
-{
-    std::cout << "Three-args constructor for " + name << std::endl;
-}
-
-// Copy Constructor Implementation 
-Player::Player(const Player &source)
-    : name{source.name}, health{source.health}, xp{ source.xp }
-{
-    std::cout << "Copy Constructor - made a copy of : " << source.name << std::endl;
-}
-
-
+//----------------------------------------------------------------------------------------------------------------------
 void display_player(Player p) 
 {
     std::cout << "Name: "   << p.get_name() << std::endl;
     std::cout << "Health: " << p.get_health() << std::endl;
     std::cout << "XP: "     << p.get_xp() << std::endl;
+
+    // When Object Player P goes out of scope, the destructor will be called.
+}
+
+void display_shallow(Shallow s)
+{
+    std::cout << s.get_data_value() << std::endl;
+}
+
+void display_deep(Deep d)
+{
+    std::cout << d.get_data_value() << std::endl;
 }
 
 
 int main()
 {
-    Player empty;
+    // Player class test
+    //Player empty ("XXXX", 100, 50);
+
+    //Player my_new_object(empty);
+    //
+    //// Because thisis a pass by value, the display_player(Player P) function
+    //// will rely on the copy consturctor to create a copy on the stack memory.
+    //display_player(empty);
+
+    //Player frank { "Frank" }; 
+    //Player hero  { "Hero", 100 };
+    //Player villain { "Villain", 100, 55 };
+
+
+    /*Shallow copy testing*/
+
+    Shallow obj1 { 100 };
+    display_shallow(obj1);
+
+    Shallow obj2(obj1);
     
-    display_player(empty);
-    Player frank { "Frank" }; 
-    Player hero  { "Hero", 100 };
-    Player villain { "Villain", 100, 55 };
+    // the issue here is we are going to reassign obj1.data to 1000
+    // because obj2 is pointing to obj1 in the same address on heap
+    obj2.set_data_value(1000); 
+
+     //After this program ends, the destructor will crash wehn it tries to re-deleted the
+     //address that was already deleted the first time it was called on obj1
+
+
+    /*Deep Copy testing*/
+
+    //Deep obj1{ 100 };
+    //
+    //// now when this is called, it will create another copy with a new address on heap to store data
+    //// and deleting this out of scope, will not affect obj1
+    //display_deep(obj1); 
+
+    //Deep obj2{ obj1 };
+    //obj2.set_data_value(999);
 
     return 0;
     
-    std::cout << "Hello World!\n";
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
