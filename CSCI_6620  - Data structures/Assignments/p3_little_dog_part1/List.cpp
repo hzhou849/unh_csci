@@ -1,10 +1,11 @@
 /*
+ * Filename: List.cpp
+
  * CSCI_6620 - Data Structures
  * Professor:  Thomas Shokite
  * Assignment 3 - P3 Little Dog - Part 1
  * HOWARD ZHOU  - ID# 00748064
  *
- * List.cpp
  */
 
 
