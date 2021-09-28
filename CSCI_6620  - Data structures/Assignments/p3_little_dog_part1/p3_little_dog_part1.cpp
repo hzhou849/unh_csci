@@ -2,15 +2,13 @@
 //
 
 #include <iostream>
-
-void LoadLinkedListNOTSorted()
-{
-
-}
+#include "List.h"
 
 
 int main()
 {
+	List myList;
 
+	myList.LoadLinkedListNOTSorted();
 }
 
