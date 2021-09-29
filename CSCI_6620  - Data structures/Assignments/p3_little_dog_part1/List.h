@@ -1,6 +1,6 @@
 /*
  * Filename: List.h
-
+ *
  * CSCI_6620 - Data Structures
  * Professor:  Thomas Shokite
  * Assignment 3 - P3 Little Dog - Part 1
@@ -23,13 +23,11 @@ public:
 	List() {}
 	~List() {}
 
-	//int size();
-	//bool isEmpty();
 	void LoadLinkedListNOTSorted();
 
-	void print();
-	void insert();
-	void find(std::string pStrValue);
+	void print(std::ofstream& pOutFile);
+	void insert(std::string pStrValue);
+	void find();
 
 
 	
@@ -48,19 +46,16 @@ private:
 		std::string mData;
 		Cell *mNext;
 	};
-	void find();
-	
 	
 	// other functions
-	void start(std::string pStrValue);
-	void insert(std::string pStrValue);
+	//void start(std::string pStrValue);
+	
 
 	// List Member Varaibles:
 	Cell *mHead  = nullptr;
 	Cell *mScan  = mHead;		
 	Cell *mPrior = nullptr;	
 
-	int counter = 0;
 
 
 };

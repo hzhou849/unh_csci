@@ -1,6 +1,6 @@
 /*
  * Filename: p3_little_dog_part1.cpp
-
+ * 
  * CSCI_6620 - Data Structures
  * Professor:  Thomas Shokite
  * Assignment 3 - P3 Little Dog - Part 1
@@ -15,6 +15,10 @@
  * - Use List::insert() to insert each line of the file into the List. (This is a linked-list insertion sort.)
  * - Call bye() before you return from
  * 
+ * Questions:
+ * 1) should the printout be the order of the linked list. Backwards?
+ * 2) find function? mPrior or mScan?
+ * 3) do you want me to print the head node or start from head->next?
  * 
  */
 #include <iostream>
@@ -28,18 +32,21 @@
 
 void banner()
 {
-	std::cout << "Banner called." << std::endl;
+	std::cout << "------ - Welcome to Program 3 LITTLE DOG by[Howard Zhou]!-------- -\n\n";
+	std::cout << "My Major is Computer Science		Graduation Year : 2023\n\n";
+	std::cout << "\"Loyalty is a two way street.If I'm asking it from you then you already got it from me.\"\n- Harvey Specter, Suits.\n\n";
+	std::cout << "About Me : Former Paratrooper in the Army; I work in the field of robitics as a software engineer.\n\n";
+	std::cout << "Interests: Travel, hiking and Swimming\n\n" << std::endl;
+
 }
 
 
 void bye()
 {
-
-	std::cout << "Bye!" << std::endl;
-
+	std::cout << "Exiting program - Bye!" << std::endl;
 }
 
-int fatal()
+void fatal()
 {
 	exit( EXIT_FAILURE);
 }
@@ -47,14 +54,16 @@ int fatal()
 
 int main()
 {
+	int counter = 0;
 	List myList;
+	std::string strData;
 	
 	std::ifstream inputFile;
 	std::ofstream outputFile;
 
-	// Set the exceptions 
-	inputFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	outputFile.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+	
+	// Print the banner
+	banner(); 
 
 	try
 	{
@@ -62,20 +71,32 @@ int main()
 		inputFile.open("p3Meow.txt", std::ios::in);
 		outputFile.open("console_out.txt", std::ios::trunc);
 
-	
-
+		if (!inputFile || !outputFile)
+			throw std::iostream::failure("I/O File ERROR");
 	}
-	catch (std::ifstream::failure& err)
+	catch (std::iostream::failure& err)
 	{
-		std::cerr << err.what() << std::endl;
+		std::cerr << "I/O exception caught \n" << err.what() << std::endl;
 		fatal();
 	}
 
+	// Initialize the list by creating the head
+	myList.insert("This is the head. Data NOT USED.");
 
+	// Read each line of the input text file
+	while (getline(inputFile, strData))
+	{
+		myList.insert(strData);
+		counter++;
+	}
 
+	// Print the list
+	myList.print(outputFile);
 
-	//myList.LoadLinkedListNOTSorted();
+	// Close the iostreams
+	inputFile.close();
+	outputFile.close();
 
-	// bye() 
+	bye();
 }
 

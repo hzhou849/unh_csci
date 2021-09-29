@@ -1,6 +1,6 @@
 /*
  * Filename: List.cpp
-
+ *
  * CSCI_6620 - Data Structures
  * Professor:  Thomas Shokite
  * Assignment 3 - P3 Little Dog - Part 1
@@ -16,76 +16,46 @@
 #include "List.h"
 
 
-
-void List::find(std::string pStrValue)
+void List::find()
 {
-	// Reset the mScan variable to the head of the list
-	mScan = mHead;
-
-	if ( pStrValue.empty() )
-	{
-		std::cerr << "No valid string entered." << std::endl;
-		exit(EXIT_FAILURE);
-	}
-
-	while (pStrValue != mScan->mData)
-	{
-		mPrior = mScan;
-		mScan = mScan->mNext;
-	}
-
-	std::cout << "FOUND: " << pStrValue << "was found in address: " << mScan << std::endl;
+	mPrior = mScan;				// sets mPrior to the newest node on the list.
 }
 
 
-// Create the first head node of the list and initialize it.
-void List::start(std::string pStrValue)
-{
-	mHead = new Cell(pStrValue);  // initialize the head
-}
-
-
-// Insert a value into the a new node.
 void List::insert(std::string pStrValue)
 {
-	Cell *newCell = new Cell(pStrValue);
+	find();						// Re-assess the current state of the linked list
 
-	//mScan = newCell; // not used.
-	newCell->mNext = mHead->mNext;
-	mHead->mNext = newCell;
-	counter++;
+	Cell *newCell = new Cell(pStrValue);
+	mScan = newCell;			// Increment the current position
+
+	if (mPrior == nullptr)
+	{
+		mHead = newCell;
+	}
+	else
+	{
+		newCell->mNext = mHead->mNext;
+		mHead->mNext = newCell;
+	}
 }
 
 
-void List::LoadLinkedListNOTSorted()
+void List::print(std::ofstream& pOutFile)
 {
+	//**Edit depending how the professor wants the output to look like
+	//Cell *index = mHead;
+	Cell *index = mHead->mNext;
 
-	// Load the input file and create an output file.
-	std::ifstream inputFile("p3Meow.txt", std::ios::in);
-	std::ofstream outputFile("console_out.txt", std::ios::trunc);
-
-	if (!inputFile || !outputFile)
+	if (!pOutFile)
 	{
-		// Place in fatal() function with try catch.
-		std::cerr << "Error initializing I/O file descriptor." << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
-	std::string strData = "This is the head. Data NOT USED.";
-	//std::string *ptrNodeStr = nullptr;
-
-	start(strData);		// Initialize the head
-
-
-	// Read each line of the input text file
-	while ( getline(inputFile, strData) )
+	while (index != nullptr)
 	{
-		std::cout << counter << ") " << strData << std::endl;
-		insert(strData);
+		std::cout << index->mData << std::endl;
+		pOutFile  << index->mData << std::endl;
+		index = index->mNext;
 	}
-
-	find("neow!");
-
-	inputFile.close();
-	
 }
