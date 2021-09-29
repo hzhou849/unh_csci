@@ -18,16 +18,63 @@
  * 
  */
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <exception>
+
 #include "List.h"
+
+
+
+void banner()
+{
+	std::cout << "Banner called." << std::endl;
+}
+
+
+void bye()
+{
+
+	std::cout << "Bye!" << std::endl;
+
+}
+
+int fatal()
+{
+	exit( EXIT_FAILURE);
+}
 
 
 int main()
 {
 	List myList;
+	
+	std::ifstream inputFile;
+	std::ofstream outputFile;
 
-	// Call banner()
+	// Set the exceptions 
+	inputFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	outputFile.exceptions(std::ofstream::failbit | std::ofstream::badbit);
 
-	myList.LoadLinkedListNOTSorted();
+	try
+	{
+		//Load the input file and create an output file.
+		inputFile.open("p3Meow.txt", std::ios::in);
+		outputFile.open("console_out.txt", std::ios::trunc);
+
+	
+
+	}
+	catch (std::ifstream::failure& err)
+	{
+		std::cerr << err.what() << std::endl;
+		fatal();
+	}
+
+
+
+
+	//myList.LoadLinkedListNOTSorted();
 
 	// bye() 
 }
