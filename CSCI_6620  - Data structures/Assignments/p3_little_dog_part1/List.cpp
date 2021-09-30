@@ -19,6 +19,10 @@
 void List::find()
 {
 	mPrior = mScan;							// sets mPrior to the newest node on the list.
+
+	/* Additional Features to be implemented  
+	 * for Part 2 of assignment
+	 */
 }
 
 
@@ -43,8 +47,6 @@ void List::insert(std::string pStrValue)
 
 void List::print(std::ofstream& pOutFile)
 {
-	//**Edit depending how the professor wants the output to look like
-	//Cell *index = mHead;
 	Cell *index = mHead->mNext;
 
 	if (!pOutFile)

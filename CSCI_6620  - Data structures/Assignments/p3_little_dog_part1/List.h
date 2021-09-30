@@ -23,14 +23,9 @@ public:
 	List() {}
 	~List() {}
 
-	void LoadLinkedListNOTSorted();
-
 	void print(std::ofstream& pOutFile);
 	void insert(std::string pStrValue);
 	void find();
-
-
-	
 
 private:
 
