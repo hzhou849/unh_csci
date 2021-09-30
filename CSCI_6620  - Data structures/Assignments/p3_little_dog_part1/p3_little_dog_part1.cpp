@@ -18,7 +18,6 @@
  * Questions:
  * 1) should the printout be the order of the linked list. Backwards?
  * 2) find function? mPrior or mScan?
- * 3) do you want me to print the head node or start from head->next?
  * 
  */
 #include <iostream>
@@ -43,7 +42,7 @@ void banner()
 
 void bye()
 {
-	std::cout << "Exiting program - Bye!" << std::endl;
+	std::cout << "\nExiting program - Bye!" << std::endl;
 }
 
 void fatal()

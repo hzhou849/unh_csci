@@ -18,18 +18,18 @@
 
 void List::find()
 {
-	mPrior = mScan;				// sets mPrior to the newest node on the list.
+	mPrior = mScan;							// sets mPrior to the newest node on the list.
 }
 
 
 void List::insert(std::string pStrValue)
 {
-	find();						// Re-assess the current state of the linked list
+	find();									// Re-assess the current state of the linked list
 
 	Cell *newCell = new Cell(pStrValue);
-	mScan = newCell;			// Increment the current position
+	mScan = newCell;						// Increment the current position
 
-	if (mPrior == nullptr)
+	if (mPrior == nullptr)		
 	{
 		mHead = newCell;
 	}
