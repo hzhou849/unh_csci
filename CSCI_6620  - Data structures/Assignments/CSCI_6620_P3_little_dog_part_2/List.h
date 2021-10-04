@@ -1,5 +1,5 @@
 /*
- * Filename: List.cpp
+ * Filename: List.h
  *
  * CSCI_6620 - Data Structures
  * Professor:  Thomas Shokite
@@ -21,10 +21,10 @@ class List
 public:
 	List() {}
 	~List() {}
-
-	void find();
+	
+	void find(std::string& pStrValue);
 	void insert(std::string pStrValue);
-	void print(std::ofstream pOutFile);
+	void print(std::ofstream& pOutFile) const;
 
 private:
 	class Cell
@@ -41,7 +41,7 @@ private:
 
 	// List Member variables:
 	Cell *mHead  = nullptr;
-	Cell *mScan  = nullptr;
+	Cell *mScan  = mHead;
 	Cell *mPrior = nullptr;
 
 };
