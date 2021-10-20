@@ -21,10 +21,10 @@
 
 // x2. In your List class, define members for the head of the list and for walking around it. You  don’t need a count field for this application.
 // x3. Initially, the List should be empty, that is, the head of the list should be initialized to nullptr.
-// 4. The list described here is a straight - line list until eof is reached, and the ends are joined.
-// 5. All cells are inserted at the head of the list because that is easiest and most efficient.
+// x4. The list described here is a straight - line list until eof is reached, and the ends are joined.
+// x5. All cells are inserted at the head of the list because that is easiest and most efficient.
 // 6. No special action is needed to maintain circularity when a Cell is removed.
-// 7. Use a 2 - pointer scan to walk around the list.This makes deletion very easy.
+// x7. Use a 2 - pointer scan to walk around the list.This makes deletion very easy.
 
 
 #ifndef _CLIST_H
@@ -45,6 +45,12 @@ public:
 
 	void print();
 	void insert(Student *pStudent);
+	void find(Student *pStudent);
+	void closeList();
+	void pickLoser();
+	void walkList(Cell *pCurPtr, int pNumHops);
+
+	void memCleanup();
 
 
 
@@ -52,6 +58,7 @@ private:
 	Cell *mHead = nullptr;
 	Cell *mScan = mHead;
 	Cell *mPrior = nullptr;
+	Cell *mLastNode = nullptr; // Track the last node in the list
 };
 #endif // !_CLIST_H
 

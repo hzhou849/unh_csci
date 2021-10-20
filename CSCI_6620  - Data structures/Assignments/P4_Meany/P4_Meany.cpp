@@ -36,6 +36,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "CList.h"
 #include "Student.h"
@@ -101,6 +102,8 @@ int main()
 //		the new Cell to the tail end of the list.Count the cells you create.
 // 6. When eof is reached, close the file and make the last Cell on the list point back to the first one, forming a circle.
 
+
+
 	// Initialize the list by creating the head.
 	Student *headStudent= new Student("NULL", "NULL");
 	myList.insert(headStudent);
@@ -108,32 +111,48 @@ int main()
 	std::string fName;
 	std::string lName;
 
+	int count = 0;
+
 	while (getline(inputFile, strData))
 	{
-		
-		//Method 1
+		// Method 1
 		// seperate out the two names
-		//for (auto tempStr: strData)
-		//{
-		//	std::cout << "string: " << tempStr << std::endl;
-		//}
-		//std::cout << "--------------------------" << std::endl;
+		// for (auto tempStr: strData)
+		// {
+		// 	std::cout << "string: " << tempStr << std::endl;
+		// }
+		// std::cout << "--------------------------" << std::endl;
 
-		// Method 2 word parser:
+		// Method 2 String Stream word parser:
 		std::stringstream ss(strData);
 		ss >> fName >> lName;
-		std::cout << "fName: " << fName << " lName: " << lName << std::endl;
+		//std::cout << "fName: " << fName << " \tlName: " << lName << std::endl;
 		Student *newStudent = new Student(fName, lName);
-
-
 		myList.insert(newStudent);
+
+		count++;
+	}
+	
+	if (count == 1)
+	{
+		myList.print();
+	}
+	else
+	{
+		myList.print();
+		myList.closeList();
+		myList.print();
+		myList.pickLoser();
 
 	}
 
-	myList.print();
+	// Cleanup
+	myList.memCleanup();
 
 	inputFile.close();
 	outputFile.close();
+
+
 
 	bye();
 }
