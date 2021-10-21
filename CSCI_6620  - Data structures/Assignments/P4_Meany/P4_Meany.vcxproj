@@ -139,7 +139,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Cell.cpp" />
     <ClCompile Include="CList.cpp" />
     <ClCompile Include="P4_Meany.cpp" />
     <ClCompile Include="Student.cpp" />

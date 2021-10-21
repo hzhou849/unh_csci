@@ -43,11 +43,11 @@ public:
 	CList();
 	~CList();
 
-	void print();
+	void print(std::ofstream &pOutFile);
 	void insert(Student *pStudent);
 	void find(Student *pStudent);
 	void closeList();
-	void pickLoser();
+	void pickLoser(std::ofstream &pOutFile);
 	void walkList(Cell *pCurPtr, int pNumHops);
 
 	void memCleanup();

@@ -7,11 +7,6 @@
  * Name:        HOWARD ZHOU - ID# 00748064
  */
 
- //Define a class named Student.
- // - boolean flag: seen 
- // - strings -  fname
- //			 -  lname.
- // The Student(pFname, pLname) initialize and set seen to false.
 
 #ifndef _STUDENT_H
 #define _STUDENT_H

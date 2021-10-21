@@ -7,30 +7,6 @@
  * Name:        HOWARD ZHOU - ID# 00748064
  */
 
-
-
-
-// Setup
-// x1. Call banner().Then open the late file properly and fill the list with Cells, each containing one names from the file.
-// x2. Instantiate your CList class, which should be initially empty.
-//x 3. Open the file and attempt to read the first line(two names, separated by a space).
-// 4. If there are zero names in the file, end the program immediately with a congratulatory comment.
-// 5. Otherwise, read the file, one student at a time, install the student in a new Cell, and attach 
-//		the new Cell to the tail end of the list.Count the cells you create.
-// 6. When eof is reached, close the file and make the last Cell on the list point back to the first one, forming a circle.
-
-// 1. If there is exactly one name in the file, end the program immediately with a comment announcing the loser.
-// 2. Otherwise, set a pointer(current) to the first student on the list.
-// 3. Use a string library function to get N, the length of the current last name.
-// 4. Walk around the circular list for N steps and look at the seen flag for that student.The first student who was 
-//		previously is the loser.Announce his name and end the process.
-// 5. Otherwise, mark the current student as seen.
-// 6. Repeat this process from step 3. Properly free all dynamic memory.
-// 7.Call bye().
-
-
-
-
 #include <iostream>
 #include <exception>
 #include <fstream>
@@ -73,8 +49,6 @@ int main()
 	std::ifstream inputFile;
 	std::ofstream outputFile;
 	
-	// x1. Call banner().Then open the late file properly and fill the list with Cells, each containing one names from the file.
-
 	// Print the banner
 	banner();
 
@@ -93,17 +67,6 @@ int main()
 		fatal();
 	}
 
-
-// x2. Instantiate your CList class, which should be initially empty.
-// x3. Open the file and attempt to read the first line(two names, separated by a space).
-// 
-// 4. If there are zero names in the file, end the program immediately with a congratulatory comment.
-// 5. Otherwise, read the file, one student at a time, install the student in a new Cell, and attach 
-//		the new Cell to the tail end of the list.Count the cells you create.
-// 6. When eof is reached, close the file and make the last Cell on the list point back to the first one, forming a circle.
-
-
-
 	// Initialize the list by creating the head.
 	Student *headStudent= new Student("NULL", "NULL");
 	myList.insert(headStudent);
@@ -115,44 +78,37 @@ int main()
 
 	while (getline(inputFile, strData))
 	{
-		// Method 1
-		// seperate out the two names
-		// for (auto tempStr: strData)
-		// {
-		// 	std::cout << "string: " << tempStr << std::endl;
-		// }
-		// std::cout << "--------------------------" << std::endl;
-
-		// Method 2 String Stream word parser:
 		std::stringstream ss(strData);
 		ss >> fName >> lName;
-		//std::cout << "fName: " << fName << " \tlName: " << lName << std::endl;
 		Student *newStudent = new Student(fName, lName);
 		myList.insert(newStudent);
-
 		count++;
 	}
 	
-	if (count == 1)
+	if (count == 0)
 	{
-		myList.print();
+		std::cout  << "Congratulations, there are NO losers found." << std::endl;
+		outputFile << "Congratulations, there are NO losers found." << std::endl;
+	}
+	else if (count == 1)
+	{
+		std::cout  << "The ONE loser found is: " << std::endl;
+		outputFile << "The ONE loser found is: " << std::endl;
+		myList.print(outputFile);
+		myList.memCleanup();		// Cleanup all dynamic heap allocation memory
 	}
 	else
 	{
-		myList.print();
 		myList.closeList();
-		myList.print();
-		myList.pickLoser();
+		myList.print(outputFile);
+		myList.pickLoser(outputFile);
+		myList.memCleanup();
 
 	}
 
-	// Cleanup
-	myList.memCleanup();
-
+	// Close file descriptors
 	inputFile.close();
 	outputFile.close();
-
-
 
 	bye();
 }
