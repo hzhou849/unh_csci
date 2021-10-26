@@ -1,0 +1,14 @@
+address: 00000288AD801240; Raj Patel     	next cell:  00000288AD801970
+address: 00000288AD801970; Jane Doe     	next cell:  00000288AD801740
+address: 00000288AD801740; Brian Morrisy     	next cell:  00000288AD801560
+address: 00000288AD801560; Jim Galin     	next cell:  00000288AD8014C0
+address: 00000288AD8014C0; Joseph Bryson     	next cell:  00000288AD800D40
+address: 00000288AD800D40; Paul Jones     	next cell:  00000288AD801150
+address: 00000288AD801150; Joe Smith     	next cell:  00000288AD801240
+Start picking a loser...
+
+Current position: Joseph Bryson	0
+Current position: Jim Galin	0
+Current position: Jane Doe	0
+Current position: Joseph Bryson	1
+Loser found: Joseph Bryson
