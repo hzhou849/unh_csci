@@ -17,6 +17,14 @@ int main()
     myTree.PutItem(3);
     myTree.PutItem(2);
     myTree.PutItem(16);
+    myTree.PutItem(7);
+    myTree.PutItem(15);
+    myTree.PutItem(14);
+    myTree.PutItem(12);
+    myTree.PutItem(17);
+    myTree.PutItem(29);
+    myTree.PutItem(43);
+    myTree.PutItem(8);
     myTree.PutItem(6);
 
     

@@ -5,7 +5,11 @@
 
 
 #include <iostream>
+#include <iomanip>
 #include "Node.h"
+
+static const int rootIndent = 20;
+
 
 class Tree
 {
@@ -33,11 +37,12 @@ public:
 	void PrintTree(Node *pTree);
 	Node *getRoot();
 
-	void GuiPrint(Node *pTree);
+	void GuiPrint(Node *pTree, int indent = rootIndent);
 
 
 private:
 	Node *root; // Similar to head of linked list
+	bool rootPrinted = false;
 };
 #endif // !_TREE_H
 
@@ -105,7 +110,7 @@ void Insert(Node *&pTree, int pItem)
 		pTree = new Node(pItem);
 		// Default pointers for LEFT and RIGHT are already null.
 	}
-	else if (pItem < pTree->mData)		// If item is smaller than root, insert LEFT
+	else if (pItem <= pTree->mData)		// If item is smaller than root, insert LEFT
 	{
 		Insert(pTree->mLeftNode, pItem);
 	}
@@ -135,12 +140,44 @@ void Tree::PrintTree(Node *pTree)
 }
 
 
-void Tree::GuiPrint(Node *pTree)
+
+// Modify the print to start looking into priors?
+void Tree::GuiPrint(Node *pTree, int indent)
 {
 	if (pTree != nullptr)
 	{
-		std::cout << pTree->mData << std::endl;
-		GuiPrint(pTree->mLeftNode);
-		GuiPrint(pTree->mRightNode);
+		if (indent == rootIndent && !rootPrinted)
+		{
+			std::cout << std::setw(indent) << pTree->mData << std::endl;
+			rootPrinted = true;
+		}
+
+
+		if (pTree->mRightNode && pTree->mLeftNode)
+		{
+			std::cout << std::setw(indent+2) << "/   \\" << std::endl;
+			std::cout << std::setw(indent - 3); 
+			std::cout << pTree->mLeftNode->mData;
+			std::cout <<std::setw(6) <<  pTree->mRightNode->mData;
+		}
+		else if (pTree->mRightNode)
+		{
+			std::cout << std::setw(indent+3) << ' ' << "*\\\n";
+			std::cout << std::setw(indent+3) << ' ';
+			std::cout << pTree->mRightNode->mData << std::endl;
+		}
+		else if (pTree->mLeftNode != nullptr)
+		{
+			std::cout << std::setw(indent-1) << "/" << std::endl;
+			std::cout << std::setw(indent - 2);
+			std::cout << pTree->mLeftNode->mData << std::endl;
+		}
+		std::cout << std::endl;
+
+		GuiPrint(pTree->mLeftNode, indent-2);
+		GuiPrint(pTree->mRightNode, indent+4);
+
+		//GuiPrint(pTree->mLeftNode->);
+		//GuiPrint(pTree->mRightNode);
 	}
 }
