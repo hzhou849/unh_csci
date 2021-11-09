@@ -48,6 +48,9 @@ struct comp
 
 int main()
 {
+	int left;
+	int right;
+	int count = 0;
 	banner();
 	
 	//Huffman huffm;
@@ -62,10 +65,29 @@ int main()
 	pq.push(20);
 	pq.push(2);
 
-	while (!pq.empty())
+	//while (!pq.empty())
+	//{
+	//	std::cout << pq.top() << std::endl;
+	//	pq.pop();
+
+	//}
+
+	while (pq.size() != 1)
 	{
-		std::cout << pq.top() << std::endl;
+		std::cout << "Iteration: " << count << std::endl;
+		left = pq.top();
+		std::cout << "Left:" << pq.top() << std::endl;
 		pq.pop();
+		std::cout << "Right:" << pq.top() << std::endl;
+		right = pq.top();
+		pq.pop();
+
+		int sum = left + right;
+		std::cout << "sum: " << sum << "\n" << std::endl;
+		
+		pq.push(sum);
+		count++;
+
 
 	}
 

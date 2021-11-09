@@ -26,11 +26,17 @@ public:
 	Huffman();
 	~Huffman();
 	Node *getNode(char ch, int tally, Node *left, Node *right);
-	Node heapify(std::string text, Node *root);
+	Node *heapify(Node *root);
+
+
 
 
 private:
-	
+	void compress(std::string text);
+	void doTally(std::string text);
+	void encode(Node * root, std::string str, std::unordered_map<char, std::string> &huffmanCode);
+	void decode(Node *root, int &index, std::string str);
+
 	struct comp
 	{
 		bool operator()(Node *nOne, Node *nTwo)
