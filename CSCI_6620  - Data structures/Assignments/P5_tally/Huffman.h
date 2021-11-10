@@ -19,20 +19,22 @@
 #include "Node.h"
 
 
+static const int rootIndent = 20;  // Adjust spacing if needed
+
 class Huffman
 {
 
 public:
 	Huffman();
 	~Huffman();
-	Node *getNode(char ch, int tally, Node *left, Node *right);
+	Node *createNode(char ch, int tally, Node *left, Node *right);
 	Node *heapify(Node *root);
+	void compress(std::string text);
 
 
 
 
 private:
-	void compress(std::string text);
 	void doTally(std::string text);
 	void encode(Node * root, std::string str, std::unordered_map<char, std::string> &huffmanCode);
 	void decode(Node *root, int &index, std::string str);
@@ -53,7 +55,9 @@ private:
 	Node *rootHuffTree = new Node();
 	
 
-
+	// Needs implementation
+	void GuiPrint(Node *root, int indent=rootIndent);
+	bool rootPrinted = false;
 
 };
 

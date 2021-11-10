@@ -8,13 +8,14 @@
  */
 
 #include <iostream>
+#include <iomanip>
 #include "Huffman.h"
 
 
 Huffman::Huffman() {}
 Huffman::~Huffman() {}
 
-Node* Huffman::getNode(char ch, int tally, Node *left, Node *right)
+Node* Huffman::createNode(char ch, int tally, Node *left, Node *right)
 {
 	Node *node = new Node();
 	node->ch = ch;
@@ -32,7 +33,7 @@ Node *Huffman::heapify(Node *root)
 	// set the unordered_map to 
 	for (auto pair : tally)
 	{
-		P5pq.push(getNode(pair.first, pair.second, nullptr, nullptr));
+		P5pq.push(createNode(pair.first, pair.second, nullptr, nullptr));
 	}
 
 	while (P5pq.size() != 1)
@@ -49,23 +50,21 @@ Node *Huffman::heapify(Node *root)
 		// frequencies. Add the new node 
 
 		int sum = left->tally + right->tally;
-		P5pq.push(getNode('\0', sum, left, right));
+		P5pq.push(createNode('\0', sum, left, right));
 		
 	}
 
 	root = P5pq.top();
-	return *root;
+	return root;
 }
 
-
+// Tally up the characters in the string
 void Huffman::doTally(std::string text)
 {
 	for (char ch : text)
 	{
-		tally[ch]++;
+		tally[ch]++;     // Increment the unordered map stores of each character
 	}
-
-	
 }
 
 
@@ -133,7 +132,66 @@ void Huffman::compress(std::string text)
 	
 	for (auto pair : huffmanCode)
 	{
-		std::cout << "pair.first" << std::endl;
+		std::cout << pair.first << " "  << pair.second <<  std::endl;
 	}
+
+	std::cout << "\nOriginal string was: " << text << std::endl;
+
+	// print encoded string
+	std::string str = "";
+	for (char ch : text)
+	{
+		str += huffmanCode[ch];
+	}
+
+	std::cout << "Encoded string: " << str << std::endl;
+
+	// Traverse the Huffman tree again an this time decode the encoded string
+	int index = -1;
+	while (index < (int)str.size() - 2)
+	{
+		decode(rootHuffTree, index, str);
+	}
+}
+
+
+void Huffman::GuiPrint(Node *root, int indent)
+{
+	// Check if this goes back?
+	if (root == nullptr)
+	{
+		return;
+	}
+
+	if (indent == rootIndent && !rootPrinted)
+	{
+		std::cout << std::setw(indent) << root->ch << ";" << root->tally << std::endl;
+	}
+
+	// Parent has a left and right node.
+	if (root->right && root->left)
+	{
+		std::cout << std::setw(indent + 2) << " /   \\" << std::endl;
+		std::cout << std::setw(indent - 3);
+		std::cout << root->left->ch << "; " << root->left->tally;
+		std::cout << std::setw(6) << root->right->ch << ";" << root->right->tally;
+	}
+	else if (root->right)	// Right leaf
+	{
+		std::cout << std::setw(indent + 3) << ' ' << "*\\\n";
+		std::cout << std::setw(indent + 3) << ' ';
+		std::cout << root->right->ch << ";" << root->tally << std::endl;
+	}
+	else if (root->left != nullptr)
+	{
+		std::cout << std::setw(indent - 1) << "/" << std::endl;
+		std::cout << std::setw(indent - 2);
+		std::cout << root->left->ch << ";" << root->left->tally << std::endl;
+	}
+	std::cout << std::endl;
+
+	GuiPrint(root->left, indent - 2);
+	GuiPrint(root->right, indent + 4);
+
 
 }

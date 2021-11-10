@@ -91,5 +91,10 @@ int main()
 
 	}
 
+	Huffman hf;
+	hf.compress("testing");
+
+
+
 }
 
