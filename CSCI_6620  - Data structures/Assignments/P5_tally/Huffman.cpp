@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 #include "Huffman.h"
 
 
@@ -31,10 +32,16 @@ Node *Huffman::heapify(Node *root)
 {
 	// Create a leaf node for each of character and add it to the priority queue.
 	// set the unordered_map to 
+	int counter = 0;
+
+	std::cout << "Tally: " << std::endl;
 	for (auto pair : tally)
 	{
+		std::cout << counter << " " << pair.first << " - " << pair.second << std::endl;
 		P5pq.push(createNode(pair.first, pair.second, nullptr, nullptr));
+		counter++;
 	}
+
 
 	while (P5pq.size() != 1)
 	{
@@ -76,7 +83,7 @@ void Huffman::encode(Node * root, std::string str, std::unordered_map<char, std:
 		return;		
 	}
 
-	// Found a left node, both left and right are null.
+	// Found a leaf node, both left and right are null.
 	if (!root->left && !root->right)
 	{
 		huffmanCode[root->ch] = str;
@@ -99,7 +106,7 @@ void Huffman::decode(Node *root, int &index, std::string str)
 	// found a leaf node
 	if (!root->left && !root->right)
 	{
-		std::cout << "Decoded string" << root->ch;
+		std::cout << root->ch;
 		return;
 	}
 
@@ -119,9 +126,13 @@ void Huffman::decode(Node *root, int &index, std::string str)
 // Build Huffman Tree. Decode given input text
 void Huffman::compress(std::string text)
 {
+	std::ofstream outputFile("HuffmanCodes.txt", std::ios::trunc);
+	std::ofstream outputFileES("EncodedString.txt", std::ios::trunc);
+
 	doTally(text);
 
 	rootHuffTree = heapify(rootHuffTree);
+	GuiPrint(rootHuffTree);
 
 	// traverse the Huffman Tree and store Huffman codes 
 	// in a map. Also prints them
@@ -129,10 +140,14 @@ void Huffman::compress(std::string text)
 	std::unordered_map<char, std::string> huffmanCode;
 	encode(rootHuffTree, "", huffmanCode);
 	std::cout << "Huffman Codes: " << std::endl;
+	outputFile<< "Huffman Codes: " << std::endl;
+	 
 	
 	for (auto pair : huffmanCode)
 	{
-		std::cout << pair.first << " "  << pair.second <<  std::endl;
+		std::cout  << pair.first << " "  << pair.second <<  std::endl;
+		outputFile << pair.first << " "  << pair.second <<  std::endl;
+	
 	}
 
 	std::cout << "\nOriginal string was: " << text << std::endl;
@@ -145,13 +160,20 @@ void Huffman::compress(std::string text)
 	}
 
 	std::cout << "Encoded string: " << str << std::endl;
+	outputFileES << str;
 
 	// Traverse the Huffman tree again an this time decode the encoded string
+	std::cout << "Decoded String: ";
+
 	int index = -1;
 	while (index < (int)str.size() - 2)
 	{
 		decode(rootHuffTree, index, str);
-	}
+	} 
+
+	outputFile.close();
+	outputFileES.close();
+
 }
 
 
@@ -165,7 +187,10 @@ void Huffman::GuiPrint(Node *root, int indent)
 
 	if (indent == rootIndent && !rootPrinted)
 	{
-		std::cout << std::setw(indent) << root->ch << ";" << root->tally << std::endl;
+		if (root->left->ch == '\0')
+			std::cout << std::setw(indent) << "(" << root->tally << ")" << std::endl;
+		else
+			std::cout << std::setw(indent) << root->ch << ";" << root->tally << std::endl;
 	}
 
 	// Parent has a left and right node.
@@ -173,13 +198,21 @@ void Huffman::GuiPrint(Node *root, int indent)
 	{
 		std::cout << std::setw(indent + 2) << " /   \\" << std::endl;
 		std::cout << std::setw(indent - 3);
-		std::cout << root->left->ch << "; " << root->left->tally;
-		std::cout << std::setw(6) << root->right->ch << ";" << root->right->tally;
+		if (root->left->ch == '\0')
+			std::cout << "(" << root->left->tally << ")";
+		else
+			std::cout << root->left->ch << ";" << root->left->tally;
+
+		if (root->right->ch == '\0')
+			std::cout << std::setw(4) <<  "(" << root->right->tally << ")";
+		else
+			std::cout << std::setw(4) << root->right->ch << ";" << root->right->tally;
 	}
 	else if (root->right)	// Right leaf
 	{
 		std::cout << std::setw(indent + 3) << ' ' << "*\\\n";
 		std::cout << std::setw(indent + 3) << ' ';
+
 		std::cout << root->right->ch << ";" << root->tally << std::endl;
 	}
 	else if (root->left != nullptr)
@@ -192,6 +225,4 @@ void Huffman::GuiPrint(Node *root, int indent)
 
 	GuiPrint(root->left, indent - 2);
 	GuiPrint(root->right, indent + 4);
-
-
 }

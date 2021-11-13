@@ -1,0 +1,5 @@
+Huffman Codes: 
+a 0
+b 10
+c 110
+d 111

@@ -49,15 +49,15 @@ private:
 	};
 
 	
-	std::unordered_map<char, int> tally;
+	void GuiPrint(Node *root, int indent=rootIndent);
 
-	std::priority_queue<Node*, std::vector<Node*>, comp> P5pq;
+	// Member variables
+	bool rootPrinted = false;
+	std::unordered_map<char, int> tally;
 	Node *rootHuffTree = new Node();
+	std::priority_queue<Node*, std::vector<Node*>, comp> P5pq;
 	
 
-	// Needs implementation
-	void GuiPrint(Node *root, int indent=rootIndent);
-	bool rootPrinted = false;
 
 };
 

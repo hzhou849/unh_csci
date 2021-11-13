@@ -55,15 +55,14 @@ int main()
 	
 	//Huffman huffm;
 
-	bye();
 
 
-	std::priority_queue<int, std::vector<int >, comp> pq;
+	//std::priority_queue<int, std::vector<int >, comp> pq;
 
-	pq.push(5);
-	pq.push(10);
-	pq.push(20);
-	pq.push(2);
+	//pq.push(5);
+	//pq.push(10);
+	//pq.push(20);
+	//pq.push(2);
 
 	//while (!pq.empty())
 	//{
@@ -72,28 +71,29 @@ int main()
 
 	//}
 
-	while (pq.size() != 1)
-	{
-		std::cout << "Iteration: " << count << std::endl;
-		left = pq.top();
-		std::cout << "Left:" << pq.top() << std::endl;
-		pq.pop();
-		std::cout << "Right:" << pq.top() << std::endl;
-		right = pq.top();
-		pq.pop();
+	//while (pq.size() != 1)
+	//{
+	//	std::cout << "Iteration: " << count << std::endl;
+	//	left = pq.top();
+	//	std::cout << "Left:" << pq.top() << std::endl;
+	//	pq.pop();
+	//	std::cout << "Right:" << pq.top() << std::endl;
+	//	right = pq.top();
+	//	pq.pop();
 
-		int sum = left + right;
-		std::cout << "sum: " << sum << "\n" << std::endl;
-		
-		pq.push(sum);
-		count++;
+	//	int sum = left + right;
+	//	std::cout << "sum: " << sum << "\n" << std::endl;
+	//	
+	//	pq.push(sum);
+	//	count++;
 
 
-	}
+	//}
 
-	Huffman hf;
-	hf.compress("testing");
+	Huffman huffObj;
+	huffObj.compress("aabacdab");
 
+	bye();
 
 
 }
