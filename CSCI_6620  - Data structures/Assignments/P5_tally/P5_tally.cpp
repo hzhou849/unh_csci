@@ -8,6 +8,8 @@
  */
 
 #include <iostream>
+#include <exception>
+#include <fstream>
 #include <string>
 
 
@@ -33,6 +35,7 @@ void bye()
 void fatal()
 {
 	std::cerr << "Fatal error detected. Terminating program." << std::endl;
+	exit(EXIT_FAILURE);
 }
 
 
@@ -48,50 +51,38 @@ struct comp
 
 int main()
 {
-	int left;
-	int right;
-	int count = 0;
+	std::ifstream inputFile;
+	std::string stringData;
+
 	banner();
 	
-	//Huffman huffm;
+	try
+	{
+		// Load the input file
+		inputFile.open("P5_input.txt", std::ios::in);
+
+		if (!inputFile)
+			throw std::iostream::failure("Input file initialization error.");
+	}
+	catch (std::iostream::failure &err)
+	{
+		std::cerr << "Exception caught: " << err.what() << std::endl;
+		fatal();
+	}
+
+	getline(inputFile, stringData);
+
+	std::cout << "STRING: [" << stringData << "]" << std::endl;
 
 
-
-	//std::priority_queue<int, std::vector<int >, comp> pq;
-
-	//pq.push(5);
-	//pq.push(10);
-	//pq.push(20);
-	//pq.push(2);
-
-	//while (!pq.empty())
-	//{
-	//	std::cout << pq.top() << std::endl;
-	//	pq.pop();
-
-	//}
-
-	//while (pq.size() != 1)
-	//{
-	//	std::cout << "Iteration: " << count << std::endl;
-	//	left = pq.top();
-	//	std::cout << "Left:" << pq.top() << std::endl;
-	//	pq.pop();
-	//	std::cout << "Right:" << pq.top() << std::endl;
-	//	right = pq.top();
-	//	pq.pop();
-
-	//	int sum = left + right;
-	//	std::cout << "sum: " << sum << "\n" << std::endl;
-	//	
-	//	pq.push(sum);
-	//	count++;
+	//char test1 = '!';
+	//char test2 = ' ';
 
 
-	//}
 
 	Huffman huffObj;
-	huffObj.compress("aabacdab");
+	//huffObj.compress("aabacdabff!!");
+	huffObj.compress(stringData);
 
 	bye();
 

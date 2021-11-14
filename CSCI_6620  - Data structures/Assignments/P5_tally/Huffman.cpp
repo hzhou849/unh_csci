@@ -37,7 +37,16 @@ Node *Huffman::heapify(Node *root)
 	std::cout << "Tally: " << std::endl;
 	for (auto pair : tally)
 	{
-		std::cout << counter << " " << pair.first << " - " << pair.second << std::endl;
+		if (pair.first == ' ')
+		{
+			std::cout << counter << " " << std::hex << std::showbase << static_cast<std::uint16_t>(pair.first) << " - "; 
+			std::cout << std::resetiosflags(std::ios::basefield); // Reset the io flags to default and print decimal
+			std::cout << pair.second << std::endl;
+		}
+		else
+		{
+			std::cout << counter << " " << pair.first << " - " << pair.second << std::endl;
+		}
 		P5pq.push(createNode(pair.first, pair.second, nullptr, nullptr));
 		counter++;
 	}
@@ -185,18 +194,20 @@ void Huffman::GuiPrint(Node *root, int indent)
 		return;
 	}
 
-	if (indent == rootIndent && !rootPrinted)
+
+	// This is the root character being printed
+	if (indent == rootIndent)
 	{
-		if (root->left->ch == '\0')
+		if ( ( root->left != nullptr) && (root->left->ch == '\0') )
 			std::cout << std::setw(indent) << "(" << root->tally << ")" << std::endl;
-		else
+		else if( root->right != nullptr)
 			std::cout << std::setw(indent) << root->ch << ";" << root->tally << std::endl;
 	}
 
 	// Parent has a left and right node.
 	if (root->right && root->left)
 	{
-		std::cout << std::setw(indent + 2) << " /   \\" << std::endl;
+		std::cout << std::setw(indent + 3) << " /   \\" << std::endl;
 		std::cout << std::setw(indent - 3);
 		if (root->left->ch == '\0')
 			std::cout << "(" << root->left->tally << ")";
@@ -207,6 +218,7 @@ void Huffman::GuiPrint(Node *root, int indent)
 			std::cout << std::setw(4) <<  "(" << root->right->tally << ")";
 		else
 			std::cout << std::setw(4) << root->right->ch << ";" << root->right->tally;
+		std::cout << std::endl;
 	}
 	else if (root->right)	// Right leaf
 	{
@@ -221,7 +233,7 @@ void Huffman::GuiPrint(Node *root, int indent)
 		std::cout << std::setw(indent - 2);
 		std::cout << root->left->ch << ";" << root->left->tally << std::endl;
 	}
-	std::cout << std::endl;
+	//std::cout << std::endl;
 
 	GuiPrint(root->left, indent - 2);
 	GuiPrint(root->right, indent + 4);

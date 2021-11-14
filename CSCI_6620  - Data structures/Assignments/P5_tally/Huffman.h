@@ -52,7 +52,7 @@ private:
 	void GuiPrint(Node *root, int indent=rootIndent);
 
 	// Member variables
-	bool rootPrinted = false;
+	//bool rootPrinted = false;
 	std::unordered_map<char, int> tally;
 	Node *rootHuffTree = new Node();
 	std::priority_queue<Node*, std::vector<Node*>, comp> P5pq;
