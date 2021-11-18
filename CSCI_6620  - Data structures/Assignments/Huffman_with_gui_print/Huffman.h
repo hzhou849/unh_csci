@@ -12,9 +12,10 @@
 #define _HUFFMAN_H
 #pragma once
 
+
 #include <unordered_map>
 #include <queue>
-#include <fstream>
+
 #include "Node.h"
 
 
@@ -27,15 +28,18 @@ public:
 	Huffman();
 	~Huffman();
 	Node *createNode(char ch, int tally, Node *left, Node *right);
-	Node *heapify(Node *root, std::ofstream &outputFile);
+	Node *heapify(Node *root);
 	void compress(std::string text);
+
+
+
 
 private:
 	void doTally(std::string text);
 	void encode(Node * root, std::string str, std::unordered_map<char, std::string> &huffmanCode);
-	void decode(Node *root, int &index, std::string str, std::string &decodedStr);
-	
-	struct comp // Comparator helper function for priority_queue()
+	void decode(Node *root, int &index, std::string str);
+
+	struct comp
 	{
 		bool operator()(Node *nOne, Node *nTwo)
 		{
@@ -48,10 +52,12 @@ private:
 	void GuiPrint(Node *root, int indent=rootIndent);
 
 	// Member variables
-	//bool rootPrinted = false; // used to display the root node one time only
+	bool rootPrinted = false; // used to display the root node one time only
 	std::unordered_map<char, int> tally;
 	Node *rootHuffTree = new Node();
 	std::priority_queue<Node*, std::vector<Node*>, comp> P5pq;
+	
+
 
 };
 

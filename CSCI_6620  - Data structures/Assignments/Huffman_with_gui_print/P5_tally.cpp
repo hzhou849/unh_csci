@@ -18,7 +18,7 @@
 
 void banner()
 {
-	std::cout << "------- Welcome to Program 5 Tally by [ Howard Zhou ]! -------- -\n\n";
+	std::cout << "------- Welcome to Program 5 Meany by [Howard Zhou]! -------- -\n\n";
 	std::cout << "My Major is Computer Science		Graduation Year : 2023\n\n";
 	std::cout << "\"Loyalty is a two way street. If I'm asking it from you then you already got it from me.\"\n- Harvey Specter, Suits.\n\n";
 	std::cout << "About Me : Former Paratrooper in the Army; I work in the field of robitics as a software engineer.\n\n";
@@ -39,14 +39,14 @@ void fatal()
 }
 
 
-//struct comp
-//{
-//	bool operator() (int nOne, int nTwo)
-//	{
-//		// highest priority item has lowest frequency
-//		return nOne > nTwo;
-//	}
-//};
+struct comp
+{
+	bool operator() (int nOne, int nTwo)
+	{
+		// highest priority item has lowest frequency
+		return nOne > nTwo;
+	}
+};
 
 
 int main()
@@ -71,16 +71,18 @@ int main()
 	}
 
 	getline(inputFile, stringData);
+
 	std::cout << "STRING: [" << stringData << "]" << std::endl;
 
+
+	//char test1 = '!';
+	//char test2 = ' ';
 
 
 
 	Huffman huffObj;
+	//huffObj.compress("aabacdabff!!");
 	huffObj.compress(stringData);
-
-	// Cleanup
-	inputFile.close();
 
 	bye();
 

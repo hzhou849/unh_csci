@@ -28,36 +28,30 @@ Node* Huffman::createNode(char ch, int tally, Node *left, Node *right)
 }
 
 
-Node *Huffman::heapify(Node *root, std::ofstream &outputFile)
+Node *Huffman::heapify(Node *root)
 {
 	// Create a leaf node for each of character and add it to the priority queue.
 	// set the unordered_map to 
+	int counter = 0;
 
-	std::cout  << "\nTally: " << std::endl;
-	outputFile << "\nTally: " << std::endl;
-	
+	std::cout << "Tally: " << std::endl;
 	for (auto pair : tally)
 	{
 		if (pair.first == ' ')
 		{
-			/* For hex output of special characters uncomment this block */
-			//std::cout << counter << " " << std::hex << std::showbase << static_cast<std::uint16_t>(pair.first) << " - "; 
-			//std::cout << std::resetiosflags(std::ios::basefield); // Reset the io flags to default and print decimal
-			//std::cout << pair.second << std::endl;
-
-			std::cout << " '" << pair.first << "'- " << pair.second << std::endl;
-			outputFile << " '" << pair.first << "'- " << pair.second << std::endl;
+			std::cout << counter << " " << std::hex << std::showbase << static_cast<std::uint16_t>(pair.first) << " - "; 
+			std::cout << std::resetiosflags(std::ios::basefield); // Reset the io flags to default and print decimal
+			std::cout << pair.second << std::endl;
 		}
 		else
 		{
-			std::cout << "  " << pair.first << " - " << pair.second << std::endl;
-			outputFile << "  " << pair.first << " - " << pair.second << std::endl;
+			std::cout << counter << " " << pair.first << " - " << pair.second << std::endl;
 		}
 		P5pq.push(createNode(pair.first, pair.second, nullptr, nullptr));
-		//counter++;
+		counter++;
 	}
 
-	
+
 	while (P5pq.size() != 1)
 	{
 		// Remove the two nodes of highest priority
@@ -81,7 +75,7 @@ Node *Huffman::heapify(Node *root, std::ofstream &outputFile)
 }
 
 // Tally up the characters in the string
-void Huffman::doTally(std::string text )
+void Huffman::doTally(std::string text)
 {
 	for (char ch : text)
 	{
@@ -111,10 +105,8 @@ void Huffman::encode(Node * root, std::string str, std::unordered_map<char, std:
 }
 
 // Recursively traverse the Huffman Tree and decode the encode string
-void Huffman::decode(Node *root, int &index, std::string str, std::string &decodedStr)
+void Huffman::decode(Node *root, int &index, std::string str)
 {
-	
-
 	if (root == nullptr)
 	{
 		return;
@@ -124,7 +116,6 @@ void Huffman::decode(Node *root, int &index, std::string str, std::string &decod
 	if (!root->left && !root->right)
 	{
 		std::cout << root->ch;
-		decodedStr += root->ch;
 		return;
 	}
 
@@ -132,11 +123,11 @@ void Huffman::decode(Node *root, int &index, std::string str, std::string &decod
 
 	if (str[index] == '0')
 	{
-		decode(root->left, index, str, decodedStr);
+		decode(root->left, index, str);
 	}
 	else
 	{
-		decode(root->right, index, str, decodedStr);
+		decode(root->right, index, str);
 	}
 }
 
@@ -145,19 +136,19 @@ void Huffman::decode(Node *root, int &index, std::string str, std::string &decod
 void Huffman::compress(std::string text)
 {
 	std::ofstream outputFile("HuffmanCodes.txt", std::ios::trunc);
-	//std::ofstream outputFileES("EncodedString.txt", std::ios::trunc);
-	std::string decodedStr = "";
+	std::ofstream outputFileES("EncodedString.txt", std::ios::trunc);
 
 	doTally(text);
 
-	rootHuffTree = heapify(rootHuffTree, outputFile);
+	rootHuffTree = heapify(rootHuffTree);
+	GuiPrint(rootHuffTree);
 
 	// traverse the Huffman Tree and store Huffman codes 
 	// in a map. Also prints them
 
 	std::unordered_map<char, std::string> huffmanCode;
 	encode(rootHuffTree, "", huffmanCode);
-	std::cout << "\nHuffman Codes: " << std::endl;
+	std::cout << "Huffman Codes: " << std::endl;
 	outputFile<< "Huffman Codes: " << std::endl;
 	 
 	
@@ -165,11 +156,10 @@ void Huffman::compress(std::string text)
 	{
 		std::cout  << pair.first << " "  << pair.second <<  std::endl;
 		outputFile << pair.first << " "  << pair.second <<  std::endl;
+	
 	}
 
 	std::cout << "\nOriginal string was: " << text << std::endl;
-	outputFile << "\nOriginal string was: " << text << std::endl;
-
 
 	// print encoded string
 	std::string str = "";
@@ -179,22 +169,73 @@ void Huffman::compress(std::string text)
 	}
 
 	std::cout << "Encoded string: " << str << std::endl;
-	outputFile << str;
+	outputFileES << str;
 
 	// Traverse the Huffman tree again an this time decode the encoded string
 	std::cout << "Decoded String: ";
-	outputFile << "Decoded String: ";
-
 
 	int index = -1;
 	while (index < (int)str.size() - 2)
 	{
-		decode(rootHuffTree, index, str, decodedStr);
+		decode(rootHuffTree, index, str);
 	} 
-	outputFile << "Decoded: " << decodedStr << std::endl;
 
 	outputFile.close();
-	//outputFileES.close();
+	outputFileES.close();
 
 }
 
+
+void Huffman::GuiPrint(Node *root, int indent)
+{
+	// Check if this goes back?
+	if (root == nullptr)
+	{
+		return;
+	}
+
+
+	// This is the root character being printed
+	if (indent == rootIndent && !rootPrinted)
+	{
+		rootPrinted = true;
+		if ( ( root->left != nullptr) && (root->left->ch == '\0') )
+			std::cout << std::setw(indent) << "(" << root->tally << ")" << std::endl;
+		else if( root->right != nullptr)
+			std::cout << std::setw(indent) << root->ch << ";" << root->tally << std::endl;
+	}
+
+	// Parent has a left and right node.
+	if (root->right && root->left)
+	{
+		std::cout << std::setw(indent + 3) << " /   \\" << std::endl;
+		std::cout << std::setw(indent - 3);
+		if (root->left->ch == '\0')
+			std::cout << "(" << root->left->tally << ")";
+		else
+			std::cout << root->left->ch << ";" << root->left->tally;
+
+		if (root->right->ch == '\0')
+			std::cout << std::setw(4) <<  "(" << root->right->tally << ")";
+		else
+			std::cout << std::setw(4) << root->right->ch << ";" << root->right->tally;
+		std::cout << std::endl;
+	}
+	else if (root->right)	// Right leaf
+	{
+		std::cout << std::setw(indent + 3) << ' ' << "*\\\n";
+		std::cout << std::setw(indent + 3) << ' ';
+
+		std::cout << root->right->ch << ";" << root->tally << std::endl;
+	}
+	else if (root->left != nullptr)
+	{
+		std::cout << std::setw(indent - 1) << "/" << std::endl;
+		std::cout << std::setw(indent - 2);
+		std::cout << root->left->ch << ";" << root->left->tally << std::endl;
+	}
+	std::cout << std::endl;
+
+	GuiPrint(root->left, indent - 2);
+	GuiPrint(root->right, indent + 4);
+}
