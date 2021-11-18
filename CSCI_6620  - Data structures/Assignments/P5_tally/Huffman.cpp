@@ -54,7 +54,6 @@ Node *Huffman::heapify(Node *root, std::ofstream &outputFile)
 			outputFile << "  " << pair.first << " - " << pair.second << std::endl;
 		}
 		P5pq.push(createNode(pair.first, pair.second, nullptr, nullptr));
-		//counter++;
 	}
 
 	
@@ -158,7 +157,7 @@ void Huffman::compress(std::string text)
 	std::unordered_map<char, std::string> huffmanCode;
 	encode(rootHuffTree, "", huffmanCode);
 	std::cout << "\nHuffman Codes: " << std::endl;
-	outputFile<< "Huffman Codes: " << std::endl;
+	outputFile<< "\nHuffman Codes: " << std::endl;
 	 
 	
 	for (auto pair : huffmanCode)
@@ -167,8 +166,8 @@ void Huffman::compress(std::string text)
 		outputFile << pair.first << " "  << pair.second <<  std::endl;
 	}
 
-	std::cout << "\nOriginal string was: " << text << std::endl;
-	outputFile << "\nOriginal string was: " << text << std::endl;
+	std::cout << "\nOriginal string was: " << text  << "\n"<< std::endl;
+	outputFile << "\nOriginal string was: " << text << "\n" << std::endl;
 
 
 	// print encoded string
@@ -179,11 +178,11 @@ void Huffman::compress(std::string text)
 	}
 
 	std::cout << "Encoded string: " << str << std::endl;
-	outputFile << str;
+	outputFile << "Encoded string:" << str << std::endl;
 
 	// Traverse the Huffman tree again an this time decode the encoded string
-	std::cout << "Decoded String: ";
-	outputFile << "Decoded String: ";
+	std::cout << "\nDecoded String: ";
+	outputFile << "\nDecoded String: ";
 
 
 	int index = -1;
@@ -191,10 +190,9 @@ void Huffman::compress(std::string text)
 	{
 		decode(rootHuffTree, index, str, decodedStr);
 	} 
-	outputFile << "Decoded: " << decodedStr << std::endl;
+	outputFile << decodedStr << std::endl;
 
 	outputFile.close();
-	//outputFileES.close();
 
 }
 
