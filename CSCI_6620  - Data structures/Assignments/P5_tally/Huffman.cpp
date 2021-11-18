@@ -72,7 +72,6 @@ Node *Huffman::heapify(Node *root, std::ofstream &outputFile)
 
 		int sum = left->tally + right->tally;
 		P5pq.push(createNode('\0', sum, left, right));
-		
 	}
 
 	root = P5pq.top();
@@ -105,15 +104,11 @@ void Huffman::encode(Node * root, std::string str, std::unordered_map<char, std:
 
 	encode(root->left, str + "0", huffmanCode);
 	encode(root->right, str + "1", huffmanCode);
-
-
 }
 
 // Recursively traverse the Huffman Tree and decode the encode string
 void Huffman::decode(Node *root, int &index, std::string str, std::string &decodedStr)
 {
-	
-
 	if (root == nullptr)
 	{
 		return;
@@ -144,7 +139,6 @@ void Huffman::decode(Node *root, int &index, std::string str, std::string &decod
 void Huffman::compress(std::string text)
 {
 	std::ofstream outputFile("HuffmanCodes.txt", std::ios::trunc);
-	//std::ofstream outputFileES("EncodedString.txt", std::ios::trunc);
 	std::string decodedStr = "";
 
 	doTally(text);

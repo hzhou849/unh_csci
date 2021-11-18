@@ -12,8 +12,6 @@
 #include <fstream>
 #include <string>
 
-
-
 #include "Huffman.h"
 
 void banner()
@@ -39,15 +37,6 @@ void fatal()
 }
 
 
-//struct comp
-//{
-//	bool operator() (int nOne, int nTwo)
-//	{
-//		// highest priority item has lowest frequency
-//		return nOne > nTwo;
-//	}
-//};
-
 
 int main()
 {
@@ -71,10 +60,7 @@ int main()
 	}
 
 	getline(inputFile, stringData);
-	std::cout << "STRING: [" << stringData << "]" << std::endl;
-
-
-
+	//std::cout << "STRING: [" << stringData << "]" << std::endl;
 
 	Huffman huffObj;
 	huffObj.compress(stringData);
