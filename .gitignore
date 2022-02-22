@@ -36,3 +36,10 @@ Browse.VC.db
 ipch
 .vs/
 Debug/
+
+# VS Code
+.vscode/
+
+#MikroIDE
+.dbg
+.dct
