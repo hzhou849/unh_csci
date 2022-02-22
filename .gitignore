@@ -40,6 +40,6 @@ Debug/
 # VS Code
 .vscode/
 
-#MikroIDE
+# MikroIDE
 .dbg
 .dct
