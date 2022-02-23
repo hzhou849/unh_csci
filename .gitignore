@@ -41,5 +41,5 @@ Debug/
 .vscode/
 
 # MikroIDE
-.dbg
-.dct
+*.dbg
+*.dct
