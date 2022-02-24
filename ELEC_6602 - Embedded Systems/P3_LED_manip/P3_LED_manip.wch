@@ -13,4 +13,11 @@
 <item n="R4" r="1" s="False" e="False" i="11"/>
 <item n="main_combined_num_L0" r="1" s="False" e="False" i="12"/>
 <item n="_PE_display_mode" r="0" s="False" e="False" i="13"/>
+<item n="R9" r="1" s="False" e="False" i="14"/>
+<item n="R8" r="1" s="False" e="False" i="15"/>
+<item n="main_target_count_L0" r="0" s="False" e="False" i="16"/>
+<item n="GPIOB_IDR" r="1" s="False" e="False" i="17"/>
+<item n="GPIOB_CRL" r="1" s="False" e="False" i="18"/>
+<item n="_PD_HIGH_NUM" r="0" s="False" e="False" i="19"/>
+<item n="_PD_LOW_NUM" r="0" s="False" e="False" i="20"/>
 </WCH>
