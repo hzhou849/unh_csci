@@ -48,12 +48,9 @@ typedef unsigned long int uintptr_t;
 
 typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
-#line 29 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P3_LED_manip/P3_LED_manip.c"
+#line 44 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P3_LED_manip/P3_LED_manip.c"
 static const uint32_t GPIO_DIR_OUTPUT = 0x33333333;
 static const uint32_t GPIO_DIR_INPUT = 0x44444444;
-
-
-
 
 static const uint8_t INCREMENT_MODE = 0x01;
 static const uint8_t DECREMENT_MODE = 0x00;
@@ -63,10 +60,12 @@ static const uint8_t PE_MODE_LOW = 0x00;
 
 
 
+uint16_t delay_time_ms = 100;
 uint8_t PE_display_mode = PE_MODE_LOW;
 uint8_t PD_LOW_NUM = 0xFF;
 uint8_t PD_HIGH_NUM = 0x33;
-uint16_t delay_time_ms = 100;
+
+
 
 
 void update_PD_LED(uint16_t *target_count) {
@@ -101,16 +100,12 @@ void PC_btn_check(uint8_t *PE_display_mode) {
  }
 
  if (*PE_display_mode == PE_MODE_LOW) {
-
  --PD_LOW_NUM;
  GPIOE_ODR = PD_LOW_NUM << 8;
-
-
  }
  else {
  --PD_HIGH_NUM;
  GPIOE_ODR = PD_HIGH_NUM << 8;
-
  }
  }
 
@@ -125,25 +120,11 @@ void PC_btn_check(uint8_t *PE_display_mode) {
 
  ++PD_LOW_NUM;
  GPIOE_ODR = PD_LOW_NUM << 8;
-
-
  }
  else {
  ++PD_HIGH_NUM;
  GPIOE_ODR = PD_HIGH_NUM << 8;
-
  }
- }
-}
-
-
-void get_PE_display_data(uint8_t *PE_display_mode) {
-
- if (*PE_display_mode == PE_MODE_LOW) {
- *PE_display_mode = PE_MODE_HIGH;
- }
- else {
- *PE_display_mode = PE_MODE_LOW;
  }
 }
 
@@ -156,9 +137,9 @@ void main() {
  uint8_t count_mode = INCREMENT_MODE;
  uint8_t temp_num = 0;
  uint8_t PA0_PWM_phase = 0;
- uint32_t PA0_led_counter = 0;
  uint32_t i = 0;
-#line 150 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P3_LED_manip/P3_LED_manip.c"
+
+
  RCC_APB2ENR |= 1 << 2;
  RCC_APB2ENR |= 1 << 3;
  RCC_APB2ENR |= 1 << 4;
@@ -167,25 +148,15 @@ void main() {
 
 
 
-
-
-
  GPIOA_CRL = GPIO_DIR_OUTPUT;
-
-
  GPIOB_CRL = GPIO_DIR_INPUT;
-
-
  GPIOC_CRL = GPIO_DIR_INPUT;
-
 
  GPIOD_CRL = GPIO_DIR_OUTPUT;
  GPIOD_CRH = GPIO_DIR_OUTPUT;
 
-
  GPIOE_CRL = GPIO_DIR_OUTPUT;
  GPIOE_CRH = GPIO_DIR_OUTPUT;
-
 
 
  if (PD_LOW_NUM > PD_HIGH_NUM) {
@@ -217,8 +188,6 @@ void main() {
  Delay_ms(1000);
 
 
-
-
  for (;;) {
 
 
@@ -242,20 +211,9 @@ void main() {
 
 
 
-
-
-
  for (i = 0; i < delay_time_ms; i++) {
  Delay_ms(1);
- PA0_led_counter++;
-#line 291 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P3_LED_manip/P3_LED_manip.c"
  PC_btn_check(&PE_display_mode);
-
-
  }
-#line 386 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P3_LED_manip/P3_LED_manip.c"
  }
-
-
-
 }

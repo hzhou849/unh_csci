@@ -48,12 +48,9 @@ typedef unsigned long int uintptr_t;
 
 typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
-#line 23 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P3_LED_Bonus/P3_LED_BONUS.c"
+#line 26 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P3_LED_Bonus/P3_LED_BONUS.c"
 static const uint32_t GPIO_DIR_OUTPUT = 0x33333333;
 static const uint32_t GPIO_DIR_INPUT = 0x44444444;
-
-
-
 
 static const uint8_t INCREMENT_MODE = 0x01;
 static const uint8_t DECREMENT_MODE = 0x00;
@@ -67,6 +64,7 @@ uint8_t PE_display_mode = PE_MODE_LOW;
 uint8_t PD_LOW_NUM = 0xFF;
 uint8_t PD_HIGH_NUM = 0x33;
 uint16_t delay_time_ms = 100;
+uint32_t PA0_PWM_phase = 0;
 
 
 
@@ -94,10 +92,8 @@ void PC_btn_check(uint8_t *PE_display_mode) {
  *PE_display_mode = PE_MODE_LOW;
  }
  }
-
 }
 
- uint32_t PA0_PWM_phase = 0;
 
 void main() {
 
@@ -107,14 +103,14 @@ void main() {
  uint8_t temp_num = 0;
  uint32_t PA0_led_counter = 0;
  uint32_t i = 0;
-#line 93 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P3_LED_Bonus/P3_LED_BONUS.c"
+
+
+
  RCC_APB2ENR |= 1 << 2;
  RCC_APB2ENR |= 1 << 3;
  RCC_APB2ENR |= 1 << 4;
  RCC_APB2ENR |= 1 << 5;
  RCC_APB2ENR |= 1 << 6;
-
-
 
 
 
@@ -188,12 +184,17 @@ void main() {
 
  update_PD_LED(&target_count);
 
+
+
  PA0_PWM_phase = target_count % 3;
-#line 192 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P3_LED_Bonus/P3_LED_BONUS.c"
+
+
+
  asm {
-#line 213 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P3_LED_Bonus/P3_LED_BONUS.c"
- MOVW R7, #0x0900
- MOVT R7, #0x3D
+#line 189 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P3_LED_Bonus/P3_LED_BONUS.c"
+ MOVW R7, #0x2B89
+ MOVT R7, #0x1C
+
 
 
 
@@ -201,7 +202,6 @@ void main() {
  MOVT R0, #HI_ADDR(GPIOC_IDR+0)
  MOVW R3, #LO_ADDR(GPIOA_ODR+0)
  MOVT R3, #HI_ADDR(GPIOA_ODR+0)
-
  MOVW R2, #LO_ADDR(GPIOE_ODR+0)
  MOVT R2, #HI_ADDR(GPIOE_ODR+0)
  MOVW R4, #LO_ADDR(_PE_display_mode+0)
@@ -220,6 +220,9 @@ void main() {
  BEQ _PC0_BTN_FILTER
  BNE _PC0_NOT_PRESSED
 
+
+
+
  _PC0_PRESSED:
  LDR R5, [R4]
  CMP R5, #1
@@ -233,10 +236,12 @@ void main() {
  BEQ _PC0_BTN_FILTER
  BNE _PC0_PRESSED
 
+
+
+
+
+
  _PC0_NOT_PRESSED:
-
-
-
  MOVW R5, #LO_ADDR(_PA0_PWM_phase+0)
  MOVT R5, #HI_ADDR(_PA0_PWM_phase+0)
  LDR R10, [R5]
@@ -246,11 +251,6 @@ void main() {
  BEQ _UPDATE_PWM2_PA
  CMP R10, #2
  BEQ _UPDATE_PWM3_PA
-
-
-
-
-
 
  _SET_PE_LOW:
  LDR R5, [R8]
@@ -268,24 +268,32 @@ void main() {
  STR R10, [R4]
  B _DELAY_LOOP
 
+
+
+
+
+
  _UPDATE_PWM1_PA:
- MOV R10, #3
+ MOV R10, #15
  UDIV R5, R7, R10
  MUL R11, R5, R10
  CMP R7, R11
+
  BEQ _TURN_ON_PA
  BNE _TURN_OFF_PA
+
 
  _UPDATE_PWM2_PA:
- MOV R10, #10
+ MOV R10, #5
  UDIV R5, R7, R10
  MUL R11, R5, R10
  CMP R7, R11
  BEQ _TURN_ON_PA
  BNE _TURN_OFF_PA
 
+
  _UPDATE_PWM3_PA:
- MOV R10, #20
+ MOV R10, #1
  UDIV R5, R7, R10
  MUL R11, R5, R10
  CMP R7, R11
@@ -304,12 +312,5 @@ void main() {
  _EXIT_TIME_LOOP:
  NOP
  }
-
-
-
-
  }
-
-
-
 }
