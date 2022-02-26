@@ -1,5 +1,5 @@
 /**************************************************************************************************
- * Project 3: Push Button LEDs
+ * Project 3: Push Button LEDs - Part 1 of 2
  * Name: Howard Zhou
  * Date: 2/28/2022
  * Course: ELEC-6602-Embedded Systems
@@ -29,8 +29,6 @@
 static const uint32_t GPIO_DIR_OUTPUT = 0x33333333; 
 static const uint32_t GPIO_DIR_INPUT  = 0x44444444;
 
-
-
 // static const uint8_t PD_LOW_NUM = 0;  
 // static const uint8_t PD_HIGH_NUM = 255; 
 
@@ -45,20 +43,20 @@ static const uint8_t PE_MODE_LOW  = 0x00;
 uint8_t PE_display_mode = PE_MODE_LOW;       // Default PE Display mode
 uint8_t PD_LOW_NUM      = 0xFF;
 uint8_t PD_HIGH_NUM     = 0x33;
-uint16_t delay_time_ms  = 1000;
+uint16_t delay_time_ms  = 100;
 
 
 void update_PD_LED(uint16_t *target_count) {
-    GPIOD_ODR = (*target_count & 0x000FFFF);  // GPIOD_ODR is 32bit, must pad target_count it will be promoted to uint32
+    GPIOD_ODR = (*target_count & 0x000000FF);  // GPIOD_ODR is 32bit, must pad target_count it will be promoted to uint32
 }
 
 
 void PC_btn_check(uint8_t *PE_display_mode) {
-
+    
     // Capture the button press (pressed down)
     if (GPIOC_IDR.B0 == 1) {   
         // Wait for the affect to take place on the FALLING-EDGE (button released)
-        while (GPIOC_IDR.B0 == 1 ) {
+        while (GPIOC_IDR.B0 == 1) {
             Delay_ms(1);
         }
         // Switch up the display for Port E from Low to High number
@@ -83,10 +81,13 @@ void PC_btn_check(uint8_t *PE_display_mode) {
 
             --PD_LOW_NUM;
             GPIOE_ODR = PD_LOW_NUM << 8;
+
+            // ** UPdate the lower bound
         }
         else {
             --PD_HIGH_NUM;
             GPIOE_ODR = PD_HIGH_NUM  << 8;
+            //** update the upper bound
         }
     }
 
@@ -101,10 +102,13 @@ void PC_btn_check(uint8_t *PE_display_mode) {
 
             ++PD_LOW_NUM;
             GPIOE_ODR = PD_LOW_NUM << 8;
+
+            // UPdate the lower bound
         }
         else {
             ++PD_HIGH_NUM;
             GPIOE_ODR = PD_HIGH_NUM  << 8;
+            // update the upper bound
         }
     }
 }
@@ -124,16 +128,18 @@ void get_PE_display_data(uint8_t *PE_display_mode) {
 
 void main() {
     /* Local Variables - MikroC compiler requires all declarations up top */
-    uint32_t i               = 0;                             
-    // uint32_t time_ms         = 100;             // Default 1000ms; 1second
     uint16_t combined_num    = 0;
-    uint16_t target_count    = PD_LOW_NUM;       // Set the lower bound number
+    uint16_t target_count    = 0;       // Set the lower bound number
     uint8_t  count_mode      = INCREMENT_MODE;   // Default start state
-    uint32_t PA0_led_counter=0;
-    uint8_t PA0_PWM_phase = 0;
+    uint8_t  temp_num        = 0;
+    uint8_t  PA0_PWM_phase   = 0;
+    uint32_t PA0_led_counter = 0;
+    uint32_t i               = 0;                             
 
     /* Merge the lower + upper number to get the full 16-bit numerical value */
-    combined_num = (PD_LOW_NUM & 0x00FF) | (PD_HIGH_NUM << 8);
+    // combined_num = (PD_LOW_NUM & 0x00FF) | (PD_HIGH_NUM << 8);
+
+  
 
     // Delay_ms(1000);     // 1 Second delay
     // Delay_ms(2000);
@@ -169,9 +175,31 @@ void main() {
     GPIOE_CRH = GPIO_DIR_OUTPUT;
 
 
+    /* Check which number is the lower number, swap them if necessary */
+    if (PD_LOW_NUM > PD_HIGH_NUM) {
+        temp_num = PD_LOW_NUM; // Store the 'higher" number
+        PD_LOW_NUM = PD_HIGH_NUM;
+        PD_HIGH_NUM = temp_num;
+    }
+    else if (PD_LOW_NUM == PD_HIGH_NUM) {
+        // If the two numbers are equal, display the number ons PORT D H &L and PORT E to alert an error 
+        // and exit the application.
+        combined_num = (PD_LOW_NUM & 0x00FF) | (PD_HIGH_NUM << 8);
+        GPIOD_ODR = combined_num;
+        GPIOE_ODR = combined_num << 8;
+
+        return;  // Exit program
+    }
+
     /* Initialize LEDs */
+
+    // Display LOWER number on PORTD/L and HIGH number on PORT D/H
+    combined_num = (PD_LOW_NUM & 0x00FF) | (PD_HIGH_NUM << 8);
     GPIOD_ODR = (combined_num & 0x0000FFFF);     // Pad for 32-bit ODR
     GPIOE_ODR = (PD_LOW_NUM & 0x0000FFFF) << 8;
+
+    // Start with counter being the LOWER number
+    target_count = PD_LOW_NUM;
     
     // Temporary hold to see the starting value before main loop starts
     Delay_ms(1000);
@@ -182,7 +210,7 @@ void main() {
     for (;;) {
         
         // Check if we have hit target number
-        if (target_count == combined_num) {
+        if (target_count == PD_HIGH_NUM) {
             count_mode = DECREMENT_MODE;
         }
         else if (target_count == PD_LOW_NUM) {
@@ -201,8 +229,9 @@ void main() {
         // get_PE_display_data(&PE_display_mode);
 
 
-        
-        GPIOA_ODR.B0=1;
+        // Initialize Port A to 
+        // GPIOA_ODR.B0=1;
+
         /* C method of 1 second sleep delay */
         for (i = 0; i < delay_time_ms; i++) {
             Delay_ms(1);
@@ -210,58 +239,54 @@ void main() {
 
 
             // BOnus objective 1
-            if (PA0_PWM_phase == 0) {
-                if (PA0_led_counter % 25 == 0 )
-                    GPIOA_ODR.B0=1;
-                else if (PA0_led_counter % 12 == 0)
-                    GPIOA_ODR.B0=0;
+            // if (PA0_PWM_phase == 0) {
+            //     if (PA0_led_counter % 25 == 0 )
+            //         GPIOA_ODR.B0=1;
+            //     else if (PA0_led_counter % 12 == 0)
+            //         GPIOA_ODR.B0=0;
 
-                if (PA0_led_counter > 1000)
-                {
-                    PA0_PWM_phase++;
-                    PA0_led_counter =0;
-
-                }
+            //     if (PA0_led_counter > 500) {
+            //         PA0_PWM_phase++;
+            //         PA0_led_counter =0;
+            //     }
                 
 
-            } 
-            else if ( PA0_PWM_phase == 1)
-            {
-                 if (PA0_led_counter % 10 == 0 )
-                    GPIOA_ODR.B0=1;
-                else if (PA0_led_counter % 5 == 0)
-                    GPIOA_ODR.B0=0;
+            // } 
+            // else if ( PA0_PWM_phase == 1) {
+            //      if (PA0_led_counter % 10 == 0 )
+            //         GPIOA_ODR.B0=1;
+            //     else if (PA0_led_counter % 5 == 0)
+            //         GPIOA_ODR.B0=0;
 
-                if (PA0_led_counter > 1000)
-                {
-                    PA0_PWM_phase++;
-                    PA0_led_counter =0;
-                }
-            }
-            else if ( PA0_PWM_phase == 2)
-            {
-                 if (PA0_led_counter % 5 == 0 )
-                    GPIOA_ODR.B0=1;
-                else if (PA0_led_counter % 2 == 0)
-                    GPIOA_ODR.B0=0;
+            //     if (PA0_led_counter > 500) {
+            //         PA0_PWM_phase++;
+            //         PA0_led_counter =0;
+            //     }
+            // }
+            // else if ( PA0_PWM_phase == 2)
+            // {
+            //      if (PA0_led_counter % 5 == 0 )
+            //         GPIOA_ODR.B0=1;
+            //     else if (PA0_led_counter % 2 == 0)
+            //         GPIOA_ODR.B0=0;
 
-                if (PA0_led_counter > 1000)
-                {
-                    PA0_PWM_phase++;
-                    PA0_led_counter =0;
-                }
-            }
-               else if ( PA0_PWM_phase == 3)
-            {
-                 if (PA0_led_counter % 5 == 0 )
-                    GPIOA_ODR.B0=1;
+            //     if (PA0_led_counter > 500)
+            //     {
+            //         PA0_PWM_phase++;
+            //         PA0_led_counter =0;
+            //     }
+            // }
+            //    else if ( PA0_PWM_phase == 3)
+            // {
+            //      if (PA0_led_counter % 5 == 0 )
+            //         GPIOA_ODR.B0=1;
 
-                if (PA0_led_counter > 1000)
-                {
-                    PA0_PWM_phase=0;
-                    PA0_led_counter =0;
-                }
-            }
+            //     if (PA0_led_counter > 500)
+            //     {
+            //         PA0_PWM_phase=0;
+            //         PA0_led_counter =0;
+            //     }
+            // }
                 
             PC_btn_check(&PE_display_mode);
 
