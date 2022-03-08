@@ -41,5 +41,10 @@ Debug/
 .vscode/
 
 # MikroIDE
+<<<<<<< HEAD
 .dbg
 .dct
+=======
+*.dbg
+*.dct
+>>>>>>> feature/ELEC-6602-P3_LED_manip

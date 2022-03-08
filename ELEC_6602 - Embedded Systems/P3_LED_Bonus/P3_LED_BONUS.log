@@ -1,0 +1,14 @@
+0	1	mikroCARM.exe -MSF -DBG -pSTM32F107VC -UICD -BIN -LHF -DL -SSA -O11111114 -fo72 -N"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P3_LED_Bonus\P3_LED_BONUS.mcpar" -SP"D:\mikroC PRO for ARM\Defs\" -SP"D:\mikroC PRO for ARM\Uses\ST M3\" -SP"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P3_LED_Bonus\" -IP"D:\mikroC PRO for ARM\Uses\ST M3\" "P3_LED_BONUS.c" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" "__Lib_Delays.emcl" "__Lib_System_105_107.emcl" "__Lib_GPIO_32F10x_Defs.emcl" "__Lib_GPIO_32F10x.emcl"	 
+diagnostics: 0	122	Compilation Started	stdint.h
+diagnostics: 310	123	Compiled Successfully	P3_LED_BONUS.c
+hint: 74	1164	Variable 'combined_num' has been eliminated by optimizer	P3_LED_BONUS.c
+hint: 78	1164	Variable 'PA0_led_counter' has been eliminated by optimizer	P3_LED_BONUS.c
+hint: 79	1164	Variable 'i' has been eliminated by optimizer	P3_LED_BONUS.c
+diagnostics: 0	127	All files Compiled in 78 ms	 
+hint: 0	1144	Used RX: 16 (100%)   Free RX: 0 (0%)	Used RX: 16 (100%)   Free RX: 0 (0%)
+hint: 0	1144	Static RAM (bytes): 11   Dynamic RAM (bytes): 65521	Static RAM (bytes): 11   Dynamic RAM (bytes): 65521
+hint: 0	1144	Used ROM (bytes): 1825 (1%)  Free ROM (bytes): 260319 (99%)	Used ROM (bytes): 1825 (1%)  Free ROM (bytes): 260319 (99%)
+diagnostics: 0	125	Project Linked Successfully	P3_LED_BONUS.mcpar
+diagnostics: 0	128	Linked in 219 ms	 
+diagnostics: 0	129	Project 'P3_LED_BONUS.mcpar' completed: 469 ms	 
+diagnostics: 0	103	Finished successfully: 26 Feb 2022, 16:24:52	P3_LED_BONUS.mcpar
