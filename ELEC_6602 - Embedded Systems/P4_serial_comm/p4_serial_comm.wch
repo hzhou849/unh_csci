@@ -1,0 +1,4 @@
+<WCH v="2">
+<item n="USART1_SR" r="1" s="False" e="False" i="0"/>
+<item n="USART1_DR" r="0" s="False" e="False" i="1"/>
+</WCH>
