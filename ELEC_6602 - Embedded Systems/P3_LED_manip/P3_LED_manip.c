@@ -132,7 +132,7 @@ void main() {
     uint32_t i               = 0;                             
 
     /* Initial ABP2 Peripheral clock enable register */
-    RCC_APB2ENR |= 1 << 2; // Enable GPIO Clock - Port B
+    RCC_APB2ENR |= 1 << 2; // Enable GPIO Clock - Port A
     RCC_APB2ENR |= 1 << 3; // Enable GPIO Clock - Port B
     RCC_APB2ENR |= 1 << 4; // Enable GPIO Clock - Port C
     RCC_APB2ENR |= 1 << 5; // Enable GPIO Clock - Port D

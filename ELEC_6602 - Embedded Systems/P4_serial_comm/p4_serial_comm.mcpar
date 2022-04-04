@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=1
 [ACTIVE_TAB]
-Value=p4_serial_comm.c
+Value=p4_serial_comm.lst
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -25,7 +25,8 @@ Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=p4_serial_comm.c
-Count=1
+File1=p4_serial_comm.lst
+Count=2
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -43,7 +44,8 @@ Count=0
 [Useses]
 Count=0
 [EXPANDED_NODES]
-Count=0
+0=p4_serial_comm.mcpar
+Count=1
 [LIB_EXPANDED_NODES]
 Count=1
 [PROGRAMMER_OPTIONS]

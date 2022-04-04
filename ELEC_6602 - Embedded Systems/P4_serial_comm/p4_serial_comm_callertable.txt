@@ -1,3 +1,14 @@
 main
+	__CC2DW
 	__FillZeros
-	InitializeUSART1
+	update_led
+	read_data
+	print_header
+		write_data_char
+	write_data
+		write_data_char
+	q_sort
+		__CC2DW
+		q_sort | Recursion.
+	write_data_reversed
+		write_data_char
