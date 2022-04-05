@@ -1,0 +1,6 @@
+[PROJECTS]
+Count=2
+Project0=..\P4_serial_comm\p4_serial_comm.mcpar
+Project1=P4_bonus_obj.mcpar
+[ActiveProject]
+Index=1

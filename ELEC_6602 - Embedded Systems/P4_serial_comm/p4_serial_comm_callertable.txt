@@ -10,5 +10,5 @@ main
 	q_sort
 		__CC2DW
 		q_sort | Recursion.
-	write_data_reversed
-		write_data_char
+	convert_to_ascii
+	write_data_char

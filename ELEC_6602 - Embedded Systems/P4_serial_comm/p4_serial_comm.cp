@@ -60,7 +60,9 @@ static const uint32_t CHAR_LF = 0x0A;
 static const uint8_t NO_NEW_LINE = 0;
 static const uint8_t NEW_LINE_EN = 1;
 static const uint32_t LED_RESET = 0;
+static const uint32_t ASCII_HEX_0 = 0x30;
 int32_t list_len=0;
+
 
 
 
@@ -99,12 +101,13 @@ void write_data_char(uint32_t *tx_char, uint8_t new_line){
  USART1_DR = CHAR_LF;
  }
 }
-#line 92 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P4_serial_comm/p4_serial_comm.c"
+
+
 void write_data(uint32_t *arr_buffer) {
  uint32_t i = 0;
 
  while (arr_buffer[i] != EXIT_CHAR) {
- write_data_char(&arr_buffer[i], 1);
+ write_data_char(&arr_buffer[i], NEW_LINE_EN);
  ++i;
  }
  Delay_ms(100);
@@ -112,32 +115,7 @@ void write_data(uint32_t *arr_buffer) {
  Delay_ms(100);
  USART1_DR = CHAR_LF;
 }
-
-
-void write_data_reversed(uint32_t *arr_buffer, int32_t list_len) {
- int32_t i = 0;
-
-
-
-
-
-
- for ( i=list_len; i >= 0; i--) {
- write_data_char(&arr_buffer[i], 1);
- }
-
- Delay_ms(100);
- USART1_DR = CHAR_CR;
- Delay_ms(100);
- USART1_DR = CHAR_LF;
-}
-
-
-
-
-
-
-
+#line 111 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P4_serial_comm/p4_serial_comm.c"
 void update_led(uint32_t counter) {
  GPIOD_ODR = (counter << 8);
  Delay_ms(100);
@@ -163,10 +141,8 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
  uint32_t right_found = 0;
  uint32_t temp_val = 0;
 
+
  while (left_found == 0) {
-
-
-
 
  if (left_cur == *pivot_pos) {
  left_found = 1;
@@ -184,7 +160,7 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
  }
  }
 
- else if ( (arr_list[left_cur]) > (arr_list[*pivot_pos]) ) {
+ else if ( (arr_list[left_cur]) < (arr_list[*pivot_pos]) ) {
  left_found = 1;
  }
  else {
@@ -193,12 +169,9 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
  }
 
 
-
-
  while (right_found == 0) {
 
-
- if ( (right_cur == *min_pos) && (arr_list[right_cur]) >= (arr_list[*pivot_pos]) ) {
+ if ( (right_cur == *min_pos) && (arr_list[right_cur]) <= (arr_list[*pivot_pos]) ) {
 
  right_found = 1;
 
@@ -214,22 +187,19 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
  return q_sort( arr_list, pivot_pos, min_pos );
  }
 
-
-
- else if ( (arr_list[right_cur]) <= (arr_list[*pivot_pos]) ) {
+ else if ( (arr_list[right_cur]) >= (arr_list[*pivot_pos]) ) {
 
  right_found =1;
  }
  else
  {
-
  --right_cur;
  }
  }
 
 
 
- if (right_cur < left_cur) {
+ if (right_cur > left_cur) {
  temp_val = arr_list[left_cur];
  arr_list[left_cur] = arr_list[*pivot_pos];
  arr_list[*pivot_pos] = temp_val;
@@ -254,46 +224,78 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
 
 }
 
+
 void print_header(uint32_t *header) {
  uint32_t i = 0;
 
  while (header[i] != '\0') {
- write_data_char( &header[i], 0 );
+ write_data_char( &header[i], NO_NEW_LINE );
  ++i;
  }
+
 
  Delay_ms(100);
  USART1_DR = CHAR_CR;
  Delay_ms(100);
  USART1_DR = CHAR_LF;
-
 }
 
+
+void convert_to_ascii(int32_t *input_dec, uint32_t *ascii_msb, uint32_t *ascii_lsb)
+{
+
+ uint32_t temp_val = 0;
+ *ascii_msb = 0;
+ *ascii_lsb = 0;
+
+
+ if (*input_dec > MAX_BUFFER_SIZE ) {
+ return;
+ }
+
+
+ temp_val = *input_dec;
+ while (temp_val >=10) {
+ temp_val /= 10;
+ *ascii_msb = temp_val + ASCII_HEX_0;
+
+
+
+
+ }
+
+
+ temp_val = *input_dec;
+
+ temp_val %= 10;
+
+ *ascii_lsb = temp_val +ASCII_HEX_0;
+
+}
 
 
 void main() {
 
 
  uint8_t loop_on = TRUE;
- uint32_t tx_buffer;
- uint32_t rx_buffer[50];
- int32_t char_counter = 0;
- uint32_t i=0;
  int32_t min_pos = 0;
  int32_t pivot_pos = 0;
-
-
-
-
-
+ int32_t char_counter = 0;
+ uint32_t tx_buffer;
+ uint32_t rx_buffer[50];
+ uint32_t i = 0;
+ uint32_t num_ascii = 0;
+ uint32_t ascii_msb;
+ uint32_t ascii_lsb;
 
 
 
 
 
  uint32_t title_orig[10]= {'O','r','i','g','i','n','a','l',':', '\0'};
- uint32_t title_sorted[8]= {'S','o','r','t','e','d',':', '\0'};
  uint32_t title_rev[10]= {'R','e','v','e','r','s','e','d',':','\0'};
+ uint32_t title_sorted[]= {'S','o','r','t','e','d',':', '\0'};
+ uint32_t title_counter[] = {'N','u','m','.','\x20','S','o','r','t','e','d',':','\0'};
 
 
 
@@ -331,13 +333,12 @@ void main() {
 
  USART1_CR1 |= 1 << 13;
  Delay_ms(100);
- update_led(0xff);
-
 
 
 
  for (;;) {
 
+ update_led(LED_RESET);
  while ( (char_counter < MAX_BUFFER_SIZE) && (loop_on == TRUE) ) {
  read_data(&rx_buffer[char_counter]);
 
@@ -346,20 +347,16 @@ void main() {
  }
  else if (rx_buffer[char_counter] != 0x0D) {
  ++char_counter;
+ update_led(char_counter);
 
  if (char_counter == MAX_BUFFER_SIZE) {
- rx_buffer[i] = EXIT_CHAR;
- }
- update_led(char_counter);
+ rx_buffer[char_counter] = EXIT_CHAR;
  }
  }
-
+ }
 
  list_len = char_counter;
  pivot_pos = (char_counter - 1);
-
- update_led(LED_RESET);
-
 
 
 
@@ -370,12 +367,16 @@ void main() {
 
  q_sort(&rx_buffer, &pivot_pos, &min_pos);
 
- print_header(&title_sorted);
 
+ print_header(&title_sorted);
  write_data(&rx_buffer);
 
- print_header(&title_rev);
- write_data_reversed(&rx_buffer, (list_len-1) );
+ print_header(&title_counter);
+
+ convert_to_ascii(&list_len, &ascii_msb, &ascii_lsb);
+ write_data_char(&ascii_msb, NO_NEW_LINE);
+ write_data_char(&ascii_lsb, NEW_LINE_EN);
+
 
 
 

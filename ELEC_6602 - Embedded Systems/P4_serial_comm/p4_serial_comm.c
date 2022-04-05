@@ -36,8 +36,10 @@ static const uint32_t CHAR_LF		= 0x0A;
 static const uint8_t  NO_NEW_LINE 	= 0;
 static const uint8_t  NEW_LINE_EN	= 1;
 static const uint32_t LED_RESET		= 0;
+static const uint32_t ASCII_HEX_0   = 0x30;
 int32_t list_len=0;
 
+///================================================================================================================
 /// Helper Functions
 
 // Read the incoming serial data 
@@ -76,24 +78,12 @@ void write_data_char(uint32_t *tx_char, uint8_t new_line){
 	}
 } 
 
-// Transmit/write out an entire array buffer via USART
-// void write_data(uint32_t *arr_buffer, uint32_t size) {
-// 	uint32_t i = 0;
-
-// 	for (i=0; i < size; i++ ) {
-// 		write_data_char(&arr_buffer[i], 1);
-// 	}
-// 	Delay_ms(100);
-// 	USART1_DR = CHAR_CR;			// Write a Carriage Return 
-// 	Delay_ms(100);
-// 	USART1_DR = CHAR_LF;			// Write a Line Fee
-// }
-
+// Transmit/write array buffer
 void write_data(uint32_t *arr_buffer) {
 	uint32_t i = 0;
 
 	while (arr_buffer[i] != EXIT_CHAR) {
-		write_data_char(&arr_buffer[i], 1);
+		write_data_char(&arr_buffer[i], NEW_LINE_EN);
 		++i;
 	}
 	Delay_ms(100);
@@ -102,28 +92,19 @@ void write_data(uint32_t *arr_buffer) {
 	USART1_DR = CHAR_LF;			// Write a Line Fee
 }
 
-// Print a list in descending order
-void write_data_reversed(uint32_t *arr_buffer, int32_t list_len) {
-	int32_t i = 0;
+// // Print a list in descending order
+// void write_data_reversed(uint32_t *arr_buffer, int32_t list_len) {
+	
+// 	int32_t i = 0;
 
-	// while (arr_buffer[i] != EXIT_CHAR) {
-	// 	write_data_char(&arr_buffer[i], 1);
-	// 	++i;
-	// }
+// 	for ( i=list_len; i >= 0; i--) {
+// 		write_data_char(&arr_buffer[i], NEW_LINE_EN);
+// 	}
 
-	for ( i=list_len; i >= 0; i--) {
-		write_data_char(&arr_buffer[i], 1);
-	}
-
-	Delay_ms(100);
-	USART1_DR = CHAR_CR;			// Write a Carriage Return 
-	Delay_ms(100);
-	USART1_DR = CHAR_LF;			// Write a Line Fee
-}
-
-// void write_heading(uint32_t *arr_buffer) {
-
-// 	//look for null term
+// 	Delay_ms(100);
+// 	USART1_DR = CHAR_CR;			// Write a Carriage Return 
+// 	Delay_ms(100);
+// 	USART1_DR = CHAR_LF;			// Write a Line Fee
 // }
 
 // Update the LEDs to display a number
@@ -152,10 +133,8 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
 	uint32_t right_found = 0;
 	uint32_t temp_val = 0;
 
+	// Search left 
 	while (left_found == 0) {
-
-		// Search left 
-
 		// if the left_cur reached pivot, that means pivot is the largest number
 		if (left_cur == *pivot_pos) {
 			left_found = 1;
@@ -173,7 +152,7 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
 			}
 		}
 		//We found out Left value
-		else if ( (arr_list[left_cur]) > (arr_list[*pivot_pos]) ) {
+		else if ( (arr_list[left_cur]) < (arr_list[*pivot_pos]) ) {
 			left_found = 1;
 		}
 		else {
@@ -181,13 +160,10 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
 		}
 	}
 
-
-
 	// Search right side
 	while (right_found == 0) {
-
 		// If right cursor reaches 0, pivot is the smallest number
-		if ( (right_cur == *min_pos) && (arr_list[right_cur]) >= (arr_list[*pivot_pos]) ) {
+		if ( (right_cur == *min_pos) && (arr_list[right_cur]) <= (arr_list[*pivot_pos]) ) {
 		
 			right_found = 1;
 
@@ -202,23 +178,20 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
 
 			return q_sort( arr_list, pivot_pos, min_pos );
 		} 
-		// We found the right value
-		//right_val =
-		//pivot_val = 
-		else if ( (arr_list[right_cur]) <= (arr_list[*pivot_pos]) ) {
+
+		else if ( (arr_list[right_cur]) >= (arr_list[*pivot_pos]) ) {
 
 			right_found =1;
 		}
 		else
 		{
-
 			--right_cur;
 		}
 	}
 
 	// If either cursor has passed each other during their search, 
 	// means no number smaller than pivot and swap with Lval for its correct position
-	if (right_cur < left_cur) {
+	if (right_cur > left_cur) {
 		temp_val = arr_list[left_cur];
 		arr_list[left_cur] = arr_list[*pivot_pos];
 		arr_list[*pivot_pos] = temp_val;
@@ -243,46 +216,78 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
 	
 }
 
+// Print header titles
 void print_header(uint32_t *header) {
 	uint32_t i = 0;
 
 	while (header[i] != '\0') {
-		write_data_char( &header[i], 0 );
+		write_data_char( &header[i], NO_NEW_LINE );
 		++i;
 	}
 
+	// Write carriage returna nd line feed
 	Delay_ms(100);
-	USART1_DR = CHAR_CR;			// Write a Carriage Return 
+	USART1_DR = CHAR_CR;			
 	Delay_ms(100);
-	USART1_DR = CHAR_LF;			// Write a Line Feed
-
+	USART1_DR = CHAR_LF;			
 }
 
+//
+void convert_to_ascii(int32_t *input_dec, uint32_t *ascii_msb, uint32_t *ascii_lsb)
+{
+	// set the default values to 0
+	uint32_t temp_val = 0;
+	*ascii_msb = 0;
+	*ascii_lsb = 0;
 
+	// number is ranged from 0-50 decimal.
+	if (*input_dec > MAX_BUFFER_SIZE ) {
+		return; // error code
+	}
+
+	// Get the MSB
+	temp_val = *input_dec;
+	while (temp_val >=10) {
+		temp_val /= 10;
+		*ascii_msb = temp_val + ASCII_HEX_0;
+		// *ascii_msb = "'\\x'+ temp_val'";
+		// *ascii_msb = temp_val;
+
+
+	}
+
+	// Get the LSB
+	temp_val = *input_dec;
+
+	temp_val %= 10;
+	// *ascii_lsb = "'\\x' +temp_val'";
+	*ascii_lsb = temp_val +ASCII_HEX_0;
+	
+}
+///================================================================================================================
 /// Main function
 void main() {
 	
 	/* Local Variables */
 	uint8_t loop_on = TRUE;
+	int32_t min_pos   = 0;
+	int32_t pivot_pos = 0;
+	int32_t char_counter = 0;
 	uint32_t tx_buffer;
 	uint32_t rx_buffer[50];
-	int32_t char_counter = 0;
-	uint32_t i=0;
-	int32_t min_pos = 0;
-	int32_t pivot_pos = 0;
+	uint32_t i = 0;
+	uint32_t num_ascii = 0;
+	uint32_t ascii_msb;
+	uint32_t ascii_lsb;
 	// uint32_t rx_buffer[6] = {'7','2','1','1','5','\0'};
 	// uint32_t rx_buffer[6] = {'g','b','a','a','f','@'};
 	// uint32_t rx_buffer[7] = {'2','3','2','1','4', '3','@'};
-	
-
-	
 
 	// ** NOTEText chars must be 32bit size otherwise USART terminal will not read the data correctly
-	// uint32_t str[10] = "testing";
-	// uint32_t str2[7]= {'t','e','s','t','i','n','g'};
 	uint32_t title_orig[10]= {'O','r','i','g','i','n','a','l',':', '\0'};
-	uint32_t title_sorted[8]= {'S','o','r','t','e','d',':', '\0'};
 	uint32_t title_rev[10]= {'R','e','v','e','r','s','e','d',':','\0'};
+	uint32_t title_sorted[]= {'S','o','r','t','e','d',':', '\0'};
+	uint32_t title_counter[] = {'N','u','m','.','\x20','S','o','r','t','e','d',':','\0'};
 	
 
 	/* Initialization stuff */
@@ -320,13 +325,12 @@ void main() {
 	
 	USART1_CR1 |= 1 << 13;			//** NOTE USART1 Enable must be done after configuration is complete
 	Delay_ms(100);					// Allow some time for USART to complete initialization.
-	update_led(0xff);
-
-	// write_data(&str,7); //or 8?
+	// update_led(0xff);
 
 	/* Main loop */
 	for (;;) {
 
+		update_led(LED_RESET);
         while ( (char_counter < MAX_BUFFER_SIZE) && (loop_on == TRUE) ) {
             read_data(&rx_buffer[char_counter]);
 
@@ -335,36 +339,36 @@ void main() {
 			}
 			else if (rx_buffer[char_counter] != 0x0D) {
 				++char_counter;	
+				update_led(char_counter);
 
 				if (char_counter == MAX_BUFFER_SIZE) {
-					rx_buffer[i] = EXIT_CHAR;
+					rx_buffer[char_counter] = EXIT_CHAR;
 				}
-				update_led(char_counter);
 			}
 		}
-		// char_counter = 5;
 
 		list_len = char_counter;
 		pivot_pos = (char_counter - 1);
 		
-		update_led(LED_RESET);
 		
-		// for (i=0; i < char_counter; i++){
-		// 	write_data_char(&rx_buffer[i]);
-		// }
-
-		print_header(&title_orig);		// Print title heading
+		
+		// Print original list
+		print_header(&title_orig);
 		write_data(&rx_buffer);
 
 		// sort the data
 		q_sort(&rx_buffer, &pivot_pos, &min_pos);
 
-		print_header(&title_sorted);		// Print title heading
-
+		// Print sorted
+		print_header(&title_sorted);		
 		write_data(&rx_buffer);
 
-		print_header(&title_rev); 	// Print reversed title
-		write_data_reversed(&rx_buffer, (list_len-1) );		// Print reversed is (listSize -1)
+		print_header(&title_counter);
+
+		convert_to_ascii(&list_len, &ascii_msb, &ascii_lsb);
+		write_data_char(&ascii_msb, NO_NEW_LINE);
+		write_data_char(&ascii_lsb, NEW_LINE_EN);
+
 
 		// Reset everything to start all over again
 		// clear_buffer(&rx_buffer, MAX_BUFFER_SIZE);
