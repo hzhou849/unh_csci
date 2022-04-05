@@ -50,10 +50,10 @@ typedef unsigned long int uintptr_t;
 typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
 #line 29 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P4_serial_comm/p4_serial_comm.c"
+static const uint32_t MAX_BUFFER_SIZE = 50;
 static const uint32_t EXIT_CHAR = 0x40;
 static const uint32_t TRUE = 1;
 static const uint32_t FALSE = 0;
-static const uint32_t MAX_BUFFER_SIZE = 50;
 static const uint32_t GPIO_OUTPUT = 0x33333333;
 static const uint32_t CHAR_CR = 0x0D;
 static const uint32_t CHAR_LF = 0x0A;
@@ -258,17 +258,11 @@ void convert_to_ascii(int32_t *input_dec, uint32_t *ascii_msb, uint32_t *ascii_l
  while (temp_val >=10) {
  temp_val /= 10;
  *ascii_msb = temp_val + ASCII_HEX_0;
-
-
-
-
  }
 
 
- temp_val = *input_dec;
 
- temp_val %= 10;
-
+ temp_val = (*input_dec % 10);
  *ascii_lsb = temp_val +ASCII_HEX_0;
 
 }
@@ -292,8 +286,8 @@ void main() {
 
 
 
- uint32_t title_orig[10]= {'O','r','i','g','i','n','a','l',':', '\0'};
- uint32_t title_rev[10]= {'R','e','v','e','r','s','e','d',':','\0'};
+ uint32_t title_orig[]= {'\x0D','\x0A','O','r','i','g','i','n','a','l',':', '\0'};
+ uint32_t title_rev[]= {'R','e','v','e','r','s','e','d',':','\0'};
  uint32_t title_sorted[]= {'S','o','r','t','e','d',':', '\0'};
  uint32_t title_counter[] = {'N','u','m','.','\x20','S','o','r','t','e','d',':','\0'};
 

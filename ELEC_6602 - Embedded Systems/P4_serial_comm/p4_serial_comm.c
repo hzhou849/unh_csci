@@ -26,10 +26,10 @@
 // #include <string.h> 
 
 /// Constants
+static const uint32_t MAX_BUFFER_SIZE = 50;
 static const uint32_t EXIT_CHAR 	 = 0x40; // '@'
 static const uint32_t TRUE			 = 1;
 static const uint32_t FALSE			 = 0;
-static const uint32_t MAX_BUFFER_SIZE = 50;
 static const uint32_t GPIO_OUTPUT 	= 0x33333333; // CNF output-push-pull 0x00; Mode output 50MHz 0x11;
 static const uint32_t CHAR_CR		= 0x0D;
 static const uint32_t CHAR_LF		= 0x0A;
@@ -232,7 +232,7 @@ void print_header(uint32_t *header) {
 	USART1_DR = CHAR_LF;			
 }
 
-//
+// Converts decimal number to ascii char and sets the msb and lsb values
 void convert_to_ascii(int32_t *input_dec, uint32_t *ascii_msb, uint32_t *ascii_lsb)
 {
 	// set the default values to 0
@@ -242,25 +242,18 @@ void convert_to_ascii(int32_t *input_dec, uint32_t *ascii_msb, uint32_t *ascii_l
 
 	// number is ranged from 0-50 decimal.
 	if (*input_dec > MAX_BUFFER_SIZE ) {
-		return; // error code
+		return;
 	}
 
-	// Get the MSB
+	// Get the MSB and set it to msb pointer
 	temp_val = *input_dec;
 	while (temp_val >=10) {
 		temp_val /= 10;
 		*ascii_msb = temp_val + ASCII_HEX_0;
-		// *ascii_msb = "'\\x'+ temp_val'";
-		// *ascii_msb = temp_val;
-
-
 	}
 
-	// Get the LSB
-	temp_val = *input_dec;
-
-	temp_val %= 10;
-	// *ascii_lsb = "'\\x' +temp_val'";
+	// Get the LSB and set it to lsb pointer
+	temp_val = (*input_dec % 10);
 	*ascii_lsb = temp_val +ASCII_HEX_0;
 	
 }
@@ -284,8 +277,8 @@ void main() {
 	// uint32_t rx_buffer[7] = {'2','3','2','1','4', '3','@'};
 
 	// ** NOTEText chars must be 32bit size otherwise USART terminal will not read the data correctly
-	uint32_t title_orig[10]= {'O','r','i','g','i','n','a','l',':', '\0'};
-	uint32_t title_rev[10]= {'R','e','v','e','r','s','e','d',':','\0'};
+	uint32_t title_orig[]= {'\x0D','\x0A','O','r','i','g','i','n','a','l',':', '\0'};
+	uint32_t title_rev[]= {'R','e','v','e','r','s','e','d',':','\0'};
 	uint32_t title_sorted[]= {'S','o','r','t','e','d',':', '\0'};
 	uint32_t title_counter[] = {'N','u','m','.','\x20','S','o','r','t','e','d',':','\0'};
 	

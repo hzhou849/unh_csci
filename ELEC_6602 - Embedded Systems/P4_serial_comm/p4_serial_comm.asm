@@ -745,7 +745,7 @@ BLS	L_convert_to_ascii53
 ; ascii_msb end address is: 0 (R0)
 ; ascii_lsb end address is: 8 (R2)
 ; input_dec end address is: 4 (R1)
-;p4_serial_comm.c,245 :: 		return; // error code
+;p4_serial_comm.c,245 :: 		return;
 IT	AL
 BAL	L_end_convert_to_ascii
 ;p4_serial_comm.c,246 :: 		}
@@ -783,56 +783,55 @@ MOV	R4, R3
 ;p4_serial_comm.c,252 :: 		*ascii_msb = temp_val + ASCII_HEX_0;
 ADDS	R3, #48
 STR	R3, [R2, #0]
-;p4_serial_comm.c,257 :: 		}
+;p4_serial_comm.c,253 :: 		}
 ; ascii_msb end address is: 8 (R2)
 ; temp_val end address is: 16 (R4)
 IT	AL
 BAL	L_convert_to_ascii54
 L_convert_to_ascii55:
-;p4_serial_comm.c,260 :: 		temp_val = *input_dec;
+;p4_serial_comm.c,257 :: 		temp_val = (*input_dec % 10);
 LDR	R5, [R1, #0]
 ; input_dec end address is: 4 (R1)
-;p4_serial_comm.c,262 :: 		temp_val %= 10;
 MOVS	R4, #10
-UDIV	R3, R5, R4
+SDIV	R3, R5, R4
 MLS	R3, R4, R3, R5
-;p4_serial_comm.c,264 :: 		*ascii_lsb = temp_val +ASCII_HEX_0;
+;p4_serial_comm.c,258 :: 		*ascii_lsb = temp_val +ASCII_HEX_0;
 ADDS	R3, #48
 STR	R3, [R0, #0]
 ; ascii_lsb end address is: 0 (R0)
-;p4_serial_comm.c,266 :: 		}
+;p4_serial_comm.c,260 :: 		}
 L_end_convert_to_ascii:
 ADD	SP, SP, #4
 BX	LR
 ; end of _convert_to_ascii
 _main:
-;p4_serial_comm.c,269 :: 		void main() {
-SUB	SP, SP, #344
-;p4_serial_comm.c,272 :: 		uint8_t loop_on = TRUE;
+;p4_serial_comm.c,263 :: 		void main() {
+SUB	SP, SP, #352
+;p4_serial_comm.c,266 :: 		uint8_t loop_on = TRUE;
 ; loop_on start address is: 8 (R2)
 MOVS	R2, #1
-;p4_serial_comm.c,273 :: 		int32_t min_pos   = 0;
+;p4_serial_comm.c,267 :: 		int32_t min_pos   = 0;
 ADD	R11, SP, #212
 ADD	R10, R11, #8
 MOVW	R12, #lo_addr(?ICSmain_min_pos_L0+0)
 MOVT	R12, #hi_addr(?ICSmain_min_pos_L0+0)
 BL	___CC2DW+0
-;p4_serial_comm.c,274 :: 		int32_t pivot_pos = 0;
-;p4_serial_comm.c,275 :: 		int32_t char_counter = 0;
+;p4_serial_comm.c,268 :: 		int32_t pivot_pos = 0;
+;p4_serial_comm.c,269 :: 		int32_t char_counter = 0;
 ; char_counter start address is: 12 (R3)
 MOV	R3, #0
-;p4_serial_comm.c,278 :: 		uint32_t i = 0;
-;p4_serial_comm.c,279 :: 		uint32_t num_ascii = 0;
-;p4_serial_comm.c,287 :: 		uint32_t title_orig[10]= {'O','r','i','g','i','n','a','l',':', '\0'};
+;p4_serial_comm.c,272 :: 		uint32_t i = 0;
+;p4_serial_comm.c,273 :: 		uint32_t num_ascii = 0;
+;p4_serial_comm.c,281 :: 		uint32_t title_orig[]= {'\x0D','\x0A','O','r','i','g','i','n','a','l',':', '\0'};
 ADD	R11, SP, #220
-ADD	R10, R11, #124
+ADD	R10, R11, #132
 MOVW	R12, #lo_addr(?ICSmain_title_orig_L0+0)
 MOVT	R12, #hi_addr(?ICSmain_title_orig_L0+0)
 BL	___CC2DW+0
-;p4_serial_comm.c,288 :: 		uint32_t title_rev[10]= {'R','e','v','e','r','s','e','d',':','\0'};
-;p4_serial_comm.c,289 :: 		uint32_t title_sorted[]= {'S','o','r','t','e','d',':', '\0'};
-;p4_serial_comm.c,290 :: 		uint32_t title_counter[] = {'N','u','m','.','\x20','S','o','r','t','e','d',':','\0'};
-;p4_serial_comm.c,294 :: 		RCC_APB2ENR |= 0x00000001; 	// Alternate function bit AFIOEN bit[0]. USART1 uses AF for PA9/PA10
+;p4_serial_comm.c,282 :: 		uint32_t title_rev[]= {'R','e','v','e','r','s','e','d',':','\0'};
+;p4_serial_comm.c,283 :: 		uint32_t title_sorted[]= {'S','o','r','t','e','d',':', '\0'};
+;p4_serial_comm.c,284 :: 		uint32_t title_counter[] = {'N','u','m','.','\x20','S','o','r','t','e','d',':','\0'};
+;p4_serial_comm.c,288 :: 		RCC_APB2ENR |= 0x00000001; 	// Alternate function bit AFIOEN bit[0]. USART1 uses AF for PA9/PA10
 MOVW	R0, #lo_addr(RCC_APB2ENR+0)
 MOVT	R0, #hi_addr(RCC_APB2ENR+0)
 LDR	R0, [R0, #0]
@@ -840,12 +839,12 @@ ORR	R1, R0, #1
 MOVW	R0, #lo_addr(RCC_APB2ENR+0)
 MOVT	R0, #hi_addr(RCC_APB2ENR+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,295 :: 		AFIO_MAPR    = 0x00000000; 	// Bit[2] USART1 REMAP 0: No Remap (Tx=PA9; Rx=PA10)
+;p4_serial_comm.c,289 :: 		AFIO_MAPR    = 0x00000000; 	// Bit[2] USART1 REMAP 0: No Remap (Tx=PA9; Rx=PA10)
 MOVS	R1, #0
 MOVW	R0, #lo_addr(AFIO_MAPR+0)
 MOVT	R0, #hi_addr(AFIO_MAPR+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,297 :: 		RCC_APB2ENR |= 1 << 2;		// Enable GPIO Clock - Port A
+;p4_serial_comm.c,291 :: 		RCC_APB2ENR |= 1 << 2;		// Enable GPIO Clock - Port A
 MOVW	R0, #lo_addr(RCC_APB2ENR+0)
 MOVT	R0, #hi_addr(RCC_APB2ENR+0)
 LDR	R0, [R0, #0]
@@ -853,7 +852,7 @@ ORR	R1, R0, #4
 MOVW	R0, #lo_addr(RCC_APB2ENR+0)
 MOVT	R0, #hi_addr(RCC_APB2ENR+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,298 :: 		RCC_APB2ENR |= 1 << 5;		// Enable GPIO Clock - Port D
+;p4_serial_comm.c,292 :: 		RCC_APB2ENR |= 1 << 5;		// Enable GPIO Clock - Port D
 MOVW	R0, #lo_addr(RCC_APB2ENR+0)
 MOVT	R0, #hi_addr(RCC_APB2ENR+0)
 LDR	R0, [R0, #0]
@@ -861,7 +860,7 @@ ORR	R1, R0, #32
 MOVW	R0, #lo_addr(RCC_APB2ENR+0)
 MOVT	R0, #hi_addr(RCC_APB2ENR+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,299 :: 		RCC_APB2ENR |= 1 << 14; 	// Enable USART1 Clock
+;p4_serial_comm.c,293 :: 		RCC_APB2ENR |= 1 << 14; 	// Enable USART1 Clock
 MOVW	R0, #lo_addr(RCC_APB2ENR+0)
 MOVT	R0, #hi_addr(RCC_APB2ENR+0)
 LDR	R0, [R0, #0]
@@ -869,7 +868,7 @@ ORR	R1, R0, #16384
 MOVW	R0, #lo_addr(RCC_APB2ENR+0)
 MOVT	R0, #hi_addr(RCC_APB2ENR+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,301 :: 		GPIOA_CRH &= ~(0xFF << 4);  // Shift 4 bits left to clear bits[9:4] for PA9/PA10 0000 0FF0 -> mask with  FFFF F00F
+;p4_serial_comm.c,295 :: 		GPIOA_CRH &= ~(0xFF << 4);  // Shift 4 bits left to clear bits[9:4] for PA9/PA10 0000 0FF0 -> mask with  FFFF F00F
 MOVW	R0, #lo_addr(GPIOA_CRH+0)
 MOVT	R0, #hi_addr(GPIOA_CRH+0)
 LDR	R1, [R0, #0]
@@ -878,7 +877,7 @@ ANDS	R1, R0
 MOVW	R0, #lo_addr(GPIOA_CRH+0)
 MOVT	R0, #hi_addr(GPIOA_CRH+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,302 :: 		GPIOA_CRH |= (0x0B << 4) ;  // USART1 Tx/PA9 set to CNF=AFoutput push-pull b10; MODE= output-50Hz b11;
+;p4_serial_comm.c,296 :: 		GPIOA_CRH |= (0x0B << 4) ;  // USART1 Tx/PA9 set to CNF=AFoutput push-pull b10; MODE= output-50Hz b11;
 MOVW	R0, #lo_addr(GPIOA_CRH+0)
 MOVT	R0, #hi_addr(GPIOA_CRH+0)
 LDR	R0, [R0, #0]
@@ -886,7 +885,7 @@ ORR	R1, R0, #176
 MOVW	R0, #lo_addr(GPIOA_CRH+0)
 MOVT	R0, #hi_addr(GPIOA_CRH+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,303 :: 		GPIOA_CRH |= (0x04 << 8);   // USART1 Rx/PA10 set CNF=Input-floating b01; MODE=Input mode b00;
+;p4_serial_comm.c,297 :: 		GPIOA_CRH |= (0x04 << 8);   // USART1 Rx/PA10 set CNF=Input-floating b01; MODE=Input mode b00;
 MOVW	R0, #lo_addr(GPIOA_CRH+0)
 MOVT	R0, #hi_addr(GPIOA_CRH+0)
 LDR	R0, [R0, #0]
@@ -894,17 +893,17 @@ ORR	R1, R0, #1024
 MOVW	R0, #lo_addr(GPIOA_CRH+0)
 MOVT	R0, #hi_addr(GPIOA_CRH+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,304 :: 		GPIOD_CRH = GPIO_OUTPUT;
+;p4_serial_comm.c,298 :: 		GPIOD_CRH = GPIO_OUTPUT;
 MOV	R1, #858993459
 MOVW	R0, #lo_addr(GPIOD_CRH+0)
 MOVT	R0, #hi_addr(GPIOD_CRH+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,309 :: 		USART1_BRR = 0x00000506;
+;p4_serial_comm.c,303 :: 		USART1_BRR = 0x00000506;
 MOVW	R1, #1286
 MOVW	R0, #lo_addr(USART1_BRR+0)
 MOVT	R0, #hi_addr(USART1_BRR+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,319 :: 		USART1_CR1 &= ~(1<<12);          // Force 8 data bits. M bit is set to 0.
+;p4_serial_comm.c,313 :: 		USART1_CR1 &= ~(1<<12);          // Force 8 data bits. M bit is set to 0.
 MOVW	R0, #lo_addr(USART1_CR1+0)
 MOVT	R0, #hi_addr(USART1_CR1+0)
 LDR	R1, [R0, #0]
@@ -913,7 +912,7 @@ ANDS	R1, R0
 MOVW	R0, #lo_addr(USART1_CR1+0)
 MOVT	R0, #hi_addr(USART1_CR1+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,320 :: 		USART1_CR2 &= ~(3<<12);          // Force 1 stop bit
+;p4_serial_comm.c,314 :: 		USART1_CR2 &= ~(3<<12);          // Force 1 stop bit
 MOVW	R0, #lo_addr(USART1_CR2+0)
 MOVT	R0, #hi_addr(USART1_CR2+0)
 LDR	R1, [R0, #0]
@@ -922,7 +921,7 @@ ANDS	R1, R0
 MOVW	R0, #lo_addr(USART1_CR2+0)
 MOVT	R0, #hi_addr(USART1_CR2+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,321 :: 		USART1_CR3 &= ~(3<<8);           // Force no flow control and no DMA for USART1
+;p4_serial_comm.c,315 :: 		USART1_CR3 &= ~(3<<8);           // Force no flow control and no DMA for USART1
 MOVW	R0, #lo_addr(USART1_CR3+0)
 MOVT	R0, #hi_addr(USART1_CR3+0)
 LDR	R1, [R0, #0]
@@ -931,7 +930,7 @@ ANDS	R1, R0
 MOVW	R0, #lo_addr(USART1_CR3+0)
 MOVT	R0, #hi_addr(USART1_CR3+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,322 :: 		USART1_CR1 &= ~(3<<9);           // Force no parity and no parity control
+;p4_serial_comm.c,316 :: 		USART1_CR1 &= ~(3<<9);           // Force no parity and no parity control
 MOVW	R0, #lo_addr(USART1_CR1+0)
 MOVT	R0, #hi_addr(USART1_CR1+0)
 LDR	R1, [R0, #0]
@@ -940,7 +939,7 @@ ANDS	R1, R0
 MOVW	R0, #lo_addr(USART1_CR1+0)
 MOVT	R0, #hi_addr(USART1_CR1+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,323 :: 		USART1_CR1 |= 3<<2;              // RX, TX enable
+;p4_serial_comm.c,317 :: 		USART1_CR1 |= 3<<2;              // RX, TX enable
 MOVW	R0, #lo_addr(USART1_CR1+0)
 MOVT	R0, #hi_addr(USART1_CR1+0)
 LDR	R0, [R0, #0]
@@ -948,7 +947,7 @@ ORR	R1, R0, #12
 MOVW	R0, #lo_addr(USART1_CR1+0)
 MOVT	R0, #hi_addr(USART1_CR1+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,326 :: 		USART1_CR1 |= 1 << 13;			//** NOTE USART1 Enable must be done after configuration is complete
+;p4_serial_comm.c,320 :: 		USART1_CR1 |= 1 << 13;			//** NOTE USART1 Enable must be done after configuration is complete
 MOVW	R0, #lo_addr(USART1_CR1+0)
 MOVT	R0, #hi_addr(USART1_CR1+0)
 LDR	R0, [R0, #0]
@@ -956,7 +955,7 @@ ORR	R1, R0, #8192
 MOVW	R0, #lo_addr(USART1_CR1+0)
 MOVT	R0, #hi_addr(USART1_CR1+0)
 STR	R1, [R0, #0]
-;p4_serial_comm.c,327 :: 		Delay_ms(100);					// Allow some time for USART to complete initialization.
+;p4_serial_comm.c,321 :: 		Delay_ms(100);					// Allow some time for USART to complete initialization.
 MOVW	R7, #20351
 MOVT	R7, #18
 NOP
@@ -972,9 +971,9 @@ NOP
 STR	R3, [SP, #0]
 UXTB	R3, R2
 LDR	R2, [SP, #0]
-;p4_serial_comm.c,331 :: 		for (;;) {
+;p4_serial_comm.c,325 :: 		for (;;) {
 L_main58:
-;p4_serial_comm.c,333 :: 		update_led(LED_RESET);
+;p4_serial_comm.c,327 :: 		update_led(LED_RESET);
 ; char_counter start address is: 8 (R2)
 ; loop_on start address is: 12 (R3)
 STR	R2, [SP, #0]
@@ -983,7 +982,7 @@ BL	_update_led+0
 ; loop_on end address is: 12 (R3)
 ; char_counter end address is: 8 (R2)
 LDR	R2, [SP, #0]
-;p4_serial_comm.c,334 :: 		while ( (char_counter < MAX_BUFFER_SIZE) && (loop_on == TRUE) ) {
+;p4_serial_comm.c,328 :: 		while ( (char_counter < MAX_BUFFER_SIZE) && (loop_on == TRUE) ) {
 L_main61:
 ; loop_on start address is: 12 (R3)
 ; char_counter start address is: 8 (R2)
@@ -994,12 +993,12 @@ CMP	R3, #1
 IT	NE
 BNE	L__main73
 L__main72:
-;p4_serial_comm.c,335 :: 		read_data(&rx_buffer[char_counter]);
+;p4_serial_comm.c,329 :: 		read_data(&rx_buffer[char_counter]);
 ADD	R1, SP, #4
 LSLS	R0, R2, #2
 ADDS	R0, R1, R0
 BL	_read_data+0
-;p4_serial_comm.c,337 :: 		if (rx_buffer[char_counter] == EXIT_CHAR){
+;p4_serial_comm.c,331 :: 		if (rx_buffer[char_counter] == EXIT_CHAR){
 ADD	R1, SP, #4
 LSLS	R0, R2, #2
 ADDS	R0, R1, R0
@@ -1008,16 +1007,16 @@ CMP	R0, #64
 IT	NE
 BNE	L_main65
 ; loop_on end address is: 12 (R3)
-;p4_serial_comm.c,338 :: 		loop_on = FALSE;
+;p4_serial_comm.c,332 :: 		loop_on = FALSE;
 ; loop_on start address is: 0 (R0)
 MOVS	R0, #0
-;p4_serial_comm.c,339 :: 		}
+;p4_serial_comm.c,333 :: 		}
 UXTB	R3, R0
 ; loop_on end address is: 0 (R0)
 IT	AL
 BAL	L_main66
 L_main65:
-;p4_serial_comm.c,340 :: 		else if (rx_buffer[char_counter] != 0x0D) {
+;p4_serial_comm.c,334 :: 		else if (rx_buffer[char_counter] != 0x0D) {
 ; loop_on start address is: 12 (R3)
 ADD	R1, SP, #4
 LSLS	R0, R2, #2
@@ -1026,78 +1025,78 @@ LDR	R0, [R0, #0]
 CMP	R0, #13
 IT	EQ
 BEQ	L__main75
-;p4_serial_comm.c,341 :: 		++char_counter;
+;p4_serial_comm.c,335 :: 		++char_counter;
 ADDS	R0, R2, #1
 ; char_counter end address is: 8 (R2)
 ; char_counter start address is: 16 (R4)
 MOV	R4, R0
-;p4_serial_comm.c,342 :: 		update_led(char_counter);
+;p4_serial_comm.c,336 :: 		update_led(char_counter);
 BL	_update_led+0
-;p4_serial_comm.c,344 :: 		if (char_counter == MAX_BUFFER_SIZE) {
+;p4_serial_comm.c,338 :: 		if (char_counter == MAX_BUFFER_SIZE) {
 CMP	R4, #50
 IT	NE
 BNE	L_main68
-;p4_serial_comm.c,345 :: 		rx_buffer[char_counter] = EXIT_CHAR;
+;p4_serial_comm.c,339 :: 		rx_buffer[char_counter] = EXIT_CHAR;
 ADD	R1, SP, #4
 LSLS	R0, R4, #2
 ADDS	R1, R1, R0
 MOV	R0, #64
 STR	R0, [R1, #0]
-;p4_serial_comm.c,346 :: 		}
+;p4_serial_comm.c,340 :: 		}
 L_main68:
-;p4_serial_comm.c,347 :: 		}
+;p4_serial_comm.c,341 :: 		}
 MOV	R0, R4
 IT	AL
 BAL	L_main67
 ; char_counter end address is: 16 (R4)
 L__main75:
-;p4_serial_comm.c,340 :: 		else if (rx_buffer[char_counter] != 0x0D) {
+;p4_serial_comm.c,334 :: 		else if (rx_buffer[char_counter] != 0x0D) {
 MOV	R0, R2
-;p4_serial_comm.c,347 :: 		}
+;p4_serial_comm.c,341 :: 		}
 L_main67:
 ; char_counter start address is: 0 (R0)
 ; char_counter end address is: 0 (R0)
 ; loop_on end address is: 12 (R3)
 MOV	R2, R0
 L_main66:
-;p4_serial_comm.c,348 :: 		}
+;p4_serial_comm.c,342 :: 		}
 ; char_counter start address is: 8 (R2)
 ; loop_on start address is: 12 (R3)
 ; loop_on end address is: 12 (R3)
 IT	AL
 BAL	L_main61
-;p4_serial_comm.c,334 :: 		while ( (char_counter < MAX_BUFFER_SIZE) && (loop_on == TRUE) ) {
+;p4_serial_comm.c,328 :: 		while ( (char_counter < MAX_BUFFER_SIZE) && (loop_on == TRUE) ) {
 L__main74:
 L__main73:
-;p4_serial_comm.c,350 :: 		list_len = char_counter;
+;p4_serial_comm.c,344 :: 		list_len = char_counter;
 MOVW	R0, #lo_addr(_list_len+0)
 MOVT	R0, #hi_addr(_list_len+0)
 STR	R2, [R0, #0]
-;p4_serial_comm.c,351 :: 		pivot_pos = (char_counter - 1);
+;p4_serial_comm.c,345 :: 		pivot_pos = (char_counter - 1);
 SUBS	R0, R2, #1
 ; char_counter end address is: 8 (R2)
 STR	R0, [SP, #216]
-;p4_serial_comm.c,356 :: 		print_header(&title_orig);
+;p4_serial_comm.c,350 :: 		print_header(&title_orig);
 ADD	R0, SP, #220
 BL	_print_header+0
-;p4_serial_comm.c,357 :: 		write_data(&rx_buffer);
+;p4_serial_comm.c,351 :: 		write_data(&rx_buffer);
 ADD	R0, SP, #4
 BL	_write_data+0
-;p4_serial_comm.c,360 :: 		q_sort(&rx_buffer, &pivot_pos, &min_pos);
+;p4_serial_comm.c,354 :: 		q_sort(&rx_buffer, &pivot_pos, &min_pos);
 ADD	R2, SP, #212
 ADD	R1, SP, #216
 ADD	R0, SP, #4
 BL	_q_sort+0
-;p4_serial_comm.c,363 :: 		print_header(&title_sorted);
-ADD	R0, SP, #260
+;p4_serial_comm.c,357 :: 		print_header(&title_sorted);
+ADD	R0, SP, #268
 BL	_print_header+0
-;p4_serial_comm.c,364 :: 		write_data(&rx_buffer);
+;p4_serial_comm.c,358 :: 		write_data(&rx_buffer);
 ADD	R0, SP, #4
 BL	_write_data+0
-;p4_serial_comm.c,366 :: 		print_header(&title_counter);
-ADD	R0, SP, #292
+;p4_serial_comm.c,360 :: 		print_header(&title_counter);
+ADD	R0, SP, #300
 BL	_print_header+0
-;p4_serial_comm.c,368 :: 		convert_to_ascii(&list_len, &ascii_msb, &ascii_lsb);
+;p4_serial_comm.c,362 :: 		convert_to_ascii(&list_len, &ascii_msb, &ascii_lsb);
 ADD	R1, SP, #208
 ADD	R0, SP, #204
 MOV	R2, R1
@@ -1105,26 +1104,26 @@ MOV	R1, R0
 MOVW	R0, #lo_addr(_list_len+0)
 MOVT	R0, #hi_addr(_list_len+0)
 BL	_convert_to_ascii+0
-;p4_serial_comm.c,369 :: 		write_data_char(&ascii_msb, NO_NEW_LINE);
+;p4_serial_comm.c,363 :: 		write_data_char(&ascii_msb, NO_NEW_LINE);
 ADD	R0, SP, #204
 MOVS	R1, #0
 BL	_write_data_char+0
-;p4_serial_comm.c,370 :: 		write_data_char(&ascii_lsb, NEW_LINE_EN);
+;p4_serial_comm.c,364 :: 		write_data_char(&ascii_lsb, NEW_LINE_EN);
 ADD	R0, SP, #208
 MOVS	R1, #1
 BL	_write_data_char+0
-;p4_serial_comm.c,375 :: 		loop_on = TRUE;
+;p4_serial_comm.c,369 :: 		loop_on = TRUE;
 ; loop_on start address is: 12 (R3)
 MOVS	R3, #1
-;p4_serial_comm.c,376 :: 		char_counter = 0;
+;p4_serial_comm.c,370 :: 		char_counter = 0;
 ; char_counter start address is: 8 (R2)
 MOVS	R2, #0
-;p4_serial_comm.c,380 :: 		}
+;p4_serial_comm.c,374 :: 		}
 ; loop_on end address is: 12 (R3)
 ; char_counter end address is: 8 (R2)
 IT	AL
 BAL	L_main58
-;p4_serial_comm.c,385 :: 		}
+;p4_serial_comm.c,379 :: 		}
 L_end_main:
 L__main_end_loop:
 B	L__main_end_loop
