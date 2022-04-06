@@ -49,25 +49,28 @@ typedef unsigned long int uintptr_t;
 
 typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
-#line 29 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P4_serial_comm/p4_serial_comm.c"
-static const uint32_t MAX_BUFFER_SIZE = 50;
-static const uint32_t EXIT_CHAR = 0x40;
-static const uint32_t TRUE = 1;
-static const uint32_t FALSE = 0;
-static const uint32_t GPIO_OUTPUT = 0x33333333;
-static const uint32_t CHAR_CR = 0x0D;
-static const uint32_t CHAR_LF = 0x0A;
+#line 35 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P4_serial_comm/p4_serial_comm.c"
 static const uint8_t NO_NEW_LINE = 0;
 static const uint8_t NEW_LINE_EN = 1;
-static const uint32_t LED_RESET = 0;
 static const uint32_t ASCII_HEX_0 = 0x30;
+static const uint32_t CHAR_CR = 0x0D;
+static const uint32_t CHAR_LF = 0x0A;
+static const uint32_t EXIT_CHAR = 0x40;
+static const uint32_t FALSE = 0;
+static const uint32_t LED_RESET = 0;
+static const uint32_t GPIO_OUTPUT = 0x33333333;
+static const uint32_t NULL_BYTE = 0x00000000;
+static const uint32_t TRUE = 1;
+static const uint32_t MAX_BUFFER_SIZE = 50;
+
+
 int32_t list_len=0;
 
 
 
 
 
-void read_data(uint32_t *rx_buffer){
+void read_data(uint32_t *rx_buffer) {
 
 
 
@@ -80,24 +83,25 @@ void read_data(uint32_t *rx_buffer){
 
 
  while ( (USART1_SR & (1 << 7)) == 0) {}
- Delay_ms(100);
+ Delay_ms(10);
 }
 
 
-void write_data_char(uint32_t *tx_char, uint8_t new_line){
-
+void write_data_char(uint32_t *tx_char, uint8_t new_line) {
  uint32_t tx_var = *tx_char;
+
+
  while ( (USART1_SR & (1 << 7)) == 0) {}
 
- Delay_ms(100);
+
+ Delay_ms(10);
  USART1_DR = *tx_char;
 
 
-
  if (new_line == 1) {
- Delay_ms(100);
+ Delay_ms(10);
  USART1_DR = CHAR_CR;
- Delay_ms(100);
+ Delay_ms(10);
  USART1_DR = CHAR_LF;
  }
 }
@@ -106,16 +110,20 @@ void write_data_char(uint32_t *tx_char, uint8_t new_line){
 void write_data(uint32_t *arr_buffer) {
  uint32_t i = 0;
 
- while (arr_buffer[i] != EXIT_CHAR) {
+ while ( (arr_buffer[i] != EXIT_CHAR) && (i < MAX_BUFFER_SIZE) ) {
  write_data_char(&arr_buffer[i], NEW_LINE_EN);
  ++i;
  }
- Delay_ms(100);
+
+
+ Delay_ms(10);
  USART1_DR = CHAR_CR;
- Delay_ms(100);
+ Delay_ms(10);
  USART1_DR = CHAR_LF;
 }
-#line 111 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P4_serial_comm/p4_serial_comm.c"
+
+
+
 void update_led(uint32_t counter) {
  GPIOD_ODR = (counter << 8);
  Delay_ms(100);
@@ -183,16 +191,12 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
 
  *min_pos = left_cur;
 
-
  return q_sort( arr_list, pivot_pos, min_pos );
  }
-
  else if ( (arr_list[right_cur]) >= (arr_list[*pivot_pos]) ) {
-
  right_found =1;
  }
- else
- {
+ else {
  --right_cur;
  }
  }
@@ -203,9 +207,6 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
  temp_val = arr_list[left_cur];
  arr_list[left_cur] = arr_list[*pivot_pos];
  arr_list[*pivot_pos] = temp_val;
-
-
-
  *min_pos = 0;
  }
 
@@ -221,11 +222,10 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
  else {
  return q_sort(arr_list, pivot_pos, min_pos);
  }
-
 }
 
 
-void print_header(uint32_t *header) {
+void print_header(uint32_t *header, uint8_t new_line) {
  uint32_t i = 0;
 
  while (header[i] != '\0') {
@@ -234,15 +234,16 @@ void print_header(uint32_t *header) {
  }
 
 
- Delay_ms(100);
+ if (new_line == NEW_LINE_EN) {
+ Delay_ms(10);
  USART1_DR = CHAR_CR;
- Delay_ms(100);
+ Delay_ms(10);
  USART1_DR = CHAR_LF;
+ }
 }
 
 
-void convert_to_ascii(int32_t *input_dec, uint32_t *ascii_msb, uint32_t *ascii_lsb)
-{
+void convert_to_ascii(int32_t *input_dec, uint32_t *ascii_msb, uint32_t *ascii_lsb) {
 
  uint32_t temp_val = 0;
  *ascii_msb = 0;
@@ -261,11 +262,13 @@ void convert_to_ascii(int32_t *input_dec, uint32_t *ascii_msb, uint32_t *ascii_l
  }
 
 
-
+ if (*input_dec > 0 ) {
  temp_val = (*input_dec % 10);
  *ascii_lsb = temp_val +ASCII_HEX_0;
-
+ }
 }
+
+
 
 
 void main() {
@@ -275,21 +278,18 @@ void main() {
  int32_t min_pos = 0;
  int32_t pivot_pos = 0;
  int32_t char_counter = 0;
- uint32_t tx_buffer;
- uint32_t rx_buffer[50];
- uint32_t i = 0;
- uint32_t num_ascii = 0;
- uint32_t ascii_msb;
  uint32_t ascii_lsb;
+ uint32_t ascii_msb;
+ uint32_t num_ascii = 0;
+ uint32_t rx_buffer[50];
+ uint32_t tx_buffer;
+ uint32_t i = 0;
 
 
-
-
-
- uint32_t title_orig[]= {'\x0D','\x0A','O','r','i','g','i','n','a','l',':', '\0'};
- uint32_t title_rev[]= {'R','e','v','e','r','s','e','d',':','\0'};
- uint32_t title_sorted[]= {'S','o','r','t','e','d',':', '\0'};
- uint32_t title_counter[] = {'N','u','m','.','\x20','S','o','r','t','e','d',':','\0'};
+ uint32_t title_counter[] = {'N','u','m','.','\x20','S','o','r','t','e','d',':','\x20','\0'};
+ uint32_t title_orig[] = {'\x0D','\x0A','O','r','i','g','i','n','a','l',':', '\0'};
+ uint32_t title_rev[] = {'R','e','v','e','r','s','e','d',':','\0'};
+ uint32_t title_sorted[] = {'S','o','r','t','e','d',':', '\0'};
 
 
 
@@ -325,26 +325,29 @@ void main() {
  USART1_CR1 |= 3<<2;
 
 
- USART1_CR1 |= 1 << 13;
  Delay_ms(100);
-
+ USART1_CR1 |= 1 << 13;
 
 
  for (;;) {
 
  update_led(LED_RESET);
+
+
+
  while ( (char_counter < MAX_BUFFER_SIZE) && (loop_on == TRUE) ) {
  read_data(&rx_buffer[char_counter]);
 
  if (rx_buffer[char_counter] == EXIT_CHAR){
  loop_on = FALSE;
  }
- else if (rx_buffer[char_counter] != 0x0D) {
+ else if ( (rx_buffer[char_counter]) != 0x0D && (rx_buffer[char_counter] != NULL_BYTE) ) {
  ++char_counter;
  update_led(char_counter);
 
  if (char_counter == MAX_BUFFER_SIZE) {
  rx_buffer[char_counter] = EXIT_CHAR;
+ loop_on = FALSE;
  }
  }
  }
@@ -353,35 +356,25 @@ void main() {
  pivot_pos = (char_counter - 1);
 
 
-
-
- print_header(&title_orig);
+ print_header(&title_orig, NEW_LINE_EN);
  write_data(&rx_buffer);
 
 
  q_sort(&rx_buffer, &pivot_pos, &min_pos);
 
 
- print_header(&title_sorted);
+ print_header(&title_sorted, NEW_LINE_EN);
  write_data(&rx_buffer);
 
- print_header(&title_counter);
 
+ print_header(&title_counter, NO_NEW_LINE);
  convert_to_ascii(&list_len, &ascii_msb, &ascii_lsb);
  write_data_char(&ascii_msb, NO_NEW_LINE);
  write_data_char(&ascii_lsb, NEW_LINE_EN);
 
 
 
-
  loop_on = TRUE;
  char_counter = 0;
-
-
-
  }
-
-
-
-
 }

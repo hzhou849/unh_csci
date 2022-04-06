@@ -1,6 +1,6 @@
 <WCH v="2">
 <item n="USART1_DR" r="0" s="False" e="False" i="0"/>
-<item n="main_rx_buffer_L0" r="4" s="False" e="False" i="1684">
+<item n="main_rx_buffer_L0" r="4" s="False" e="True" i="1686">
 <item n="[0]" r="4" s="False" e="False" i="0"/>
 <item n="[1]" r="4" s="False" e="False" i="1"/>
 <item n="[2]" r="4" s="False" e="False" i="2"/>
@@ -81,4 +81,5 @@
 <item n="FARG_convert_to_ascii_ascii_lsb" r="1" s="False" e="True" i="1682">
 <item n="" r="0" s="False" e="False" i="0"/>
 </item>
+<item n="FARG_update_led_counter" r="0" s="False" e="False" i="15"/>
 </WCH>
