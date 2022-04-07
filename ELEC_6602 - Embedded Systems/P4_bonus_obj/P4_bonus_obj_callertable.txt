@@ -1,2 +1,18 @@
 main
+	__CC2DW
 	__FillZeros
+	print_string
+		write_data_char
+	read_data
+	write_data
+		write_data_char
+	q_sort
+		__CC2DW
+		q_sort | Recursion.
+	tally
+		__CC2DW
+		write_data_char
+		print_string
+		convert_to_ascii
+	convert_to_ascii
+	write_data_char

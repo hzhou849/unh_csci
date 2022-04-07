@@ -1,10 +1,10 @@
 main
 	__CC2DW
 	__FillZeros
+	print_string
+		write_data_char
 	update_led
 	read_data
-	print_header
-		write_data_char
 	write_data
 		write_data_char
 	q_sort

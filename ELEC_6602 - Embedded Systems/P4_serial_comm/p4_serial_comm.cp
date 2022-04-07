@@ -57,10 +57,10 @@ static const uint32_t CHAR_CR = 0x0D;
 static const uint32_t CHAR_LF = 0x0A;
 static const uint32_t EXIT_CHAR = 0x40;
 static const uint32_t FALSE = 0;
+static const uint32_t TRUE = 1;
 static const uint32_t LED_RESET = 0;
 static const uint32_t GPIO_OUTPUT = 0x33333333;
 static const uint32_t NULL_BYTE = 0x00000000;
-static const uint32_t TRUE = 1;
 static const uint32_t MAX_BUFFER_SIZE = 50;
 
 
@@ -225,16 +225,20 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
 }
 
 
-void print_header(uint32_t *header, uint8_t new_line) {
- uint32_t i = 0;
 
- while (header[i] != '\0') {
- write_data_char( &header[i], NO_NEW_LINE );
- ++i;
+
+void print_string(uint8_t *arr_string, uint8_t new_line_opt) {
+ uint32_t i = 0;
+ uint32_t buffer[64];
+
+ while (arr_string[i] != '\0'){
+ buffer[i] = (buffer[i] & 0x00000000) | arr_string[i];
+ write_data_char(&buffer[i], NO_NEW_LINE);
+ i++;
  }
 
 
- if (new_line == NEW_LINE_EN) {
+ if (new_line_opt == NEW_LINE_EN) {
  Delay_ms(10);
  USART1_DR = CHAR_CR;
  Delay_ms(10);
@@ -264,7 +268,7 @@ void convert_to_ascii(int32_t *input_dec, uint32_t *ascii_msb, uint32_t *ascii_l
 
  if (*input_dec > 0 ) {
  temp_val = (*input_dec % 10);
- *ascii_lsb = temp_val +ASCII_HEX_0;
+ *ascii_lsb = temp_val + ASCII_HEX_0;
  }
 }
 
@@ -286,10 +290,19 @@ void main() {
  uint32_t i = 0;
 
 
- uint32_t title_counter[] = {'N','u','m','.','\x20','S','o','r','t','e','d',':','\x20','\0'};
- uint32_t title_orig[] = {'\x0D','\x0A','O','r','i','g','i','n','a','l',':', '\0'};
- uint32_t title_rev[] = {'R','e','v','e','r','s','e','d',':','\0'};
- uint32_t title_sorted[] = {'S','o','r','t','e','d',':', '\0'};
+
+
+
+
+
+
+ uint8_t title_divider[] = "=============================================================";
+ uint8_t title_cr_lf[] = "\x0D\x0A";
+ uint8_t title_counter[] = "Num. Sorted: ";
+ uint8_t title_orig[] = "Original: ";
+ uint8_t title_rev[] = "Reversed: ";
+ uint8_t title_sorted[] = "Sorted: ";
+ uint8_t title_start[] = "[P4 Project] - Please enter up to 50 chars or '@' to end sequence: ";
 
 
 
@@ -328,6 +341,10 @@ void main() {
  Delay_ms(100);
  USART1_CR1 |= 1 << 13;
 
+ print_string(&title_cr_lf, NO_NEW_LINE);
+ print_string(&title_divider, NEW_LINE_EN);
+ print_string(&title_start, NEW_LINE_EN);
+
 
  for (;;) {
 
@@ -336,16 +353,16 @@ void main() {
 
 
  while ( (char_counter < MAX_BUFFER_SIZE) && (loop_on == TRUE) ) {
- read_data(&rx_buffer[char_counter]);
+ read_data( &rx_buffer[char_counter] );
 
- if (rx_buffer[char_counter] == EXIT_CHAR){
+ if ( rx_buffer[char_counter] == EXIT_CHAR ){
  loop_on = FALSE;
  }
  else if ( (rx_buffer[char_counter]) != 0x0D && (rx_buffer[char_counter] != NULL_BYTE) ) {
  ++char_counter;
  update_led(char_counter);
 
- if (char_counter == MAX_BUFFER_SIZE) {
+ if ( char_counter == MAX_BUFFER_SIZE ) {
  rx_buffer[char_counter] = EXIT_CHAR;
  loop_on = FALSE;
  }
@@ -356,18 +373,18 @@ void main() {
  pivot_pos = (char_counter - 1);
 
 
- print_header(&title_orig, NEW_LINE_EN);
+ print_string(&title_orig, NEW_LINE_EN);
  write_data(&rx_buffer);
 
 
  q_sort(&rx_buffer, &pivot_pos, &min_pos);
 
 
- print_header(&title_sorted, NEW_LINE_EN);
+ print_string(&title_sorted, NEW_LINE_EN);
  write_data(&rx_buffer);
 
 
- print_header(&title_counter, NO_NEW_LINE);
+ print_string(&title_counter, NO_NEW_LINE);
  convert_to_ascii(&list_len, &ascii_msb, &ascii_lsb);
  write_data_char(&ascii_msb, NO_NEW_LINE);
  write_data_char(&ascii_lsb, NEW_LINE_EN);

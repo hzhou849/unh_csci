@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-/// Constants
+/* Constants */
 static const uint8_t  NO_NEW_LINE 	= 0;
 static const uint8_t  NEW_LINE_EN	= 1;
 static const uint32_t ASCII_HEX_0   = 0x30;
@@ -39,17 +39,17 @@ static const uint32_t CHAR_CR		= 0x0D;
 static const uint32_t CHAR_LF		= 0x0A;
 static const uint32_t EXIT_CHAR 	= 0x40; 	  // '@'
 static const uint32_t FALSE			= 0;
+static const uint32_t TRUE			= 1;
 static const uint32_t LED_RESET		= 0;
 static const uint32_t GPIO_OUTPUT 	= 0x33333333; // CNF output-push-pull 0x00; Mode output 50MHz 0x11;
 static const uint32_t NULL_BYTE		= 0x00000000;
-static const uint32_t TRUE			= 1;
 static const uint32_t MAX_BUFFER_SIZE = 50;
 
 // For some reason this value needs to be placed in global memory otherwise compiler will alter its value
 int32_t list_len=0;					
 
 ///================================================================================================================
-// Helper Functions
+/* Helper Functions */
 
 /// Read the incoming serial data 
 void read_data(uint32_t *rx_buffer) {
@@ -58,7 +58,7 @@ void read_data(uint32_t *rx_buffer) {
 	// while (!((USART1_SR & (1<<5))== 0x20)){} // Check RXNE in USART1 Status Register. Negative logic
 	while( (USART1_SR & (1 << 5)) == 0 ) {}		// Positive logic
 
-	// // Data is available in the read register for us to retrieve it.
+	// Data is available in the read register for us to retrieve it.
 	*rx_buffer = USART1_DR;
 
 	// While TXE bit[7] Transmit data register empty is not empty, wait until bit[7] == 1
@@ -122,7 +122,7 @@ void clear_buffer(uint32_t *arr_buffer, uint32_t size) {
 	}
 }
 
-/// Quicksort algorithm
+/// Quicksort algorithm - descending order
 int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
 	uint32_t pivot_val = arr_list[*pivot_pos];
 	uint32_t left_cur = 0;
@@ -206,22 +206,26 @@ int q_sort(uint32_t *arr_list, int32_t *pivot_pos, uint32_t *min_pos) {
 	}
 }
 
-/// Print header titles
-void print_header(uint32_t *header, uint8_t new_line) {
-	uint32_t i = 0;
 
-	while (header[i] != '\0') {
-		write_data_char( &header[i], NO_NEW_LINE );
-		++i;
-	}
+/// Print title headers
+// This compiler handles write outputs as 32bit words, since c-compiler chars are 8bit, we have to promote the data
+void print_string(uint8_t *arr_string, uint8_t new_line_opt) {
+    uint32_t i = 0;
+    uint32_t buffer[64];
 
-	// Write carriage returna nd line feed
-	if (new_line == NEW_LINE_EN) {
-		Delay_ms(10);
-		USART1_DR = CHAR_CR;			
-		Delay_ms(10);
-		USART1_DR = CHAR_LF;
-	}
+    while (arr_string[i] != '\0'){
+        buffer[i] = (buffer[i] & 0x00000000) | arr_string[i];
+        write_data_char(&buffer[i], NO_NEW_LINE);
+        i++;
+    }
+
+    // Write carriage return and line feed
+    if (new_line_opt == NEW_LINE_EN) {
+        Delay_ms(10);
+        USART1_DR = CHAR_CR;
+        Delay_ms(10);
+        USART1_DR = CHAR_LF;
+    }
 }
 
 /// Converts decimal number to ascii char and sets the msb and lsb values
@@ -231,28 +235,28 @@ void convert_to_ascii(int32_t *input_dec, uint32_t *ascii_msb, uint32_t *ascii_l
 	*ascii_msb = 0;
 	*ascii_lsb = 0;
 
-	// number is ranged from 0-50 decimal.
+	// number is ranged from 0-50 decimal; since there can only be a max of 50 characters.
 	if (*input_dec > MAX_BUFFER_SIZE ) {
 		return;
 	}
 
-	// Get the MSB and set it to msb pointer
+	// Extract the MSB, convert and set MSB pointer
 	temp_val = *input_dec;
 	while (temp_val >=10) {
 		temp_val /= 10;
 		*ascii_msb = temp_val + ASCII_HEX_0;
 	}
 
-	// Get the LSB and set it to lsb pointer
+	// Extract the LSB, convert and set LSB pointer
 	if (*input_dec > 0 ) {
 		temp_val = (*input_dec % 10);
-		*ascii_lsb = temp_val +ASCII_HEX_0;
+		*ascii_lsb = temp_val + ASCII_HEX_0;
 	}
 }
 
 
 ///================================================================================================================
-/// Main function
+/* Main function */
 void main() {
 	
 	/* Local Variables */
@@ -267,19 +271,28 @@ void main() {
 	uint32_t tx_buffer;
 	uint32_t i = 0;
 
-	// ** NOTE Text chars must be 32bit size otherwise USART terminal will not read the data correctly
-	uint32_t title_counter[] = {'N','u','m','.','\x20','S','o','r','t','e','d',':','\x20','\0'};
-	uint32_t title_orig[]    = {'\x0D','\x0A','O','r','i','g','i','n','a','l',':', '\0'};
-	uint32_t title_rev[]     = {'R','e','v','e','r','s','e','d',':','\0'};
-	uint32_t title_sorted[]  = {'S','o','r','t','e','d',':', '\0'};
+	// // ** NOTE Text chars must be 32bit size otherwise USART terminal will not read the data correctly
+	// uint32_t title_counter[] = {'N','u','m','.','\x20','S','o','r','t','e','d',':','\x20','\0'};
+	// uint32_t title_orig[]    = {'\x0D','\x0A','O','r','i','g','i','n','a','l',':', '\0'};
+	// uint32_t title_rev[]     = {'R','e','v','e','r','s','e','d',':','\0'};
+	// uint32_t title_sorted[]  = {'S','o','r','t','e','d',':', '\0'};
+
+	/* Title/Headers strings */
+    uint8_t title_divider[]   = "=============================================================";
+    uint8_t title_cr_lf[]     = "\x0D\x0A";
+	uint8_t title_counter[] = "Num. Sorted: ";
+	uint8_t title_orig[] = "Original: ";
+	uint8_t title_rev[] = "Reversed: ";
+	uint8_t title_sorted[] = "Sorted: ";
+	uint8_t title_start[] = "[P4 Project] - Please enter up to 50 chars or '@' to end sequence: ";
 	
 
 	/* Initialization stuff */
 	RCC_APB2ENR |= 0x00000001; 	// Alternate function bit AFIOEN bit[0]. USART1 uses AF for PA9/PA10
 	AFIO_MAPR    = 0x00000000; 	// Bit[2] USART1 REMAP 0: No Remap (Tx=PA9; Rx=PA10) 
 
-	RCC_APB2ENR |= 1 << 2;		// Enable GPIO Clock - Port A
-	RCC_APB2ENR |= 1 << 5;		// Enable GPIO Clock - Port D
+	RCC_APB2ENR |= 1 << 2;		// Enable GPIO Clock - Port A for USART Pins
+	RCC_APB2ENR |= 1 << 5;		// Enable GPIO Clock - Port D for LEDs
 	RCC_APB2ENR |= 1 << 14; 	// Enable USART1 Clock 
 
 	GPIOA_CRH &= ~(0xFF << 4);  // Shift 4 bits left to clear bits[9:4] for PA9/PA10 0000 0FF0 -> mask with  FFFF F00F
@@ -310,7 +323,11 @@ void main() {
 	Delay_ms(100);					// Allow some time for USART to complete initialization.
 	USART1_CR1 |= 1 << 13;			//** NOTE USART1 Enable must be done after configuration is complete
 
-	// Main loop
+	print_string(&title_cr_lf, NO_NEW_LINE);
+	print_string(&title_divider, NEW_LINE_EN);
+	print_string(&title_start, NEW_LINE_EN);
+
+	/* Main loop */
 	for (;;) {
 		// Reset the LEDs after each cycle
 		update_led(LED_RESET);
@@ -318,16 +335,16 @@ void main() {
 		// Loop to capture data input from the user and filter NULL_BYTE.
 		// NOTE: Connecting/disconnecting USART cable will cause the RX buffer to receive junk data(NULL_BYTE)
         while ( (char_counter < MAX_BUFFER_SIZE) && (loop_on == TRUE) ) {
-            read_data(&rx_buffer[char_counter]);
+            read_data( &rx_buffer[char_counter] );
 
-			if (rx_buffer[char_counter] == EXIT_CHAR){
+			if ( rx_buffer[char_counter] == EXIT_CHAR ){
 				loop_on = FALSE;
 			}
 			else if ( (rx_buffer[char_counter]) != 0x0D && (rx_buffer[char_counter] != NULL_BYTE) ) {
 				++char_counter;	
 				update_led(char_counter);
 
-				if (char_counter == MAX_BUFFER_SIZE) {
+				if ( char_counter == MAX_BUFFER_SIZE ) {
 					rx_buffer[char_counter] = EXIT_CHAR;
 					loop_on = FALSE;
 				}
@@ -338,18 +355,18 @@ void main() {
 		pivot_pos = (char_counter - 1);
 		
 		// Print original list
-		print_header(&title_orig, NEW_LINE_EN);
+		print_string(&title_orig, NEW_LINE_EN);
 		write_data(&rx_buffer);
 
 		// sort the data
 		q_sort(&rx_buffer, &pivot_pos, &min_pos);
 
 		// Print sorted
-		print_header(&title_sorted, NEW_LINE_EN);		
+		print_string(&title_sorted, NEW_LINE_EN);		
 		write_data(&rx_buffer);
 
 		// Convert the counter to ascii and print it to terminal
-		print_header(&title_counter, NO_NEW_LINE);
+		print_string(&title_counter, NO_NEW_LINE);
 		convert_to_ascii(&list_len, &ascii_msb, &ascii_lsb);
 		write_data_char(&ascii_msb, NO_NEW_LINE);
 		write_data_char(&ascii_lsb, NEW_LINE_EN);
