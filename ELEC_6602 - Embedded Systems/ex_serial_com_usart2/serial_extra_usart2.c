@@ -6,8 +6,8 @@
 
 // Description: 
 //					 Application used to demonstrate USART 2 connection. Enter data through the serial terminal
-//					 to test transmission and receive of data.
-//                             USB Serial Connection, in terminal must be set to 9600 baud for this application.
+//					 to test transmission and receive of data. Key pressed in terminal will display in Rx window.
+//                             NOTE: USB Serial Connection, in terminal must be set to 9600 baud for this application.
 //---------------------------------------------------------------------------------------------------
 //		Objective 1:      Configure the following function for USART2 with a Baud rate of 9,600, assuming a 36 MHz clock. 
 //                            To test this on your board, plug your second USB cable into USB UART B and on Switch 12 turn 
@@ -44,16 +44,16 @@ void main() {
       /* Initialization  */
       USART2_CR1 &= ~(1 << 13);              // Disable USART in order to configure it.
 
-      RCC_APB1RSTR.USART2RST = 0;            // Don't hold USART2 in reset
-      RCC_APB2ENR.AFIOEN = 1;                // Enable clock for Alt. Function. USART2 uses Alternate pins PD5/PD6
-      RCC_APB2ENR.IOPDEN = 1;                // Enable clock for GPIOD
-      RCC_APB2ENR |= 1 << 3;                 // Enable GPIO Clock -> PORT B for LEDs
-      RCC_APB2ENR |= 1 << 5;                 // Enable GPIO Clock -> PORT D for USART2 Pins
+      RCC_APB1RSTR.USART2RST = 0;            // Take USART2 out of reset reset
+      RCC_APB2ENR.AFIOEN     = 1;            // Enable clock for Alt. Function. USART2 uses Alternate pins PD5/PD6
+      RCC_APB2ENR.IOPDEN     = 1;            // Enable clock for GPIOD
+      RCC_APB2ENR           |= 1 << 3;       // Enable GPIO Clock -> PORT B for LEDs
+      RCC_APB2ENR           |= 1 << 5;       // Enable GPIO Clock -> PORT D for USART2 Pins
 
-      // This bit is > Bit[16] and MikroC compiler cannot set this, must used alternative method
+      // This bit is greater than bit[16] and MikroC compiler cannot set this, must used alternative method
       // RCC_APB1ENR |= 1 << 17;             // USART2 Clock enable
-      RCC_APB1ENR.USART2EN = 1;
-      RCC_APB1RSTR &= ~(1 << 5);             // APB1 Peripherial Reset register, ensure Bit is 0 =  USART2 not in reset mode
+      RCC_APB1ENR.USART2EN   = 1;
+      RCC_APB1RSTR          &= ~(1 << 5);    // APB1 Peripherial Reset register, ensure Bit is 0 =  USART2 not in reset mode
 
       // MikroC Compiler can't handle 32-bit bitwise operations, will need to set it like below
       // GPIOD_CRL |= (0x0B << 20);          // USART2 Tx/PD5 set CNF=AF-Output push-pull b10; MODE=50MHz b11; b1011 = 0x0B
@@ -66,6 +66,7 @@ void main() {
       // NOTE: USART2_REMAP must be set AFTER GPIO ports are enabled remap to TX/PD5, RX/PD6
       GPIOD_CRL = GPIOD_USART2_EN_MASK;       
       AFIO_MAPR.USART2_REMAP = 1;           
+
 
       /* Configure PORT B - LEDs */
       // GPIOB_CRL = 0x33333333; // OUPUT mode
