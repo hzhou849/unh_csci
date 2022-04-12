@@ -104,13 +104,12 @@ void main() {
             while( (USART2_SR & (1 << 5)) == 0 ) {}		// Positive logic
 
             // Data is available in the read register for us to retrieve it.
-            rx_buffer = USART2_DR;		// read data from receiver data register
+            rx_buffer = USART2_DR;
 
             // While TXE bit[7] Transmit data register empty is not empty, wait until bit[7] == 1
             // Stay in this loop until the Transfer data register finishes transfering to shift register 
-            // aka reading is finished 
             // while ( ! (USART1_SR & (1 << 7)) == 0x80) {}
-            while ( (USART2_SR & (1 << 7)) == 0) {}
+            while ( (USART2_SR & (1 << 7) ) == 0) {}
 
             // Transmit data out via USART, same data register is used
             Delay_ms(10);
