@@ -1,0 +1,19 @@
+0	1	mikroCARM.exe -MSF -DBG -pSTM32F107VC -UICD -BIN -LHF -DL -SSA -O11111114 -fo72 -N"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P4_serial_comm\p4_serial_comm.mcpar" -SP"D:\mikroC PRO for ARM\Defs\" -SP"D:\mikroC PRO for ARM\Uses\ST M3\" -SP"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P4_serial_comm\" -IP"D:\mikroC PRO for ARM\Uses\ST M3\" "p4_serial_comm.c" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" "__Lib_Delays.emcl" "__Lib_System_105_107.emcl" "__Lib_GPIO_32F10x_Defs.emcl" "__Lib_GPIO_32F10x.emcl"	 
+diagnostics: 0	122	Compilation Started	stdint.h
+warning: 362	1505	Suspicious pointer conversion	p4_serial_comm.c
+hint: 271	1163	Variable 'tx_buffer' has been declared, but not used	p4_serial_comm.c
+diagnostics: 379	123	Compiled Successfully	p4_serial_comm.c
+hint: 73	1164	Variable 'tx_var' has been eliminated by optimizer	p4_serial_comm.c
+hint: 127	1164	Variable 'pivot_val' has been eliminated by optimizer	p4_serial_comm.c
+hint: 269	1164	Variable 'num_ascii' has been eliminated by optimizer	p4_serial_comm.c
+hint: 272	1164	Variable 'i' has been eliminated by optimizer	p4_serial_comm.c
+hint: 285	1164	Variable 'title_rev' has been eliminated by optimizer	p4_serial_comm.c
+diagnostics: 0	127	All files Compiled in 94 ms	 
+hint: 0	1144	Used RX: 16 (100%)   Free RX: 0 (0%)	Used RX: 16 (100%)   Free RX: 0 (0%)
+hint: 0	1144	Static RAM (bytes): 8   Dynamic RAM (bytes): 65525	Static RAM (bytes): 8   Dynamic RAM (bytes): 65525
+hint: 0	1144	Used ROM (bytes): 2659 (1%)  Free ROM (bytes): 259485 (99%)	Used ROM (bytes): 2659 (1%)  Free ROM (bytes): 259485 (99%)
+diagnostics: 0	125	Project Linked Successfully	p4_serial_comm.mcpar
+hint: 126	1004	Possible stack overflow : recursion or cross-calling detected.	p4_serial_comm.c
+diagnostics: 0	128	Linked in 219 ms	 
+diagnostics: 0	129	Project 'p4_serial_comm.mcpar' completed: 485 ms	 
+diagnostics: 0	103	Finished successfully: 06 Apr 2022, 21:42:47	p4_serial_comm.mcpar

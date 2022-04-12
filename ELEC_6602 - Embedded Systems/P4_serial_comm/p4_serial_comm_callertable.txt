@@ -1,0 +1,14 @@
+main
+	__CC2DW
+	__FillZeros
+	print_string
+		write_data_char
+	update_led
+	read_data
+	write_data
+		write_data_char
+	q_sort
+		__CC2DW
+		q_sort | Recursion.
+	convert_to_ascii
+	write_data_char

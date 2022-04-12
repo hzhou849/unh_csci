@@ -1,0 +1,14 @@
+<BREAKS>
+  <BP>
+    <UnitName>p4_serial_comm.c</UnitName>
+    <Line>348</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+  <BP>
+    <UnitName>p4_serial_comm.c</UnitName>
+    <Line>127</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+</BREAKS>

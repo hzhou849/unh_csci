@@ -1,0 +1,19 @@
+0	1	mikroCARM.exe -MSF -DBG -pSTM32F107VC -UICD -BIN -LHF -DL -SSA -O11111114 -fo72 -N"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P4_bonus_obj\P4_bonus_obj.mcpar" -SP"D:\mikroC PRO for ARM\Defs\" -SP"D:\mikroC PRO for ARM\Uses\ST M3\" -SP"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P4_bonus_obj\" -IP"D:\mikroC PRO for ARM\Uses\ST M3\" "P4_bonus_obj.c" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" "__Lib_Delays.emcl" "__Lib_System_105_107.emcl" "__Lib_GPIO_32F10x_Defs.emcl" "__Lib_GPIO_32F10x.emcl"	 
+diagnostics: 0	122	Compilation Started	stdlib.h
+warning: 304	1503	Result is not defined in function: 'tally'	P4_bonus_obj.c
+warning: 448	1505	Suspicious pointer conversion	P4_bonus_obj.c
+diagnostics: 480	123	Compiled Successfully	P4_bonus_obj.c
+hint: 78	1164	Variable 'tx_var' has been eliminated by optimizer	P4_bonus_obj.c
+hint: 172	1164	Variable 'pivot_val' has been eliminated by optimizer	P4_bonus_obj.c
+hint: 314	1164	Variable 'lower_case_count' has been eliminated by optimizer	P4_bonus_obj.c
+hint: 315	1164	Variable 'upper_case_count' has been eliminated by optimizer	P4_bonus_obj.c
+hint: 323	1164	Variable 'list_size' has been eliminated by optimizer	P4_bonus_obj.c
+diagnostics: 0	127	All files Compiled in 110 ms	 
+hint: 0	1144	Used RX: 16 (100%)   Free RX: 0 (0%)	Used RX: 16 (100%)   Free RX: 0 (0%)
+hint: 0	1144	Static RAM (bytes): 4   Dynamic RAM (bytes): 65529	Static RAM (bytes): 4   Dynamic RAM (bytes): 65529
+hint: 0	1144	Used ROM (bytes): 3215 (1%)  Free ROM (bytes): 258929 (99%)	Used ROM (bytes): 3215 (1%)  Free ROM (bytes): 258929 (99%)
+diagnostics: 0	125	Project Linked Successfully	P4_bonus_obj.mcpar
+hint: 169	1004	Possible stack overflow : recursion or cross-calling detected.	P4_bonus_obj.c
+diagnostics: 0	128	Linked in 218 ms	 
+diagnostics: 0	129	Project 'P4_bonus_obj.mcpar' completed: 484 ms	 
+diagnostics: 0	103	Finished successfully: 06 Apr 2022, 21:35:26	P4_bonus_obj.mcpar
