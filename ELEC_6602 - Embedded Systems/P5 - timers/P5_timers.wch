@@ -1,0 +1,6 @@
+<WCH v="2">
+<item n="RCC_CFGR" r="1" s="False" e="False" i="0"/>
+<item n="RCC_CR" r="1" s="False" e="False" i="1"/>
+<item n="RCC_CFGR2" r="1" s="False" e="False" i="2"/>
+<item n="USART1_SR" r="2" s="False" e="False" i="3"/>
+</WCH>

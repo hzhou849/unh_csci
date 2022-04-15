@@ -1,20 +1,16 @@
-0	1	mikroCARM.exe -MSF -DBG -pSTM32F107VC -BIN -LHF -DL -SSA -O11111114 -fo72 -N"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P5 - timers\P5_timers.mcpar" -SP"D:\mikroC PRO for ARM\Defs\" -SP"D:\mikroC PRO for ARM\Uses\ST M3\" -SP"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P5 - timers\" -IP"D:\mikroC PRO for ARM\Uses\ST M3\" "P5_timers.c" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" "__Lib_Delays.emcl" "__Lib_System_105_107.emcl" "__Lib_GPIO_32F10x_Defs.emcl" "__Lib_GPIO_32F10x.emcl"	 
-diagnostics: 0	122	Compilation Started	STM32F107VC.c
-diagnostics: 38838	123	Compiled Successfully	STM32F107VC.c
-diagnostics: 0	122	Compilation Started	__Lib_Delays.c
-diagnostics: 118	123	Compiled Successfully	__Lib_Delays.c
-hint: 66	1164	Variable 'cycles_div_by_10' has been eliminated by optimizer	__Lib_Delays.c
-hint: 87	1164	Variable 'NumberOfCyc' has been eliminated by optimizer	__Lib_Delays.c
-hint: 104	1164	Variable 'NumberOfCyc' has been eliminated by optimizer	__Lib_Delays.c
-diagnostics: 0	122	Compilation Started	__lib_gpio.h
-diagnostics: 834	123	Compiled Successfully	__Lib_GPIO_32F10x_Defs.c
-diagnostics: 0	122	Compilation Started	P5_timers.c
-diagnostics: 3	123	Compiled Successfully	P5_timers.c
-diagnostics: 0	127	All files Compiled in 63 ms	 
-hint: 0	1144	Used RX: 13 (81%)   Free RX: 3 (19%)	Used RX: 13 (81%)   Free RX: 3 (19%)
+0	1	mikroCARM.exe -MSF -DBG -pSTM32F107VC -UICD -BIN -LHF -DL -SSA -O11111114 -fo72 -N"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P5 - timers\P5_timers.mcpar" -SP"D:\mikroC PRO for ARM\Defs\" -SP"D:\mikroC PRO for ARM\Uses\ST M3\" -SP"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P5 - timers\" -IP"D:\mikroC PRO for ARM\Uses\ST M3\" "P5_timers.c" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" "__Lib_Delays.emcl" "__Lib_System_105_107.emcl" "__Lib_GPIO_32F10x_Defs.emcl" "__Lib_GPIO_32F10x.emcl"	 
+diagnostics: 0	122	Compilation Started	stdint.h
+diagnostics: 335	123	Compiled Successfully	P5_timers.c
+hint: 114	1164	Variable 'div_wait_flag' has been eliminated by optimizer	P5_timers.c
+hint: 115	1164	Variable 'tim1_wait_flag' has been eliminated by optimizer	P5_timers.c
+hint: 116	1164	Variable 'tim2_wait_flag' has been eliminated by optimizer	P5_timers.c
+hint: 127	1164	Variable 'title_divider' has been eliminated by optimizer	P5_timers.c
+hint: 130	1164	Variable 'title_cr_lf' has been eliminated by optimizer	P5_timers.c
+diagnostics: 0	127	All files Compiled in 94 ms	 
+hint: 0	1144	Used RX: 16 (100%)   Free RX: 0 (0%)	Used RX: 16 (100%)   Free RX: 0 (0%)
 hint: 0	1144	Static RAM (bytes): 4   Dynamic RAM (bytes): 65529	Static RAM (bytes): 4   Dynamic RAM (bytes): 65529
-hint: 0	1144	Used ROM (bytes): 956 (0%)  Free ROM (bytes): 261188 (100%)	Used ROM (bytes): 956 (0%)  Free ROM (bytes): 261188 (100%)
+hint: 0	1144	Used ROM (bytes): 2184 (1%)  Free ROM (bytes): 259960 (99%)	Used ROM (bytes): 2184 (1%)  Free ROM (bytes): 259960 (99%)
 diagnostics: 0	125	Project Linked Successfully	P5_timers.mcpar
-diagnostics: 0	128	Linked in 203 ms	 
-diagnostics: 0	129	Project 'P5_timers.mcpar' completed: 1125 ms	 
-diagnostics: 0	103	Finished successfully: 12 Apr 2022, 23:36:21	P5_timers.mcpar
+diagnostics: 0	128	Linked in 219 ms	 
+diagnostics: 0	129	Project 'P5_timers.mcpar' completed: 485 ms	 
+diagnostics: 0	103	Finished successfully: 15 Apr 2022, 00:56:25	P5_timers.mcpar

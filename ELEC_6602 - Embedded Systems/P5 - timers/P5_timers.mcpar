@@ -1,6 +1,20 @@
 [DEVICE]
 Name=STM32F107VC
 Clock=72000000
+[MEMORY_MODEL]
+Value=0
+[BUILD_TYPE]
+Value=1
+[ACTIVE_TAB]
+Value=P5_timers.c
+[USE_EEPROM]
+Value=0
+[USE_HEAP]
+Value=0
+[HEAP_SIZE]
+Value=2000
+[EEPROM_DEFINITION]
+Value=
 [FILES]
 File0=P5_timers.c
 Count=1
@@ -11,7 +25,8 @@ Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=P5_timers.c
-Count=1
+File1=.\D:\mikroC PRO for ARM\Defs\STM32F107VC.c
+Count=2
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -28,32 +43,17 @@ Count=0
 Count=0
 [Useses]
 Count=0
-[MEMORY_MODEL]
-Value=0
-[BUILD_TYPE]
-Value=0
-[ACTIVE_TAB]
-Value=P5_timers.c
-[USE_EEPROM]
-Value=0
-[USE_HEAP]
-Value=0
-[HEAP_SIZE]
-Value=0
-[EEPROM_DEFINITION]
-Value=
 [EXPANDED_NODES]
-0=serial_extra_usart2.mcpar
-9=Output Files
-Count=2
+0=P5_timers.mcpar
+Count=1
 [LIB_EXPANDED_NODES]
-Count=0
+Count=1
 [PROGRAMMER_OPTIONS]
 Value=SWD
 [PROGRAMMER_TYPE]
 Value=mikroE mikroProg
 [DEBUGGER_TYPE]
-Value=
+Value=default
 [NECTO_OPTIONS]
 NECTO_RESET_TYPE=0
 NECTO_ERASE_TYPE=0
