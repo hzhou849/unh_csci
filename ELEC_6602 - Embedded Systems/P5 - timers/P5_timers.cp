@@ -122,6 +122,7 @@ void print_string(uint8_t *arr_string, uint8_t new_line_opt) {
 
 void main() {
 
+ uint32_t sequence_count = 0;
  uint8_t div_wait_flag = FALSE;
  uint8_t tim1_wait_flag = FALSE;
  uint8_t tim2_wait_flag = FALSE;
@@ -129,7 +130,7 @@ void main() {
 
 
 
- uint32_t sequence_count = 0;
+ uint32_t i=0;
 
  uint32_t tim1_multiplier = 1;
  uint32_t tim2_multiplier = 1;
@@ -139,6 +140,9 @@ void main() {
  uint8_t tim1_prompt [] = "Please enter delay time (1-4) for TIMER1: ";
  uint8_t tim2_prompt [] = "Please enter delay time (1-4) for TIMER2: ";
  uint8_t title_cr_lf [] = "\x0D\x0A";
+ uint8_t debug_true[] = "TIMER1 TRUE ";
+ uint8_t debug_true2[] = "TIMER2 TRUE ";
+
 
 
 
@@ -180,7 +184,6 @@ void main() {
 
 
 
-
  GPIOA_CRH &= ~(0xFF << 4);
  GPIOA_CRH |= (0x0B << 4);
  GPIOA_CRH |= (0x04 << 8);
@@ -195,6 +198,7 @@ void main() {
  GPIOE_CRL = GPIO_OUTPUT;
 
 
+
  USART1_BRR = 0x00000506;
 
 
@@ -204,7 +208,6 @@ void main() {
  USART1_CR1 &= ~(3 << 9);
  USART1_CR2 &= ~(3 << 12);
  USART1_CR3 &= ~(3 << 8);
-
  USART1_CR1 |= (3 << 2);
  Delay_ms(100);
  USART1_CR1 |= 1 << 13;
@@ -252,64 +255,80 @@ void main() {
 
  if (wait_flag == FALSE) {
 
- if ( sequence_count = 0) {
- print_string(title_divider, NO_NEW_LINE);
+ if ( sequence_count == 0) {
  print_string(title_cr_lf, NO_NEW_LINE);
+ print_string(title_divider, NO_NEW_LINE);
 
 
- Delay_ms(1000);
- wait_flag == TRUE;
+
+ wait_flag = TRUE;
  sequence_count++;
  }
- else if ( sequence_count = 1 && wait_flag == TRUE ) {
+ if ( sequence_count == 1 && wait_flag == TRUE ) {
  print_string(tim1_prompt, NO_NEW_LINE);
- sequence_count++;
+
  wait_flag = TRUE;
  }
- else if (sequence_count = 2 ) {
+ else if (sequence_count == 2 ) {
  print_string(tim2_prompt, NO_NEW_LINE);
  wait_flag = TRUE;
 
- sequence_count = 0;
+
  }
  }
 
 
 
 
- if ( (USART1_SR & (1 << 5))) {
+ for (i=0; i < 10; i++) {
+
+ if ( (USART1_SR & (1 << 5)) ) {
  rx_buffer = USART1_DR;
 
- while ( (USART1_SR & ( 1 << 7)) ==0 ) {}
+ while ( (USART1_SR & ( 1 << 7)) == 0 ) {}
  USART1_DR = rx_buffer;
 
 
- if (sequence_count = 1) {
- wait_flag == FALSE;
+
+ if (sequence_count == 1 && wait_flag == TRUE ) {
+
+
  tim1_multiplier = serial_to_int(&rx_buffer);
 
 
-
-
-
-
- TIM1_ARR = ( (uint32_t)9000 * tim1_multiplier );
+ TIM1_ARR = (uint32_t)( 9000 * tim1_multiplier );
+ Delay_ms(100);
+ wait_flag = FALSE;
+ sequence_count++;
+ print_string(&debug_true, NO_NEW_LINE);
 
  }
- else if (sequence_count = 2) {
- wait_flag == FALSE;
+ else if (sequence_count == 2 && wait_flag == TRUE) {
+
+
  tim2_multiplier = serial_to_int(&rx_buffer);
 
 
+ TIM4_ARR = ( (uint32_t)9000 * tim2_multiplier );
+ print_string(&debug_true2, NO_NEW_LINE);
+ print_string(&tim2_multiplier, NO_NEW_LINE);
 
+ Delay_ms(100);
 
-
-
-
- TIM1_ARR = ( (uint32_t)9000 * tim2_multiplier );
+ sequence_count = 0;
+ wait_flag = FALSE;
  }
 
 
+ GPIOB_ODR = 0x0000;
+ GPIOC_ODR = 0x0000;
+ GPIOD_ODR = 0x0000;
+ GPIOE_ODR = 0x0000;
+ TIM1_CNT = 0;
+ TIM4_CNT = 0;
+
+
+ }
  }
 
 
@@ -333,13 +352,6 @@ void main() {
  GPIOD_ODR = ~GPIOD_ODR;
  GPIOE_ODR = ~GPIOE_ODR;
  }
-
-
-
-
-
-
-
  }
 
 
