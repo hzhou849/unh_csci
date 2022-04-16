@@ -51,18 +51,6 @@ static const uint32_t GPIO_OUTPUT    = 0x33333333;     // CNF:output-push-pull 0
 
 /* Helper functions */
 
-/// Read the incoming serial data
-// Check status register USART_SR bit[5] RXNE - read data reg not empty
-void read_data(uint32_t *rx_buffer) {
-
-    while ( (USART1_SR & (1 << 5)) == 0 ) {}
-
-    *rx_buffer = USART1_DR;
-
-    while ( (USART1_SR & (1 << 7)) == 0) {}
-    Delay_ms(10);
-}
-
 
 /// Takes the serial data recieved and convert the ascii to a useable interger
 // Any value other than 1-4 will return default value of 1.
@@ -78,8 +66,8 @@ uint32_t serial_to_int(uint32_t *rx_buffer) {
 /// Transmit/write out single character via USART
 void write_data_char(uint32_t *tx_char, uint8_t new_line_opt) {
     
-    while ( (USART1_SR & (1 << 7)) == 0 ) {}                        // Wait for transmit data register to be empty
 
+    while ( (USART1_SR & (1 << 7)) == 0 ) {}                        // Wait for transmit data register to be empty
     Delay_ms(10);                                                   // Transmit data out via USART1
     USART1_DR = *tx_char;
 
@@ -111,13 +99,27 @@ void print_string(uint8_t *arr_string, uint8_t new_line_opt) {
     USART1_DR = CHAR_LF;
 }
 
+void print_int(uint32_t *int_num) {
+    
+    uint32_t temp_val = (*int_num + ASCII_HEX_O);
+    
+    write_data_char(&temp_val, NO_NEW_LINE);
+
+    // Delay_ms(10);
+    // USART1_DR = CHAR_CR;
+    // Delay_ms(10);
+    // USART1_DR = CHAR_LF;
+
+}
+
 void main() {
 
     uint32_t sequence_count = 0;
-    uint8_t div_wait_flag  = FALSE;
-    uint8_t  tim1_wait_flag = FALSE;
-    uint8_t  tim2_wait_flag = FALSE;
-    uint8_t wait_flag       = FALSE;
+    uint8_t div_ask_time_flag  = FALSE;
+    uint8_t  tim1_ask_time_flag = FALSE;
+    uint8_t  tim2_ask_time_flag = FALSE;
+    uint8_t ask_time_flag       = FALSE;
+    uint8_t r_key_rcvd      = TRUE;
 
 
 
@@ -128,11 +130,13 @@ void main() {
     uint32_t rx_buffer;
 
     uint8_t title_divider[]  = "=============================================================";
+    uint8_t start_prompt []  = "Press 'R or r' to start or 'Q q' to quit.";
     uint8_t tim1_prompt  []  = "Please enter delay time (1-4) for TIMER1: ";
     uint8_t tim2_prompt  []  = "Please enter delay time (1-4) for TIMER2: ";
     uint8_t title_cr_lf  []  = "\x0D\x0A";
-    uint8_t debug_true[]    = "TIMER1 TRUE ";
-    uint8_t debug_true2[]    = "TIMER2 TRUE ";
+    uint8_t tim1_info[]    = "TIMER1 delay seconds value: ";
+    uint8_t tim2_info[]    = "TIMER2 delay seconds value:  ";
+    uint8_t goodbye  []    = "TIMER 1 & 4 DISABLED, goodbye!";
 
 
 
@@ -240,27 +244,35 @@ void main() {
     GPIOE_ODR = 0x0000;
 
 
+
     /* Main loop */
     for (;;) {
 
         // Print headers, putting this one first prevents other ones from prematurely executing
-        if (wait_flag == FALSE) {
+        if (ask_time_flag == FALSE ) {
 
             if ( sequence_count == 0) {
                 print_string(title_cr_lf, NO_NEW_LINE);
+                
                 print_string(title_divider, NO_NEW_LINE);
-                wait_flag = TRUE;
+                print_string(&start_prompt, NO_NEW_LINE);   // Print start prompt message
+                // ask_time_flag = TRUE;
+                r_key_rcvd = FALSE;
                 sequence_count++;
             }
-            if ( sequence_count == 1 && wait_flag == TRUE ) {
+            else if ( sequence_count == 1  && r_key_rcvd == TRUE ) {
+                print_string(title_cr_lf, NO_NEW_LINE);
                 print_string(tim1_prompt, NO_NEW_LINE);
-                wait_flag = TRUE;
+                ask_time_flag = TRUE;
             }
-            else if (sequence_count == 2 ) {
+            else if (sequence_count == 2  && r_key_rcvd == TRUE ) {
+                print_string(title_cr_lf, NO_NEW_LINE);
                 print_string(tim2_prompt, NO_NEW_LINE);
-                wait_flag = TRUE;
+                ask_time_flag = TRUE;
             }
         }
+
+      
 
         // Processor spins too quickly and cannot register the button press
         // To remedy this, we will dedicate some cpu cycles to register button press
@@ -271,11 +283,27 @@ void main() {
                 rx_buffer = USART1_DR;
                 
                 while ( (USART1_SR & ( 1 << 7)) == 0 ) {}
-                USART1_DR = rx_buffer;
-
+                // USART1_DR = rx_buffer;
+                
                 // Delay_ms(100);
+                // R=0x52; r=0x72
+                // Q=0x51; q=0x71
+                if (rx_buffer == 0x52 || rx_buffer == 0x72) {
+                    r_key_rcvd = TRUE;
+                }
+                else if (rx_buffer == 0x51 || rx_buffer == 0x71) {
+                    // GPIOB_ODR = 0x0000;
+                    // GPIOC_ODR = 0x0000;
+                    // GPIOD_ODR = 0x0000;
+                    // GPIOE_ODR = 0x0000;
+                    RCC_APB2ENR |= ~(1 << 11);                   // Enable TIMER1 Clock
+                    RCC_APB1ENR |= ~(1 << 2);                    // Enable TIMER4 Clock
+                    print_string(&goodbye, NO_NEW_LINE);
+                    return; // Quit
+                }
 
-                if (sequence_count == 1 && wait_flag == TRUE  ) {
+                // Filter out special un-seen ascii characters less than 0x20
+                if (sequence_count == 1 && ask_time_flag == TRUE  && rx_buffer >=0x20) {
 
                     // Convert buffer timer multiplier value to an integer
                     tim1_multiplier = serial_to_int(&rx_buffer);
@@ -283,27 +311,31 @@ void main() {
                     // Update the new TIMER1 delay
                     TIM1_ARR = (uint32_t)( 9000 * tim1_multiplier );
                     Delay_ms(100);
-                    wait_flag = FALSE;
+                    ask_time_flag = FALSE;
                     sequence_count++;
-                    print_string(&debug_true, NO_NEW_LINE);
+                    print_string(&tim1_info, NO_NEW_LINE);
+                    print_int(&tim1_multiplier);
 
                 }
-                else if (sequence_count == 2 && wait_flag == TRUE) {
+                else if (sequence_count == 2 && ask_time_flag == TRUE) {
 
                     // Convert buffer timer multiplier value to an integer
                     tim2_multiplier = serial_to_int(&rx_buffer);
 
                     // Update the new TIMER1 delay
                     TIM4_ARR = ( (uint32_t)9000 * tim2_multiplier );
-                    print_string(&debug_true2, NO_NEW_LINE);
-                    print_string(&tim2_multiplier, NO_NEW_LINE);
+                    print_string(&tim2_info, NO_NEW_LINE);
+                    print_int(&tim2_multiplier);
 
                     Delay_ms(100);
+                    
                     // Reset the sequence
                     sequence_count = 0;
-                    wait_flag = FALSE;
+                    ask_time_flag = FALSE;
+                    r_key_rcvd = FALSE;
                 }
 
+                    // print_string("RESETTING TIMERS COUNT")
                     // Reset the counter register and LEDs for TIMER1 and TIMER 4 to re-sync the timers
                     GPIOB_ODR = 0x0000;
                     GPIOC_ODR = 0x0000;

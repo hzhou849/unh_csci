@@ -4,3 +4,5 @@ main
 	print_string
 		write_data_char
 	serial_to_int
+	print_int
+		write_data_char
