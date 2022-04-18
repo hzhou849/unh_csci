@@ -57,12 +57,20 @@ static const uint32_t ASCII_HEX_O = 0x30;
 static const uint32_t CHAR_CR = 0x0D;
 static const uint32_t CHAR_LF = 0x0A;
 static const uint32_t GPIO_OUTPUT = 0x33333333;
-#line 69 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P5 - timers/P5_timers.c"
+
+
+
+
+
+
+
 uint32_t serial_to_int(uint32_t *rx_buffer) {
+
 
  if ( (*rx_buffer >= ASCII_HEX_O) && (*rx_buffer <= 0x34) ) {
  return (*rx_buffer - ASCII_HEX_O);
  }
+
 
  return 1;
 }
@@ -103,25 +111,22 @@ void print_string(uint8_t *arr_string, uint8_t new_line_opt) {
  USART1_DR = CHAR_LF;
 }
 
+
+
 void print_int(uint32_t *int_num) {
 
  uint32_t temp_val = (*int_num + ASCII_HEX_O);
 
  write_data_char(&temp_val, NO_NEW_LINE);
 
-
-
-
-
-
 }
 
 void main() {
 
  uint32_t sequence_count = 0;
- uint8_t div_ask_time_flag = FALSE;
- uint8_t tim1_ask_time_flag = FALSE;
- uint8_t tim2_ask_time_flag = FALSE;
+
+
+
  uint8_t ask_time_flag = FALSE;
  uint8_t r_key_rcvd = TRUE;
 
@@ -140,7 +145,7 @@ void main() {
  uint8_t title_cr_lf [] = "\x0D\x0A";
  uint8_t tim1_info[] = "TIMER1 delay seconds value: ";
  uint8_t tim2_info[] = "TIMER2 delay seconds value:  ";
- uint8_t goodbye [] = "TIMER 1 & 4 DISABLED, goodbye!";
+ uint8_t goodbye [] = "TIMER 1 & 4 shutting off, goodbye!";
 
 
 
@@ -279,8 +284,6 @@ void main() {
 
 
 
-
-
  for (i=0; i < 10; i++) {
 
  if ( (USART1_SR & (1 << 5)) ) {
@@ -289,20 +292,23 @@ void main() {
  while ( (USART1_SR & ( 1 << 7)) == 0 ) {}
 
 
-
-
-
  if (rx_buffer == 0x52 || rx_buffer == 0x72) {
  r_key_rcvd = TRUE;
+
  }
  else if (rx_buffer == 0x51 || rx_buffer == 0x71) {
 
 
-
+ GPIOB_ODR = 0x0000;
+ GPIOC_ODR = 0x0000;
+ GPIOD_ODR = 0x0000;
+ GPIOE_ODR = 0x0000;
 
  RCC_APB2ENR |= ~(1 << 11);
  RCC_APB1ENR |= ~(1 << 2);
+
  print_string(&goodbye, NO_NEW_LINE);
+
  return;
  }
 
@@ -338,6 +344,7 @@ void main() {
  ask_time_flag = FALSE;
  r_key_rcvd = FALSE;
  }
+
 
 
  GPIOB_ODR = 0x0000;

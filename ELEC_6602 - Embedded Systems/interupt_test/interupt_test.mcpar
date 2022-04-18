@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=..\P4_bonus_obj\P4_bonus_obj.c
+Value=interupt_test.c
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -24,7 +24,8 @@ Count=0
 Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
-Count=0
+File0=interupt_test.c
+Count=1
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -42,15 +43,16 @@ Count=0
 [Useses]
 Count=0
 [EXPANDED_NODES]
-Count=0
+0=interupt_test.mcpar
+Count=1
 [LIB_EXPANDED_NODES]
-Count=0
+Count=1
 [PROGRAMMER_OPTIONS]
 Value=SWD
 [PROGRAMMER_TYPE]
 Value=mikroE mikroProg
 [DEBUGGER_TYPE]
-Value=
+Value=default
 [NECTO_OPTIONS]
 NECTO_RESET_TYPE=0
 NECTO_ERASE_TYPE=0

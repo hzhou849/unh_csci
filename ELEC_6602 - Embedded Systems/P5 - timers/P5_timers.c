@@ -6,10 +6,10 @@
 
 // Description: 
 //
-//      This program toggles the LEDs on PORTD and PORTR every one second. This is done by using
-//      Timer1, the 8MHz clock, and dividing that clock by an 8000 prescaler. This creates a 
-//      clock frequency of 1000 ms, or 1 second. Every second, the status register interrupt 
-//      flag will trigger, thus allowing an action (LED toggle) to occur.
+//      This program toggles the LEDs on PORTD and PORTE by default every one second and starts
+//      By prompting the user to press R or r key to adjust the time day to values of 1 to 4 seconds
+//      Any other value will go back to the default of 1 second. To quit, press Q or q when prompted
+//      at the options menu.
 //      
 //      *NOTE: Professor, I did code a reset sequence to re-sync the LEds and TIMER counter to 0
 //             on every time change. 
@@ -56,19 +56,21 @@ static const uint32_t GPIO_OUTPUT    = 0x33333333;     // CNF:output-push-pull 0
 // Any value other than 1-4 will return default value of 1.
 uint32_t serial_to_int(uint32_t *rx_buffer) {
     
-    if ( (*rx_buffer >= ASCII_HEX_O) && (*rx_buffer <= 0x34) ) {     // if input buffer is between 0x30 and 0x34, integer [1:4] we know its an integer
+    // if input buffer is between 0x30 and 0x34, integer [1:4] we know its an integer
+    if ( (*rx_buffer >= ASCII_HEX_O) && (*rx_buffer <= 0x34) ) {     
         return (*rx_buffer - ASCII_HEX_O);
     }
     
-    return 1;                                                        // Everything else default 1 second
+    // Everything else default 1 second
+    return 1;                                                        
 }
 
 /// Transmit/write out single character via USART
 void write_data_char(uint32_t *tx_char, uint8_t new_line_opt) {
     
-
-    while ( (USART1_SR & (1 << 7)) == 0 ) {}                        // Wait for transmit data register to be empty
-    Delay_ms(10);                                                   // Transmit data out via USART1
+    // Wait for transmit data register to be empty
+    while ( (USART1_SR & (1 << 7)) == 0 ) {}                        
+    Delay_ms(10);                                                  
     USART1_DR = *tx_char;
 
     if (new_line_opt == 1) {
@@ -99,25 +101,22 @@ void print_string(uint8_t *arr_string, uint8_t new_line_opt) {
     USART1_DR = CHAR_LF;
 }
 
+
+// Convert an Integer number to ascii char and transmit it
 void print_int(uint32_t *int_num) {
     
     uint32_t temp_val = (*int_num + ASCII_HEX_O);
     
     write_data_char(&temp_val, NO_NEW_LINE);
 
-    // Delay_ms(10);
-    // USART1_DR = CHAR_CR;
-    // Delay_ms(10);
-    // USART1_DR = CHAR_LF;
-
 }
 
 void main() {
 
     uint32_t sequence_count = 0;
-    uint8_t div_ask_time_flag  = FALSE;
-    uint8_t  tim1_ask_time_flag = FALSE;
-    uint8_t  tim2_ask_time_flag = FALSE;
+    // uint8_t div_ask_time_flag  = FALSE;
+    // uint8_t  tim1_ask_time_flag = FALSE;
+    // uint8_t  tim2_ask_time_flag = FALSE;
     uint8_t ask_time_flag       = FALSE;
     uint8_t r_key_rcvd      = TRUE;
 
@@ -136,7 +135,7 @@ void main() {
     uint8_t title_cr_lf  []  = "\x0D\x0A";
     uint8_t tim1_info[]    = "TIMER1 delay seconds value: ";
     uint8_t tim2_info[]    = "TIMER2 delay seconds value:  ";
-    uint8_t goodbye  []    = "TIMER 1 & 4 DISABLED, goodbye!";
+    uint8_t goodbye  []    = "TIMER 1 & 4 shutting off, goodbye!";
 
 
 
@@ -272,8 +271,6 @@ void main() {
             }
         }
 
-      
-
         // Processor spins too quickly and cannot register the button press
         // To remedy this, we will dedicate some cpu cycles to register button press
         // Dedicate a few cycle to check for input
@@ -283,22 +280,25 @@ void main() {
                 rx_buffer = USART1_DR;
                 
                 while ( (USART1_SR & ( 1 << 7)) == 0 ) {}
-                // USART1_DR = rx_buffer;
                 
-                // Delay_ms(100);
-                // R=0x52; r=0x72
-                // Q=0x51; q=0x71
+                // If R=0x52; r=0x72, start the program to ask user for time and set timers.
                 if (rx_buffer == 0x52 || rx_buffer == 0x72) {
                     r_key_rcvd = TRUE;
-                }
+
+                }   // If Q=0x51; q=0x71, key pressed, quit.
                 else if (rx_buffer == 0x51 || rx_buffer == 0x71) {
-                    // GPIOB_ODR = 0x0000;
-                    // GPIOC_ODR = 0x0000;
-                    // GPIOD_ODR = 0x0000;
-                    // GPIOE_ODR = 0x0000;
-                    RCC_APB2ENR |= ~(1 << 11);                   // Enable TIMER1 Clock
-                    RCC_APB1ENR |= ~(1 << 2);                    // Enable TIMER4 Clock
+                    
+                    // Turn off LEDs
+                    GPIOB_ODR = 0x0000;
+                    GPIOC_ODR = 0x0000;
+                    GPIOD_ODR = 0x0000;
+                    GPIOE_ODR = 0x0000;
+
+                    RCC_APB2ENR |= ~(1 << 11);       // Disable TIMER1 Clock   
+                    RCC_APB1ENR |= ~(1 << 2);        // Disable TIMER4 Clock   
+                    
                     print_string(&goodbye, NO_NEW_LINE);
+
                     return; // Quit
                 }
 
@@ -334,7 +334,6 @@ void main() {
                     ask_time_flag = FALSE;
                     r_key_rcvd = FALSE;
                 }
-
                     // print_string("RESETTING TIMERS COUNT")
                     // Reset the counter register and LEDs for TIMER1 and TIMER 4 to re-sync the timers
                     GPIOB_ODR = 0x0000;
@@ -344,11 +343,8 @@ void main() {
                     TIM1_CNT = 0;
                     TIM4_CNT = 0;
 
-
             }
         }
-
-        
 
         // Checking timer status register to perfom an action (p570)
         // Wait until timer update flag is set, meaning the count val was reached.
