@@ -78,7 +78,6 @@ void read_data(uint32_t *rx_buffer) {
 
 /// Transmit/write out a single character via USART
 void write_data_char(uint32_t *tx_char, uint8_t new_line) {
-	uint32_t tx_var = *tx_char;
 	
 	// Wait for Transmit data register to be empty
 	while ( (USART1_SR & (1 << 7)) == 0) {} 
