@@ -64,6 +64,6 @@ void Timer3IntConfiguration(){
 							// table is 29, so set the corresponding bit in interrupt service enable
 							// register 0. This is a 32 bit register. ISER1 is used for interrupt
 							// numbers greater than 31.
-	TIM3_DIER.UIE = 1;  	// Update interrupt enable
+	TIM3_DIER.UIE = 1;  	// Allow timer to be interruptable; Update interrupt enable
 	TIM3_CR1 = 0x0001; 		// Enable TIMER3
 }

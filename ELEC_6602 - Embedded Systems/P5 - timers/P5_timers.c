@@ -114,9 +114,6 @@ void print_int(uint32_t *int_num) {
 void main() {
 
     uint32_t sequence_count = 0;
-    // uint8_t div_ask_time_flag  = FALSE;
-    // uint8_t  tim1_ask_time_flag = FALSE;
-    // uint8_t  tim2_ask_time_flag = FALSE;
     uint8_t ask_time_flag       = FALSE;
     uint8_t r_key_rcvd      = TRUE;
 

@@ -58,6 +58,9 @@ void ExternalIntConfiguration(){
 	EXTI_IMR |= 0x00000041;     // Interrupt on PA0 and PB6 are non-maskable
 	NVIC_ISER0 |= 1<<6;         // Enable NVIC interrupt for EXTI line zero (PA0)
                                 // with position 6 in NVIC table
+
+	// Shifting beyond the 16bit positon will cause problems for this compiler
+	// Compiler has issues with 32 bit manipulation instructions and will not compile correctly. Casting is used to remedy this. 							
 	NVIC_ISER0 |= (long int)1<<23;        // Enable NVIC interrupt for EXTI9_% (PB6) position 23 in NVIC table
 }
 
