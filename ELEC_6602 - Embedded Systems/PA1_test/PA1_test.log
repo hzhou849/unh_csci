@@ -1,0 +1,8 @@
+0	1	mikroCARM.exe -MSF -DBG -pSTM32F107VC -BIN -LHF -DL -SSA -O11111114 -fo72 -N"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\PA1_test\PA1_test.mcpar" -SP"D:\mikroC PRO for ARM\Defs\" -SP"D:\mikroC PRO for ARM\Uses\ST M3\" -SP"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\PA1_test\" -IP"D:\mikroC PRO for ARM\Uses\ST M3\" "PA1_test.c" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" "__Lib_Delays.emcl" "__Lib_System_105_107.emcl" "__Lib_GPIO_32F10x_Defs.emcl" "__Lib_GPIO_32F10x.emcl"	 
+diagnostics: 0	122	Compilation Started	stdint.h
+diagnostics: 222	123	Compiled Successfully	PA1_test.c
+diagnostics: 0	127	All files Compiled in 63 ms	 
+diagnostics: 0	125	Project Linked Successfully	PA1_test.mcpar
+diagnostics: 0	128	Linked in 265 ms	 
+diagnostics: 0	129	Project 'PA1_test.mcpar' completed: 500 ms	 
+diagnostics: 0	103	Finished successfully: 25 Apr 2022, 19:34:20	PA1_test.mcpar

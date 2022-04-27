@@ -1,0 +1,14 @@
+0	1	mikroCARM.exe -MSF -DBG -pSTM32F107VC -BIN -LHF -DL -SSA -O11111114 -fo72 -N"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\tft_test\tft_test.mcpar" -SP"D:\mikroC PRO for ARM\Defs\" -SP"D:\mikroC PRO for ARM\Uses\ST M3\" -SP"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\tft_test\" -IP"D:\mikroC PRO for ARM\Uses\ST M3\" "tft_test_main.c" "tft_test_events_code.c" "tft_test_driver.c" "tft_test_resources.c" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" "__Lib_Delays.emcl" "__Lib_System_105_107.emcl" "__Lib_GPIO_32F10x_Defs.emcl" "__Lib_GPIO_32F10x.emcl" "__Lib_ADC_12_32F10x_16ch.emcl" "__Lib_TFT.emcl" "__Lib_TFT_Defs.emcl" "__Lib_TouchPanel_TFT.emcl"	 
+diagnostics: 0	122	Compilation Started	tft_test_objects.h
+diagnostics: 26	123	Compiled Successfully	tft_test_main.c
+diagnostics: 0	122	Compilation Started	tft_test_objects.h
+diagnostics: 1	123	Compiled Successfully	tft_test_resources.h
+diagnostics: 0	122	Compilation Started	tft_test_objects.h
+diagnostics: 485	123	Compiled Successfully	tft_test_driver.c
+diagnostics: 0	122	Compilation Started	tft_test_resources.c
+diagnostics: 200	123	Compiled Successfully	tft_test_resources.c
+diagnostics: 0	127	All files Compiled in 579 ms	 
+diagnostics: 0	125	Project Linked Successfully	tft_test.mcpar
+diagnostics: 0	128	Linked in 359 ms	 
+diagnostics: 0	129	Project 'tft_test.mcpar' completed: 1125 ms	 
+diagnostics: 0	103	Finished successfully: 25 Apr 2022, 20:01:13	tft_test.mcpar

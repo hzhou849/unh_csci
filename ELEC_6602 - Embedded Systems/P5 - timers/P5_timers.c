@@ -114,10 +114,8 @@ void print_int(uint32_t *int_num) {
 void main() {
 
     uint32_t sequence_count = 0;
-    uint8_t ask_time_flag       = FALSE;
+    uint8_t ask_time_flag   = FALSE;
     uint8_t r_key_rcvd      = TRUE;
-
-
 
     uint32_t i=0;
 

@@ -3,5 +3,6 @@ main
 	__FillZeros
 	initClock72MHz
 TIMER2_ISR
-EXTIPA0
+USART1_ISR
 EXTIPB6
+EXTIPA4
