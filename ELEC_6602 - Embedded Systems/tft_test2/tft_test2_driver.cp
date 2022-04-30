@@ -97,6 +97,7 @@ void Init_ADC() {
  ADC1_Init();
  Delay_ms(100);
 }
+
 static void InitializeTouchPanel() {
  Init_ADC();
  TFT_Init_ILI9341_8bit(320, 240);

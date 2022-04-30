@@ -50,7 +50,7 @@ object Screen1: TMeDiagram
   TopRuler.Size = 16
   TopRuler.AutoFactor = True
   TopRuler.GridColor = clBlack
-  Zoom = 145
+  Zoom = 143
   BorderColor = clGray
   MouseWheelMode = mwOff
   ActiveLayers = 1

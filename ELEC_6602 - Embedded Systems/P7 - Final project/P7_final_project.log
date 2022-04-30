@@ -1,0 +1,14 @@
+0	1	mikroCARM.exe -MSF -DBG -pSTM32F107VC -BIN -LHF -DL -SSA -O11111114 -fo72 -N"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P7 - Final project\P7_final_project.mcpar" -SP"D:\mikroC PRO for ARM\Defs\" -SP"D:\mikroC PRO for ARM\Uses\ST M3\" -SP"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P7 - Final project\" -IP"D:\mikroC PRO for ARM\Uses\ST M3\" "P7_final_project_main.c" "P7_final_project_events_code.c" "P7_final_project_driver.c" "P7_final_project_resources.c" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" "__Lib_Delays.emcl" "__Lib_System_105_107.emcl" "__Lib_GPIO_32F10x_Defs.emcl" "__Lib_GPIO_32F10x.emcl" "__Lib_ADC_12_32F10x_16ch.emcl" "__Lib_TFT.emcl" "__Lib_TFT_Defs.emcl" "__Lib_TouchPanel_TFT.emcl"	 
+diagnostics: 0	122	Compilation Started	stdint.h
+error: 62	324	Undeclared identifier 'IVT_INT_EXIT' in expression	P7_final_project_main.c
+error: 62	304	invalid interrupt address: IVT_INT_EXIT	P7_final_project_main.c
+error: 62	402	; expected, but 'void' found	P7_final_project_main.c
+error: 62	304	can not set IVT address for non-function object	P7_final_project_main.c
+error: 127	324	Undeclared identifier 'TIME2_DIER' in expression	P7_final_project_main.c
+diagnostics: 0	122	Compilation Started	p7_final_project_objects.h
+diagnostics: 26	123	Compiled Successfully	p7_final_project_objects.h
+diagnostics: 1	122	Compilation Started	p7_final_project_resources.h
+diagnostics: 211	123	Compiled Successfully	P7_final_project_driver.c
+diagnostics: 0	122	Compilation Started	P7_final_project_resources.c
+diagnostics: 0	123	Compiled Successfully	P7_final_project_resources.c
+error: 0	102	Finished (with errors): 30 Apr 2022, 01:27:38	P7_final_project.mcpar

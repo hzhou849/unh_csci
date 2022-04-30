@@ -57,15 +57,19 @@ void Start_TP();
 void Process_TP_Press(unsigned int X, unsigned int Y);
 void Process_TP_Up(unsigned int X, unsigned int Y);
 void Process_TP_Down(unsigned int X, unsigned int Y);
-#line 18 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/tft_test2/tft_test2_main.c"
+#line 22 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/tft_test2/tft_test2_main.c"
 void main() {
+
  unsigned int counter = 0;
  Start_TP();
  RCC_APB2ENR |= 1 << 2;
  GPIOA_CRL = 0x44444444;
+ GPIOA_CRH = 0x44444444;
 
  TFT_Set_Brush(1, CL_BLACK, 0, 0, 0, 0);
  TFT_Rectangle(0,0,320, 240);
+
+
 
 
  while (1) {

@@ -12,4 +12,5 @@
 <item n="AFIO_MAPR" r="2" s="False" e="False" i="10"/>
 <item n="USART1_SR" r="0" s="False" e="False" i="11"/>
 <item n="GPIOE_ODR" r="1" s="False" e="False" i="12"/>
+<item n="USART1_DR" r="4" s="False" e="False" i="13"/>
 </WCH>

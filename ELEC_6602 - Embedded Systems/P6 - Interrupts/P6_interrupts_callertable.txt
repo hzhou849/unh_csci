@@ -2,7 +2,11 @@ main
 	__CC2DW
 	__FillZeros
 	initClock72MHz
-TIMER2_ISR
 USART1_ISR
+MY_SWIER_ISR
+TIMER2_ISR
 EXTIPB6
+	convert_int
+		__CC2DW
+		write_data_char
 EXTIPA4

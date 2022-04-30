@@ -13,16 +13,24 @@
                       http://www.mikroe.com/mikroc/arm/
  */
 
+// RUN & HOP games /  puddle duck production
+
+
+
 #include "tft_test2_objects.h"
 
 void main() {
-  unsigned int counter = 0;
-  Start_TP();
-  RCC_APB2ENR |= 1 << 2;
-  GPIOA_CRL = 0x44444444;
+    
+    unsigned int counter = 0;
+    Start_TP();
+    RCC_APB2ENR |= 1 << 2;
+    GPIOA_CRL = 0x44444444;
+    GPIOA_CRH = 0x44444444;
 
-         TFT_Set_Brush(1, CL_BLACK, 0, 0, 0, 0);
-        TFT_Rectangle(0,0,320, 240);
+    TFT_Set_Brush(1, CL_BLACK, 0, 0, 0, 0);
+    TFT_Rectangle(0,0,320, 240);
+
+
 
 // Enable gradient from black to white color, left-right orientation
   while (1) {
