@@ -160,6 +160,19 @@ main
 					TFT_Set_Pen
 	TFT_Set_Brush
 	TFT_Rectangle
+	load_intro_screen
+		__CC2DW
+		draw_intro_screen
+			TFT_Set_Font
+			TFT_Write_Text
+				TFT_Move_Cursor
+				_TFT_Write_Char_E
+					_TFT_getHeader
+					TFT_Dot
+				_TFT_Write_Char
+					TFT_Set_Font
+					TFT_Dot
+			TFT_Fill_Screen
 	Check_TP
 		TP_TFT_Press_Detect
 			Delay_300us

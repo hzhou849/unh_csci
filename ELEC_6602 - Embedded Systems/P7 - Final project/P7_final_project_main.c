@@ -38,35 +38,77 @@
 //   Oscillator:      72000000 Hz
 //   SW:              mikroC PRO for ARM
 //                    http://www.mikroe.com/mikroc/arm/
+
+ // GPIOE_ODR = (~GPIOE_ODR) |  1 << 9;
+            // Delay_ms(1000);
 ///
 //**************************************************************************************************
 
 #include <stdint.h>
+#include <stdlib.h>
+
+/// Local headers
 #include "P7_final_project_objects.h"
-
-/// My headers
-#include "cp_screen_ctl.h"
-
-static const uint32_t GPIO_INPUT_MASK      = 0x44444444;
-static const uint8_t PHASE_INTRO          = 0;
-static const uint8_t PHASE_GAME           = 1; 
-static const uint8_t TRUE                 = 1;
-static const uint8_t FALSE                = 0;
+#include "cp_const_def.h"
+#include "cp_intro_screen_ctl.h"
+#include "cp_game_ctl.h"
 
 
-/* Globals */
-static volatile uint8_t _DEV_MODE   = FALSE;
-static volatile uint8_t _GAME_PHASE = PHASE_INTRO;         // 0=intro screen; 1=main game
+
+
+/* Global variables*/
+static volatile uint8_t DEV_MODE   = FALSE;
+static volatile uint8_t GAME_PHASE  = PHASE_INTRO;         // 0=intro screen; 1=main game
+
+uint32_t rx_buffer = 0;
+
 
 /* Interrupt Handlers */
-void JOYSTICK_EXTI13 iv IVT_INT_EXIT
+
+/// USART1 Tx Interrupt
+// Bit7 TXE; Bit6 TC;  
+// TCIE interrupt generated in USART_CR1; Cleared by read  from USART_SR followed by wrte to USART_DR
+// void USART1_ISR() iv IVT_INT_USART1 {
+//     while ((USART1_SR & (1 << 7)) == 1)   {}     // Wait for TXE to clear
+//     //  USART1_SR &= ~(1 << 7);
+//     USART1_SR &= ~(0x3 << 6);
+//     //  rx_buffer = USART1_SR;
+//     //  USART1_DR = 0x50;
+//     Delay_ms(10);
+
+// }
+
+
+// PC13 Joystick_button ISR
+void EXTI15_10() iv IVT_INT_EXTI15_10  {
+    
+
+    if (GAME_PHASE == PHASE_INTRO) {
+        while (GPIOC_IDR.B13 == 0) {} 
+
+        EXTI_PR |= 1 << 15;
+        // while (GPIOC_IDR.B13 == 0) {} 
+        // GPIOB_ODR = ~GPIOB_ODR; 
+        GPIOB_ODR = ~GPIOB_ODR;
+
+        set_cur_screen_run_flag(FALSE);
+        GAME_PHASE = PHASE_GAME1;
+    }
+    else if (GAME_PHASE == PHASE_GAME1) {
+         set_cur_screen_run_flag(FALSE);
+        GAME_PHASE = PHASE_GAME2;
+
+    }
+}
+
+
 
 
 //============================================================================================================
 /* Helper Functions */
 
-/// Initialize MCU
-void init_MCU() {
+/// Initialize and configure MCU clocks and gpio
+void init_cfg_M_CTL() {
     /* Initialization MCU*/
     
     USART1_CR1 &= ~(1 << 13);                  // Disable USART for configuration
@@ -74,19 +116,18 @@ void init_MCU() {
     AFIO_MAPR    = 0x00000000;                 // Bit[2] USART1 Remap 0: No remap remap timer2 stuff
     RCC_APB2ENR |= 0x00000001;                 // Alt. function bit to enable USART1
 
-    RCC_APB2ENR |=  1 << 2;                    // Enable GPIO clock for PORT A 
-    RCC_APB2ENR |=  1 << 3;                    // Enable GPIO clock for PORT B
-    RCC_APB2ENR |=  1 << 4;                    // Enable GPIO clock for PORT C 
-    RCC_APB2ENR |=  1 << 5;                    // Enable GPIO clock for PORT D 
-    RCC_APB2ENR |=  1 << 6;                    // Enable GPIO clock for PORT E 
-    RCC_APB2ENR |=  1 << 14;                   // Enable GPIO clock for USART1
+    RCC_APB2ENR |= 1 << 2;                    // Enable GPIO clock for PORT A 
+    RCC_APB2ENR |= 1 << 3;                    // Enable GPIO clock for PORT B
+    RCC_APB2ENR |= 1 << 4;                    // Enable GPIO clock for PORT C 
+    RCC_APB2ENR |= 1 << 5;                    // Enable GPIO clock for PORT D 
+    RCC_APB2ENR |= 1 << 6;                    // Enable GPIO clock for PORT E 
+    RCC_APB2ENR |= 1 << 14;                   // Enable GPIO clock for USART1
 
     /* Config port direction & flags */
     GPIOA_CRL = GPIO_INPUT_MASK;                     // Enable PA2 PA4 PA5 PA6 for joystick control
     GPIOE_CRH = 0xFF00; 
 
     /* Joystick configuration */
-    // PD2=Left, PD4=Up, PA6=Right, PB5=Down, PC13=J_button; 
     GPIOA_CRL |= 4 << 6;                       // Enable PA6;  joystick=RIGHT      
     GPIOB_CRL |= 4 << 5;                       // Enable PB5;  joystick=DOWN      
     GPIOD_CRL |= 4 << 2;                       // Enable PD2;  joystick=LEFT      
@@ -106,37 +147,39 @@ void config_USART1() {
 
     /* USART Control register configuration */
     USART1_CR1 &= ~(1 << 13);                   // Disable USART for configuration
-    USART1_CR1 |= 1 << 5;                       // ENABLE USART1 TXNE interrupt
+    // USART1_CR1 |=   1 << 7;                     // ENABLE USART1 TXNE interrupt
     USART1_CR1 &= ~(1 << 12);                   // Force 8 data bits. Mbit set to 0
     USART1_CR1 &= ~(3 << 9);                    // Force no Parity & no parity control
     USART1_CR2 &= ~(3 << 12);                   // Force 1 stop bit
     USART1_CR3 &= ~(3 << 8);                    // Force no flow control and no DMA for USART1
-    USART1_CR1 |=  3 << 2;                      // Rx, Tx Enable
+
+    USART1_CR1 |=   1 << 3;                     // Tx Enable
+    USART1_CR1 |=   1 << 2;                     // Rx Enable
 
     Delay_ms(100);                              // Allow time for USART1 to complete initialization
     USART1_CR1 |= 1 << 13;                      // **NOTE: USART1 Enable must be done after configuration is complete. 
 }
 
+/// Initialize TIMER1
+
 /// Initialize TIMER2
 void init_timer2() {
     RCC_APB1ENR |= 1 << 0;                      // Enable Clock for TIMER2 
-    TIM2_CR1 = 0x0000;                          // Disable the timer for config setup
-    TIM2_PSC = 7999;                            // Counter clock freq is equal to clk_PSC / (PSC[15:0] + 1) from datasheet
+    TIM2_CR1     = 0x0000;                      // Disable the timer for config setup
+    TIM2_PSC     = 7999;                        // Counter clock freq is equal to clk_PSC / (PSC[15:0] + 1) from datasheet
                                                 // We want 72MHz / (7999+1) = 9000 Num. clk cycles/sec
-    TIM2_ARR = 9000;                            // Set the auto-reload register to calclated value
-    TIME2_DIER |= 1 << 0;                       // Enable TIMER2 Interrupt 
-    TIM2_CR1 = 0x0001;                          // After timer setup, enable TIMER2 bit[1]; bit[4]=0 counting up.
+    TIM2_ARR     = 9000;                        // Set the auto-reload register to calclated value
+    TIM2_DIER  |= 1 << 0;                      // Enable TIMER2 Interrupt 
+    TIM2_CR1     = 0x0001;                      // After timer setup, enable TIMER2 bit[1]; bit[4]=0 counting up.
 }
 
 
 /// Initialize and configure Interrupts
 void init_interrupt() {
 
-
     // Reset the register to put it in a known state
     AFIO_EXTICR2 = 0x0000;          
     NVIC_ISER0   = 0x00000000;      
-
 
     // PD2=Left, PD4=Up, PA6=Right, PB5=Down, PC13=J_button; 
     AFIO_EXTICR1 |= 3 << 8;                     // PD2 = EXTI2[11:8]; PortD = b0011;
@@ -146,14 +189,35 @@ void init_interrupt() {
     AFIO_EXTICR4 |= 2 << 4;                     // PC13  EXTI13[7:4]; PortC = b0010;
 
 
+    // Configure edge trigger and maskability and mask enable
+    EXTI_FTSR |= 1 << 13; // EXTI13 is FALLING EDGE
+    // EXTI_RTSR |= 
+    EXTI_IMR |= 0x00002074;      // Set EXTI2,4,5,6,13 to not-maskable
+
+
     /* Vector NVIC mapping enable - see ref. manual 10.1.2 -IRQ & Exception Vector table for mapping*/
     // Set bit for Interrupt set-enable registers for EXTI2=8; EXTI4=10; EXTI5 & EXIT6=23(EXIT9_5); EXTI13 (EXTI_15_10)=40
-    NVIC_ISER0 |= (uint32_t) 1 << 8;
-    NVIC_ISER0 |= (uint32_t) 1 << 10;
-    NVIC_ISER0 |= (uint32_t) 1 << 23;
-    NVIC_ISER1 |= (uint32_t) 1 << 8;
+    NVIC_ISER0 |= (uint32_t) 1 << 8;            // EXTI2  NVIC Pos=8:  
+    NVIC_ISER0 |= (uint32_t) 1 << 10;           // EXTI4  NVIC Pos=10: 
+    NVIC_ISER0 |= (uint32_t) 1 << 23;           // EXTI5  NVIC Pos=23: EXTI9_5 
+    NVIC_ISER1 |= (uint32_t) 1 << 8;            // EXTI13 NVIC Pos=40: EXTI15_10
+    NVIC_ISER1 |= (uint32_t) 1 << 5;            // USART1 NVIC Pos=37: ISER1[63:32]; 32+5 =37
 
+}
 
+void debug(uint32_t value) {
+    Delay_ms(1);
+    USART1_DR = 0xD;
+    Delay_ms(1);
+    USART1_DR=0xA;
+    Delay_ms(1);
+    USART1_DR = value;
+}
+
+uint32_t rand_num_gen() {
+    uint32_t ret = 0;
+    ret = TIM2_CNT % 100;
+    return ret ; 
 }
 
 //============================================================================================================
@@ -162,41 +226,48 @@ void main() {
 
     /* Local Variables */
     // uint32_t counter = 0;
-  
+    int num =0;
+
     /* Initialize GPIO & USART */
-    init_MCU();
-    
+    init_cfg_M_CTL();
+
     /* Configure USART1 port direction & flags */
     config_USART1();
 
-    
+
 
     /* TIMER2 setup configuration */
-   init_timer2();
+    init_timer2();
 
 
     /* Interrupt setup and configuration */
     init_interrupt();
-   
-   
+
+
     /* Display Initializatiogitn */
     Start_TP();
 
 
     /* Display execution stuff */
 
+ 
     /* Intro screen */
     load_intro_screen();
- 
-    // ***Game mode starts here**
+    debug( rand_num_gen() );
+    debug( rand_num_gen() );
+    debug( rand_num_gen() );
 
+    // ***Game mode starts here**
+    load_game_screen();
                     
 
-    // TFT_SET_Brush(1, CL_RED, 0, 0, 0 ,0);
-    // TFT_Rectangle(0, 0, 320, 240);
-    // TFT_Fill_Screen(CL_RED);
+    TFT_SET_Brush(1, CL_RED, 0, 0, 0 ,0);
+    TFT_Rectangle(0, 0, 320, 240);
+    TFT_Fill_Screen(CL_RED);
+
+    Delay_ms(3000);
 
     while (1) {
-        Check_TP();
+        // Check_TP();
     }
 }

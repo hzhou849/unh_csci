@@ -1,1 +1,20 @@
-<BREAKS/>
+<BREAKS>
+  <BP>
+    <UnitName>cp_screen_ctl.h</UnitName>
+    <Line>76</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+  <BP>
+    <UnitName>cp_screen_ctl.h</UnitName>
+    <Line>151</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+  <BP>
+    <UnitName>cp_screen_ctl.h</UnitName>
+    <Line>169</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+</BREAKS>

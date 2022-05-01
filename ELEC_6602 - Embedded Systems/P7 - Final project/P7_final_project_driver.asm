@@ -248,6 +248,7 @@ BX	LR
 ; end of _Calibrate
 P7_final_project_driver_InitializeObjects:
 ;P7_final_project_driver.c,92 :: 		static void InitializeObjects() {
+SUB	SP, SP, #4
 ;P7_final_project_driver.c,93 :: 		Screen1.Color                     = 0x5AEB;
 MOVW	R1, #23275
 MOVW	R0, #lo_addr(_Screen1+0)
@@ -270,6 +271,7 @@ MOVT	R0, #hi_addr(_Screen1+6)
 STRH	R1, [R0, #0]
 ;P7_final_project_driver.c,98 :: 		}
 L_end_InitializeObjects:
+ADD	SP, SP, #4
 BX	LR
 ; end of P7_final_project_driver_InitializeObjects
 P7_final_project_driver_IsInsideObject:
@@ -278,6 +280,7 @@ P7_final_project_driver_IsInsideObject:
 ; Left start address is: 8 (R2)
 ; Y start address is: 4 (R1)
 ; X start address is: 0 (R0)
+SUB	SP, SP, #4
 ; Top end address is: 12 (R3)
 ; Left end address is: 8 (R2)
 ; Y end address is: 4 (R1)
@@ -287,9 +290,9 @@ P7_final_project_driver_IsInsideObject:
 ; Left start address is: 8 (R2)
 ; Top start address is: 12 (R3)
 ; Width start address is: 20 (R5)
-LDRH	R5, [SP, #0]
+LDRH	R5, [SP, #4]
 ; Height start address is: 24 (R6)
-LDRH	R6, [SP, #4]
+LDRH	R6, [SP, #8]
 ;P7_final_project_driver.c,101 :: 		if ( (Left<= X) && (Left+ Width - 1 >= X) &&
 CMP	R2, R0
 IT	HI
@@ -333,6 +336,7 @@ L_P7_final_project_driver_IsInsideObject27:
 MOVS	R0, #0
 ;P7_final_project_driver.c,106 :: 		}
 L_end_IsInsideObject:
+ADD	SP, SP, #4
 BX	LR
 ; end of P7_final_project_driver_IsInsideObject
 _DrawScreen:
@@ -486,6 +490,7 @@ BX	LR
 ; end of _DrawScreen
 _Get_Object:
 ;P7_final_project_driver.c,138 :: 		void Get_Object(unsigned int X, unsigned int Y) {
+SUB	SP, SP, #4
 ;P7_final_project_driver.c,139 :: 		_object_count = -1;
 MOVW	R3, #65535
 SXTH	R3, R3
@@ -494,6 +499,7 @@ MOVT	R2, #hi_addr(__object_count+0)
 STRH	R3, [R2, #0]
 ;P7_final_project_driver.c,140 :: 		}
 L_end_Get_Object:
+ADD	SP, SP, #4
 BX	LR
 ; end of _Get_Object
 _Process_TP_Press:

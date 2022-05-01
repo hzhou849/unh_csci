@@ -12,15 +12,15 @@ _etResourceHeader=P7_final_project_resources.h
 [MEMORY_MODEL]
 Value=0
 [BUILD_TYPE]
-Value=0
+Value=1
 [ACTIVE_TAB]
-Value=cp_screen_ctl.h
+Value=cp_intro_screen_ctl.h
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
 Value=0
 [HEAP_SIZE]
-Value=0
+Value=2000
 [EEPROM_DEFINITION]
 Value=
 [FILES]
@@ -40,9 +40,11 @@ File1=P7_final_project_driver.c
 File2=P7_final_project_resources.c
 File3=P7_final_project_resources.h
 File4=P7_final_project_objects.h
-File7=.\D:\mikroC PRO for ARM\Defs\STM32F107VC.c
-File8=cp_screen_ctl.h
-Count=9
+File5=P7_final_project.lst
+File8=.\D:\mikroC PRO for ARM\Defs\STM32F107VC.c
+File9=.\D:\mikroC PRO for ARM\Uses\ST M3\__Lib_TFT_Defs.c
+File10=cp_intro_screen_ctl.h
+Count=11
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -65,16 +67,20 @@ File1=TFT
 File2=TFT_Defs
 File3=TFT_Fonts
 File4=TFT_TouchPanel
-Count=5
+File5=C_Type
+Count=6
 [EXPANDED_NODES]
 0=P7_final_project.mcpar
 1=Sources
-Count=2
+6=Header Files
+Count=3
 [LIB_EXPANDED_NODES]
 0=
 1=
-848=
-Count=3
+140=
+2141=
+2142=
+Count=5
 [PROGRAMMER_OPTIONS]
 Value=SWD
 [PROGRAMMER_TYPE]

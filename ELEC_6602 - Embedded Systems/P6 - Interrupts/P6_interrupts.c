@@ -293,6 +293,22 @@ void main() {
      * ISER0 = IRQ 0-31
      * ISER1 = IRQ 32-63
      * ISER2 = IRQ 64-67
+     * 
+     * EXAMPLE
+     *    // PD2=Left, PD4=Up, PA6=Right, PB5=Down, PC13=J_button; 
+     * AFIO_EXTICR1 |= 3 << 8;                     // PD2 = EXTI2[11:8]; PortD = b0011;
+     * AFIO_EXTICR2 |= 3 << 0;                     // PD4 = EXTI4[3:0];  PortD = b0011;
+     * AFIO_EXTICR2 |= 1 << 4;                     // PB5 = EXTI5[7:4];  PortB = b0001;
+     * AFIO_EXTICR2 &= ~(0xF << 0);                // PA6 = EXTI6[3:0];  PortA = b0000;
+     * AFIO_EXTICR4 |= 2 << 4;                     // PC13  EXTI13[7:4]; PortC = b0010;
+
+
+     * Vector NVIC mapping enable - see ref. manual 10.1.2 -IRQ & Exception Vector table for mapping
+     * // Set bit for Interrupt set-enable registers for EXTI2=8; EXTI4=10; EXTI5 & EXIT6=23(EXIT9_5); EXTI13 (EXTI_15_10)=40
+     * NVIC_ISER0 |= (uint32_t) 1 << 8;            // EXTI2  NVIC Pos=8:  
+     * NVIC_ISER0 |= (uint32_t) 1 << 10;           // EXTI4  NVIC Pos=10: 
+     * NVIC_ISER0 |= (uint32_t) 1 << 23;           // EXTI5  NVIC Pos=23: EXTI9_5 
+     * NVIC_ISER1 |= (uint32_t) 1 << 8;            // EXTI13 NVIC Pos=40: EXTI15_10
      */
     NVIC_ISER0 |= 1 << 10;                    // Enable NVIC interrupt set enable registers for EXTI1 line zero (PA1)
     NVIC_ISER0 |= (long int) 1 << 23;         // Enable NVIC interrupt set enable registers for EXTI6 PB6
