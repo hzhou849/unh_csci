@@ -105,6 +105,7 @@ void USART1_ISR() iv IVT_INT_USART1 {
     rx_buffer = USART1_DR;                          // RXNE bit interrupt is reset by reading data register
                                                     // Required to arm the ISR again.
 
+    // Critical delay and waits required for write to USART
     while ( (USART1_SR & (1 << 7 )) == 0) {}
     Delay_ms(10);                                   
     USART1_DR = rx_buffer;

@@ -78,15 +78,22 @@ uint32_t rx_buffer = 0;
 
 // }
 
+// PD2 = EXTI2[11:8]; PortD = b0011;
+// PD4 = EXTI4[3:0];  PortD = b0011;
+// PB5 = EXTI5[7:4];  PortB = b0001;
+// PA6 = EXTI6[3:0];  PortA = b0000;
+// PC13  EXTI13[7:4]; PortC = b0010;
+
 
 // PC13 Joystick_button ISR
 void EXTI15_10() iv IVT_INT_EXTI15_10  {
-    
+
 
     if (GAME_PHASE == PHASE_INTRO) {
         while (GPIOC_IDR.B13 == 0) {} 
 
-        EXTI_PR |= 1 << 15;
+        // EXTI_PR |= 1 << 15;
+        EXTI_PR |= 1 << 13;
         // while (GPIOC_IDR.B13 == 0) {} 
         // GPIOB_ODR = ~GPIOB_ODR; 
         GPIOB_ODR = ~GPIOB_ODR;
@@ -95,11 +102,21 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
         GAME_PHASE = PHASE_GAME1;
     }
     else if (GAME_PHASE == PHASE_GAME1) {
-         set_cur_screen_run_flag(FALSE);
+            set_cur_screen_run_flag(FALSE);
         GAME_PHASE = PHASE_GAME2;
 
     }
 }
+
+
+void EXTIPA6() iv IVT_INT_EXTI9_5  {
+    EXTI_PR |= 1 << 6;
+     while (GPIOA_IDR.B6 == 0) {} 
+
+    set_cur_screen_run_flag(FALSE);
+
+}
+
 
 
 
@@ -185,12 +202,14 @@ void init_interrupt() {
     AFIO_EXTICR1 |= 3 << 8;                     // PD2 = EXTI2[11:8]; PortD = b0011;
     AFIO_EXTICR2 |= 3 << 0;                     // PD4 = EXTI4[3:0];  PortD = b0011;
     AFIO_EXTICR2 |= 1 << 4;                     // PB5 = EXTI5[7:4];  PortB = b0001;
-    AFIO_EXTICR2 &= ~(0xF << 0);                // PA6 = EXTI6[3:0];  PortA = b0000;
+    AFIO_EXTICR2 &= ~(0xF << 8);                // PA6 = EXTI6[3:0];  PortA = b0000;
     AFIO_EXTICR4 |= 2 << 4;                     // PC13  EXTI13[7:4]; PortC = b0010;
 
 
     // Configure edge trigger and maskability and mask enable
+    EXTI_FTSR |= 1 << 6; // EXTI6 is FALLING EDGE
     EXTI_FTSR |= 1 << 13; // EXTI13 is FALLING EDGE
+    // EXTI_FTSR |= 1 << 13; // EXTI13 is FALLING EDGE
     // EXTI_RTSR |= 
     EXTI_IMR |= 0x00002074;      // Set EXTI2,4,5,6,13 to not-maskable
 
@@ -205,14 +224,6 @@ void init_interrupt() {
 
 }
 
-void debug(uint32_t value) {
-    Delay_ms(1);
-    USART1_DR = 0xD;
-    Delay_ms(1);
-    USART1_DR=0xA;
-    Delay_ms(1);
-    USART1_DR = value;
-}
 
 uint32_t rand_num_gen() {
     uint32_t ret = 0;
@@ -252,7 +263,7 @@ void main() {
 
  
     /* Intro screen */
-    load_intro_screen();
+    // load_intro_screen();
     debug( rand_num_gen() );
     debug( rand_num_gen() );
     debug( rand_num_gen() );

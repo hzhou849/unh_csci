@@ -17,4 +17,28 @@
     <Enabled>True</Enabled>
     <Type>0</Type>
   </BP>
+  <BP>
+    <UnitName>cp_game_ctl.h</UnitName>
+    <Line>262</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+  <BP>
+    <UnitName>cp_game_ctl.h</UnitName>
+    <Line>264</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+  <BP>
+    <UnitName>P7_final_project_main.c</UnitName>
+    <Line>113</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+  <BP>
+    <UnitName>P7_final_project_main.c</UnitName>
+    <Line>115</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
 </BREAKS>

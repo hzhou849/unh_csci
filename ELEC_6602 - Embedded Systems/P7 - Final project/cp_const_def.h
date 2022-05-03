@@ -15,4 +15,14 @@ static const uint32_t SCREEN_X_MAX         = 320;
 static const uint32_t SCREEN_Y_MAX         = 240;
 
 
+void debug(uint32_t value) {
+    Delay_ms(1);
+    USART1_DR = 0xD;
+    Delay_ms(1);
+    USART1_DR=0xA;
+    Delay_ms(1);
+    USART1_DR = value;
+}
+
+
 #endif // _CP_CONST_DEF

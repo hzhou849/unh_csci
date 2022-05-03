@@ -14,7 +14,7 @@
 
 
 
-/* Globals */
+/* Global variables */
 static const uint32_t SCROLL_SPEED = 3;
 static const uint32_t X_SCROLL_SPEED = 1;
 
@@ -29,13 +29,15 @@ static volatile uint8_t cur_screen_run_flag = TRUE;
 
 // External Calls
 void load_intro_screen_simple();
-void load_game_screen();
+// void load_game_screen();
 
 // Local Calls
 void draw_intro_screen(uint32_t x_axis, uint32_t y_axis);
 void draw_rectangle(uint32_t x_axis, uint32_t y_axis);
 void set_cur_screen_run_flag(uint8_t run_flag);
 void draw_info_text(uint32_t x_axis, uint32_t y_axi);
+
+// void duck_sprite();
 
 
 
@@ -54,7 +56,7 @@ void load_intro_screen_simple() {
     
 
     uint8_t scroll_dir = 5; // 1=Down/Right, 2=Up/Right, 3=Up/left, 4, Down/Left
-    uint32_t volatile x_axis = 35;
+    uint32_t volatile x_axis = 55;
     uint32_t volatile y_axis = 115;
 
     uint32_t  prev_val = 0;
@@ -185,10 +187,11 @@ void load_intro_screen() {
                     x_axis + 10;
                 }
 
-                    if (counter % 2 == 0) {
-                    rotation = ~rotation; // change direction 
-                    counter = 2;
-                }
+                //seems to be working without this.
+                //     if (counter % 3 == 0) { //2
+                //     rotation = ~rotation; // change direction 
+                //     counter = 2;
+                // }
             }
         }
 
@@ -240,3 +243,90 @@ void draw_intro_screen(uint32_t x_axis, uint32_t y_axis) {
 
 
 #endif // _CP_SCREENS_CTL_H
+
+
+
+
+// void duck_sprite() {
+//      TFT_SET_Brush(1, CL_YELLOW, 0, 0 , 0 ,0);
+//     draw_cell_xy(8,4);
+//     draw_cell_xy(9,4);
+//     draw_cell_xy(10,4);
+
+//     draw_cell_xy(7,5);
+//     draw_cell_xy(8,5);
+//     draw_cell_xy(9,5);
+
+//     TFT_SET_Brush(1, CL_BLACK, 0, 0 , 0 ,0);
+//     draw_cell_xy(10,5);
+
+
+//     TFT_SET_Brush(1, CL_YELLOW, 0, 0 , 0 ,0);
+//     draw_cell_xy(11,5); //face
+//     draw_cell_xy(2,6);
+//     draw_cell_xy(3,6);
+//     draw_cell_xy(7,6);
+//     draw_cell_xy(8,6);
+//     draw_cell_xy(9,6);
+//     draw_cell_xy(10,6);
+
+//     TFT_SET_Brush(1, CL_RED, 0, 0 , 0 ,0);
+//     draw_cell_xy(11,6);
+//     draw_cell_xy(12,6);
+//     draw_cell_xy(13,6);
+//     // draw_cell_xy(14,6);
+//     // draw_cell_xy(15,6);
+//     draw_cell_xy(11,7);
+//     draw_cell_xy(12,7);
+
+//     TFT_SET_Brush(1, CL_YELLOW, 0, 0 , 0 ,0);
+//     draw_cell_xy(1,7);
+//     draw_cell_xy(2,7);
+//     draw_cell_xy(3,7);
+//     draw_cell_xy(4,7);
+//     draw_cell_xy(8,7);
+//     draw_cell_xy(9,7);
+//     draw_cell_xy(10,7);
+//     draw_cell_xy(0,8);
+//     draw_cell_xy(1,8);
+//     draw_cell_xy(2,8);
+//     draw_cell_xy(3,8);
+//     draw_cell_xy(4,8);
+//     draw_cell_xy(5,8);
+//     draw_cell_xy(6,8);
+//     draw_cell_xy(7,8);
+//     draw_cell_xy(8,8);
+//     draw_cell_xy(9,8);
+//     draw_cell_xy(10,8);
+//     draw_cell_xy(1,9);
+//     draw_cell_xy(2,9);
+//     draw_cell_xy(3,9);
+//     draw_cell_xy(4,9);
+//     draw_cell_xy(5,9);
+//     draw_cell_xy(6,9);
+//     draw_cell_xy(7,9);
+//     draw_cell_xy(8,9);
+//     draw_cell_xy(9,9);
+//     draw_cell_xy(10,9);
+//     draw_cell_xy(2,10);
+//     draw_cell_xy(3,10);
+//     draw_cell_xy(4,10);
+//     draw_cell_xy(5,10);
+//     draw_cell_xy(6,10);
+//     draw_cell_xy(7,10);
+//     draw_cell_xy(8,10);
+//     draw_cell_xy(9,10);
+//     draw_cell_xy(10,10);
+//     draw_cell_xy(3,11);
+//     draw_cell_xy(4,11);
+//     draw_cell_xy(5,11);
+//     draw_cell_xy(6,11);
+//     draw_cell_xy(7,11);
+//     draw_cell_xy(8,11);
+//     draw_cell_xy(9,11);
+//     draw_cell_xy(4,12);
+//     draw_cell_xy(5,12);
+//     draw_cell_xy(6,12);
+//     draw_cell_xy(7,12);
+//     draw_cell_xy(8,12);
+// }

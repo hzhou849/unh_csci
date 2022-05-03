@@ -127,6 +127,16 @@ static const uint32_t GPIO_INPUT_MASK = 0x44444444;
 
 static const uint32_t SCREEN_X_MAX = 320;
 static const uint32_t SCREEN_Y_MAX = 240;
+
+
+void debug(uint32_t value) {
+ Delay_ms(1);
+ USART1_DR = 0xD;
+ Delay_ms(1);
+ USART1_DR=0xA;
+ Delay_ms(1);
+ USART1_DR = value;
+}
 #line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_intro_screen_ctl.h"
 #line 1 "d:/mikroc pro for arm/include/stdint.h"
 #line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
@@ -145,13 +155,15 @@ static volatile uint8_t cur_screen_run_flag = TRUE;
 
 
 void load_intro_screen_simple();
-void load_game_screen();
+
 
 
 void draw_intro_screen(uint32_t x_axis, uint32_t y_axis);
 void draw_rectangle(uint32_t x_axis, uint32_t y_axis);
 void set_cur_screen_run_flag(uint8_t run_flag);
 void draw_info_text(uint32_t x_axis, uint32_t y_axi);
+
+
 
 
 
@@ -170,7 +182,7 @@ void load_intro_screen_simple() {
 
 
  uint8_t scroll_dir = 5;
- uint32_t volatile x_axis = 35;
+ uint32_t volatile x_axis = 55;
  uint32_t volatile y_axis = 115;
 
  uint32_t prev_val = 0;
@@ -301,10 +313,11 @@ void load_intro_screen() {
  x_axis + 10;
  }
 
- if (counter % 2 == 0) {
- rotation = ~rotation;
- counter = 2;
- }
+
+
+
+
+
  }
  }
 
@@ -353,38 +366,396 @@ void draw_intro_screen(uint32_t x_axis, uint32_t y_axis) {
 }
 #line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
 #line 1 "d:/mikroc pro for arm/include/stdint.h"
+#line 1 "d:/mikroc pro for arm/include/string.h"
+
+
+
+
+
+void * memchr(void *p, char n, unsigned int v);
+int memcmp(void *s1, void *s2, int n);
+void * memcpy(void * d1, void * s1, int n);
+void * memmove(void * to, void * from, int n);
+void * memset(void * p1, char character, int n);
+char * strcat(char * to, char * from);
+char * strchr(char * ptr, char chr);
+int strcmp(char * s1, char * s2);
+char * strcpy(char * to, char * from);
+int strlen(char * s);
+char * strncat(char * to, char * from, int size);
+char * strncpy(char * to, char * from, int size);
+int strspn(char * str1, char * str2);
+char strcspn(char * s1, char * s2);
+int strncmp(char * s1, char * s2, char len);
+char * strpbrk(char * s1, char * s2);
+char * strrchr(char *ptr, char chr);
+char * strstr(char * s1, char * s2);
+char * strtok(char * s1, char * s2);
 #line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
-#line 9 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+#line 12 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+static const uint8_t PX_BLOCK = 16;
+static const uint32_t X_MAX_WIDTH = 20;
+static const uint32_t Y_MAX_LENGTH = 15;
+static const uint8_t MAX_BLOCK_COUNT = 300;
+static const uint8_t EOF_ARRAY = 0xFF;
+
+
+
+uint8_t g_DS_BUFFER[300];
+
+
+
+
+
+
+typedef struct cell_t {
+ uint32_t x;
+ uint32_t y;
+} cell_t;
+
+
+
+
+
+
+void load_game_screen();
+
+
+void init_arr(uint8_t *in_arr, uint32_t a_size);
+void dump_arr_memory(uint8_t *in_arr, uint32_t a_size);
+void draw_snake();
+void draw_block(uint8_t *dp_buffer, uint32_t x_pos, uint8_t y_pos);
+void draw_cell_pos( uint32_t linear_pos);
+
+void get_xy(uint32_t *cell_pos, uint32_t *x_var, uint32_t *y_var );
+void draw_cell_xy(uint32_t x_var, uint32_t y_var);
+
+void duck_sprite();
+void dump_ds_buffer();
+
+
+
+
+
+
+
+
+void init_arr(uint8_t *in_arr, uint32_t a_size) {
+ uint32_t i=0;
+
+ for (i=0; i < a_size; i++) {
+ in_arr[i]=0xFF;
+ }
+}
+
+
+
+void dump_arr_memory(uint8_t *in_arr, uint32_t a_size) {
+ uint32_t i = 0;
+
+ for ( i=0; i < MAX_BLOCK_COUNT; i++) {
+
+
+
+
+
+
+
+
+
+
+ while ( (USART1_SR & (1 << 7 )) == 0) {}
+ Delay_ms(10);
+ USART1_DR = (uint32_t)in_arr[i];
+ Delay_ms(10);
+
+ }
+}
+#line 101 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
 void load_game_screen() {
  uint32_t x_axis = 0;
  uint32_t y_axis = 0;
- uint32_t pixel_s = 16;
+ uint32_t PX_BLOCK = 16;
+ uint32_t i=0;
+
+ uint32_t value = 0;
+
+ cell_t cell;
+
+ init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+
+
 
  set_cur_screen_run_flag(TRUE);
 
+
+
  TFT_Fill_Screen(CL_NAVY);
- TFT_SET_PEN(CL_BLACK, 2);
+
+ TFT_SET_PEN(CL_BLACK, 0);
  TFT_SET_Brush(1, CL_AQUA, 0, 0 , 0 ,0);
- TFT_Rectangle(x_axis,y_axis, pixel_s,pixel_s);
- TFT_Rectangle(pixel_s*1 , pixel_s*0 , pixel_s*2,pixel_s*1);
+#line 136 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+ draw_cell_xy(0, 4);
+ draw_cell_xy(0, 5);
+ draw_cell_xy(0, 6);
+
+ dump_ds_buffer();
+
+
+
+
+
+
+
+
+
 
  while (cur_screen_run_flag == TRUE) {};
 
 
+}
+void draw_snake() {
+
+ g_DS_BUFFER[0] = 1;
+ g_DS_BUFFER[1] = 1;
+ g_DS_BUFFER[2] = 0;
+ g_DS_BUFFER[3] = 1;
+ g_DS_BUFFER[4] = 1;
+ g_DS_BUFFER[5] = EOF_ARRAY;
+
+ draw_block(&g_DS_BUFFER,1,1);
+
+
+}
+
+void get_xy(uint32_t *cell_pos, uint32_t *x_var, uint32_t *y_var ) {
+
+ uint32_t row = 0;
+ uint32_t col = 0;
+ uint32_t temp_val = *cell_pos;
+
+
+
+ while (temp_val >= (X_MAX_WIDTH) ) {
+ temp_val -= X_MAX_WIDTH-1;
+ ++row;
+
+ if (temp_val > 0 ) {
+ --temp_val;
+ }
+
+ }
+
+
+
+
+
+ col = temp_val;
+
+
+
+
+
+ *x_var = col;
+ *y_var = row;
+
+}
+#line 230 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+void draw_cell_pos( uint32_t linear_pos) {
+
+
+ cell_t cell;
+ uint32_t x_var;
+ uint32_t y_var;
+ uint32_t cell_pos = linear_pos;
+
+ get_xy(&cell_pos, &x_var, &y_var );
+
+
+ debug(x_var);
+ debug(y_var);
+
+ TFT_Rectangle(
+ PX_BLOCK * x_var,
+ (y_var * PX_BLOCK),
+ PX_BLOCK + (PX_BLOCK * x_var),
+ PX_BLOCK + (PX_BLOCK * y_var)
+ );
+
+}
+
+void draw_cell_xy(uint32_t x_var, uint32_t y_var) {
+ uint32_t linear_val = 0;
+
+
+
+
+
+
+
+
+
+
+ linear_val = ( (y_var * X_MAX_WIDTH) + x_var );
+
+ g_DS_BUFFER[linear_val] = 1;
+
+}
+
+
+void dump_ds_buffer() {
+
+ uint32_t i=0;
+
+ for (i=0; i < MAX_BLOCK_COUNT; i++) {
+ if (g_DS_BUFFER[i] == 1) {
+ draw_cell_pos(i);
+ }
+
+ }
+}
+
+void draw_block(uint8_t *dp_buffer, uint32_t x_pos, uint8_t y_pos) {
+
+ uint32_t i = 0;
+ uint32_t col_count = 0;
+ uint32_t row_count = 0;
+ cell_t cell;
+
+
+
+
+
+
+ for (i=0; i < MAX_BLOCK_COUNT; i++) {
+
+ if (dp_buffer[i] == 0xFF) {
+ break;
+ }
+
+
+
+ else if (dp_buffer[i] == 1) {
+
+
+ TFT_Rectangle(PX_BLOCK*i, row_count, (PX_BLOCK + (PX_BLOCK*i)),(PX_BLOCK+(PX_BLOCK*row_count)) );
+ }
+
+
+ col_count++;
+ if (col_count > X_MAX_WIDTH-1) {
+ row_count++;
+ }
+ }
+
+
+
+}
+
+
+
+
+
+
+
+
+void duck_sprite() {
+ TFT_SET_Brush(1, CL_YELLOW, 0, 0 , 0 ,0);
+ draw_cell_xy(8,4);
+ draw_cell_xy(9,4);
+ draw_cell_xy(10,4);
+
+ draw_cell_xy(7,5);
+ draw_cell_xy(8,5);
+ draw_cell_xy(9,5);
+
+ TFT_SET_Brush(1, CL_BLACK, 0, 0 , 0 ,0);
+ draw_cell_xy(10,5);
+
+
+ TFT_SET_Brush(1, CL_YELLOW, 0, 0 , 0 ,0);
+ draw_cell_xy(11,5);
+ draw_cell_xy(2,6);
+ draw_cell_xy(3,6);
+ draw_cell_xy(7,6);
+ draw_cell_xy(8,6);
+ draw_cell_xy(9,6);
+ draw_cell_xy(10,6);
+
+ TFT_SET_Brush(1, CL_RED, 0, 0 , 0 ,0);
+ draw_cell_xy(11,6);
+ draw_cell_xy(12,6);
+ draw_cell_xy(13,6);
+
+
+ draw_cell_xy(11,7);
+ draw_cell_xy(12,7);
+
+ TFT_SET_Brush(1, CL_YELLOW, 0, 0 , 0 ,0);
+ draw_cell_xy(1,7);
+ draw_cell_xy(2,7);
+ draw_cell_xy(3,7);
+ draw_cell_xy(4,7);
+ draw_cell_xy(8,7);
+ draw_cell_xy(9,7);
+ draw_cell_xy(10,7);
+ draw_cell_xy(0,8);
+ draw_cell_xy(1,8);
+ draw_cell_xy(2,8);
+ draw_cell_xy(3,8);
+ draw_cell_xy(4,8);
+ draw_cell_xy(5,8);
+ draw_cell_xy(6,8);
+ draw_cell_xy(7,8);
+ draw_cell_xy(8,8);
+ draw_cell_xy(9,8);
+ draw_cell_xy(10,8);
+ draw_cell_xy(1,9);
+ draw_cell_xy(2,9);
+ draw_cell_xy(3,9);
+ draw_cell_xy(4,9);
+ draw_cell_xy(5,9);
+ draw_cell_xy(6,9);
+ draw_cell_xy(7,9);
+ draw_cell_xy(8,9);
+ draw_cell_xy(9,9);
+ draw_cell_xy(10,9);
+ draw_cell_xy(2,10);
+ draw_cell_xy(3,10);
+ draw_cell_xy(4,10);
+ draw_cell_xy(5,10);
+ draw_cell_xy(6,10);
+ draw_cell_xy(7,10);
+ draw_cell_xy(8,10);
+ draw_cell_xy(9,10);
+ draw_cell_xy(10,10);
+ draw_cell_xy(3,11);
+ draw_cell_xy(4,11);
+ draw_cell_xy(5,11);
+ draw_cell_xy(6,11);
+ draw_cell_xy(7,11);
+ draw_cell_xy(8,11);
+ draw_cell_xy(9,11);
+ draw_cell_xy(4,12);
+ draw_cell_xy(5,12);
+ draw_cell_xy(6,12);
+ draw_cell_xy(7,12);
+ draw_cell_xy(8,12);
 }
 #line 60 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 static volatile uint8_t DEV_MODE = FALSE;
 static volatile uint8_t GAME_PHASE = PHASE_INTRO;
 
 uint32_t rx_buffer = 0;
-#line 83 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+#line 89 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 void EXTI15_10() iv IVT_INT_EXTI15_10 {
 
 
  if (GAME_PHASE == PHASE_INTRO) {
  while (GPIOC_IDR.B13 == 0) {}
 
- EXTI_PR |= 1 << 15;
+
+ EXTI_PR |= 1 << 13;
 
 
  GPIOB_ODR = ~GPIOB_ODR;
@@ -398,6 +769,16 @@ void EXTI15_10() iv IVT_INT_EXTI15_10 {
 
  }
 }
+
+
+void EXTIPA6() iv IVT_INT_EXTI9_5 {
+ EXTI_PR |= 1 << 6;
+ while (GPIOA_IDR.B6 == 0) {}
+
+ set_cur_screen_run_flag(FALSE);
+
+}
+
 
 
 
@@ -483,12 +864,14 @@ void init_interrupt() {
  AFIO_EXTICR1 |= 3 << 8;
  AFIO_EXTICR2 |= 3 << 0;
  AFIO_EXTICR2 |= 1 << 4;
- AFIO_EXTICR2 &= ~(0xF << 0);
+ AFIO_EXTICR2 &= ~(0xF << 8);
  AFIO_EXTICR4 |= 2 << 4;
 
 
 
+ EXTI_FTSR |= 1 << 6;
  EXTI_FTSR |= 1 << 13;
+
 
  EXTI_IMR |= 0x00002074;
 
@@ -503,14 +886,6 @@ void init_interrupt() {
 
 }
 
-void debug(uint32_t value) {
- Delay_ms(1);
- USART1_DR = 0xD;
- Delay_ms(1);
- USART1_DR=0xA;
- Delay_ms(1);
- USART1_DR = value;
-}
 
 uint32_t rand_num_gen() {
  uint32_t ret = 0;
@@ -550,7 +925,7 @@ void main() {
 
 
 
- load_intro_screen();
+
  debug( rand_num_gen() );
  debug( rand_num_gen() );
  debug( rand_num_gen() );
