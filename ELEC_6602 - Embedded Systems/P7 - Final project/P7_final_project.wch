@@ -1,8 +1,8 @@
 <WCH v="2">
 <item n="USART1_SR" r="1" s="False" e="False" i="0"/>
 <item n="FARG_debug_value" r="0" s="False" e="False" i="1"/>
-<item n="_g_DS_BUFFER" r="1" s="False" e="True" i="1661">
-<item n="[0]" r="0" s="False" e="False" i="0"/>
+<item n="_g_DS_BUFFER" r="1" s="False" e="True" i="1662">
+<item n="[0]" r="1" s="False" e="False" i="0"/>
 <item n="[1]" r="0" s="False" e="False" i="1"/>
 <item n="[2]" r="0" s="False" e="False" i="2"/>
 <item n="[3]" r="0" s="False" e="False" i="3"/>
@@ -303,4 +303,5 @@
 <item n="[298]" r="0" s="False" e="False" i="298"/>
 <item n="[299]" r="0" s="False" e="False" i="299"/>
 </item>
+<item n="draw_cell_pos_cell_pos_L0" r="0" s="False" e="False" i="3"/>
 </WCH>

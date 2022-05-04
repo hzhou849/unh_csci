@@ -87,7 +87,7 @@ void EXTIPA4() iv IVT_INT_EXTI4 ics ICS_AUTO {
 /// TIMER 2 Interrupt Handler
 void TIMER2_ISR() iv IVT_INT_TIM2 {
     
-    TIM2_SR &=  ~(1 << 0);                              // Bit[0] = UIF update intrpt flag. 1 to reset
+    TIM2_SR &=  ~(1 << 0);                              // Bit[0] = UIF update intrpt flag. 0 to reset
 
     if (timer_run_flag == 1) {
         GPIOD_ODR &= 0x00FF;                            // Wipe previous value 

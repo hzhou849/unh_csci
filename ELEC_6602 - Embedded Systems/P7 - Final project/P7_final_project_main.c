@@ -55,10 +55,9 @@
 
 
 
-
 /* Global variables*/
 static volatile uint8_t DEV_MODE   = FALSE;
-static volatile uint8_t GAME_PHASE  = PHASE_INTRO;         // 0=intro screen; 1=main game
+static uint8_t CUR_GAME_PHASE  = 0xFF;         // 0=intro screen; 1=main game
 
 uint32_t rx_buffer = 0;
 
@@ -88,33 +87,98 @@ uint32_t rx_buffer = 0;
 // PC13 Joystick_button ISR
 void EXTI15_10() iv IVT_INT_EXTI15_10  {
 
+    EXTI_PR |= 1 << 13;     // Rearm interrupt
+    GPIOB_ODR = ~GPIOB_ODR;
 
-    if (GAME_PHASE == PHASE_INTRO) {
-        while (GPIOC_IDR.B13 == 0) {} 
+    while (GPIOC_IDR.B13 == 0) { GPIOB_ODR = ~GPIOB_ODR; } 
 
-        // EXTI_PR |= 1 << 15;
-        EXTI_PR |= 1 << 13;
-        // while (GPIOC_IDR.B13 == 0) {} 
-        // GPIOB_ODR = ~GPIOB_ODR; 
-        GPIOB_ODR = ~GPIOB_ODR;
+    CUR_GAME_PHASE=get_game_mode();
 
+     switch (CUR_GAME_PHASE)
+    {
+    case PHASE_INTRO:
         set_cur_screen_run_flag(FALSE);
-        GAME_PHASE = PHASE_GAME1;
-    }
-    else if (GAME_PHASE == PHASE_GAME1) {
-            set_cur_screen_run_flag(FALSE);
-        GAME_PHASE = PHASE_GAME2;
+        CUR_GAME_PHASE = PHASE1_READY; // load_snake_game
+        break;
 
+    case PHASE1_READY:
+        set_cur_screen_run_flag(FALSE);
+        CUR_GAME_PHASE = PHASE2_PLAYING;    // Start snake game
+        break;
+    
+    case PHASE2_PLAYING:
+        Delay_ms(100);
+        // set_cur_screen_run_flag(FALSE); 
+
+        // CUR_GAME_PHASE = PHASE2_PLAYING;
+        break;
+
+    // case PHASE2_PLAYING:
+    //     set_cur_screen_run_flag(FALSE); // Start snake game
+    //     // CUR_GAME_PHASE = PHASE2_PLAYING;
+    //     break;
+    
+    default:
+        break;
     }
+    
+    // if (CUR_GAME_PHASE == PHASE_INTRO) {
+
+    //     set_cur_screen_run_flag(FALSE);
+    //     // CUR_GAME_PHASE = PHASE1_READY;
+    // }
+    // else if (CUR_GAME_PHASE == PHASE1_READY) {
+    //     set_cur_screen_run_flag(FALSE);
+    //     // CUR_GAME_PHASE = PHASE2_PLAYING; // load_snake_game
+    // }
+    // else if (CUR_GAME_PHASE == PHASE2_PLAYING) {
+    //     // set_cur_screen_run_flag(FALSE);
+    //     // CUR_GAME_PHASE = PHASE2_PLAYING; // start_snake_game
+        
+    //     Delay_ms(100);
+    // }
+    // // else if (CUR_GAME_PHASE == PHASE2_READY) {
+    //     // set_cur_screen_run_flag(FALSE);
+    //     // CUR_GAME_PHASE = PHASE2_PLAYING; // start_snake_game
+    //     // while playing
+    // // }
+
+
 }
 
-
+// PA6 - Joystick Right ISR
 void EXTIPA6() iv IVT_INT_EXTI9_5  {
-    EXTI_PR |= 1 << 6;
-     while (GPIOA_IDR.B6 == 0) {} 
+    if (GPIOB_IDR.B5 == 0) {
+        while(GPIOB_IDR.B5 == 0) {GPIOC_ODR = ~GPIOC_ODR;}
+        EXTI_PR |= 1 << 5;
+    }
+        
+    
+    if (GPIOA_IDR.B6 == 0) {
+        while (GPIOA_IDR.B6 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
+        EXTI_PR |= 1 << 6;
+    }
 
-    set_cur_screen_run_flag(FALSE);
+    // set_cur_screen_run_flag(FALSE);
 
+}
+
+// PD2 - Joystick LEFT ISR
+void EXTIPD2() iv IVT_INT_EXTI2  {
+    EXTI_PR |= 1 << 2;
+     while (GPIOD_IDR.B2 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
+}
+
+// PD4 - Joystick LEFT ISR
+void EXTIPD4() iv IVT_INT_EXTI4  {
+    EXTI_PR |= 1 << 4;
+     while (GPIOD_IDR.B4 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
+}
+
+/// TIMER2 ISR
+void TIMER2_ISR() iv IVT_INT_TIM2 {
+    TIM2_SR &= ~(1<<0);         // Bit[0] UIF interrupt reset set to 0
+    update_game_time();   
 }
 
 
@@ -207,6 +271,9 @@ void init_interrupt() {
 
 
     // Configure edge trigger and maskability and mask enable
+    EXTI_FTSR |= 1 << 2; // EXTI2 is FALLING EDGE
+    EXTI_FTSR |= 1 << 4; // EXTI4 is FALLING EDGE
+    EXTI_FTSR |= 1 << 5; // EXTI5 is FALLING EDGE
     EXTI_FTSR |= 1 << 6; // EXTI6 is FALLING EDGE
     EXTI_FTSR |= 1 << 13; // EXTI13 is FALLING EDGE
     // EXTI_FTSR |= 1 << 13; // EXTI13 is FALLING EDGE
@@ -221,6 +288,7 @@ void init_interrupt() {
     NVIC_ISER0 |= (uint32_t) 1 << 23;           // EXTI5  NVIC Pos=23: EXTI9_5 
     NVIC_ISER1 |= (uint32_t) 1 << 8;            // EXTI13 NVIC Pos=40: EXTI15_10
     NVIC_ISER1 |= (uint32_t) 1 << 5;            // USART1 NVIC Pos=37: ISER1[63:32]; 32+5 =37
+    NVIC_ISER0 |= (uint32_t) 1 << 28;           // TIMER  NVIC Pos=28
 
 }
 
@@ -269,7 +337,11 @@ void main() {
     debug( rand_num_gen() );
 
     // ***Game mode starts here**
-    load_game_screen();
+    // load_duck_screen();
+
+    load_snake_game();
+
+    start_snake_game();
                     
 
     TFT_SET_Brush(1, CL_RED, 0, 0, 0 ,0);
@@ -279,6 +351,6 @@ void main() {
     Delay_ms(3000);
 
     while (1) {
-        // Check_TP();
+        // load_intro_screen();
     }
 }

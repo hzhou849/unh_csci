@@ -209,7 +209,7 @@ void load_intro_screen() {
 
 
 void draw_info_text(uint32_t x_axis, uint32_t y_axis) {
-    TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
+    TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
     TFT_Write_Text(&intro_msg, x_axis, y_axis);
 }
 

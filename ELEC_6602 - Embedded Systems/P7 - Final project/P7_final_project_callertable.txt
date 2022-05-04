@@ -126,34 +126,55 @@ main
 			TFT_Fill_Screen
 	rand_num_gen
 	debug
-	load_game_screen
+	load_snake_game
 		init_arr
 		set_cur_screen_run_flag
 		TFT_Fill_Screen
-		TFT_Set_Pen
 		TFT_Set_Brush
-		draw_cell_xy
+		set_brush_color
+			color_convert_32
+			TFT_Set_Brush
+		TFT_Set_Pen
+		TFT_Set_Font
+		TFT_Write_Text
+			TFT_Move_Cursor
+			_TFT_Write_Char_E
+				_TFT_getHeader
+				TFT_Dot
+					Is_SSD1963_Set
+					TFT_Set_Address_SSD1963II
+					TFT_Set_Address_SSD1963I
+					TFT_Set_Address
+					TFT_Set_Address_SST7715R
+					TFT_Set_Address_HX8352A
+					TFT_Set_Address_R61526
+					TFT_Set_Address_ILI9481
+					TFT_Set_Address_ILI9342
+					TFT_Set_Address_ILI9340
+					TFT_Write_Data
+					TFT_16bit_Write_Data
+					TFT_SSD1963_8bit_Write_Data
+			_TFT_Write_Char
+				TFT_Set_Font
+				TFT_Dot
+	start_snake_game
+		init_arr
+		set_cur_screen_run_flag
+		TFT_Fill_Screen
+		TFT_Set_Brush
+		set_brush_color
+		TFT_Set_Pen
+		TFT_Set_Font
+		snake_sprite
+			load_cell_xy
 		dump_ds_buffer
 			draw_cell_pos
+				set_brush_color
 				get_xy
-				debug
 				TFT_Rectangle
 					TFT_H_Line
 						Is_SSD1963_Set
 						TFT_Dot
-							Is_SSD1963_Set
-							TFT_Set_Address_SSD1963II
-							TFT_Set_Address_SSD1963I
-							TFT_Set_Address
-							TFT_Set_Address_SST7715R
-							TFT_Set_Address_HX8352A
-							TFT_Set_Address_R61526
-							TFT_Set_Address_ILI9481
-							TFT_Set_Address_ILI9342
-							TFT_Set_Address_ILI9340
-							TFT_Write_Data
-							TFT_16bit_Write_Data
-							TFT_SSD1963_8bit_Write_Data
 						TFT_Set_Address_SSD1963II
 						TFT_Set_Address_SSD1963I
 						TFT_Set_Address
@@ -172,10 +193,41 @@ main
 						TFT_Color16bitToRGB
 						TFT_RGBToColor16bit
 					TFT_Set_Pen
+		rand
+			srand
+		render_rect_mask
+			set_brush_color
+			TFT_Rectangle
+		sprintf
+			_doprntf
+				isdigit
+				_Compare_FP
+				scale
+					_Mul_FP
+				_Mul_FP
+				_Div_FP
+				_FloatToUnsignedIntegral
+					_FloatToSignedIntegral
+				_UnsignedIntegralToFloat
+				_Sub_FP
+				_Add_FP
+				fround
+					_Mul_FP
+				_FloatToSignedIntegral
+		TFT_Write_Text
+		move_snake
+			get_offset_y
+			get_offset_x
+			set_sprite_offset
+		set_sprite_offset
 	TFT_Set_Brush
 	TFT_Rectangle
 	TFT_Fill_Screen
-EXTIPA6
-	set_cur_screen_run_flag
+EXTIPD4
+TIMER2_ISR
+	update_game_time
+EXTIPD2
 EXTI15_10
+	get_game_mode
 	set_cur_screen_run_flag
+EXTIPA6
