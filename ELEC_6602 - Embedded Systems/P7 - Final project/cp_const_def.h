@@ -2,18 +2,25 @@
 #ifndef _CP_CONST_DEF
 #define _CP_CONST_DEF
 
-
+/* Generic Booleans */
 static const uint8_t TRUE                 = 1;
 static const uint8_t FALSE                = 0;
+static const uint8_t ON                   = 1;
+static const uint8_t OFF                  = 0;
 
 static const uint32_t GPIO_INPUT_MASK      = 0x44444444;
 
 
-
+/* Game values */
 static const uint8_t PHASE_INTRO          = 0;
 static const uint8_t PHASE1_READY           = 1; 
 static const uint8_t PHASE2_PLAYING           = 2; 
 static const uint8_t PHASE3_PLAYING           = 3; 
+
+static const uint8_t MOVE_RIGHT    = 0x0;             // End marker for display array matrix
+static const uint8_t MOVE_LEFT     = 0x1;             // End marker for display array matrix
+static const uint8_t MOVE_UP       = 0x2;             // End marker for display array matrix
+static const uint8_t MOVE_DOWN     = 0x3;             // End marker for display array matrix
 
 
 /* Screen Constants */

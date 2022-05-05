@@ -28,8 +28,8 @@ static const uint8_t SHIFT_RIGHT        = 0xC4;
 static volatile uint8_t CUR_BRUSH_COLOUR = m_BLACK; 
 uint8_t g_DS_BUFFER[300];
 // uint8_t g_SPRITE_MASK_BUFFER[];
-static uint32_t offset_x = 0;
-static uint32_t offset_y = 0;
+static int32_t offset_x = 0;
+static int32_t offset_y = 0;
 
 /* Prototypes */
 void set_sprite_offset(uint32_t ofs_x, uint32_t ofs_y);
@@ -40,7 +40,7 @@ void get_xy( uint32_t *cell_pos, uint32_t *x_var, uint32_t *y_var );
 void load_cell_xy(uint32_t x_var, uint32_t y_var, uint32_t clr_code);
 void render_rect_mask(uint32_t ul_x, uint32_t ul_y, uint32_t lr_x, uint32_t lr_y, uint8_t color_8bit);
 uint32_t color_convert_32(uint8_t color_8bit);
-
+void cleaning_buffer(uint8_t color_8bit);
 
 // void init_arr(uint8_t *in_arr, uint32_t a_size);
 // void dump_arr_memory(uint8_t *in_arr, uint32_t a_size);
@@ -57,10 +57,10 @@ void set_sprite_offset(uint32_t ofs_x, uint32_t ofs_y) {
     offset_y = ofs_y;
 }
 
-uint32_t get_offset_x() {
+int32_t get_offset_x() {
     return offset_x;
 }
-uint32_t get_offset_y() {
+int32_t get_offset_y() {
     return offset_y;
 }
 
@@ -238,6 +238,18 @@ void dump_ds_buffer() {
 
         if (g_DS_BUFFER[i] != 0xFF) {
             draw_cell_pos(i, g_DS_BUFFER[i]); // pass the colour code
+        }
+
+    }
+}
+
+void cleaning_buffer(uint8_t color_8bit) {
+    uint32_t i=0;
+
+    for (i=0; i < MAX_BLOCK_COUNT  ; i++) {
+
+        if (g_DS_BUFFER[i] != 0xFF) {
+            draw_cell_pos(i, color_8bit ); // pass the colour code
         }
 
     }

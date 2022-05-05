@@ -11,9 +11,8 @@
 
 /* Constants */
 
-static const uint8_t EOF_ARRAY          = 0xFF;             // End marker for display array matrix
-static const uint8_t MOVE_RIGHT         = 0x0;             // End marker for display array matrix
-static const uint8_t MOVE_LEFT         = 0x0;             // End marker for display array matrix
+static const uint8_t EOF_ARRAY     = 0xFF;             // End marker for display array matrix
+
 
 
 // static const uint8_t m_
@@ -21,9 +20,31 @@ static const uint8_t MOVE_LEFT         = 0x0;             // End marker for disp
 
 
 /* Global variables */
-static  uint8_t GAME_PHASE = PHASE1_READY;
-static volatile uint32_t time_count = 0;
-static uint8_t snake_direction = MOVE_RIGHT;
+
+// Game states flags
+static uint8_t g_GAME_PHASE                       = PHASE1_READY;
+static uint8_t g_curr_snake_dir             = MOVE_RIGHT;
+static volatile uint8_t  g_game_clock_delay_tim3  = ON;
+static volatile uint32_t g_time_count             = 0;
+static uint32_t g_game_score                      = 0;
+static int32_t g_debug                            = 0;
+
+
+
+uint8_t g_str_buffer[128];                                // General use string buffer for output text
+static uint32_t g_t_mins            = 0;
+static uint32_t g_t_secs            = 0;
+static uint32_t g_t_wait            = FALSE;
+
+
+// snake head x,y;
+// body start x,y;
+// body end   x,y;
+// tail       x,y;
+static uint32_t snake_info[8];
+static uint32_t *snake_head_x = &snake_info[0];
+static uint32_t *snake_head_y = &snake_info[1];
+
 
 
 
@@ -35,6 +56,7 @@ void load_game_screen();
 uint8_t get_game_mode();
 void update_game_time();
 void move_snake();
+void set_curr_snake_dir();
 
 
 
@@ -51,21 +73,41 @@ void duck_sprite();
 void snake_sprite();
 void dump_ds_buffer();
 // void start_snake_game();
-
+// void update_snake_info(uint32_t head_x, head_y, start_bdy_x, start_bd
+void update_snake_info(uint32_t head_x, uint32_t head_y,uint32_t tail_x, uint32_t tail_y);
+void toggle_game_clock_delay();
 
 
 //=============================================================================================================
-/* Function Declarations */
+/* Interrupt Functions */
+/// Set the snake direction 
+void set_curr_snake_dir(uint8_t new_dir) {
+    g_curr_snake_dir = new_dir;
+}
+
+/// Toggle the game clock delay from timer3
+void toggle_game_clock_delay() {
+    g_game_clock_delay_tim3 = ~g_game_clock_delay_tim3;
+}
 
 // Update the game timer
 void update_game_time () {
-    time_count++;
+    g_time_count++;
 }
 
 /// Get the current game mode
 uint8_t get_game_mode() {
-    return GAME_PHASE;
+    return g_GAME_PHASE;
 }
+
+void update_snake_info(uint32_t head_x, uint32_t head_y, uint32_t tail_x, uint32_t tail_y) 
+{
+    snake_info[0] = head_x;
+    snake_info[1] = head_y;
+    snake_info[2] = tail_x;
+    snake_info[3] = tail_y;
+}
+
 
 /// Initialize array to 0
 void init_arr(uint8_t *in_arr, uint32_t a_size) {
@@ -134,10 +176,11 @@ void load_duck_screen() {
 
     for (i=0; i< 20; i++) {
         
-        if (i < 1) {
-            render_rect_mask(0, 0+6, 13+i, 9+6, m_NAVY);
-        }
-        render_rect_mask(0+ (i-1), 0+6, 13+i, 9+6, m_NAVY);
+        // if (i < 1) {
+        //     render_rect_mask(0, 0+6, 13+i, 9+6, m_NAVY);
+        // }
+        // render_rect_mask(0+ (i-1), 0+6, 13+i, 9+6, m_NAVY);
+        cleaning_buffer(m_NAVY);
 
         // Delay_ms(10);
         set_sprite_offset(i, 6);
@@ -159,7 +202,7 @@ void load_duck_screen() {
 void load_snake_game() {
 
     // Set the game phase mode flag
-    GAME_PHASE = PHASE1_READY;
+    g_GAME_PHASE = PHASE1_READY;
 
      init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
     // dump_arr_memory(&g_DS_BUFFER, MAX_BLOCK_SIZE);
@@ -180,18 +223,40 @@ void load_snake_game() {
     while (cur_screen_run_flag == TRUE) {};
 }
 
-
-void start_snake_game() {
-
-
-    uint8_t str_buffer[128];
-    uint32_t num = 2550;
-    int rand_num;
-
-     // Set the game phase mode flag
-    GAME_PHASE = PHASE2_PLAYING;
+/// Update the score and print it to screen
+void update_score() {
     
-     init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+    
+
+    sprintf(g_str_buffer, "Score: \x20 %05d", g_game_score);
+    TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 0*PX_BLOCK);
+
+    //  Update game mode
+            sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d",g_debug );
+            TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 0*PX_BLOCK);
+}
+
+/// Update timer and print it to screen 
+void update_time() {
+    g_t_secs = g_time_count % 60;
+    if (g_t_secs != 0) {
+        g_t_wait = FALSE;
+    }
+    if (g_t_secs == 0 && g_t_wait == FALSE) {
+        g_t_mins++;
+        g_t_wait = TRUE;
+    }
+    sprintf(g_str_buffer, "Time: \x20 %02d:%02d", g_t_mins, g_t_secs );
+    TFT_Write_Text(&g_str_buffer, 15*PX_BLOCK, 0*PX_BLOCK);
+}
+
+
+/// initialize screen
+void init_snake_game() {
+     // Set the game phase mode flag
+    g_GAME_PHASE = PHASE2_PLAYING;
+    
+    init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
     // dump_arr_memory(&g_DS_BUFFER, MAX_BLOCK_SIZE);
 
     // Reset the current screen run flag to stay in this mode
@@ -202,118 +267,163 @@ void start_snake_game() {
     TFT_SET_Brush(1, CL_AQUA, 0, 0 , 0 ,0);
     set_brush_color(m_GREEN);
 
-    // sprintf(str_buffer, "Score: %d          Time: %d", rand);
+    // sprintf(g_str_buffer, "Score: %d          Time: %d", rand);
 
 
     TFT_SET_PEN(CL_GRAY, 0);
     TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
-    // TFT_Write_Text(&str_buffer, 0*PX_BLOCK, 0*PX_BLOCK);
-    
-    // sprintf(str_buffer,"Time:");
-    // TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
-    // TFT_Write_Text(&str_buffer, 10*PX_BLOCK, 0*PX_BLOCK);
-    // load_cell_xy(0,1, m_GREEN);
-    // load_cell_xy(2,1, m_GREEN);
-    // load_cell_xy(1,1, m_GREEN);
+   
+    Delay_ms(100);  // Delay to allow screen to get wiped
     snake_sprite();
 
     dump_ds_buffer();
 
+}
+
+/// Main Snake game
+void start_snake_game() {
+
+    /* Local variables */
+    // uint8_t g_str_buffer[128];
+    uint32_t num = 2550;
+    // int rand_num;
+
+     int32_t rand_num = (rand() % 100);
+        snake_info[0] = rand_num;
+
+    //  // Set the game phase mode flag
+    // g_GAME_PHASE = PHASE2_PLAYING;
+    
+    // init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+    // // dump_arr_memory(&g_DS_BUFFER, MAX_BLOCK_SIZE);
+
+    // // Reset the current screen run flag to stay in this mode
+    // set_cur_screen_run_flag(TRUE);
+    //  // Setup screen 
+    // TFT_Fill_Screen(CL_BLACK);
+   
+    // TFT_SET_Brush(1, CL_AQUA, 0, 0 , 0 ,0);
+    // set_brush_color(m_GREEN);
+
+    // // sprintf(g_str_buffer, "Score: %d          Time: %d", rand);
+
+
+    // TFT_SET_PEN(CL_GRAY, 0);
+    // TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
+   
+    // Delay_ms(100);  // Delay to allow screen to get wiped
+    // snake_sprite();
+
+    // dump_ds_buffer();
+
+
+    //==================================================================================================
     /* Game Loop */
     while (cur_screen_run_flag == TRUE) {
-        //update direction and refresh screen here?
-        rand_num = (rand() % 100);
+        // Hold here until TIMER3 pulse allows up to move
+        // g_game_clock_delay_tim3 = ON;
 
-        render_rect_mask(0,0,20,1, m_NAVY);
-        //  render_rect_mask(0,10,19,0, m_BLACK);
+       
 
-        //  sprintf(str_buffer, "Score: %d                               Time: %d", rand_num, time_count);
-        sprintf(str_buffer, "Score: %d", rand_num);
-        TFT_Write_Text(&str_buffer, 0*PX_BLOCK, 0*PX_BLOCK);
-        sprintf(str_buffer, "Time: %d", time_count);
-        TFT_Write_Text(&str_buffer, 13*PX_BLOCK, 0*PX_BLOCK);
+        // // Things to do while waiting
+        // while (g_game_clock_delay_tim3 == ON) {
+        //     /* clean screen mask */
+        //     //update direction and refresh screen here?
+        //     render_rect_mask(0,0,20,1, m_NAVY);
+        //     Delay_ms(100);
+        //     //  render_rect_mask(0,10,19,0, m_BLACK);
+        //     // /* Update time */
+        //     update_time();
+
+        //     // /* Update score */
+        //     update_score();
+
+        //     // Update game mode
+        //     sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d",g_debug );
+        //     TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 0*PX_BLOCK);
+            
+
+        // }
+
+    
      
-        move_snake();
-        dump_ds_buffer();
-        Delay_ms(200);
+        // Clean previous buffered image out and update new movement
+        // cleaning_buffer(m_BLACK);                       
+        // move_snake();
+        // dump_ds_buffer();
+
+        // Delay will be on so do any additional house keeping here while waiting.
+        // update coordinates for snake
+        
     };
 
     // Reset offset on quit
     set_sprite_offset(0,0);
 }
 
-
-
-//  for (i=0; i< 20; i++) {
-        
-//         if (i < 1) {
-//             render_rect_mask(0, 0+6, 13+i, 9+6, m_NAVY);
-//         }
-//         render_rect_mask(0+ (i-1), 0+6, 13+i, 9+6, m_NAVY);
-
-//         // Delay_ms(10);
-//         set_sprite_offset(i, 6);
-//         dump_ds_buffer();
-//     }
-
-void move_snake() {
-
-    if (snake_direction == MOVE_RIGHT) {
-        set_sprite_offset( (get_offset_x() + 1), (get_offset_y())  );
-    }
-    // dump_ds_buffer();
+void screen_refresh_TIM3() {
+      // Clean previous buffered image out and update new movement
+        cleaning_buffer(m_BLACK);      
+        Delay_ms(50); // Delay needed for screen to catch up                 
+        move_snake();
+        dump_ds_buffer();
+        Delay_ms(50);
 }
 
+void move_snake() {
+    
+    int32_t sprit_offset_x = get_offset_x();
+    int32_t sprit_offset_y = get_offset_y();  
+
+    if (g_curr_snake_dir == MOVE_RIGHT) {
+        sprit_offset_x++;
+        // g_debug = sprit_offset_x;
+
+        if (sprit_offset_x >=19) {
+            sprit_offset_x = 0;
+        }
+    } 
+    else if (g_curr_snake_dir == MOVE_LEFT)  {
+        sprit_offset_x--;
+        
+        if (sprit_offset_x <=0) {
+            sprit_offset_x = 19;
+        }
+    }
+    else if (g_curr_snake_dir == MOVE_UP)  {
+        sprit_offset_y--;
+        
+        if (sprit_offset_y <=0) {
+            sprit_offset_y = 15;
+        }
+
+    }
+    else if (g_curr_snake_dir == MOVE_DOWN)  {
+          sprit_offset_y++;
+        
+        if (sprit_offset_y >=15) {
+            sprit_offset_y = 0;
+        }
 
 
+    } else {
+        // No movement
+        sprit_offset_x = 0;
+        sprit_offset_y = 0;  
+    }
 
-
-
-
-
-
+    set_sprite_offset( sprit_offset_x, sprit_offset_y);
+}
 
 
 
 
 #endif //_CP_GAME_CTL_H
 
-// void draw_block(uint8_t *dp_buffer, uint32_t x_pos, uint8_t y_pos) {
+void pass_info(uint32_t value) {
+    g_debug = value;
+}
 
-//     uint32_t i = 0;
-//     uint32_t col_count = 0;
-//     uint32_t row_count = 0;
-//     cell_t   cell;
-
-    
-    
-//     // Matrix formula to jagged array conversion is:
-//     // Cell Position = yArr_row * col_width + xArrPos
-
-//     for (i=0; i < MAX_BLOCK_COUNT; i++) {
-
-//         if (dp_buffer[i] == 0xFF) {
-//             break;      //EOF reached.
-//         }
-
-
-
-//         else if (dp_buffer[i] == 1) {
-//             // TFT_Rectangle(x_pos *i, y_pos* column, PX_BLOCK*col_count,PX_BLOCK * row_count);
-
-//             TFT_Rectangle(PX_BLOCK*i, row_count, (PX_BLOCK + (PX_BLOCK*i)),(PX_BLOCK+(PX_BLOCK*row_count))   );
-//         }
-
-//         // update column/row count
-//         col_count++;
-//         if (col_count > MAX_COL_WIDTH-1) {
-//             row_count++;
-//         }
-//     }
-//     // TFT_Rectangle(PX_BLOCK*1 , PX_BLOCK*0 , PX_BLOCK*2,PX_BLOCK*1);
-
-
-// }
 
 void snake_sprite() {
      load_cell_xy(0,1, m_GREEN);

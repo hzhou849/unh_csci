@@ -119,6 +119,8 @@ void Process_TP_Down(unsigned int X, unsigned int Y);
 
 static const uint8_t TRUE = 1;
 static const uint8_t FALSE = 0;
+static const uint8_t ON = 1;
+static const uint8_t OFF = 0;
 
 static const uint32_t GPIO_INPUT_MASK = 0x44444444;
 
@@ -128,6 +130,11 @@ static const uint8_t PHASE_INTRO = 0;
 static const uint8_t PHASE1_READY = 1;
 static const uint8_t PHASE2_PLAYING = 2;
 static const uint8_t PHASE3_PLAYING = 3;
+
+static const uint8_t MOVE_RIGHT = 0x0;
+static const uint8_t MOVE_LEFT = 0x1;
+static const uint8_t MOVE_UP = 0x2;
+static const uint8_t MOVE_DOWN = 0x3;
 
 
 
@@ -143,7 +150,7 @@ static const uint8_t m_NAVY = 3;
 static const uint8_t m_GRAY = 3;
 static const uint8_t m_GREEN = 4;
 static const uint8_t m_WHITE = 5;
-#line 53 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
+#line 60 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
 void debug(uint32_t value) {
  Delay_ms(1);
  USART1_DR = 0xD;
@@ -409,7 +416,7 @@ char * strtok(char * s1, char * s2);
 #line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
 #line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_pix_render.h"
 #line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
-#line 11 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_pix_render.h"
+#line 13 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_pix_render.h"
 static const uint32_t Y_MAX_LENGTH = 15;
 static const uint32_t MAX_COL_WIDTH = 20;
 static const uint32_t MAX_BLOCK_COUNT = 300;
@@ -428,8 +435,8 @@ static const uint8_t SHIFT_RIGHT = 0xC4;
 static volatile uint8_t CUR_BRUSH_COLOUR = m_BLACK;
 uint8_t g_DS_BUFFER[300];
 
-static uint32_t offset_x = 0;
-static uint32_t offset_y = 0;
+static int32_t offset_x = 0;
+static int32_t offset_y = 0;
 
 
 void set_sprite_offset(uint32_t ofs_x, uint32_t ofs_y);
@@ -440,16 +447,17 @@ void get_xy( uint32_t *cell_pos, uint32_t *x_var, uint32_t *y_var );
 void load_cell_xy(uint32_t x_var, uint32_t y_var, uint32_t clr_code);
 void render_rect_mask(uint32_t ul_x, uint32_t ul_y, uint32_t lr_x, uint32_t lr_y, uint8_t color_8bit);
 uint32_t color_convert_32(uint8_t color_8bit);
-#line 53 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_pix_render.h"
+void cleaning_buffer(uint8_t color_8bit);
+#line 55 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_pix_render.h"
 void set_sprite_offset(uint32_t ofs_x, uint32_t ofs_y) {
  offset_x = ofs_x;
  offset_y = ofs_y;
 }
 
-uint32_t get_offset_x() {
+int32_t get_offset_x() {
  return offset_x;
 }
-uint32_t get_offset_y() {
+int32_t get_offset_y() {
  return offset_y;
 }
 
@@ -522,7 +530,7 @@ void draw_cell_pos( uint32_t linear_pos, uint8_t color_8bit) {
 
 
  if (color_8bit != CUR_BRUSH_COLOUR) {
-#line 147 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_pix_render.h"
+#line 149 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_pix_render.h"
  set_brush_color(color_8bit);
  }
 
@@ -619,10 +627,20 @@ void dump_ds_buffer() {
 
  }
 }
+
+void cleaning_buffer(uint8_t color_8bit) {
+ uint32_t i=0;
+
+ for (i=0; i < MAX_BLOCK_COUNT ; i++) {
+
+ if (g_DS_BUFFER[i] != 0xFF) {
+ draw_cell_pos(i, color_8bit );
+ }
+
+ }
+}
 #line 14 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
 static const uint8_t EOF_ARRAY = 0xFF;
-static const uint8_t MOVE_RIGHT = 0x0;
-static const uint8_t MOVE_LEFT = 0x0;
 
 
 
@@ -630,9 +648,32 @@ static const uint8_t MOVE_LEFT = 0x0;
 
 
 
-static uint8_t GAME_PHASE = PHASE1_READY;
-static volatile uint32_t time_count = 0;
-static uint8_t snake_direction = MOVE_RIGHT;
+
+
+
+static uint8_t g_GAME_PHASE = PHASE1_READY;
+static uint8_t g_curr_snake_dir = MOVE_RIGHT;
+static volatile uint8_t g_game_clock_delay_tim3 = ON;
+static volatile uint32_t g_time_count = 0;
+static uint32_t g_game_score = 0;
+static int32_t g_debug = 0;
+
+
+
+uint8_t g_str_buffer[128];
+static uint32_t g_t_mins = 0;
+static uint32_t g_t_secs = 0;
+static uint32_t g_t_wait = FALSE;
+
+
+
+
+
+
+static uint32_t snake_info[8];
+static uint32_t *snake_head_x = &snake_info[0];
+static uint32_t *snake_head_y = &snake_info[1];
+
 
 
 
@@ -644,6 +685,7 @@ void load_game_screen();
 uint8_t get_game_mode();
 void update_game_time();
 void move_snake();
+void set_curr_snake_dir();
 
 
 
@@ -661,20 +703,40 @@ void snake_sprite();
 void dump_ds_buffer();
 
 
+void update_snake_info(uint32_t head_x, uint32_t head_y,uint32_t tail_x, uint32_t tail_y);
+void toggle_game_clock_delay();
 
 
 
 
+
+void set_curr_snake_dir(uint8_t new_dir) {
+ g_curr_snake_dir = new_dir;
+}
+
+
+void toggle_game_clock_delay() {
+ g_game_clock_delay_tim3 = ~g_game_clock_delay_tim3;
+}
 
 
 void update_game_time () {
- time_count++;
+ g_time_count++;
 }
 
 
 uint8_t get_game_mode() {
- return GAME_PHASE;
+ return g_GAME_PHASE;
 }
+
+void update_snake_info(uint32_t head_x, uint32_t head_y, uint32_t tail_x, uint32_t tail_y)
+{
+ snake_info[0] = head_x;
+ snake_info[1] = head_y;
+ snake_info[2] = tail_x;
+ snake_info[3] = tail_y;
+}
+
 
 
 void init_arr(uint8_t *in_arr, uint32_t a_size) {
@@ -700,7 +762,7 @@ void dump_arr_memory(uint8_t *in_arr, uint32_t a_size) {
 
  }
 }
-#line 105 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+#line 147 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
 void load_duck_screen() {
  uint32_t x_axis = 0;
  uint32_t y_axis = 0;
@@ -733,10 +795,11 @@ void load_duck_screen() {
 
  for (i=0; i< 20; i++) {
 
- if (i < 1) {
- render_rect_mask(0, 0+6, 13+i, 9+6, m_NAVY);
- }
- render_rect_mask(0+ (i-1), 0+6, 13+i, 9+6, m_NAVY);
+
+
+
+
+ cleaning_buffer(m_NAVY);
 
 
  set_sprite_offset(i, 6);
@@ -758,7 +821,7 @@ void load_duck_screen() {
 void load_snake_game() {
 
 
- GAME_PHASE = PHASE1_READY;
+ g_GAME_PHASE = PHASE1_READY;
 
  init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
 
@@ -780,15 +843,37 @@ void load_snake_game() {
 }
 
 
-void start_snake_game() {
+void update_score() {
 
 
- uint8_t str_buffer[128];
- uint32_t num = 2550;
- int rand_num;
+
+ sprintf(g_str_buffer, "Score: \x20 %05d", g_game_score);
+ TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 0*PX_BLOCK);
 
 
- GAME_PHASE = PHASE2_PLAYING;
+ sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d",g_debug );
+ TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 0*PX_BLOCK);
+}
+
+
+void update_time() {
+ g_t_secs = g_time_count % 60;
+ if (g_t_secs != 0) {
+ g_t_wait = FALSE;
+ }
+ if (g_t_secs == 0 && g_t_wait == FALSE) {
+ g_t_mins++;
+ g_t_wait = TRUE;
+ }
+ sprintf(g_str_buffer, "Time: \x20 %02d:%02d", g_t_mins, g_t_secs );
+ TFT_Write_Text(&g_str_buffer, 15*PX_BLOCK, 0*PX_BLOCK);
+}
+
+
+
+void init_snake_game() {
+
+ g_GAME_PHASE = PHASE2_PLAYING;
 
  init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
 
@@ -807,48 +892,96 @@ void start_snake_game() {
  TFT_SET_PEN(CL_GRAY, 0);
  TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
 
-
-
-
-
-
-
-
+ Delay_ms(100);
  snake_sprite();
 
  dump_ds_buffer();
 
+}
 
+
+void start_snake_game() {
+
+
+
+ uint32_t num = 2550;
+
+
+ int32_t rand_num = (rand() % 100);
+ snake_info[0] = rand_num;
+#line 322 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
  while (cur_screen_run_flag == TRUE) {
-
- rand_num = (rand() % 100);
-
- render_rect_mask(0,0,20,1, m_NAVY);
-
-
-
- sprintf(str_buffer, "Score: %d", rand_num);
- TFT_Write_Text(&str_buffer, 0*PX_BLOCK, 0*PX_BLOCK);
- sprintf(str_buffer, "Time: %d", time_count);
- TFT_Write_Text(&str_buffer, 13*PX_BLOCK, 0*PX_BLOCK);
-
- move_snake();
- dump_ds_buffer();
- Delay_ms(200);
+#line 358 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
  };
 
 
  set_sprite_offset(0,0);
 }
-#line 259 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+
+void screen_refresh_TIM3() {
+
+ cleaning_buffer(m_BLACK);
+ Delay_ms(50);
+ move_snake();
+ dump_ds_buffer();
+ Delay_ms(50);
+}
+
 void move_snake() {
 
- if (snake_direction == MOVE_RIGHT) {
- set_sprite_offset( (get_offset_x() + 1), (get_offset_y()) );
+ int32_t sprit_offset_x = get_offset_x();
+ int32_t sprit_offset_y = get_offset_y();
+
+ if (g_curr_snake_dir == MOVE_RIGHT) {
+ sprit_offset_x++;
+
+
+ if (sprit_offset_x >=19) {
+ sprit_offset_x = 0;
+ }
+ }
+ else if (g_curr_snake_dir == MOVE_LEFT) {
+ sprit_offset_x--;
+
+ if (sprit_offset_x <=0) {
+ sprit_offset_x = 19;
+ }
+ }
+ else if (g_curr_snake_dir == MOVE_UP) {
+ sprit_offset_y--;
+
+ if (sprit_offset_y <=0) {
+ sprit_offset_y = 15;
  }
 
+ }
+ else if (g_curr_snake_dir == MOVE_DOWN) {
+ sprit_offset_y++;
+
+ if (sprit_offset_y >=15) {
+ sprit_offset_y = 0;
+ }
+
+
+ } else {
+
+ sprit_offset_x = 0;
+ sprit_offset_y = 0;
+ }
+
+ set_sprite_offset( sprit_offset_x, sprit_offset_y);
 }
-#line 318 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+
+
+
+
+
+
+void pass_info(uint32_t value) {
+ g_debug = value;
+}
+
+
 void snake_sprite() {
  load_cell_xy(0,1, m_GREEN);
 }
@@ -946,10 +1079,11 @@ void duck_sprite() {
 }
 #line 59 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 static volatile uint8_t DEV_MODE = FALSE;
-static uint8_t CUR_GAME_PHASE = 0xFF;
+static uint8_t g_cur_game_phase = 0xFF;
+static int32_t g_game_speed = 2500;
 
 uint32_t rx_buffer = 0;
-#line 88 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+#line 89 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 void EXTI15_10() iv IVT_INT_EXTI15_10 {
 
  EXTI_PR |= 1 << 13;
@@ -957,18 +1091,18 @@ void EXTI15_10() iv IVT_INT_EXTI15_10 {
 
  while (GPIOC_IDR.B13 == 0) { GPIOB_ODR = ~GPIOB_ODR; }
 
- CUR_GAME_PHASE=get_game_mode();
+ g_cur_game_phase = get_game_mode();
 
- switch (CUR_GAME_PHASE)
+ switch (g_cur_game_phase)
  {
  case PHASE_INTRO:
  set_cur_screen_run_flag(FALSE);
- CUR_GAME_PHASE = PHASE1_READY;
+ g_cur_game_phase = PHASE1_READY;
  break;
 
  case PHASE1_READY:
  set_cur_screen_run_flag(FALSE);
- CUR_GAME_PHASE = PHASE2_PLAYING;
+ g_cur_game_phase = PHASE2_PLAYING;
  break;
 
  case PHASE2_PLAYING:
@@ -986,7 +1120,7 @@ void EXTI15_10() iv IVT_INT_EXTI15_10 {
  default:
  break;
  }
-#line 147 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+#line 148 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 }
 
 
@@ -994,12 +1128,19 @@ void EXTIPA6() iv IVT_INT_EXTI9_5 {
  if (GPIOB_IDR.B5 == 0) {
  while(GPIOB_IDR.B5 == 0) {GPIOC_ODR = ~GPIOC_ODR;}
  EXTI_PR |= 1 << 5;
+ set_curr_snake_dir(MOVE_DOWN);
  }
 
 
  if (GPIOA_IDR.B6 == 0) {
- while (GPIOA_IDR.B6 == 0) {GPIOB_ODR = ~GPIOB_ODR;}
  EXTI_PR |= 1 << 6;
+ while (GPIOA_IDR.B6 == 0) {
+ GPIOB_ODR = ~GPIOB_ODR;
+ Delay_ms(1);
+ }
+ set_curr_snake_dir(MOVE_RIGHT);
+#line 178 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+ pass_info(g_game_speed);
  }
 
 
@@ -1010,18 +1151,48 @@ void EXTIPA6() iv IVT_INT_EXTI9_5 {
 void EXTIPD2() iv IVT_INT_EXTI2 {
  EXTI_PR |= 1 << 2;
  while (GPIOD_IDR.B2 == 0) {GPIOB_ODR = ~GPIOB_ODR;}
+ set_curr_snake_dir(MOVE_LEFT);
 }
 
 
 void EXTIPD4() iv IVT_INT_EXTI4 {
  EXTI_PR |= 1 << 4;
  while (GPIOD_IDR.B4 == 0) {GPIOB_ODR = ~GPIOB_ODR;}
+ set_curr_snake_dir(MOVE_UP);
 }
 
 
 void TIMER2_ISR() iv IVT_INT_TIM2 {
  TIM2_SR &= ~(1<<0);
  update_game_time();
+
+
+
+
+ render_rect_mask(0,0,20,1, m_NAVY);
+ Delay_ms(50);
+
+
+ update_time();
+
+
+ update_score();
+
+
+
+
+
+}
+
+
+void TIMER3_ISR() iv IVT_INT_TIM3 {
+ TIM3_SR &= ~(1<<0);
+ toggle_game_clock_delay();
+
+ cleaning_buffer(m_BLACK);
+ Delay_ms(100);
+ move_snake();
+ dump_ds_buffer();
 }
 
 
@@ -1048,10 +1219,10 @@ void init_cfg_M_CTL() {
  RCC_APB2ENR |= 1 << 14;
 
 
- GPIOA_CRL = GPIO_INPUT_MASK;
  GPIOE_CRH = 0xFF00;
 
 
+ GPIOA_CRL |= 4 << 4;
  GPIOA_CRL |= 4 << 6;
  GPIOB_CRL |= 4 << 5;
  GPIOD_CRL |= 4 << 2;
@@ -1087,6 +1258,7 @@ void config_USART1() {
 
 
 
+
 void init_timer2() {
  RCC_APB1ENR |= 1 << 0;
  TIM2_CR1 = 0x0000;
@@ -1094,9 +1266,19 @@ void init_timer2() {
 
  TIM2_ARR = 9000;
  TIM2_DIER |= 1 << 0;
- TIM2_CR1 = 0x0001;
+
 }
 
+void init_timer3() {
+ RCC_APB1ENR |= (1 << 1);
+ TIM3_CR1 = 0x0000;
+ TIM3_PSC = 7999;
+
+ TIM3_ARR = g_game_speed;
+ TIM3_DIER |= 1 << 0;
+
+
+}
 
 
 void init_interrupt() {
@@ -1104,6 +1286,7 @@ void init_interrupt() {
 
  AFIO_EXTICR2 = 0x0000;
  NVIC_ISER0 = 0x00000000;
+
 
 
  AFIO_EXTICR1 |= 3 << 8;
@@ -1129,9 +1312,20 @@ void init_interrupt() {
  NVIC_ISER0 |= (uint32_t) 1 << 8;
  NVIC_ISER0 |= (uint32_t) 1 << 10;
  NVIC_ISER0 |= (uint32_t) 1 << 23;
+ NVIC_ISER0 |= (uint32_t) 1 << 28;
+ NVIC_ISER0 |= (uint32_t) 1 << 29;
+
  NVIC_ISER1 |= (uint32_t) 1 << 8;
  NVIC_ISER1 |= (uint32_t) 1 << 5;
- NVIC_ISER0 |= (uint32_t) 1 << 28;
+
+
+
+
+
+
+
+
+
 
 }
 
@@ -1160,6 +1354,7 @@ void main() {
 
 
  init_timer2();
+ init_timer3();
 
 
 
@@ -1182,8 +1377,13 @@ void main() {
 
 
 
+
  load_snake_game();
 
+ init_snake_game();
+
+ TIM2_CR1 = 0x0001;
+ TIM3_CR1 = 0x0001;
  start_snake_game();
 
 

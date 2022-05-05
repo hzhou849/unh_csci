@@ -2,15 +2,15 @@
 diagnostics: 0	122	Compilation Started	stdint.h
 warning: 213	1505	Suspicious pointer conversion	cp_intro_screen_ctl.h
 warning: 234	1505	Suspicious pointer conversion	cp_intro_screen_ctl.h
-diagnostics: 356	123	Compiled Successfully	P7_final_project_main.c
+diagnostics: 434	123	Compiled Successfully	P7_final_project_main.c
 diagnostics: 0	122	Compilation Started	p7_final_project_objects.h
 diagnostics: 26	123	Compiled Successfully	p7_final_project_objects.h
 diagnostics: 1	122	Compilation Started	p7_final_project_resources.h
 diagnostics: 211	123	Compiled Successfully	P7_final_project_driver.c
 diagnostics: 0	122	Compilation Started	P7_final_project_resources.c
 diagnostics: 0	123	Compiled Successfully	P7_final_project_resources.c
-diagnostics: 0	127	All files Compiled in 359 ms	 
+diagnostics: 0	127	All files Compiled in 360 ms	 
 diagnostics: 0	125	Project Linked Successfully	P7_final_project.mcpar
-diagnostics: 0	128	Linked in 297 ms	 
-diagnostics: 0	129	Project 'P7_final_project.mcpar' completed: 797 ms	 
-diagnostics: 0	103	Finished successfully: 04 May 2022, 02:16:50	P7_final_project.mcpar
+diagnostics: 0	128	Linked in 312 ms	 
+diagnostics: 0	129	Project 'P7_final_project.mcpar' completed: 812 ms	 
+diagnostics: 0	103	Finished successfully: 05 May 2022, 00:54:41	P7_final_project.mcpar

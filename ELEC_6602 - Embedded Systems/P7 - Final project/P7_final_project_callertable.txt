@@ -4,6 +4,7 @@ main
 	init_cfg_M_CTL
 	config_USART1
 	init_timer2
+	init_timer3
 	init_interrupt
 	Start_TP
 		Init_MCU
@@ -157,7 +158,7 @@ main
 			_TFT_Write_Char
 				TFT_Set_Font
 				TFT_Dot
-	start_snake_game
+	init_snake_game
 		init_arr
 		set_cur_screen_run_flag
 		TFT_Fill_Screen
@@ -193,11 +194,21 @@ main
 						TFT_Color16bitToRGB
 						TFT_RGBToColor16bit
 					TFT_Set_Pen
+	start_snake_game
 		rand
 			srand
-		render_rect_mask
-			set_brush_color
-			TFT_Rectangle
+		set_sprite_offset
+	TFT_Set_Brush
+	TFT_Rectangle
+	TFT_Fill_Screen
+EXTIPD4
+	set_curr_snake_dir
+TIMER2_ISR
+	update_game_time
+	render_rect_mask
+		set_brush_color
+		TFT_Rectangle
+	update_time
 		sprintf
 			_doprntf
 				isdigit
@@ -215,19 +226,23 @@ main
 					_Mul_FP
 				_FloatToSignedIntegral
 		TFT_Write_Text
-		move_snake
-			get_offset_y
-			get_offset_x
-			set_sprite_offset
+	update_score
+		sprintf
+		TFT_Write_Text
+TIMER3_ISR
+	toggle_game_clock_delay
+	cleaning_buffer
+		draw_cell_pos
+	move_snake
+		get_offset_x
+		get_offset_y
 		set_sprite_offset
-	TFT_Set_Brush
-	TFT_Rectangle
-	TFT_Fill_Screen
-EXTIPD4
-TIMER2_ISR
-	update_game_time
-EXTIPD2
+	dump_ds_buffer
 EXTI15_10
 	get_game_mode
 	set_cur_screen_run_flag
 EXTIPA6
+	set_curr_snake_dir
+	pass_info
+EXTIPD2
+	set_curr_snake_dir

@@ -57,7 +57,8 @@
 
 /* Global variables*/
 static volatile uint8_t DEV_MODE   = FALSE;
-static uint8_t CUR_GAME_PHASE  = 0xFF;         // 0=intro screen; 1=main game
+static uint8_t g_cur_game_phase  = 0xFF;         // 0=intro screen; 1=main game
+static int32_t g_game_speed        = 2500;
 
 uint32_t rx_buffer = 0;
 
@@ -92,54 +93,54 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
 
     while (GPIOC_IDR.B13 == 0) { GPIOB_ODR = ~GPIOB_ODR; } 
 
-    CUR_GAME_PHASE=get_game_mode();
+    g_cur_game_phase = get_game_mode();
 
-     switch (CUR_GAME_PHASE)
+     switch (g_cur_game_phase)
     {
     case PHASE_INTRO:
         set_cur_screen_run_flag(FALSE);
-        CUR_GAME_PHASE = PHASE1_READY; // load_snake_game
+        g_cur_game_phase = PHASE1_READY; // load_snake_game
         break;
 
     case PHASE1_READY:
         set_cur_screen_run_flag(FALSE);
-        CUR_GAME_PHASE = PHASE2_PLAYING;    // Start snake game
+        g_cur_game_phase = PHASE2_PLAYING;    // Start snake game
         break;
     
     case PHASE2_PLAYING:
         Delay_ms(100);
         // set_cur_screen_run_flag(FALSE); 
 
-        // CUR_GAME_PHASE = PHASE2_PLAYING;
+        // g_cur_game_phase = PHASE2_PLAYING;
         break;
 
     // case PHASE2_PLAYING:
     //     set_cur_screen_run_flag(FALSE); // Start snake game
-    //     // CUR_GAME_PHASE = PHASE2_PLAYING;
+    //     // g_cur_game_phase = PHASE2_PLAYING;
     //     break;
     
     default:
         break;
     }
     
-    // if (CUR_GAME_PHASE == PHASE_INTRO) {
+    // if (g_cur_game_phase == PHASE_INTRO) {
 
     //     set_cur_screen_run_flag(FALSE);
-    //     // CUR_GAME_PHASE = PHASE1_READY;
+    //     // g_cur_game_phase = PHASE1_READY;
     // }
-    // else if (CUR_GAME_PHASE == PHASE1_READY) {
+    // else if (g_cur_game_phase == PHASE1_READY) {
     //     set_cur_screen_run_flag(FALSE);
-    //     // CUR_GAME_PHASE = PHASE2_PLAYING; // load_snake_game
+    //     // g_cur_game_phase = PHASE2_PLAYING; // load_snake_game
     // }
-    // else if (CUR_GAME_PHASE == PHASE2_PLAYING) {
+    // else if (g_cur_game_phase == PHASE2_PLAYING) {
     //     // set_cur_screen_run_flag(FALSE);
-    //     // CUR_GAME_PHASE = PHASE2_PLAYING; // start_snake_game
+    //     // g_cur_game_phase = PHASE2_PLAYING; // start_snake_game
         
     //     Delay_ms(100);
     // }
-    // // else if (CUR_GAME_PHASE == PHASE2_READY) {
+    // // else if (g_cur_game_phase == PHASE2_READY) {
     //     // set_cur_screen_run_flag(FALSE);
-    //     // CUR_GAME_PHASE = PHASE2_PLAYING; // start_snake_game
+    //     // g_cur_game_phase = PHASE2_PLAYING; // start_snake_game
     //     // while playing
     // // }
 
@@ -151,12 +152,30 @@ void EXTIPA6() iv IVT_INT_EXTI9_5  {
     if (GPIOB_IDR.B5 == 0) {
         while(GPIOB_IDR.B5 == 0) {GPIOC_ODR = ~GPIOC_ODR;}
         EXTI_PR |= 1 << 5;
+        set_curr_snake_dir(MOVE_DOWN);
     }
         
     
     if (GPIOA_IDR.B6 == 0) {
-        while (GPIOA_IDR.B6 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
         EXTI_PR |= 1 << 6;
+        while (GPIOA_IDR.B6 == 0) {
+            GPIOB_ODR = ~GPIOB_ODR;
+            Delay_ms(1);
+        } 
+        set_curr_snake_dir(MOVE_RIGHT);
+        // Change speed
+        // TIM3_CR1    = 0x0000;                       // Disable time for setup
+        // g_game_speed -= 2000; // 500ms
+
+        // if (g_game_speed <= 0) {
+        //     g_game_speed = 1300; // Anything less will not be visible
+        // }
+        // TIM3_ARR = g_game_speed;
+        // Delay_ms(10);
+        // TIM3_CNT = TIM3_CNT % g_game_speed ; // Reset the count
+        // TIM3_CR1 = 0x0001;  // REset the timer
+        // Delay_ms(10);
+        pass_info(g_game_speed);
     }
 
     // set_cur_screen_run_flag(FALSE);
@@ -167,18 +186,48 @@ void EXTIPA6() iv IVT_INT_EXTI9_5  {
 void EXTIPD2() iv IVT_INT_EXTI2  {
     EXTI_PR |= 1 << 2;
      while (GPIOD_IDR.B2 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
+     set_curr_snake_dir(MOVE_LEFT);
 }
 
 // PD4 - Joystick LEFT ISR
 void EXTIPD4() iv IVT_INT_EXTI4  {
     EXTI_PR |= 1 << 4;
      while (GPIOD_IDR.B4 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
+     set_curr_snake_dir(MOVE_UP);
 }
 
 /// TIMER2 ISR
 void TIMER2_ISR() iv IVT_INT_TIM2 {
     TIM2_SR &= ~(1<<0);         // Bit[0] UIF interrupt reset set to 0
-    update_game_time();   
+    update_game_time();
+
+
+    //   /* clean screen mask */
+    //update direction and refresh screen here?
+    render_rect_mask(0,0,20,1, m_NAVY);
+    Delay_ms(50);
+    //  render_rect_mask(0,10,19,0, m_BLACK);
+    // /* Update time */
+    update_time();
+
+    // /* Update score */
+    update_score();
+    // Delay_ms(100); // delay needed for screen to update
+       //     // Update game mode
+        //     sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d",g_debug );
+        //     TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 0*PX_BLOCK);
+   
+}
+
+/// TIMER3 ISR - Needs to have higher priority than TIM2 in order to update display properly
+void TIMER3_ISR() iv IVT_INT_TIM3 {
+    TIM3_SR &= ~(1<<0);         // Bit[0] UIF interrupt reset set to 0
+    toggle_game_clock_delay(); 
+      // Clean previous buffered image out and update new movement
+        cleaning_buffer(m_BLACK);  
+        Delay_ms(100);                     
+        move_snake();
+        dump_ds_buffer();  
 }
 
 
@@ -205,10 +254,10 @@ void init_cfg_M_CTL() {
     RCC_APB2ENR |= 1 << 14;                   // Enable GPIO clock for USART1
 
     /* Config port direction & flags */
-    GPIOA_CRL = GPIO_INPUT_MASK;                     // Enable PA2 PA4 PA5 PA6 for joystick control
     GPIOE_CRH = 0xFF00; 
 
     /* Joystick configuration */
+    GPIOA_CRL |= 4 << 4;                       // Enable PA4;  Game TIMER3 control      
     GPIOA_CRL |= 4 << 6;                       // Enable PA6;  joystick=RIGHT      
     GPIOB_CRL |= 4 << 5;                       // Enable PB5;  joystick=DOWN      
     GPIOD_CRL |= 4 << 2;                       // Enable PD2;  joystick=LEFT      
@@ -243,6 +292,7 @@ void config_USART1() {
 
 /// Initialize TIMER1
 
+
 /// Initialize TIMER2
 void init_timer2() {
     RCC_APB1ENR |= 1 << 0;                      // Enable Clock for TIMER2 
@@ -251,9 +301,19 @@ void init_timer2() {
                                                 // We want 72MHz / (7999+1) = 9000 Num. clk cycles/sec
     TIM2_ARR     = 9000;                        // Set the auto-reload register to calclated value
     TIM2_DIER  |= 1 << 0;                      // Enable TIMER2 Interrupt 
-    TIM2_CR1     = 0x0001;                      // After timer setup, enable TIMER2 bit[1]; bit[4]=0 counting up.
+    // TIM2_CR1     = 0x0001;                      // wait for game to startAfter timer setup, enable TIMER2 bit[1]; bit[4]=0 counting up.
 }
 
+void init_timer3() {
+    RCC_APB1ENR |= (1 << 1);                   // Enable TIMER3 Clock
+    TIM3_CR1    = 0x0000;                       // Disable time for setup
+    TIM3_PSC    = 7999;                         // Counter clock freq is equal to clk_PSC / (PSC[15:0] + 1) from datasheet
+                                                // We want 72MHz / (7999+1) = 9000 Num. clk cycles/sec
+    TIM3_ARR    = g_game_speed;                         // auto-reload reg. 2 seconds so  double it = 9000*2 = 18000                                            
+    TIM3_DIER   |= 1 << 0;                      // Enable interrupt
+    // TIM3_CR1     = 0x0001;                      // After timer setup, enable TIMER1 bit[1]; bit[4]=0 counting up.
+
+}
 
 /// Initialize and configure Interrupts
 void init_interrupt() {
@@ -263,6 +323,7 @@ void init_interrupt() {
     NVIC_ISER0   = 0x00000000;      
 
     // PD2=Left, PD4=Up, PA6=Right, PB5=Down, PC13=J_button; 
+    // AFIO_EXTICR1 |=
     AFIO_EXTICR1 |= 3 << 8;                     // PD2 = EXTI2[11:8]; PortD = b0011;
     AFIO_EXTICR2 |= 3 << 0;                     // PD4 = EXTI4[3:0];  PortD = b0011;
     AFIO_EXTICR2 |= 1 << 4;                     // PB5 = EXTI5[7:4];  PortB = b0001;
@@ -286,9 +347,20 @@ void init_interrupt() {
     NVIC_ISER0 |= (uint32_t) 1 << 8;            // EXTI2  NVIC Pos=8:  
     NVIC_ISER0 |= (uint32_t) 1 << 10;           // EXTI4  NVIC Pos=10: 
     NVIC_ISER0 |= (uint32_t) 1 << 23;           // EXTI5  NVIC Pos=23: EXTI9_5 
+    NVIC_ISER0 |= (uint32_t) 1 << 28;           // TIMER2  NVIC Pos=28
+    NVIC_ISER0 |= (uint32_t) 1 << 29;           // TIMER3  NVIC Pos=29
+
     NVIC_ISER1 |= (uint32_t) 1 << 8;            // EXTI13 NVIC Pos=40: EXTI15_10
     NVIC_ISER1 |= (uint32_t) 1 << 5;            // USART1 NVIC Pos=37: ISER1[63:32]; 32+5 =37
-    NVIC_ISER0 |= (uint32_t) 1 << 28;           // TIMER  NVIC Pos=28
+
+    /* Interrupt Priority settings */
+    
+    // // TIMER 2 Priority 
+    // NVIC_IPR7 |= (uint32_t) 0xFE << 0;
+    // // TIMER3 is NVIC Pos 29
+    // // 29 % 4 = 8 R 1; IPRx=8; offset=1 8bits/offset; 0-255(0xFF) priority
+    // NVIC_IPR8 |= (uint32_t) 0xFF<< 1;
+
 
 }
 
@@ -315,8 +387,9 @@ void main() {
 
 
 
-    /* TIMER2 setup configuration */
+    /* TIMERS setup configuration */
     init_timer2();
+    init_timer3();
 
 
     /* Interrupt setup and configuration */
@@ -336,11 +409,16 @@ void main() {
     debug( rand_num_gen() );
     debug( rand_num_gen() );
 
-    // ***Game mode starts here**
+
+    /* **Game mode starts here* */
     // load_duck_screen();
 
     load_snake_game();
 
+    init_snake_game();      // initialize the screen
+
+    TIM2_CR1     = 0x0001; // Start TIMER2 for game time
+    TIM3_CR1    = 0x0001; // Start TIMER3 now
     start_snake_game();
                     
 
