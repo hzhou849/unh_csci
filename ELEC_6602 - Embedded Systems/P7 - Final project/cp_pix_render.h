@@ -10,11 +10,7 @@
 #include "cp_const_def.h"
 
 /* Constants */
-static const uint32_t Y_MAX_LENGTH      = 15;               // 240/16px = 15 blocks
-static const uint32_t MAX_COL_WIDTH     = 20;               // 320/16px = 20 blocks
-static const uint32_t MAX_BLOCK_COUNT   = 300;              // 20*15 = 300 blocks
 
-static const uint8_t PX_BLOCK           = 16;               // 16x16px pixel block size
 
 
 static const uint8_t SHIFT_UP           = 0xC1;
@@ -27,32 +23,33 @@ static const uint8_t SHIFT_RIGHT        = 0xC4;
 /* Global variables */
 static volatile uint8_t CUR_BRUSH_COLOUR = m_BLACK; 
 uint8_t g_DS_BUFFER[300];
+
 // uint8_t g_SPRITE_MASK_BUFFER[];
 static int32_t offset_x = 0;
 static int32_t offset_y = 0;
 
 /* Prototypes */
-void set_sprite_offset(uint32_t ofs_x, uint32_t ofs_y);
-uint32_t get_offset_x();
-// uint32_t get_offset_y();
-void draw_cell_pos( uint32_t linear_pos, uint32_t clr_code);
-void get_xy( uint32_t *cell_pos, uint32_t *x_var, uint32_t *y_var );
-void load_cell_xy(uint32_t x_var, uint32_t y_var, uint32_t clr_code);
-void render_rect_mask(uint32_t ul_x, uint32_t ul_y, uint32_t lr_x, uint32_t lr_y, uint8_t color_8bit);
-uint32_t color_convert_32(uint8_t color_8bit);
+void set_sprite_offset(int32_t ofs_x, int32_t ofs_y);
+int32_t get_offset_x();
+// int32_t get_offset_y();
+void draw_cell_pos( int32_t *linear_pos, uint8_t color_8bit);
+void convert_lin_xy( int32_t *cell_pos, int32_t *x_var, int32_t *y_var );
+void load_cell_xy(int32_t x_var, int32_t y_var, int32_t clr_code);
+void render_rect_mask(int32_t ul_x, int32_t ul_y, int32_t lr_x, int32_t lr_y, uint8_t color_8bit);
+int32_t color_convert_32(uint8_t color_8bit);
 void cleaning_buffer(uint8_t color_8bit);
 
-// void init_arr(uint8_t *in_arr, uint32_t a_size);
-// void dump_arr_memory(uint8_t *in_arr, uint32_t a_size);
+// void init_arr(uint8_t *in_arr, int32_t a_size);
+// void dump_arr_memory(uint8_t *in_arr, int32_t a_size);
 // void draw_snake();
-// void draw_block(uint8_t *dp_buffer, uint32_t x_pos, uint8_t y_pos);
+// void draw_block(uint8_t *dp_buffer, int32_t x_pos, uint8_t y_pos);
 
 // void dump_ds_buffer();
 //=================================================================================================================
 
 
 // Set the offset transform values for the current sprite in the video buffer
-void set_sprite_offset(uint32_t ofs_x, uint32_t ofs_y) {
+void set_sprite_offset(int32_t ofs_x, int32_t ofs_y) {
     offset_x = ofs_x;
     offset_y = ofs_y;
 }
@@ -65,11 +62,15 @@ int32_t get_offset_y() {
 }
 
 /// Converts a linear cell postion and sets x and y grid co-ordinates
-void get_xy(uint32_t *cell_pos, uint32_t *x_var, uint32_t *y_var ) {
+void convert_lin_xy(int32_t *cell_pos, int32_t *x_var, int32_t *y_var ) {
 
-    uint32_t row = 0;
-    uint32_t col = 0;
-    uint32_t temp_val = *cell_pos; 
+    int32_t row = 0;
+    int32_t col = 0;
+    int32_t temp_val = *cell_pos; 
+
+    if (temp_val > MAX_BLOCK_COUNT) {
+        temp_val = 300;
+    }
 
 
     // If value is greater than the first row size
@@ -100,7 +101,7 @@ void get_xy(uint32_t *cell_pos, uint32_t *x_var, uint32_t *y_var ) {
 
 
 /// Convert the 8bit compact colour code to the IDE's 32bit CL_CODE
-uint32_t color_convert_32(uint8_t color_8bit) {
+int32_t color_convert_32(uint8_t color_8bit) {
 
     if (color_8bit == m_YELLOW){
         return CL_YELLOW;
@@ -112,13 +113,15 @@ uint32_t color_convert_32(uint8_t color_8bit) {
         return CL_NAVY;
     } else if (color_8bit == m_GREEN) {
         return CL_GREEN;
+    } else if (color_8bit == m_FUCHSIA) {
+        return CL_FUCHSIA;
     } else {
         return CL_WHITE;
     }
 }
 
 void set_brush_color(uint8_t color_8bit) {
-    uint32_t px_clr;
+    int32_t px_clr;
     px_clr = color_convert_32(color_8bit);
 
     TFT_SET_Brush(1, px_clr, 0, 0 , 0 ,0);
@@ -126,37 +129,23 @@ void set_brush_color(uint8_t color_8bit) {
 }
 
 /// Draws at a cell block at specific linear array position
-void draw_cell_pos( uint32_t linear_pos, uint8_t color_8bit) {
-    uint32_t x_var;
-    uint32_t y_var;
-    uint32_t cell_pos = linear_pos;
+void draw_cell_pos( int32_t *linear_pos, uint8_t color_8bit) {
+    int32_t x_var;
+    int32_t y_var;
+    int32_t cell_pos = *linear_pos;
     
     // If the draw colour has changed, update it 
     if (color_8bit != CUR_BRUSH_COLOUR) {
 
-        // // Convert the 32bit colour code to this 8bit one
-        // if (color_8bit == m_YELLOW){
-        //     px_clr = CL_YELLOW;
-        // } else if (color_8bit == m_BLACK) {
-        //     px_clr = CL_BLACK;
-        // } else if (color_8bit == m_RED) {
-        //     px_clr = CL_RED;
-        // }
-        
-
-        // TFT_SET_Brush(1, px_clr, 0, 0 , 0 ,0);
-        // CUR_BRUSH_COLOUR = color_8bit; // assign the new colour code
         set_brush_color(color_8bit);
     }
 
     // Get the x, y coordinates from the liner array
-    get_xy(&cell_pos, &x_var, &y_var );
+    convert_lin_xy(&cell_pos, &x_var, &y_var );
 
-    // debug(x_var);
-    // debug(y_var);
-
-    x_var +=offset_x; // right 2 blocks
-    y_var +=offset_y; // down 1 block
+   
+    // x_var +=offset_x; // right 2 blocks
+    // y_var +=offset_y; // down 1 block
 
     // Draw over the old pixels first
     TFT_Rectangle(
@@ -172,8 +161,14 @@ void draw_cell_pos( uint32_t linear_pos, uint8_t color_8bit) {
 
 
 /// Debug load and draw single block at specified coordinate pixel block
-void draw_cell_xy(uint32_t x_var, uint32_t y_var) {
-    uint32_t linear_val = 0;
+void draw_cell_xy(int16_t x_var, int16_t y_var, uint8_t color_8bit ) {
+    // int32_t linear_val = 0;
+
+       if (color_8bit != CUR_BRUSH_COLOUR) {
+        set_brush_color(color_8bit);
+    }
+
+  
 
     // // Draw the sprite directly
        TFT_Rectangle(
@@ -195,7 +190,7 @@ void draw_cell_xy(uint32_t x_var, uint32_t y_var) {
 
 /// A rectangle mask from point X->Y just enter LxW
 // + offsets
-void render_rect_mask(uint32_t ul_x, uint32_t ul_y, uint32_t lr_x, uint32_t lr_y, uint8_t color_8bit) {
+void render_rect_mask(int32_t ul_x, int32_t ul_y, int32_t lr_x, int32_t lr_y, uint8_t color_8bit) {
     // CUR_BRUSH_COLOUR = color_convert_32(color_8bit);
     // TFT_SET_Brush(1, CUR_BRUSH_COLOUR, 0, 0, 0, 0  );
     set_brush_color(color_8bit);
@@ -211,8 +206,28 @@ void render_rect_mask(uint32_t ul_x, uint32_t ul_y, uint32_t lr_x, uint32_t lr_y
 
 
 /// Load the cell data in to the display buffer, to be drawn later
-void load_cell_xy(uint32_t x_var, uint32_t y_var, uint8_t clr_code) {
-    uint32_t linear_val = 0;
+void load_cell_xy(int32_t x_var, int32_t y_var, uint8_t clr_code) {
+    int32_t linear_val = 0;
+    uint8_t color_8bit = clr_code;
+
+// //   Draw the sprite directly
+//        TFT_Rectangle(
+//             PX_BLOCK * x_var,                   // Upper-left X
+//             (y_var * PX_BLOCK),                 // Upper-left Y
+//             PX_BLOCK + (PX_BLOCK * x_var),      // Lower-right X
+//             PX_BLOCK + (PX_BLOCK * y_var)       // Lower-right Y
+//             );
+
+    // Convert to linear array  x + (y * col_width)
+    linear_val = ( (y_var * MAX_COL_WIDTH) + x_var );
+
+    g_DS_BUFFER[linear_val] = color_8bit;
+
+}
+
+/// Load the cell data in to the display buffer, to be drawn later
+void load_snake_xy(int32_t x_var, int32_t y_var, uint8_t clr_code) {
+    int32_t linear_val = 0;
     uint8_t color_8bit = clr_code;
 
 // //   Draw the sprite directly
@@ -232,7 +247,7 @@ void load_cell_xy(uint32_t x_var, uint32_t y_var, uint8_t clr_code) {
 
 
 void dump_ds_buffer() {
-    uint32_t i=0;
+    int32_t i=0;
 
     for (i=0; i < MAX_BLOCK_COUNT  ; i++) {
 
@@ -243,21 +258,39 @@ void dump_ds_buffer() {
     }
 }
 
+void print_snake(t_node *node, uint8_t color_8bit) {
+    
+ 
+
+    draw_cell_xy(node->node_x, node->node_y, color_8bit);
+
+}
+
 void cleaning_buffer(uint8_t color_8bit) {
-    uint32_t i=0;
+    int32_t i=0;
 
     for (i=0; i < MAX_BLOCK_COUNT  ; i++) {
 
         if (g_DS_BUFFER[i] != 0xFF) {
-            draw_cell_pos(i, color_8bit ); // pass the colour code
+            draw_cell_pos(i, color_8bit ); // pass the colour code~
         }
 
     }
 }
 
+void clean_tail(t_node * node_tail,  uint8_t color_8bit) {
+    int32_t i = 0;
+
+
+    
+    print_snake(node_tail, color_8bit);
+    
+
+}
+
 
 // void transform_sprite_(uint8_t transform_dir) {
-//     uint32_t i=0;
+//     int32_t i=0;
 
 //     for (i=0; i < MAX_BLOCK_COUNT  ; i++) {
 

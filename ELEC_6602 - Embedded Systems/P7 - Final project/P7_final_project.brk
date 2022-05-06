@@ -1,31 +1,25 @@
 <BREAKS>
   <BP>
-    <UnitName>P7_final_project_main.c</UnitName>
-    <Line>92</Line>
-    <Enabled>True</Enabled>
-    <Type>0</Type>
-  </BP>
-  <BP>
-    <UnitName>P7_final_project_main.c</UnitName>
-    <Line>314</Line>
-    <Enabled>True</Enabled>
-    <Type>0</Type>
-  </BP>
-  <BP>
-    <UnitName>cp_game_ctl.h</UnitName>
-    <Line>200</Line>
-    <Enabled>True</Enabled>
-    <Type>0</Type>
-  </BP>
-  <BP>
-    <UnitName>cp_game_ctl.h</UnitName>
-    <Line>201</Line>
-    <Enabled>True</Enabled>
-    <Type>0</Type>
-  </BP>
-  <BP>
     <UnitName>cp_pix_render.h</UnitName>
     <Line>203</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+  <BP>
+    <UnitName>P7_final_project_main.c</UnitName>
+    <Line>225</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+  <BP>
+    <UnitName>cp_game_ctl.h</UnitName>
+    <Line>421</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+  <BP>
+    <UnitName>cp_game_ctl.h</UnitName>
+    <Line>194</Line>
     <Enabled>True</Enabled>
     <Type>0</Type>
   </BP>

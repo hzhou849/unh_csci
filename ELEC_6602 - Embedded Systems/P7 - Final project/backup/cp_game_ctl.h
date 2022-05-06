@@ -12,7 +12,6 @@
 /* Constants */
 
 static const uint8_t EOF_ARRAY     = 0xFF;             // End marker for display array matrix
-const static int32_t MAX_CELLS                            =10;
 
 
 
@@ -23,18 +22,18 @@ const static int32_t MAX_CELLS                            =10;
 /* Global variables */
 
 // Game states flags
-static uint8_t g_GAME_PHASE                         = PHASE1_READY;
-static uint8_t g_curr_snake_dir                     = MOVE_RIGHT;
-static volatile uint8_t  g_game_clock_delay_tim3    = ON;
-static volatile uint32_t g_time_count               = 0;
-static uint32_t g_game_score                        = 0;
-static int32_t g_debug                              = 0;
-static int32_t g_rand_num                          = 999;
-static uint8_t g_food_in_play                       = FALSE;
+static uint8_t g_GAME_PHASE                       = PHASE1_READY;
+static uint8_t g_curr_snake_dir             = MOVE_RIGHT;
+static volatile uint8_t  g_game_clock_delay_tim3  = ON;
+static volatile uint32_t g_time_count             = 0;
+static uint32_t g_game_score                      = 0;
+static int32_t g_debug                            = 0;
+static uint32_t g_rand_num                          = 999;
+
 
 
 uint8_t g_str_buffer[128];                                // General use string buffer for output text
-t_node g_snake_cells[5];                               // track the current snake 
+t_node g_snake_cells[50];                               // track the current snake 
 
 static uint32_t g_t_mins            = 0;
 static uint32_t g_t_secs            = 0;
@@ -43,11 +42,9 @@ static uint32_t g_t_wait            = FALSE;
 
 // Snake info tracking
 t_node *node_start = &g_snake_cells;
-t_node *node_end = &g_snake_cells[MAX_CELLS-1];  // addressing is 4bytes less than allocated cells; [length-1]
+t_node *node_end = &g_snake_cells[50];
 t_node *node_head = &g_snake_cells;    
-t_node *node_tail = &g_snake_cells;
-t_node *node_restart_head = &g_snake_cells[1];
-
+t_node *node_tail = &g_snake_cells;    
 
 static int16_t snake_info[16];
 static int16_t *s_head_x = &snake_info[0];
@@ -68,7 +65,7 @@ uint8_t get_game_mode();
 void update_game_time();
 void move_snake();
 void set_curr_snake_dir();
-void scr_debug(uint32_t value);  // Debugging function
+void scr_debug(uint32_t * value);  // Debugging function
 
 
 
@@ -112,89 +109,73 @@ uint8_t get_game_mode() {
 
 void move_snake() {
     
+    int32_t sprit_offset_x = get_offset_x();
+    int32_t sprit_offset_y = get_offset_y();
     int16_t temp_x = node_head->node_x;  
     int16_t temp_y = node_head->node_y;  
 
     if (g_curr_snake_dir == MOVE_RIGHT) {
-
-        if (node_head+1 > node_end) {
-            node_start->node_x = ++temp_x;
-            node_start->node_y = temp_y;
-
-            node_head = node_start;
-        } else {
-            // move snake head 1 space RIGHT
-            (node_head+1)->node_x = ++temp_x;
-            (node_head+1)->node_y = temp_y;
-            incr_snake_head();
-        }
         
+        
+        // sprit_offset_x++;
+        // *s_head_x++;
+
+
+        // g_debug = sprit_offset_x;
+
+        // move snake head 1 space right
+        (node_head+1)->node_x = ++temp_x;
+        (node_head+1)->node_y = temp_y;
+        
+        incr_snake_head();
+
         // Increment the snake head pointer
 
-        // Boundaries      
-        if (node_head->node_x > MAX_COL_WIDTH-1) { //0-indexed array
+        // Delete the tail - skip if we touch food box
+        //if food_flag != TRUE
+        // node_tail->node_x = 0xFF;
+        // node_tail->node_y = 0xFF;
+
+        // Increment the tail pointer
+        // incr_snake_tail();
+
+        // if (sprit_offset_x >=19) {
+        //     sprit_offset_x = 0;
+        // }
+        if (node_head->node_x >=19) {
             node_head->node_x = 0;
         }
     } 
     else if (g_curr_snake_dir == MOVE_LEFT)  {
-
-        if (node_head+1 > node_end) {
-            (node_start)->node_x = --temp_x;
-            (node_start)->node_y = temp_y;
-
-            node_head = node_start;
-        } else {
-            // move snake head 1 space LEFT
-            (node_head+1)->node_x = --temp_x;
-            (node_head+1)->node_y = temp_y;
-            // Increment the snake head pointer
-            incr_snake_head();
+        sprit_offset_x--;
+        s_head_x--;
+        
+        if (sprit_offset_x <=0) {
+            sprit_offset_x = 19;
         }
-
-        // Boundaries      
-        if (node_head->node_x < 0) {
-        node_head->node_x = 19;
-        }
-       
     }
     else if (g_curr_snake_dir == MOVE_UP)  {
-
-        if (node_head+1 > node_end) {
-            (node_start)->node_x = temp_x;
-            (node_start)->node_y = --temp_y;
-            node_head = node_start;
-        } else {
-            // move snake head 1 space UP
-            (node_head+1)->node_x = temp_x;
-            (node_head+1)->node_y = --temp_y;
-            // Increment the snake head pointer
-            incr_snake_head();
+        sprit_offset_y--;
+        s_head_y--;
+        
+        if (sprit_offset_y <=0) {
+            sprit_offset_y = 15;
         }
 
-        // Boundaries      
-        if (node_head->node_y < 1 ) { // status bar is row 0
-            node_head->node_y = (MAX_ROW_LENGTH-1);
-        }
     }
     else if (g_curr_snake_dir == MOVE_DOWN)  {
-        if (node_head+1 > node_end) {
-            (node_start)->node_x = temp_x;
-            (node_start)->node_y = ++temp_y;
-            node_head = node_start;
-        } else {
-            // move snake head 1 space DOWN
-            (node_head+1)->node_x = temp_x;
-            (node_head+1)->node_y = ++temp_y;
-            
-            // Increment the snake head pointer
-            incr_snake_head();
+          sprit_offset_y++;
+          s_head_y++;
+        
+        if (sprit_offset_y >=15) {
+            sprit_offset_y = 0;
         }
 
-        // Boundaries      
-        if (node_head->node_y > MAX_ROW_LENGTH-1 ) { // status bar is row 0
-            node_head->node_y = 1;
-        }
 
+    } else {
+        // No movement
+        sprit_offset_x = 0;
+        sprit_offset_y = 0;  
     }
 
     // set_sprite_offset( sprit_offset_x, sprit_offset_y);
@@ -203,26 +184,23 @@ void move_snake() {
 
 /// Generate food() 
 void  generate_food() {
-    g_rand_num = (int32_t) (rand() % MAX_BLOCK_COUNT);// + MAX_COL_WIDTH because row 0 is reserved for info
+    g_rand_num = (uint32_t) (rand() % MAX_BLOCK_COUNT);// + MAX_COL_WIDTH because row 0 is reserved for info
     
 
-    draw_cell_pos(&g_rand_num, m_RED);
-    scr_debug(g_rand_num);
-    g_food_in_play = TRUE;
+    // Convert linear number to x,y coordinates
+    get_xy(&g_rand_num, &s_food_x, &s_food_y);
 }
-
 
 /// Increment the snake head queue
 void incr_snake_head() {
     
-    if (node_head < node_end) { // array_size * sizeof(t_node)
+    if (node_head <= node_end) { // array_size * sizeof(t_node)
         node_head++;
     } else {
-        node_head = node_restart_head; // Wrap around array if end is reached
+        node_head = node_start; // Wrap around array if end is reached
     }
 
 }
-
 
 /// Increment the snake tail queue
 void incr_snake_tail() {
@@ -230,8 +208,8 @@ void incr_snake_tail() {
     // clear the cell data
     node_tail->node_x = 0xFF;
     node_tail->node_y = 0xFF;
-
-    if (node_tail < node_end) { // array_size * sizeof(t_node)
+    
+    if (node_tail <= node_end) { // array_size * sizeof(t_node)
         node_tail++;
     } else {
         node_tail = node_start; // Wrap around array if end is reached
@@ -489,27 +467,20 @@ void start_snake_game() {
 
 void screen_refresh_TIM3() {
         
+        
+    generate_food();
+    
     // Clean previous buffered image out and update new movement
     // cleaning_buffer(m_BLACK);      
     clean_tail(node_tail, m_BLACK);
-    Delay_ms(10);
 
 
     move_snake();
     print_snake(node_head, m_GREEN);
-    Delay_ms(10); // Delay needed for screen to catch up                 
+    Delay_ms(100); // Delay needed for screen to catch up                 
     // dump_ds_buffer();
     incr_snake_tail();
-    
-    
-    // Reduce this delay with other non time sensitive operations
-    Delay_ms(20);
-    if (g_food_in_play == FALSE) {
-        generate_food();
-    }
-    g_food_in_play = FALSE;
-    // draw_cell_pos(29, m_RED);
-    
+    Delay_ms(50);
 }
 
 
@@ -519,27 +490,19 @@ void screen_refresh_TIM3() {
 
 #endif //_CP_GAME_CTL_H
 
-void scr_debug(uint32_t value) {
-    g_debug = value;
+void scr_debug(uint32_t * value) {
+    g_debug = *value;
 }
 
-// Set the initial values of the snake
+
 void init_snake_sprite() {
- 
+    //  load_cell_xy(0,1, m_GREEN);
+    //  update_snake_info(0,1);
 
     node_head->node_x = 0;
     node_head->node_y = 1;
-    print_snake(node_head, m_GREEN);
-    // incr_snake_head();
-    // node_head->node_x =1;
-    // node_head->node_y =1;
-    // print_snake(node_head, m_GREEN);
-    // incr_snake_head();
-    //  node_head->node_x =2;
-    // node_head->node_y =1;
-    // print_snake(node_head, m_GREEN);
-    Delay_ms(1);
     
+    print_snake(node_head, m_GREEN);
 
 
 }

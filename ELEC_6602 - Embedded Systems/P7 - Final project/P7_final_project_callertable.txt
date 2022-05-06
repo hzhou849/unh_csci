@@ -125,8 +125,6 @@ main
 			TP_TFT_Init
 			TP_TFT_Set_ADC_Threshold
 			TFT_Fill_Screen
-	rand_num_gen
-	debug
 	load_snake_game
 		init_arr
 		set_cur_screen_run_flag
@@ -166,37 +164,38 @@ main
 		set_brush_color
 		TFT_Set_Pen
 		TFT_Set_Font
-		snake_sprite
-			load_cell_xy
+		init_snake_sprite
+			print_snake
+				draw_cell_xy
+					set_brush_color
+					TFT_Rectangle
+						TFT_H_Line
+							Is_SSD1963_Set
+							TFT_Dot
+							TFT_Set_Address_SSD1963II
+							TFT_Set_Address_SSD1963I
+							TFT_Set_Address
+							TFT_Set_Address_SST7715R
+							TFT_Set_Address_HX8352A
+							TFT_Set_Address_R61526
+							TFT_Set_Address_ILI9481
+							TFT_Set_Address_ILI9342
+							TFT_Set_Address_ILI9340
+							TFT_Write_Data
+							TFT_16bit_Write_Data
+							TFT_SSD1963_8bit_Write_Data
+						TFT_V_Line
+							TFT_Dot
+						TFT_GetCurrentColor
+							TFT_Color16bitToRGB
+							TFT_RGBToColor16bit
+						TFT_Set_Pen
 		dump_ds_buffer
 			draw_cell_pos
 				set_brush_color
-				get_xy
+				convert_lin_xy
 				TFT_Rectangle
-					TFT_H_Line
-						Is_SSD1963_Set
-						TFT_Dot
-						TFT_Set_Address_SSD1963II
-						TFT_Set_Address_SSD1963I
-						TFT_Set_Address
-						TFT_Set_Address_SST7715R
-						TFT_Set_Address_HX8352A
-						TFT_Set_Address_R61526
-						TFT_Set_Address_ILI9481
-						TFT_Set_Address_ILI9342
-						TFT_Set_Address_ILI9340
-						TFT_Write_Data
-						TFT_16bit_Write_Data
-						TFT_SSD1963_8bit_Write_Data
-					TFT_V_Line
-						TFT_Dot
-					TFT_GetCurrentColor
-						TFT_Color16bitToRGB
-						TFT_RGBToColor16bit
-					TFT_Set_Pen
 	start_snake_game
-		rand
-			srand
 		set_sprite_offset
 	TFT_Set_Brush
 	TFT_Rectangle
@@ -229,20 +228,30 @@ TIMER2_ISR
 	update_score
 		sprintf
 		TFT_Write_Text
+	ADC1_Read
+		ADC_Set_Input_Channel
+		ADC1_Init
+		ADC1_Get_Sample
+			ADCx_Get_Sample
+				Delay_1us
 TIMER3_ISR
 	toggle_game_clock_delay
-	cleaning_buffer
-		draw_cell_pos
-	move_snake
-		get_offset_x
-		get_offset_y
-		set_sprite_offset
-	dump_ds_buffer
+	screen_refresh_TIM3
+		clean_tail
+			print_snake
+		move_snake
+			incr_snake_head
+		print_snake
+		incr_snake_tail
+		generate_food
+			rand
+				srand
+			draw_cell_pos
+			scr_debug
 EXTI15_10
 	get_game_mode
 	set_cur_screen_run_flag
 EXTIPA6
 	set_curr_snake_dir
-	pass_info
 EXTIPD2
 	set_curr_snake_dir

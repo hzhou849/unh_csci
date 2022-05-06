@@ -58,9 +58,10 @@
 /* Global variables*/
 static volatile uint8_t DEV_MODE   = FALSE;
 static uint8_t g_cur_game_phase  = 0xFF;         // 0=intro screen; 1=main game
-static int32_t g_game_speed        = 2500;
+static int32_t g_game_speed        = 1000;
 
 uint32_t rx_buffer = 0;
+uint32_t debug_val;
 
 
 /* Interrupt Handlers */
@@ -175,7 +176,7 @@ void EXTIPA6() iv IVT_INT_EXTI9_5  {
         // TIM3_CNT = TIM3_CNT % g_game_speed ; // Reset the count
         // TIM3_CR1 = 0x0001;  // REset the timer
         // Delay_ms(10);
-        pass_info(g_game_speed);
+        
     }
 
     // set_cur_screen_run_flag(FALSE);
@@ -187,6 +188,8 @@ void EXTIPD2() iv IVT_INT_EXTI2  {
     EXTI_PR |= 1 << 2;
      while (GPIOD_IDR.B2 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
      set_curr_snake_dir(MOVE_LEFT);
+
+    
 }
 
 // PD4 - Joystick LEFT ISR
@@ -216,7 +219,12 @@ void TIMER2_ISR() iv IVT_INT_TIM2 {
        //     // Update game mode
         //     sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d",g_debug );
         //     TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 0*PX_BLOCK);
-   
+    // Debug print to screen
+    // read adc
+    debug_val = ADC1_Read(3);
+    // debug_val = ADC1_DR;
+    //  scr_debug(debug_val);
+    //  ADC1_SR = 0;
 }
 
 /// TIMER3 ISR - Needs to have higher priority than TIM2 in order to update display properly
@@ -224,10 +232,12 @@ void TIMER3_ISR() iv IVT_INT_TIM3 {
     TIM3_SR &= ~(1<<0);         // Bit[0] UIF interrupt reset set to 0
     toggle_game_clock_delay(); 
       // Clean previous buffered image out and update new movement
-        cleaning_buffer(m_BLACK);  
-        Delay_ms(100);                     
-        move_snake();
-        dump_ds_buffer();  
+        // cleaning_buffer(m_BLACK);  
+        //         Delay_ms(100);
+        // move_snake();
+        // dump_ds_buffer();  
+
+    screen_refresh_TIM3();
 }
 
 
@@ -252,9 +262,11 @@ void init_cfg_M_CTL() {
     RCC_APB2ENR |= 1 << 5;                    // Enable GPIO clock for PORT D 
     RCC_APB2ENR |= 1 << 6;                    // Enable GPIO clock for PORT E 
     RCC_APB2ENR |= 1 << 14;                   // Enable GPIO clock for USART1
+    RCC_APB2ENR |= 1 << 9;                   // Enable ADC1 Clock
 
     /* Config port direction & flags */
     GPIOE_CRH = 0xFF00; 
+    GPIOA_CRL &= ~(0xF << 12);                 // PA3 - Analog input mode b0000 bit[15:12]
 
     /* Joystick configuration */
     GPIOA_CRL |= 4 << 4;                       // Enable PA4;  Game TIMER3 control      
@@ -263,6 +275,33 @@ void init_cfg_M_CTL() {
     GPIOD_CRL |= 4 << 2;                       // Enable PD2;  joystick=LEFT      
     GPIOD_CRL |= 4 << 4;                       // Enable PD4;  joystick=UP      
     GPIOC_CRH |= 4 << 5;                       // Enable PC13; joystick=PUSH BUTTON 
+
+    // ADC1_Init();
+    // ADC_Set_Input_Channel(_ADC_CHANNEL_3);
+    // unsigned ADC_Get_Sample(_ADC_CHANNEL_3);
+
+    // ADC1_CR1 |= 1 << 23; // Analog-watch-dog Enable watchdog;
+    // ADC1_CR1 |= 1 << 16; // Analog-watch-dog Enable watchdog;
+    // // ADC_CR1 |= 1 << 6; // AWD watchdog interrupt enable;
+    // ADC1_CR1 |= 0x3 << 0; // AWD Channel 3 selection
+    // ADC1_CR1 |= 1 << 0; // AWD Channel 1 selection
+
+    // ADC1_CR2 |= 1 << 22; // Start conversion of regular channels
+    // ADC1_CR2 |= (uint32_t) 1 << 21; // Start conversion of injected channels
+    // ADC1_CR2 |= 1 << 20; // Exteral trigger conversion mode for regular channels
+    // ADC1_CR2 = 0;
+    // ADC1_CR2 |= (uint32_t) 1 << 12; // JWSTART b111
+    // ADC1_CR2 |= (uint32_t) 1 << 13; // JWSTART b111
+    // ADC1_CR2 |= (uint32_t) 1 << 14; // JWSTART b111
+    // ADC1_CR2 |= 1 << 1; // ADC continuous conversion on
+    // ADC1_JOFR1 |= 1 << 3; // enable channel 3 injection
+    // ADC1_CR2 |= 1 << 0; // ADC on
+
+    //ADC1_CR1 = 0x0001
+    //ADC1_CR2 = 0x000E 0001 b0- 0- 1110 0- 0- 0001 | 14,13,12 & 1 = ON
+
+    
+
 }
 
 /// Configure USART1
@@ -288,6 +327,8 @@ void config_USART1() {
 
     Delay_ms(100);                              // Allow time for USART1 to complete initialization
     USART1_CR1 |= 1 << 13;                      // **NOTE: USART1 Enable must be done after configuration is complete. 
+
+
 }
 
 /// Initialize TIMER1
@@ -365,12 +406,6 @@ void init_interrupt() {
 }
 
 
-uint32_t rand_num_gen() {
-    uint32_t ret = 0;
-    ret = TIM2_CNT % 100;
-    return ret ; 
-}
-
 //============================================================================================================
 /* Main function */
 void main() {
@@ -405,9 +440,6 @@ void main() {
  
     /* Intro screen */
     // load_intro_screen();
-    debug( rand_num_gen() );
-    debug( rand_num_gen() );
-    debug( rand_num_gen() );
 
 
     /* **Game mode starts here* */
@@ -415,7 +447,9 @@ void main() {
 
     load_snake_game();
 
-    init_snake_game();      // initialize the screen
+    // initialize the screen ** NOTE this load sequence must be performed in this order
+    // of screen will have issues. 
+    init_snake_game();      
 
     TIM2_CR1     = 0x0001; // Start TIMER2 for game time
     TIM3_CR1    = 0x0001; // Start TIMER3 now
