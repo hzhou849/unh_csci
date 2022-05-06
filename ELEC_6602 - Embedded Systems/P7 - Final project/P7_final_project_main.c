@@ -1,31 +1,33 @@
 //**************************************************************************************************
-// Project 7 - Interrupts
+// Project 7 - Final Project
 // Name: Howard Zhou
-// Due Date: 05/2/2022
+// Due Date: 05/9/2022
 // Course: ELEC 6602 - Embedded Systems
 
 // Description: 
-//                  Program demonstrates uses of External interrupts PA4 and PA6.
-//                  and internal software(SWIER) and TIMER2 interrupts.
-//                  PORTD/H LEDs will display counter every 1 sec and can be paused/resumed with PA4
-//                  Pressing PB6 will display the current count on the Terminal window.
-//                  Keyboard input from the terminal window will increase the count displyed on
-//                  PORTE LEDS. A seperate software interrupt will blink the LEDs on PORTD/L
-//                  Independantly.
+//                 Snake
 //      
-//      Objective 1: - Use Timer 2, PA4 and PA6 on interrupt
-//                   - Timer 2 will display the time every 1 second on PORTD/H 
-//                     starting at 99, counting down to zero and restart.
+//      Objective 1: - Flow Diagram rough sketch
 //
-//      Objective 2: - Every time PA4 is pressed for the first time, timer must stop.
-//                   - When pressed a second time, it must start again.
+//      Objective 2: - Develop snake base game features:
+//                   - Joystick movement, score tracking, randomize item generation [x]
 //  
-//      Objective 3: - When PB6 is released time must be displayed on USART Terminal (limit 00 to 99)
-//                   - THe main program increments the value on PORTR every time a char
-//                     is typed on USART terminal and sends the character back to 
-//                     the USART terminal.
+//      Objective 3: - Push button to change state              [o]
+//                   - Mode 1: default
+//                   - Mode 2: increase food object - skip
+//                   - Mode 3: ?                    - skip
+//              
+//      Objective 4: - Add a feature to read an analog value to increase/decrease game speeed
+//                      Algorithm linearized from 1 to 200% 
 //
-//      Bonus Obj:     Write and additional ISR to blink an LED at a specified frequency.
+//      Objective 5: - TIM2 and PD6 create RTC to time, and swap between total and game time.
+//      
+//      Objective 6: - Store score in EERPOM using I2C; Save initals using joystick
+//      
+//      Bonus Obj:     Using piezo buzzer to implement sound collecting object, hitting wall
+//                     and other collision. Optional to have differnt sound for eac
+//      
+//      Bonus Obj:     Developer mode with secret password disable collision
 //
 // **NOTE board requires all bitwise operations greater than 16 to either be accessed directly or 
 //   re-casted to 32bit 
@@ -153,7 +155,10 @@ void EXTIPA6() iv IVT_INT_EXTI9_5  {
     if (GPIOB_IDR.B5 == 0) {
         while(GPIOB_IDR.B5 == 0) {GPIOC_ODR = ~GPIOC_ODR;}
         EXTI_PR |= 1 << 5;
-        set_curr_snake_dir(MOVE_DOWN);
+
+        if (g_curr_snake_dir != MOVE_UP) {
+            set_curr_snake_dir(MOVE_DOWN);
+        }
     }
         
     
@@ -163,19 +168,10 @@ void EXTIPA6() iv IVT_INT_EXTI9_5  {
             GPIOB_ODR = ~GPIOB_ODR;
             Delay_ms(1);
         } 
-        set_curr_snake_dir(MOVE_RIGHT);
-        // Change speed
-        // TIM3_CR1    = 0x0000;                       // Disable time for setup
-        // g_game_speed -= 2000; // 500ms
-
-        // if (g_game_speed <= 0) {
-        //     g_game_speed = 1300; // Anything less will not be visible
-        // }
-        // TIM3_ARR = g_game_speed;
-        // Delay_ms(10);
-        // TIM3_CNT = TIM3_CNT % g_game_speed ; // Reset the count
-        // TIM3_CR1 = 0x0001;  // REset the timer
-        // Delay_ms(10);
+        if (g_curr_snake_dir != MOVE_LEFT) {
+            set_curr_snake_dir(MOVE_RIGHT);
+        }
+   
         
     }
 
@@ -187,7 +183,10 @@ void EXTIPA6() iv IVT_INT_EXTI9_5  {
 void EXTIPD2() iv IVT_INT_EXTI2  {
     EXTI_PR |= 1 << 2;
      while (GPIOD_IDR.B2 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
-     set_curr_snake_dir(MOVE_LEFT);
+
+     if (g_curr_snake_dir != MOVE_RIGHT) {
+        set_curr_snake_dir(MOVE_LEFT);
+     }
 
     
 }
@@ -196,12 +195,17 @@ void EXTIPD2() iv IVT_INT_EXTI2  {
 void EXTIPD4() iv IVT_INT_EXTI4  {
     EXTI_PR |= 1 << 4;
      while (GPIOD_IDR.B4 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
-     set_curr_snake_dir(MOVE_UP);
+
+     if (g_curr_snake_dir != MOVE_DOWN) {
+        set_curr_snake_dir(MOVE_UP);
+     }
 }
 
 /// TIMER2 ISR
 void TIMER2_ISR() iv IVT_INT_TIM2 {
     TIM2_SR &= ~(1<<0);         // Bit[0] UIF interrupt reset set to 0
+
+  
     update_game_time();
 
 
@@ -214,7 +218,7 @@ void TIMER2_ISR() iv IVT_INT_TIM2 {
     update_time();
 
     // /* Update score */
-    update_score();
+    update_stats();
     // Delay_ms(100); // delay needed for screen to update
        //     // Update game mode
         //     sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d",g_debug );
@@ -230,8 +234,9 @@ void TIMER2_ISR() iv IVT_INT_TIM2 {
 /// TIMER3 ISR - Needs to have higher priority than TIM2 in order to update display properly
 void TIMER3_ISR() iv IVT_INT_TIM3 {
     TIM3_SR &= ~(1<<0);         // Bit[0] UIF interrupt reset set to 0
+
     toggle_game_clock_delay(); 
-      // Clean previous buffered image out and update new movement
+    // Clean previous buffered image out and update new movement
         // cleaning_buffer(m_BLACK);  
         //         Delay_ms(100);
         // move_snake();

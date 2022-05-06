@@ -190,11 +190,21 @@ main
 							TFT_Color16bitToRGB
 							TFT_RGBToColor16bit
 						TFT_Set_Pen
+			generate_food
+				rand
+					srand
+				scr_debug
+				convert_lin_xy
+				check_snake_collision
+					incr_node
+				draw_cell_pos
+					set_brush_color
+					convert_lin_xy
+					TFT_Rectangle
+				set_food_in_play_flag
+				set_food_xy
 		dump_ds_buffer
 			draw_cell_pos
-				set_brush_color
-				convert_lin_xy
-				TFT_Rectangle
 	start_snake_game
 		set_sprite_offset
 	TFT_Set_Brush
@@ -225,7 +235,7 @@ TIMER2_ISR
 					_Mul_FP
 				_FloatToSignedIntegral
 		TFT_Write_Text
-	update_score
+	update_stats
 		sprintf
 		TFT_Write_Text
 	ADC1_Read
@@ -237,17 +247,15 @@ TIMER2_ISR
 TIMER3_ISR
 	toggle_game_clock_delay
 	screen_refresh_TIM3
+		check_snake_collision
 		clean_tail
 			print_snake
+		draw_cell_xy
 		move_snake
 			incr_snake_head
 		print_snake
 		incr_snake_tail
 		generate_food
-			rand
-				srand
-			draw_cell_pos
-			scr_debug
 EXTI15_10
 	get_game_mode
 	set_cur_screen_run_flag

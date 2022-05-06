@@ -14,7 +14,7 @@ Value=0
 [BUILD_TYPE]
 Value=1
 [ACTIVE_TAB]
-Value=cp_game_ctl.h
+Value=P7_final_project.lst
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -76,7 +76,7 @@ Count=8
 6=Header Files
 Count=3
 [LIB_EXPANDED_NODES]
-Count=0
+Count=1
 [PROGRAMMER_OPTIONS]
 Value=SWD
 [PROGRAMMER_TYPE]

@@ -47,7 +47,6 @@ void cleaning_buffer(uint8_t color_8bit);
 // void dump_ds_buffer();
 //=================================================================================================================
 
-
 // Set the offset transform values for the current sprite in the video buffer
 void set_sprite_offset(int32_t ofs_x, int32_t ofs_y) {
     offset_x = ofs_x;
@@ -61,6 +60,8 @@ int32_t get_offset_y() {
     return offset_y;
 }
 
+
+
 /// Converts a linear cell postion and sets x and y grid co-ordinates
 void convert_lin_xy(int32_t *cell_pos, int32_t *x_var, int32_t *y_var ) {
 
@@ -72,27 +73,26 @@ void convert_lin_xy(int32_t *cell_pos, int32_t *x_var, int32_t *y_var ) {
         temp_val = 300;
     }
 
-
+    // Left over value will equal column, but since matrix is 0-indexed,
+    // remainders are not zero indexed so we have to subtract 1.
     // If value is greater than the first row size
     while (temp_val >= (MAX_COL_WIDTH) ) {
         temp_val -= MAX_COL_WIDTH-1;
         ++row;
 
         if (temp_val > 0 ) {
-            --temp_val; // compensate for zero-index of array by adding 1
+            --temp_val; // compensate for zero-index of array by subtract 1
         }
         
     }
     
-    // Left over value will equal column, but since matrix is 0-indexed,
-    // remainders are not zero indexed so we have to subtract 1.
 
+    // y=0 is off-limits
+    if (row <= 0 ) {
+        row = 1;
+    }
 
     col = temp_val;
-
-    // Set the x y pointers so they can be used
-    // cell->x = col;
-    // cell->y = row;
 
     *x_var = col;
     *y_var = row;
@@ -154,23 +154,17 @@ void draw_cell_pos( int32_t *linear_pos, uint8_t color_8bit) {
             PX_BLOCK + (PX_BLOCK * x_var),              // Lower-right X
             PX_BLOCK + (PX_BLOCK * y_var)               // Lower-right Y
             );
-
-    
-
 }
 
 
 /// Debug load and draw single block at specified coordinate pixel block
 void draw_cell_xy(int16_t x_var, int16_t y_var, uint8_t color_8bit ) {
-    // int32_t linear_val = 0;
 
-       if (color_8bit != CUR_BRUSH_COLOUR) {
-        set_brush_color(color_8bit);
+    if (color_8bit != CUR_BRUSH_COLOUR) {
+    set_brush_color(color_8bit);
     }
-
-  
-
-    // // Draw the sprite directly
+    
+    // Draw the sprite directly
        TFT_Rectangle(
             PX_BLOCK * x_var,                   // Upper-left X
             (y_var * PX_BLOCK),                 // Upper-left Y
@@ -201,7 +195,7 @@ void render_rect_mask(int32_t ul_x, int32_t ul_y, int32_t lr_x, int32_t lr_y, ui
             PX_BLOCK * lr_x,               // Lower-right X
             PX_BLOCK * lr_y                // Lower-right Y
         );
-    }
+}
 
 
 
@@ -266,27 +260,25 @@ void print_snake(t_node *node, uint8_t color_8bit) {
 
 }
 
-void cleaning_buffer(uint8_t color_8bit) {
-    int32_t i=0;
-
-    for (i=0; i < MAX_BLOCK_COUNT  ; i++) {
-
-        if (g_DS_BUFFER[i] != 0xFF) {
-            draw_cell_pos(i, color_8bit ); // pass the colour code~
-        }
-
-    }
-}
-
 void clean_tail(t_node * node_tail,  uint8_t color_8bit) {
-    int32_t i = 0;
-
-
-    
     print_snake(node_tail, color_8bit);
-    
-
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// void cleaning_buffer(uint8_t color_8bit) {
+//     int32_t i=0;
+
+//     for (i=0; i < MAX_BLOCK_COUNT  ; i++) {
+
+//         if (g_DS_BUFFER[i] != 0xFF) {
+//             draw_cell_pos(i, color_8bit ); // pass the colour code~
+//         }
+
+//     }
+// }
 
 
 // void transform_sprite_(uint8_t transform_dir) {

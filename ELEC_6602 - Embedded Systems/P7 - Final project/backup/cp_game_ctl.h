@@ -355,7 +355,7 @@ void load_snake_game() {
 }
 
 /// Update the score and print it to screen
-void update_score() {
+void update_stats() {
     sprintf(g_str_buffer, "Score: \x20 %05d", g_game_score);
     TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 0*PX_BLOCK);
 
