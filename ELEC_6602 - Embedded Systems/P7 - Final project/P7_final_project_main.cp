@@ -128,7 +128,6 @@ static const uint8_t TAIL_OFF = 0;
 
 
 
-volatile uint8_t cur_screen_run_flag = TRUE;
 
 
 static const uint32_t GPIO_INPUT_MASK = 0x44444444;
@@ -139,6 +138,7 @@ static const int32_t MAX_COL_WIDTH = 20;
 static const int32_t MAX_ROW_LENGTH = 15;
 static const int32_t MAX_BLOCK_COUNT = 300;
 static const uint8_t PX_BLOCK = 16;
+static const uint8_t INI_BLOCK = 8;
 
 
 
@@ -150,10 +150,12 @@ typedef struct {
 
 
 static const uint8_t PHASE_INTRO = 0;
+static const uint8_t PHASE_LOGO = 0;
 static const uint8_t PHASE1_READY = 1;
 static const uint8_t PHASE2_PLAYING = 2;
 static const uint8_t PHASE_QUIT = 3;
-static const uint8_t PHASE_HSCORE = 3;
+static const uint8_t PHASE_HSCORE = 4;
+static const uint8_t PHASE_GAME_LOOP_OVER = 5;
 
 static const uint8_t NORMAL_MODE = 0;
 static const uint8_t WALL_COL_OFF = 0x1;
@@ -163,6 +165,7 @@ static const uint8_t MOVE_RIGHT = 0x0;
 static const uint8_t MOVE_LEFT = 0x1;
 static const uint8_t MOVE_UP = 0x2;
 static const uint8_t MOVE_DOWN = 0x3;
+static const uint8_t JBTN_DOWN = 0x4;
 static const uint16_t NEG_NULL = -1;
 static const uint32_t SFX_FOOD = 5;
 static const uint32_t SFX_FOOD_HIGH = 1;
@@ -178,11 +181,23 @@ static const uint8_t m_BLACK = 0;
 static const uint8_t m_YELLOW = 1;
 static const uint8_t m_RED = 2;
 static const uint8_t m_NAVY = 3;
-static const uint8_t m_GRAY = 3;
-static const uint8_t m_GREEN = 4;
-static const uint8_t m_WHITE = 5;
+static const uint8_t m_GRAY = 4;
+static const uint8_t m_GREEN = 5;
+static const uint8_t m_WHITE = 6;
 static const uint8_t m_FUCHSIA = 6;
-#line 92 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
+
+
+static volatile uint8_t cur_screen_run_flag = TRUE;
+static volatile uint8_t g_GAME_PHASE = PHASE1_READY;
+
+void set_cur_screen_run_flag(uint8_t run_flag) {
+ cur_screen_run_flag = run_flag;
+}
+
+void set_game_phase(uint8_t game_phase) {
+ g_GAME_PHASE = game_phase;
+}
+#line 106 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
 void debug(uint32_t value) {
  Delay_ms(1);
  USART1_DR = 0xD;
@@ -194,7 +209,310 @@ void debug(uint32_t value) {
 #line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_intro_screen_ctl.h"
 #line 1 "d:/mikroc pro for arm/include/stdint.h"
 #line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
-#line 18 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_intro_screen_ctl.h"
+#line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_pix_render.h"
+#line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
+#line 16 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_pix_render.h"
+static const uint8_t SHIFT_UP = 0xC1;
+static const uint8_t SHIFT_DOWN = 0xC2;
+static const uint8_t SHIFT_LEFT = 0xC3;
+static const uint8_t SHIFT_RIGHT = 0xC4;
+
+
+
+
+static volatile uint8_t CUR_BRUSH_COLOUR = m_BLACK;
+uint8_t g_DS_BUFFER[300];
+
+
+static int32_t offset_x = 0;
+static int32_t offset_y = 0;
+
+
+
+void cleaning_buffer (uint8_t color_8bit);
+void convert_lin_xy ( int32_t *cell_pos, int32_t *x_var, int32_t *y_var );
+void draw_cell_pos ( int32_t *linear_pos, uint8_t color_8bit);
+void init_arr (uint8_t *in_arr, uint32_t a_size);
+void load_cell_xy (int32_t x_var, int32_t y_var, int32_t clr_code);
+void render_rect_mask (int32_t ul_x, int32_t ul_y, int32_t lr_x, int32_t lr_y, uint8_t color_8bit);
+void set_sprite_offset (int32_t ofs_x, int32_t ofs_y);
+
+int32_t color_convert_32 (uint8_t color_8bit);
+int32_t get_offset_x ();
+
+void dump_arr_memory(uint8_t *in_arr, uint32_t a_size);
+
+
+
+
+
+
+void dump_ds_buffer();
+
+
+
+
+
+void init_arr(uint8_t *in_arr, uint32_t a_size) {
+ uint32_t i=0;
+
+ for (i=0; i < a_size; i++) {
+ in_arr[i]=0xFF;
+ }
+}
+
+
+
+void dump_arr_memory(uint8_t *in_arr, uint32_t a_size) {
+ uint32_t i = 0;
+
+ for ( i=0; i < MAX_BLOCK_COUNT; i++) {
+
+
+ while ( (USART1_SR & (1 << 7 )) == 0) {}
+ Delay_ms(10);
+ USART1_DR = (uint32_t)in_arr[i];
+ Delay_ms(10);
+
+ }
+}
+
+
+
+
+void set_sprite_offset(int32_t ofs_x, int32_t ofs_y) {
+ offset_x = ofs_x;
+ offset_y = ofs_y;
+}
+
+int32_t get_offset_x() {
+ return offset_x;
+}
+int32_t get_offset_y() {
+ return offset_y;
+}
+
+
+
+
+void convert_lin_xy(int32_t *cell_pos, int32_t *x_var, int32_t *y_var ) {
+
+ int32_t row = 0;
+ int32_t col = 0;
+ int32_t temp_val = *cell_pos;
+
+ if (temp_val > MAX_BLOCK_COUNT) {
+ temp_val = 300;
+ }
+
+
+
+
+ while (temp_val >= (MAX_COL_WIDTH) ) {
+ temp_val -= MAX_COL_WIDTH-1;
+ ++row;
+
+ if (temp_val > 0 ) {
+ --temp_val;
+ }
+
+ }
+
+
+
+ if (row <= 0 ) {
+ row = 1;
+ }
+
+ col = temp_val;
+
+ *x_var = col;
+ *y_var = row;
+
+}
+
+
+
+int32_t color_convert_32(uint8_t color_8bit) {
+
+ if (color_8bit == m_YELLOW){
+ return CL_YELLOW;
+ } else if (color_8bit == m_BLACK) {
+ return CL_BLACK;
+ } else if (color_8bit == m_RED) {
+ return CL_RED;
+ } else if (color_8bit == m_NAVY) {
+ return CL_NAVY;
+ } else if (color_8bit == m_GREEN) {
+ return CL_GREEN;
+ } else if (color_8bit == m_FUCHSIA) {
+ return CL_FUCHSIA;
+ } else if (color_8bit == m_GRAY) {
+ return CL_GRAY;
+ } else {
+ return CL_WHITE;
+ }
+}
+
+
+
+
+void set_brush_color(uint8_t color_8bit) {
+ int32_t px_clr;
+ px_clr = color_convert_32(color_8bit);
+
+ TFT_SET_Brush(1, px_clr, 0, 0 , 0 ,0);
+ CUR_BRUSH_COLOUR = color_8bit;
+}
+
+
+
+
+void draw_cell_pos( int32_t *linear_pos, uint8_t color_8bit) {
+ int32_t x_var;
+ int32_t y_var;
+ int32_t cell_pos = *linear_pos;
+
+
+ if (color_8bit != CUR_BRUSH_COLOUR) {
+
+ set_brush_color(color_8bit);
+ }
+
+
+ convert_lin_xy(&cell_pos, &x_var, &y_var );
+
+
+ x_var +=offset_x;
+ y_var +=offset_y;
+
+
+
+ TFT_Rectangle(
+ PX_BLOCK * x_var,
+ (y_var * PX_BLOCK),
+ PX_BLOCK + (PX_BLOCK * x_var),
+ PX_BLOCK + (PX_BLOCK * y_var)
+ );
+}
+
+
+
+
+void draw_cell_xy(int16_t x_var, int16_t y_var, uint8_t color_8bit ) {
+
+ if (color_8bit != CUR_BRUSH_COLOUR) {
+ set_brush_color(color_8bit);
+ }
+
+
+
+ x_var +=offset_x;
+ y_var +=offset_y;
+
+
+
+ TFT_Rectangle(
+ PX_BLOCK * x_var,
+ (y_var * PX_BLOCK),
+ PX_BLOCK + (PX_BLOCK * x_var),
+ PX_BLOCK + (PX_BLOCK * y_var)
+ );
+}
+
+
+
+void draw_ini_cell_xy(int16_t x_var, int16_t y_var, uint8_t color_8bit ) {
+
+ if (color_8bit != CUR_BRUSH_COLOUR) {
+ set_brush_color(color_8bit);
+ }
+
+
+
+ x_var +=offset_x;
+ y_var +=offset_y;
+
+
+
+ TFT_Rectangle(
+ INI_BLOCK * x_var,
+ (y_var * PX_BLOCK),
+ INI_BLOCK + ( INI_BLOCK * x_var),
+ PX_BLOCK + ( PX_BLOCK * y_var)
+ );
+}
+
+
+
+
+
+
+void render_rect_mask(int32_t ul_x, int32_t ul_y, int32_t lr_x, int32_t lr_y, uint8_t color_8bit) {
+
+
+ set_brush_color(color_8bit);
+
+ TFT_Rectangle(
+ PX_BLOCK * ul_x,
+ PX_BLOCK * ul_y,
+ PX_BLOCK * lr_x,
+ PX_BLOCK * lr_y
+ );
+}
+
+
+
+
+
+void load_cell_xy(int32_t x_var, int32_t y_var, uint8_t clr_code) {
+ int32_t linear_val = 0;
+ uint8_t color_8bit = clr_code;
+
+
+
+
+
+
+
+
+
+
+ linear_val = ( (y_var * MAX_COL_WIDTH) + x_var );
+
+ g_DS_BUFFER[linear_val] = color_8bit;
+
+}
+
+
+
+
+void dump_ds_buffer() {
+ int32_t i=0;
+
+ for (i=0; i < MAX_BLOCK_COUNT ; i++) {
+
+ if (g_DS_BUFFER[i] != 0xFF) {
+ draw_cell_pos(i, g_DS_BUFFER[i]);
+ }
+
+ }
+}
+
+
+
+
+void print_snake(t_node *node, uint8_t color_8bit) {
+ draw_cell_xy(node->node_x, node->node_y, color_8bit);
+}
+
+
+
+
+void clean_tail(t_node * node_tail, uint8_t color_8bit) {
+ print_snake(node_tail, color_8bit);
+}
+#line 17 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_intro_screen_ctl.h"
 static const uint32_t SCROLL_SPEED = 3;
 static const uint32_t X_SCROLL_SPEED = 1;
 
@@ -212,26 +530,12 @@ void load_intro_screen_simple();
 
 
 
+void duck_sprite();
 void draw_intro_screen(uint32_t x_axis, uint32_t y_axis);
 void draw_rectangle(uint32_t x_axis, uint32_t y_axis);
 void set_cur_screen_run_flag(uint8_t run_flag);
 void draw_info_text(uint32_t x_axis, uint32_t y_axi);
-
-
-
-
-
-
-
-
-
-void set_cur_screen_run_flag(uint8_t run_flag) {
- cur_screen_run_flag = run_flag;
-}
-
-
-
-
+#line 51 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_intro_screen_ctl.h"
 void load_intro_screen_simple() {
 
 
@@ -347,8 +651,6 @@ void load_intro_screen() {
  else {
  scroll_dir = 1;
  }
-
-
  }
 
  }
@@ -418,6 +720,159 @@ void draw_intro_screen(uint32_t x_axis, uint32_t y_axis) {
  Delay_ms(10);
 
 }
+
+
+
+
+
+void load_duck_screen() {
+ uint32_t x_axis = 0;
+ uint32_t y_axis = 0;
+ uint32_t PX_BLOCK = 16;
+ uint32_t i=0;
+
+ uint32_t value = 0;
+
+
+
+ init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+
+
+
+ set_cur_screen_run_flag(TRUE);
+
+
+
+ TFT_Fill_Screen(CL_NAVY);
+
+ TFT_SET_PEN(m_BLACK, 0);
+ TFT_SET_Brush(1, CL_AQUA, 0, 0 , 0 ,0);
+
+
+
+ duck_sprite();
+
+
+
+
+ for (i=0; i< 20; i++) {
+
+
+
+
+
+ cleaning_buffer(m_NAVY);
+
+
+ set_sprite_offset(i, 6);
+ dump_ds_buffer();
+ }
+
+
+
+ while (cur_screen_run_flag == TRUE) {};
+
+
+ set_sprite_offset(0,0);
+
+}
+
+
+
+
+
+
+void duck_sprite() {
+
+
+
+
+
+
+
+
+
+ load_cell_xy(8,0, m_YELLOW);
+ load_cell_xy(9,0, m_YELLOW);
+ load_cell_xy(10,0, m_YELLOW);
+
+
+ load_cell_xy(2,2,m_YELLOW);
+ load_cell_xy(3,2,m_YELLOW);
+ load_cell_xy(7,2,m_YELLOW);
+ load_cell_xy(8,2,m_YELLOW);
+
+
+
+
+ load_cell_xy(7,1, m_BLACK);
+ load_cell_xy(8,1, m_BLACK);
+ load_cell_xy(9,1, m_BLACK);
+ load_cell_xy(10,1, m_BLACK);
+ load_cell_xy(11,1, m_BLACK);
+ load_cell_xy(9,2, m_BLACK);
+ load_cell_xy(10,2, m_BLACK);
+
+
+
+
+ load_cell_xy(11,2, m_RED);
+ load_cell_xy(12,2, m_RED);
+ load_cell_xy(13,2, m_RED);
+ load_cell_xy(11,3, m_RED);
+ load_cell_xy(12,3, m_RED);
+
+
+ load_cell_xy(1,3, m_YELLOW);
+ load_cell_xy(2,3, m_YELLOW);
+ load_cell_xy(3,3, m_YELLOW);
+ load_cell_xy(4,3, m_YELLOW);
+ load_cell_xy(8,3, m_YELLOW);
+ load_cell_xy(9,3, m_YELLOW);
+ load_cell_xy(10,3, m_YELLOW);
+ load_cell_xy(0,4, m_YELLOW);
+ load_cell_xy(1,4, m_YELLOW);
+ load_cell_xy(2,4, m_YELLOW);
+ load_cell_xy(3,4, m_YELLOW);
+ load_cell_xy(4,4, m_YELLOW);
+ load_cell_xy(5,4, m_YELLOW);
+ load_cell_xy(6,4, m_YELLOW);
+ load_cell_xy(7,4, m_YELLOW);
+ load_cell_xy(8,4, m_YELLOW);
+ load_cell_xy(9,4, m_YELLOW);
+ load_cell_xy(10,4, m_YELLOW);
+ load_cell_xy(1,5, m_YELLOW);
+ load_cell_xy(2,5, m_YELLOW);
+ load_cell_xy(3,5, m_YELLOW);
+ load_cell_xy(4,5, m_YELLOW);
+ load_cell_xy(5,5, m_YELLOW);
+ load_cell_xy(6,5, m_YELLOW);
+ load_cell_xy(7,5, m_YELLOW);
+ load_cell_xy(8,5, m_YELLOW);
+ load_cell_xy(9,5, m_YELLOW);
+ load_cell_xy(10,5, m_YELLOW);
+ load_cell_xy(2,6, m_YELLOW);
+ load_cell_xy(3,6, m_YELLOW);
+ load_cell_xy(4,6, m_YELLOW);
+ load_cell_xy(5,6, m_YELLOW);
+ load_cell_xy(6,6, m_YELLOW);
+ load_cell_xy(7,6, m_YELLOW);
+ load_cell_xy(8,6, m_YELLOW);
+ load_cell_xy(9,6, m_YELLOW);
+ load_cell_xy(10,6, m_YELLOW);
+ load_cell_xy(3,7,m_YELLOW);
+ load_cell_xy(4,7,m_YELLOW);
+ load_cell_xy(5,7,m_YELLOW);
+ load_cell_xy(6,7,m_YELLOW);
+ load_cell_xy(7,7,m_YELLOW);
+ load_cell_xy(8,7,m_YELLOW);
+ load_cell_xy(9,7,m_YELLOW);
+ load_cell_xy(4,8,m_YELLOW);
+ load_cell_xy(5,8,m_YELLOW);
+ load_cell_xy(6,8,m_YELLOW);
+ load_cell_xy(7,8,m_YELLOW);
+ load_cell_xy(8,8,m_YELLOW);
+}
 #line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
 #line 1 "d:/mikroc pro for arm/include/stdint.h"
 #line 1 "d:/mikroc pro for arm/include/string.h"
@@ -447,274 +902,18 @@ char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
 #line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_pix_render.h"
-#line 1 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
-#line 16 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_pix_render.h"
-static const uint8_t SHIFT_UP = 0xC1;
-static const uint8_t SHIFT_DOWN = 0xC2;
-static const uint8_t SHIFT_LEFT = 0xC3;
-static const uint8_t SHIFT_RIGHT = 0xC4;
-
-
-
-
-static volatile uint8_t CUR_BRUSH_COLOUR = m_BLACK;
-uint8_t g_DS_BUFFER[300];
-
-
-static int32_t offset_x = 0;
-static int32_t offset_y = 0;
-
-
-void set_sprite_offset(int32_t ofs_x, int32_t ofs_y);
-int32_t get_offset_x();
-
-void draw_cell_pos( int32_t *linear_pos, uint8_t color_8bit);
-void convert_lin_xy( int32_t *cell_pos, int32_t *x_var, int32_t *y_var );
-void load_cell_xy(int32_t x_var, int32_t y_var, int32_t clr_code);
-void render_rect_mask(int32_t ul_x, int32_t ul_y, int32_t lr_x, int32_t lr_y, uint8_t color_8bit);
-int32_t color_convert_32(uint8_t color_8bit);
-void cleaning_buffer(uint8_t color_8bit);
-
-
-
-
-
-
-void dump_ds_buffer();
-
-
-
-void set_sprite_offset(int32_t ofs_x, int32_t ofs_y) {
- offset_x = ofs_x;
- offset_y = ofs_y;
-}
-
-int32_t get_offset_x() {
- return offset_x;
-}
-int32_t get_offset_y() {
- return offset_y;
-}
-
-
-
-
-void convert_lin_xy(int32_t *cell_pos, int32_t *x_var, int32_t *y_var ) {
-
- int32_t row = 0;
- int32_t col = 0;
- int32_t temp_val = *cell_pos;
-
- if (temp_val > MAX_BLOCK_COUNT) {
- temp_val = 300;
- }
-
-
-
-
- while (temp_val >= (MAX_COL_WIDTH) ) {
- temp_val -= MAX_COL_WIDTH-1;
- ++row;
-
- if (temp_val > 0 ) {
- --temp_val;
- }
-
- }
-
-
-
- if (row <= 0 ) {
- row = 1;
- }
-
- col = temp_val;
-
- *x_var = col;
- *y_var = row;
-
-}
-
-
-
-int32_t color_convert_32(uint8_t color_8bit) {
-
- if (color_8bit == m_YELLOW){
- return CL_YELLOW;
- } else if (color_8bit == m_BLACK) {
- return CL_BLACK;
- } else if (color_8bit == m_RED) {
- return CL_RED;
- } else if (color_8bit == m_NAVY) {
- return CL_NAVY;
- } else if (color_8bit == m_GREEN) {
- return CL_GREEN;
- } else if (color_8bit == m_FUCHSIA) {
- return CL_FUCHSIA;
- } else {
- return CL_WHITE;
- }
-}
-
-void set_brush_color(uint8_t color_8bit) {
- int32_t px_clr;
- px_clr = color_convert_32(color_8bit);
-
- TFT_SET_Brush(1, px_clr, 0, 0 , 0 ,0);
- CUR_BRUSH_COLOUR = color_8bit;
-}
-
-
-void draw_cell_pos( int32_t *linear_pos, uint8_t color_8bit) {
- int32_t x_var;
- int32_t y_var;
- int32_t cell_pos = *linear_pos;
-
-
- if (color_8bit != CUR_BRUSH_COLOUR) {
-
- set_brush_color(color_8bit);
- }
-
-
- convert_lin_xy(&cell_pos, &x_var, &y_var );
-
-
-
-
-
-
- TFT_Rectangle(
- PX_BLOCK * x_var,
- (y_var * PX_BLOCK),
- PX_BLOCK + (PX_BLOCK * x_var),
- PX_BLOCK + (PX_BLOCK * y_var)
- );
-}
-
-
-
-void draw_cell_xy(int16_t x_var, int16_t y_var, uint8_t color_8bit ) {
-
- if (color_8bit != CUR_BRUSH_COLOUR) {
- set_brush_color(color_8bit);
- }
-
-
- TFT_Rectangle(
- PX_BLOCK * x_var,
- (y_var * PX_BLOCK),
- PX_BLOCK + (PX_BLOCK * x_var),
- PX_BLOCK + (PX_BLOCK * y_var)
- );
-
-
-
-
-
-
-
-}
-
-
-
-
-
-void render_rect_mask(int32_t ul_x, int32_t ul_y, int32_t lr_x, int32_t lr_y, uint8_t color_8bit) {
-
-
- set_brush_color(color_8bit);
-
- TFT_Rectangle(
- PX_BLOCK * ul_x,
- PX_BLOCK * ul_y,
- PX_BLOCK * lr_x,
- PX_BLOCK * lr_y
- );
-}
-
-
-
-
-void load_cell_xy(int32_t x_var, int32_t y_var, uint8_t clr_code) {
- int32_t linear_val = 0;
- uint8_t color_8bit = clr_code;
-
-
-
-
-
-
-
-
-
-
- linear_val = ( (y_var * MAX_COL_WIDTH) + x_var );
-
- g_DS_BUFFER[linear_val] = color_8bit;
-
-}
-
-
-void load_snake_xy(int32_t x_var, int32_t y_var, uint8_t clr_code) {
- int32_t linear_val = 0;
- uint8_t color_8bit = clr_code;
-
-
-
-
-
-
-
-
-
-
- linear_val = ( (y_var * MAX_COL_WIDTH) + x_var );
-
- g_DS_BUFFER[linear_val] = color_8bit;
-
-}
-
-
-void dump_ds_buffer() {
- int32_t i=0;
-
- for (i=0; i < MAX_BLOCK_COUNT ; i++) {
-
- if (g_DS_BUFFER[i] != 0xFF) {
- draw_cell_pos(i, g_DS_BUFFER[i]);
- }
-
- }
-}
-
-void print_snake(t_node *node, uint8_t color_8bit) {
-
-
-
- draw_cell_xy(node->node_x, node->node_y, color_8bit);
-
-}
-
-void clean_tail(t_node * node_tail, uint8_t color_8bit) {
- print_snake(node_tail, color_8bit);
-}
 #line 14 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
 static const uint8_t EOF_ARRAY = 0xFF;
 const static int32_t MAX_CELLS = 300;
-
-
-
-
-
+static const uint32_t EEPROM_MAX_SIZE =100;
 
 
 
 
 
 static volatile uint8_t game_cur_screen_run_flag = TRUE;
-static uint8_t g_GAME_PHASE = PHASE1_READY;
-static uint8_t g_GAME_MODE = NORMAL_MODE;
+
+static uint8_t g_GAME_MODE = DEV_MODE;
 static uint8_t g_curr_snake_dir = MOVE_RIGHT;
 static volatile uint8_t g_game_clock_delay_tim3 = ON;
 static volatile uint32_t g_time_count = 0;
@@ -725,11 +924,16 @@ static int32_t g_rand_num = 999;
 static uint8_t g_food_in_play = FALSE;
 static int32_t g_fd_x_val = NEG_NULL;
 static int32_t g_fd_y_val = NEG_NULL;
-int32_t i=0;
-int32_t j=0;
-uint32_t i2c_status;
-uint8_t data_[128];
-uint8_t rx_data_[256];
+static int32_t init_cursor_start = 0x40;
+static int32_t init_cur_count = 1;
+static int32_t i =0;
+static int32_t j =0;
+static uint32_t i2c_status;
+static uint8_t tx_buffer_[128];
+static uint8_t rx_buffer_[256];
+static int32_t hs_cursor_x = 22;
+static int32_t hs_cursor_y = 4;
+uint8_t init_cur = 0x40;
 
 
 uint8_t g_str_buffer[128];
@@ -743,6 +947,7 @@ static uint32_t g_t_wait = FALSE;
 t_node g_snake_cells[MAX_CELLS];
 t_node *m_node_start = &g_snake_cells;
 t_node *m_node_end = &g_snake_cells[MAX_CELLS-1];
+
 t_node *m_node_head = &g_snake_cells;
 t_node *m_node_tail = &g_snake_cells;
 
@@ -762,12 +967,12 @@ void scr_debug(uint32_t value);
 
 
 
-void init_arr(uint8_t *in_arr, uint32_t a_size);
-void dump_arr_memory(uint8_t *in_arr, uint32_t a_size);
+
+
 void draw_snake();
 void draw_block(uint8_t *dp_buffer, uint32_t x_pos, uint8_t y_pos);
 
-void duck_sprite();
+
 void init_snake_sprite();
 
 void incr_snake_head();
@@ -825,8 +1030,6 @@ void set_food_in_play_flag (uint8_t state) {
 void set_food_xy(int32_t *x_val, int32_t *y_val) {
  g_fd_x_val = *x_val;
  g_fd_y_val = *y_val;
-
-
 }
 
 
@@ -835,7 +1038,6 @@ void play_sound1( uint32_t duration) {
 
  for (i=0; i < duration; i++) {
  GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
-
  Delay_ms(SFX_FOOD_HIGH);
  }
 }
@@ -846,7 +1048,6 @@ void play_sound2( uint32_t duration) {
 
  for (i=0; i < duration; i++) {
  GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
-
  Delay_ms(SFX_FOOD);
  }
 }
@@ -857,7 +1058,6 @@ void play_sound3( uint32_t duration) {
 
  for (i=0; i < duration; i++) {
  GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
-
  Delay_ms(SFX_WALL);
  }
 }
@@ -884,6 +1084,7 @@ void play_sfx_wall( uint32_t duration) {
 
 
 
+
 void play_sfx_food( uint32_t duration) {
 
  for (i=0; i < duration; i++) {
@@ -902,10 +1103,13 @@ void play_sfx_food( uint32_t duration) {
  }
 }
 
+
+
+
 void game_over() {
 
 
- TIM2_CR1 = 0;
+
  TIM3_CR1 = 0;
  play_sfx_wall(20);
  game_cur_screen_run_flag = FALSE;
@@ -913,10 +1117,9 @@ void game_over() {
 }
 
 
-
-
-
-
+int32_t get_init_count () {
+ return init_cur_count;
+}
 
 
 
@@ -1154,70 +1357,7 @@ void incr_snake_tail() {
 
 
 
-void init_arr(uint8_t *in_arr, uint32_t a_size) {
- uint32_t i=0;
 
- for (i=0; i < a_size; i++) {
- in_arr[i]=0xFF;
- }
-}
-
-
-
-
-
-
-void load_duck_screen() {
- uint32_t x_axis = 0;
- uint32_t y_axis = 0;
- uint32_t PX_BLOCK = 16;
- uint32_t i=0;
-
- uint32_t value = 0;
-
-
-
- init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
-
-
-
- set_cur_screen_run_flag(TRUE);
-
-
-
- TFT_Fill_Screen(CL_NAVY);
-
- TFT_SET_PEN(m_BLACK, 0);
- TFT_SET_Brush(1, CL_AQUA, 0, 0 , 0 ,0);
-
-
-
- duck_sprite();
-
-
-
-
- for (i=0; i< 20; i++) {
-
-
-
-
-
- cleaning_buffer(m_NAVY);
-
-
- set_sprite_offset(i, 6);
- dump_ds_buffer();
- }
-
-
-
- while (cur_screen_run_flag == TRUE) {};
-
-
- set_sprite_offset(0,0);
-
-}
 
 
 
@@ -1226,7 +1366,7 @@ void load_snake_game() {
 
  g_GAME_PHASE = PHASE1_READY;
 
- init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+
 
 
 
@@ -1264,6 +1404,7 @@ void update_stats() {
 
 
 void update_time() {
+
  g_t_secs = g_time_count % 60;
  if (g_t_secs != 0) {
  g_t_wait = FALSE;
@@ -1280,12 +1421,15 @@ void update_time() {
 
 void init_snake_game() {
 
- g_GAME_PHASE = PHASE2_PLAYING;
 
- init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+
+ g_GAME_PHASE = PHASE2_PLAYING;
 
 
  set_cur_screen_run_flag(TRUE);
+ game_cur_screen_run_flag=TRUE;
+
+
 
 
  TFT_Fill_Screen(CL_BLACK);
@@ -1293,7 +1437,6 @@ void init_snake_game() {
 
  TFT_SET_Brush(1, CL_AQUA, 0, 0 , 0 ,0);
  set_brush_color(m_GREEN);
-
  TFT_SET_PEN(CL_GRAY, 0);
  TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
 
@@ -1304,7 +1447,14 @@ void init_snake_game() {
 
 
 
+
 void init_snake_sprite() {
+
+ m_node_head = m_node_start;
+ m_node_tail = m_node_start;
+ g_curr_snake_dir = MOVE_RIGHT;
+
+
  m_node_head->node_x = 0;
  m_node_head->node_y = 1;
  print_snake(m_node_head, m_GREEN);
@@ -1362,8 +1512,10 @@ void screen_refresh_TIM3() {
 void game_over_scr() {
 
  g_GAME_PHASE = PHASE_QUIT;
+ set_game_phase (PHASE_QUIT);
 
- init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+
+
 
 
  set_cur_screen_run_flag(TRUE);
@@ -1384,34 +1536,86 @@ void game_over_scr() {
  TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 3*PX_BLOCK);
 
 
-
-
  while (cur_screen_run_flag == TRUE) {}
 
 
 }
 
-void EE_write(uint8_t w_addr, uint8_t w_data) {
- data_[0] = w_addr;
- data_[1] = w_data;
+
+
+void EE_write(uint8_t reg_addr, uint8_t tx_byte, uint32_t tx_size) {
+ tx_buffer_[0] = reg_addr;
+ tx_buffer_[1] = tx_byte;
  I2C1_Start();
 
 
- I2C1_Write(0x50, data_, 2, END_MODE_STOP);
+ I2C1_Write(0x50, tx_buffer_, 2, END_MODE_STOP);
 
 }
 
-uint8_t EE_read(uint8_t r_addr) {
- data_[0] = r_addr;
+
+
+
+void EE_read(uint8_t reg_addr, uint32_t rx_size) {
+
+
  I2C1_Start();
- I2C1_Write(0x50, data_,1, END_MODE_RESTART);
- I2C1_Read(0x50, data_, 1, END_MODE_STOP);
+ I2C1_Write(0x50, reg_addr, 1, END_MODE_RESTART);
+ I2C1_Read(0x50, rx_buffer_, rx_size +4, END_MODE_STOP);
 
- return data_[0];
+
 }
+
+
+void refresh_hs_scr(uint8_t cur_dir) {
+ int32_t xval = hs_cursor_x;
+ int32_t yval = hs_cursor_y;
+
+
+ TFT_Fill_Screen(CL_BLACK);
+ switch(cur_dir) {
+ case MOVE_UP:
+
+ if (init_cur > 0x5A) {
+ init_cur = init_cursor_start;
+ }
+ ++init_cur;
+ break;
+
+ case MOVE_DOWN:
+
+ if (init_cur < init_cursor_start) {
+ init_cur = 0x5A;
+ } else {
+ ++init_cur;
+ }
+ break;
+ case JBTN_DOWN:
+
+ ++init_cur_count;
+ }
+
+
+ if (init_cur_count == 3) {
+
+
+ g_GAME_PHASE = PHASE_GAME_LOOP_OVER;
+ } else {
+ draw_ini_cell_xy(hs_cursor_x,hs_cursor_y,m_GRAY);
+ }
+
+ sprintf(g_str_buffer, "Enter high score: \x20\x20 ");
+ TFT_Write_Text(&g_str_buffer, 4*PX_BLOCK, 4*PX_BLOCK);
+ sprintf(g_str_buffer, "%c: \x20", init_cur);
+ TFT_Write_Text(&g_str_buffer, 11*PX_BLOCK, 4*PX_BLOCK);
+
+}
+
+
 
 void game_high_score_scr() {
-
+ uint32_t tx_count = 0;
+ uint8_t byte;
 
 
  set_cur_screen_run_flag(TRUE);
@@ -1426,131 +1630,52 @@ void game_high_score_scr() {
  GPIOB_ODR |= 0xFF00;
  Delay_ms(10);
 
- for (i = 0; i < 0x16; i++) {
- EE_write(i, (0x32 +i) );
- GPIOB_ODR++;
- Delay_ms(5);
- }
+ draw_ini_cell_xy(22,4,m_GRAY);
+ Delay_ms(100);
+ sprintf(g_str_buffer, "Enter high score: \x20\x20 ");
+ TFT_Write_Text(&g_str_buffer, 4*PX_BLOCK, 4*PX_BLOCK);
+ sprintf(g_str_buffer, "___: \x20 %d", g_game_score);
+ TFT_Write_Text(&g_str_buffer, 11*PX_BLOCK, 4*PX_BLOCK);
 
+
+
+
+
+
+
+ for (i = 0; i < 0x16; i++) {
+ EE_write(i, (0x50 +i),1 );
+ GPIOB_ODR++;
+ Delay_ms(50);
+ }
+#line 776 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
  Delay_ms(10);
  GPIOB_ODR |= 0xFF00;
  Delay_ms(10);
 
- for (i=0; i < 0x16; i++) {
- rx_data_[i] = EE_read(i);
- Delay_ms(10);
+ for (i=0; i < 0x1; i++) {
+
+ EE_read(i,16);
+ Delay_ms(100);
  }
-
- sprintf(g_str_buffer, "testing: \x20 %s", rx_data_);
- TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 4*PX_BLOCK);
+ Delay_ms(100);
 
 
-
+ TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 9*PX_BLOCK);
+#line 802 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
  while (cur_screen_run_flag == TRUE) {}
 
 }
-#line 776 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
-void duck_sprite() {
-
-
-
-
-
-
-
-
-
- load_cell_xy(8,0, m_YELLOW);
- load_cell_xy(9,0, m_YELLOW);
- load_cell_xy(10,0, m_YELLOW);
-
-
- load_cell_xy(2,2,m_YELLOW);
- load_cell_xy(3,2,m_YELLOW);
- load_cell_xy(7,2,m_YELLOW);
- load_cell_xy(8,2,m_YELLOW);
-
-
-
-
- load_cell_xy(7,1, m_BLACK);
- load_cell_xy(8,1, m_BLACK);
- load_cell_xy(9,1, m_BLACK);
- load_cell_xy(10,1, m_BLACK);
- load_cell_xy(11,1, m_BLACK);
- load_cell_xy(9,2, m_BLACK);
- load_cell_xy(10,2, m_BLACK);
-
-
-
-
- load_cell_xy(11,2, m_RED);
- load_cell_xy(12,2, m_RED);
- load_cell_xy(13,2, m_RED);
- load_cell_xy(11,3, m_RED);
- load_cell_xy(12,3, m_RED);
-
-
- load_cell_xy(1,3, m_YELLOW);
- load_cell_xy(2,3, m_YELLOW);
- load_cell_xy(3,3, m_YELLOW);
- load_cell_xy(4,3, m_YELLOW);
- load_cell_xy(8,3, m_YELLOW);
- load_cell_xy(9,3, m_YELLOW);
- load_cell_xy(10,3, m_YELLOW);
- load_cell_xy(0,4, m_YELLOW);
- load_cell_xy(1,4, m_YELLOW);
- load_cell_xy(2,4, m_YELLOW);
- load_cell_xy(3,4, m_YELLOW);
- load_cell_xy(4,4, m_YELLOW);
- load_cell_xy(5,4, m_YELLOW);
- load_cell_xy(6,4, m_YELLOW);
- load_cell_xy(7,4, m_YELLOW);
- load_cell_xy(8,4, m_YELLOW);
- load_cell_xy(9,4, m_YELLOW);
- load_cell_xy(10,4, m_YELLOW);
- load_cell_xy(1,5, m_YELLOW);
- load_cell_xy(2,5, m_YELLOW);
- load_cell_xy(3,5, m_YELLOW);
- load_cell_xy(4,5, m_YELLOW);
- load_cell_xy(5,5, m_YELLOW);
- load_cell_xy(6,5, m_YELLOW);
- load_cell_xy(7,5, m_YELLOW);
- load_cell_xy(8,5, m_YELLOW);
- load_cell_xy(9,5, m_YELLOW);
- load_cell_xy(10,5, m_YELLOW);
- load_cell_xy(2,6, m_YELLOW);
- load_cell_xy(3,6, m_YELLOW);
- load_cell_xy(4,6, m_YELLOW);
- load_cell_xy(5,6, m_YELLOW);
- load_cell_xy(6,6, m_YELLOW);
- load_cell_xy(7,6, m_YELLOW);
- load_cell_xy(8,6, m_YELLOW);
- load_cell_xy(9,6, m_YELLOW);
- load_cell_xy(10,6, m_YELLOW);
- load_cell_xy(3,7,m_YELLOW);
- load_cell_xy(4,7,m_YELLOW);
- load_cell_xy(5,7,m_YELLOW);
- load_cell_xy(6,7,m_YELLOW);
- load_cell_xy(7,7,m_YELLOW);
- load_cell_xy(8,7,m_YELLOW);
- load_cell_xy(9,7,m_YELLOW);
- load_cell_xy(4,8,m_YELLOW);
- load_cell_xy(5,8,m_YELLOW);
- load_cell_xy(6,8,m_YELLOW);
- load_cell_xy(7,8,m_YELLOW);
- load_cell_xy(8,8,m_YELLOW);
-}
 #line 62 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 static uint8_t g_cur_game_phase = 0xFF;
-static int32_t g_game_speed = 1000;
+static int32_t g_game_speed = 2500;
 
 uint32_t rx_buffer = 0;
 uint32_t debug_val;
 uint32_t i2c_status1;
 uint8_t rx_data1 =0x32;
 uint8_t tx_data1 =0x55;
-#line 95 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+#line 84 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 void EXTI15_10() iv IVT_INT_EXTI15_10 {
 
  EXTI_PR |= 1 << 13;
@@ -1562,6 +1687,11 @@ void EXTI15_10() iv IVT_INT_EXTI15_10 {
 
  switch (g_cur_game_phase)
  {
+ case PHASE_LOGO:
+ set_cur_screen_run_flag(FALSE);
+ g_cur_game_phase = PHASE1_READY;
+ break;
+
  case PHASE_INTRO:
  set_cur_screen_run_flag(FALSE);
  g_cur_game_phase = PHASE1_READY;
@@ -1581,6 +1711,11 @@ void EXTI15_10() iv IVT_INT_EXTI15_10 {
 
  case PHASE_QUIT:
  set_cur_screen_run_flag(FALSE);
+ g_cur_game_phase = PHASE_HSCORE;
+ break;
+
+ case PHASE_HSCORE:
+
  g_cur_game_phase = PHASE_HSCORE;
  break;
 
@@ -1617,18 +1752,27 @@ void EXTIPA0() iv IVT_INT_EXTI0 {
 
 }
 
+
 void EXTIPA6() iv IVT_INT_EXTI9_5 {
+
  if (GPIOB_IDR.B5 == 0) {
  while(GPIOB_IDR.B5 == 0) {GPIOC_ODR = ~GPIOC_ODR;}
  EXTI_PR |= 1 << 5;
 
+ if (g_cur_game_phase == PHASE2_PLAYING) {
  if (g_curr_snake_dir != MOVE_UP) {
  set_curr_snake_dir(MOVE_DOWN);
+ }
+ } else if (g_cur_game_phase == PHASE_HSCORE) {
+ refresh_hs_scr(MOVE_DOWN);
  }
  }
 
 
  if (GPIOA_IDR.B6 == 0) {
+
+ if (g_cur_game_phase == PHASE2_PLAYING) {
+
  EXTI_PR |= 1 << 6;
  while (GPIOA_IDR.B6 == 0) {
  GPIOB_ODR = ~GPIOB_ODR;
@@ -1637,11 +1781,12 @@ void EXTIPA6() iv IVT_INT_EXTI9_5 {
  if (g_curr_snake_dir != MOVE_LEFT) {
  set_curr_snake_dir(MOVE_RIGHT);
  }
-
-
+ }
  }
 
+
 }
+
 
 
 
@@ -1649,8 +1794,10 @@ void EXTIPD2() iv IVT_INT_EXTI2 {
  EXTI_PR |= 1 << 2;
  while (GPIOD_IDR.B2 == 0) {GPIOB_ODR = ~GPIOB_ODR;}
 
+ if (g_cur_game_phase == PHASE2_PLAYING) {
  if (g_curr_snake_dir != MOVE_RIGHT) {
  set_curr_snake_dir(MOVE_LEFT);
+ }
  }
 
 
@@ -1658,9 +1805,11 @@ void EXTIPD2() iv IVT_INT_EXTI2 {
 
 
 
+
 void EXTIPD4() iv IVT_INT_EXTI4 {
  EXTI_PR |= 1 << 4;
  while (GPIOD_IDR.B4 == 0) {GPIOB_ODR = ~GPIOB_ODR;}
+
 
  if (g_curr_snake_dir != MOVE_DOWN) {
  set_curr_snake_dir(MOVE_UP);
@@ -1674,6 +1823,7 @@ void TIMER2_ISR() iv IVT_INT_TIM2 {
 
  update_game_time();
 
+ if (g_GAME_PHASE == PHASE2_PLAYING) {
 
 
 
@@ -1695,6 +1845,7 @@ void TIMER2_ISR() iv IVT_INT_TIM2 {
 
 
 
+ }
 }
 
 
@@ -1753,7 +1904,7 @@ void init_cfg_M_CTL() {
  GPIOD_CRL |= 4 << 2;
  GPIOD_CRL |= 4 << 4;
  GPIOC_CRH |= 4 << 5;
-#line 330 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+#line 345 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 }
 
 
@@ -1846,7 +1997,6 @@ void init_interrupt() {
  NVIC_ISER0 |= (uint32_t) 1 << 23;
  NVIC_ISER0 |= (uint32_t) 1 << 28;
  NVIC_ISER0 |= (uint32_t) 1 << 29;
-
  NVIC_ISER1 |= (uint32_t) 1 << 8;
  NVIC_ISER1 |= (uint32_t) 1 << 5;
 
@@ -1885,32 +2035,33 @@ void main() {
 
 
  init_interrupt();
-#line 476 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+#line 490 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
  Start_TP();
-#line 497 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+#line 520 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+ while (1) {
+
  load_snake_game();
 
 
 
  init_snake_game();
+ render_rect_mask(0,0,20,1, m_NAVY);
+ Delay_ms(50);
+
+
+ update_time();
+
+
+ update_stats();
 
  TIM2_CR1 = 0x0001;
  TIM3_CR1 = 0x0001;
  start_snake_game();
+ g_GAME_PHASE = PHASE_QUIT;
+ set_game_phase (PHASE_QUIT);
 
  game_over_scr();
  game_high_score_scr();
-
-
-
-
- TFT_SET_Brush(1, CL_BLACK, 0, 0, 0 ,0);
- TFT_Rectangle(0, 0, 320, 240);
- TFT_Fill_Screen(CL_GRAY);
-
- Delay_ms(3000);
-
- while (1) {
 
  }
 }

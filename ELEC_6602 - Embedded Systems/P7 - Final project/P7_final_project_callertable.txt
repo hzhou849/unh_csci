@@ -127,7 +127,6 @@ main
 			TP_TFT_Set_ADC_Threshold
 			TFT_Fill_Screen
 	load_snake_game
-		init_arr
 		set_cur_screen_run_flag
 		TFT_Fill_Screen
 		TFT_Set_Brush
@@ -158,7 +157,6 @@ main
 				TFT_Set_Font
 				TFT_Dot
 	init_snake_game
-		init_arr
 		set_cur_screen_run_flag
 		TFT_Fill_Screen
 		TFT_Set_Brush
@@ -204,13 +202,10 @@ main
 					TFT_Rectangle
 				set_food_in_play_flag
 				set_food_xy
-	start_snake_game
-	game_over_scr
-		init_arr
-		set_cur_screen_run_flag
+	render_rect_mask
 		set_brush_color
-		TFT_Set_Pen
-		TFT_Set_Font
+		TFT_Rectangle
+	update_time
 		sprintf
 			_doprntf
 				isdigit
@@ -228,6 +223,19 @@ main
 					_Mul_FP
 				_FloatToSignedIntegral
 		TFT_Write_Text
+	update_stats
+		sprintf
+		TFT_Write_Text
+	start_snake_game
+	set_game_phase
+	game_over_scr
+		set_game_phase
+		set_cur_screen_run_flag
+		set_brush_color
+		TFT_Set_Pen
+		TFT_Set_Font
+		sprintf
+		TFT_Write_Text
 	game_high_score_scr
 		set_cur_screen_run_flag
 		TFT_Fill_Screen
@@ -238,6 +246,11 @@ main
 				GPIO_Alternate_Function_Enable
 					GPIO_Configure_Pin
 						GPIO_Config
+		draw_ini_cell_xy
+			set_brush_color
+			TFT_Rectangle
+		sprintf
+		TFT_Write_Text
 		EE_write
 			I2C1_Start
 				I2Cx_Start
@@ -271,24 +284,13 @@ main
 					TFT_Write_Command
 					TFT_SSD1963_8bit_Set_Index
 					TFT_SSD1963YT_8bit_Write_Command
-		sprintf
-		TFT_Write_Text
-	TFT_Set_Brush
-	TFT_Rectangle
-	TFT_Fill_Screen
 EXTIPD4
 	set_curr_snake_dir
 TIMER2_ISR
 	update_game_time
 	render_rect_mask
-		set_brush_color
-		TFT_Rectangle
 	update_time
-		sprintf
-		TFT_Write_Text
 	update_stats
-		sprintf
-		TFT_Write_Text
 	ADC1_Read
 		ADC_Set_Input_Channel
 		ADC1_Init
@@ -319,3 +321,8 @@ EXTIPA0
 	set_cur_screen_run_flag
 EXTIPA6
 	set_curr_snake_dir
+	refresh_hs_scr
+		TFT_Fill_Screen
+		draw_ini_cell_xy
+		sprintf
+		TFT_Write_Text

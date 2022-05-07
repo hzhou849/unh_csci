@@ -8,9 +8,8 @@
 #define _CP_INTRO_SCREEN_CTL_H
 
 #include <stdint.h>
-
-/// My headers
 #include "cp_const_def.h"
+#include "cp_pix_render.h"
 
 
 
@@ -20,8 +19,8 @@ static const uint32_t X_SCROLL_SPEED = 1;
 
 
  const  uint8_t pub_msg[] = "PUDDLE ProDUCKtions presents:";
- const    uint8_t dev_msg[] = "A Run Hop Games, game.";
- const    uint8_t intro_msg[] = "Press Joystick/PC13 to contiue.";
+ const  uint8_t dev_msg[] = "A Run Hop Games, game.";
+ const  uint8_t intro_msg[] = "Press Joystick/PC13 to contiue.";
 
 
 //================================================================================================
@@ -32,6 +31,7 @@ void load_intro_screen_simple();
 // void load_game_screen();
 
 // Local Calls
+void duck_sprite();
 void draw_intro_screen(uint32_t x_axis, uint32_t y_axis);
 void draw_rectangle(uint32_t x_axis, uint32_t y_axis);
 void set_cur_screen_run_flag(uint8_t run_flag);
@@ -44,10 +44,6 @@ void draw_info_text(uint32_t x_axis, uint32_t y_axi);
 //=================================================================================================
 /* Function Definitions */
 
-
-void set_cur_screen_run_flag(uint8_t run_flag) {
-    cur_screen_run_flag = run_flag;
-}
 
 
 /// Load the intro screen and kick off screen control handler
@@ -167,8 +163,6 @@ void load_intro_screen() {
                 else {
                     scroll_dir = 1;
                 }
-
-              
             }
 
         }
@@ -240,93 +234,155 @@ void draw_intro_screen(uint32_t x_axis, uint32_t y_axis) {
 }
 
 
+//==========================================================================================================
+/// Load Duck logo the game screen
+///
+void load_duck_screen() {
+    uint32_t x_axis = 0;
+    uint32_t y_axis = 0;
+    uint32_t PX_BLOCK = 16;
+    uint32_t i=0;
+
+    uint32_t value = 0;
+
+    
+    
+    init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+    // dump_arr_memory(&g_DS_BUFFER, MAX_BLOCK_SIZE);
+
+    // Set the current screen run flag
+    set_cur_screen_run_flag(TRUE);
+
+
+    // Setup screen 
+    TFT_Fill_Screen(CL_NAVY);
+   
+    TFT_SET_PEN(m_BLACK, 0);
+    TFT_SET_Brush(1, CL_AQUA, 0, 0 , 0 ,0);
+
+
+   // Load the duck sprite into video buffer
+    duck_sprite();
+
+    // set the offsets
+        // dump_ds_buffer();
+
+    for (i=0; i< 20; i++) {
+        
+        // if (i < 1) {
+        //     render_rect_mask(0, 0+6, 13+i, 9+6, m_NAVY);
+        // }
+        // render_rect_mask(0+ (i-1), 0+6, 13+i, 9+6, m_NAVY);
+        cleaning_buffer(m_NAVY);
+
+        // Delay_ms(10);
+        set_sprite_offset(i, 6);
+        dump_ds_buffer();
+    }
+
+
+    // hold here -may move this out later
+    while (cur_screen_run_flag == TRUE) {};
+
+    // Reset offset on quit
+    set_sprite_offset(0,0);
+    
+}
+
+
 
 
 #endif // _CP_SCREENS_CTL_H
 
+void duck_sprite() {
+    // Sprite is 12x8 dimension
+    // Group the colours to reduce instruction calls for colour swapping
+    // if drawing directly
+    // m_YELLOW, 7 
+    // m_YELLOW 47 (410-457) 47+7 = 54
+    // m_BLACK, 7
+    // m_RED 5
+
+    // TFT_SET_Brush(1, m_YELLOW, 0, 0 , 0 ,0);
+    load_cell_xy(8,0, m_YELLOW);
+    load_cell_xy(9,0, m_YELLOW);
+    load_cell_xy(10,0, m_YELLOW);
+
+    // TFT_SET_Brush(1, m_YELLOW, 0, 0 , 0 ,0);
+    load_cell_xy(2,2,m_YELLOW); //face
+    load_cell_xy(3,2,m_YELLOW);
+    load_cell_xy(7,2,m_YELLOW);
+    load_cell_xy(8,2,m_YELLOW);
+
+
+    // Black sunglasses
+    // TFT_SET_Brush(1, m_BLACK, 0, 0 , 0 ,0);
+    load_cell_xy(7,1, m_BLACK); // Sunglasses
+    load_cell_xy(8,1, m_BLACK);
+    load_cell_xy(9,1, m_BLACK);
+    load_cell_xy(10,1, m_BLACK);
+    load_cell_xy(11,1, m_BLACK);
+    load_cell_xy(9,2, m_BLACK);
+    load_cell_xy(10,2, m_BLACK);
 
 
 
-// void duck_sprite() {
-//      TFT_SET_Brush(1, CL_YELLOW, 0, 0 , 0 ,0);
-//     draw_cell_xy(8,4);
-//     draw_cell_xy(9,4);
-//     draw_cell_xy(10,4);
+    // TFT_SET_Brush(1, m_RED, 0, 0 , 0 ,0);
+    load_cell_xy(11,2, m_RED);
+    load_cell_xy(12,2, m_RED);
+    load_cell_xy(13,2, m_RED);
+    load_cell_xy(11,3, m_RED);
+    load_cell_xy(12,3, m_RED);
 
-//     draw_cell_xy(7,5);
-//     draw_cell_xy(8,5);
-//     draw_cell_xy(9,5);
+    // TFT_SET_Brush(1, m_YELLOW, 0, 0 , 0 ,0);
+    load_cell_xy(1,3, m_YELLOW);
+    load_cell_xy(2,3, m_YELLOW);
+    load_cell_xy(3,3, m_YELLOW);
+    load_cell_xy(4,3, m_YELLOW);
+    load_cell_xy(8,3, m_YELLOW);
+    load_cell_xy(9,3, m_YELLOW);
+    load_cell_xy(10,3, m_YELLOW);
+    load_cell_xy(0,4, m_YELLOW);
+    load_cell_xy(1,4, m_YELLOW);
+    load_cell_xy(2,4, m_YELLOW);
+    load_cell_xy(3,4, m_YELLOW);
+    load_cell_xy(4,4, m_YELLOW);
+    load_cell_xy(5,4, m_YELLOW);
+    load_cell_xy(6,4, m_YELLOW);
+    load_cell_xy(7,4, m_YELLOW);
+    load_cell_xy(8,4, m_YELLOW);
+    load_cell_xy(9,4, m_YELLOW);
+    load_cell_xy(10,4, m_YELLOW);
+    load_cell_xy(1,5, m_YELLOW);
+    load_cell_xy(2,5, m_YELLOW);
+    load_cell_xy(3,5, m_YELLOW);
+    load_cell_xy(4,5, m_YELLOW);
+    load_cell_xy(5,5, m_YELLOW);
+    load_cell_xy(6,5, m_YELLOW);
+    load_cell_xy(7,5, m_YELLOW);
+    load_cell_xy(8,5, m_YELLOW);
+    load_cell_xy(9,5, m_YELLOW);
+    load_cell_xy(10,5, m_YELLOW);
+    load_cell_xy(2,6, m_YELLOW);
+    load_cell_xy(3,6, m_YELLOW);
+    load_cell_xy(4,6, m_YELLOW);
+    load_cell_xy(5,6, m_YELLOW);
+    load_cell_xy(6,6, m_YELLOW);
+    load_cell_xy(7,6, m_YELLOW);
+    load_cell_xy(8,6, m_YELLOW);
+    load_cell_xy(9,6, m_YELLOW);
+    load_cell_xy(10,6, m_YELLOW);
+    load_cell_xy(3,7,m_YELLOW);
+    load_cell_xy(4,7,m_YELLOW);
+    load_cell_xy(5,7,m_YELLOW);
+    load_cell_xy(6,7,m_YELLOW);
+    load_cell_xy(7,7,m_YELLOW);
+    load_cell_xy(8,7,m_YELLOW);
+    load_cell_xy(9,7,m_YELLOW);
+    load_cell_xy(4,8,m_YELLOW);
+    load_cell_xy(5,8,m_YELLOW);
+    load_cell_xy(6,8,m_YELLOW);
+    load_cell_xy(7,8,m_YELLOW);
+    load_cell_xy(8,8,m_YELLOW);
+}
 
-//     TFT_SET_Brush(1, CL_BLACK, 0, 0 , 0 ,0);
-//     draw_cell_xy(10,5);
-
-
-//     TFT_SET_Brush(1, CL_YELLOW, 0, 0 , 0 ,0);
-//     draw_cell_xy(11,5); //face
-//     draw_cell_xy(2,6);
-//     draw_cell_xy(3,6);
-//     draw_cell_xy(7,6);
-//     draw_cell_xy(8,6);
-//     draw_cell_xy(9,6);
-//     draw_cell_xy(10,6);
-
-//     TFT_SET_Brush(1, CL_RED, 0, 0 , 0 ,0);
-//     draw_cell_xy(11,6);
-//     draw_cell_xy(12,6);
-//     draw_cell_xy(13,6);
-//     // draw_cell_xy(14,6);
-//     // draw_cell_xy(15,6);
-//     draw_cell_xy(11,7);
-//     draw_cell_xy(12,7);
-
-//     TFT_SET_Brush(1, CL_YELLOW, 0, 0 , 0 ,0);
-//     draw_cell_xy(1,7);
-//     draw_cell_xy(2,7);
-//     draw_cell_xy(3,7);
-//     draw_cell_xy(4,7);
-//     draw_cell_xy(8,7);
-//     draw_cell_xy(9,7);
-//     draw_cell_xy(10,7);
-//     draw_cell_xy(0,8);
-//     draw_cell_xy(1,8);
-//     draw_cell_xy(2,8);
-//     draw_cell_xy(3,8);
-//     draw_cell_xy(4,8);
-//     draw_cell_xy(5,8);
-//     draw_cell_xy(6,8);
-//     draw_cell_xy(7,8);
-//     draw_cell_xy(8,8);
-//     draw_cell_xy(9,8);
-//     draw_cell_xy(10,8);
-//     draw_cell_xy(1,9);
-//     draw_cell_xy(2,9);
-//     draw_cell_xy(3,9);
-//     draw_cell_xy(4,9);
-//     draw_cell_xy(5,9);
-//     draw_cell_xy(6,9);
-//     draw_cell_xy(7,9);
-//     draw_cell_xy(8,9);
-//     draw_cell_xy(9,9);
-//     draw_cell_xy(10,9);
-//     draw_cell_xy(2,10);
-//     draw_cell_xy(3,10);
-//     draw_cell_xy(4,10);
-//     draw_cell_xy(5,10);
-//     draw_cell_xy(6,10);
-//     draw_cell_xy(7,10);
-//     draw_cell_xy(8,10);
-//     draw_cell_xy(9,10);
-//     draw_cell_xy(10,10);
-//     draw_cell_xy(3,11);
-//     draw_cell_xy(4,11);
-//     draw_cell_xy(5,11);
-//     draw_cell_xy(6,11);
-//     draw_cell_xy(7,11);
-//     draw_cell_xy(8,11);
-//     draw_cell_xy(9,11);
-//     draw_cell_xy(4,12);
-//     draw_cell_xy(5,12);
-//     draw_cell_xy(6,12);
-//     draw_cell_xy(7,12);
-//     draw_cell_xy(8,12);
-// }

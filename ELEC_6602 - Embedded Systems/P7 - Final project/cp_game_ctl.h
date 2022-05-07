@@ -8,54 +8,56 @@
 #include <string.h>
 #include "cp_const_def.h"
 #include "cp_pix_render.h"
+// #include "cp_game_over_ctl.h"
 
 /* Constants */
-
 static const uint8_t EOF_ARRAY     = 0xFF;             // End marker for display array matrix
 const static int32_t MAX_CELLS                            = 300;
-
-
-
-// static const uint8_t m_
-// static const uint8_t m_
+static const uint32_t EEPROM_MAX_SIZE               =100; // 3 Initials, 4 for score = 7 chars x 10 rows = 70 Minimun
 
 
 /* Global variables */
+// Game states flags - variables needs global tow work 
+// compiler has issues with declaring variables in functions.
+static volatile uint8_t game_cur_screen_run_flag        = TRUE;
 
-// Game states flags - compiler has issues with declaring variables in functions.
-static volatile uint8_t game_cur_screen_run_flag = TRUE;
-static uint8_t g_GAME_PHASE                         = PHASE1_READY;
-static uint8_t g_GAME_MODE                          = NORMAL_MODE;
-static uint8_t g_curr_snake_dir                     = MOVE_RIGHT;
-static volatile uint8_t  g_game_clock_delay_tim3    = ON;
-static volatile uint32_t g_time_count               = 0;
-static uint32_t g_game_score                        = 0;
-static int32_t g_debug                              = 0;
-static int32_t g_debug2                             = 2;
-static int32_t g_rand_num                          = 999;
-static uint8_t g_food_in_play                       = FALSE;
-static int32_t g_fd_x_val                          = NEG_NULL;
-static int32_t g_fd_y_val                          = NEG_NULL;
-int32_t i=0;    // Generic counters
-int32_t j=0;    // Generic counters
-uint32_t i2c_status;
-uint8_t data_[128];
-uint8_t rx_data_[256];
+static uint8_t g_GAME_MODE                              = DEV_MODE;
+static uint8_t g_curr_snake_dir                         = MOVE_RIGHT;
+static volatile uint8_t  g_game_clock_delay_tim3        = ON;
+static volatile uint32_t g_time_count                   = 0;
+static uint32_t g_game_score                            = 0;
+static int32_t g_debug                                  = 0;
+static int32_t g_debug2                                 = 2;
+static int32_t g_rand_num                               = 999;
+static uint8_t g_food_in_play                           = FALSE;
+static int32_t g_fd_x_val                               = NEG_NULL;
+static int32_t g_fd_y_val                               = NEG_NULL;
+static int32_t init_cursor_start                        = 0x40;          // '@'; 1 char less than 'A' allow for increment algorithm
+static int32_t init_cur_count                           = 1; 
+static int32_t i                                               =0;    // Generic counters
+static int32_t j             =0;    // Generic counters
+static uint32_t i2c_status;
+static uint8_t  tx_buffer_[128];
+static uint8_t  rx_buffer_[256];
+static int32_t hs_cursor_x = 22;
+static int32_t hs_cursor_y = 4;
+uint8_t init_cur = 0x40; // 'A' -1
 
 
 uint8_t g_str_buffer[128];                                // General use string buffer for output text
 
-static uint32_t g_t_mins            = 0;
-static uint32_t g_t_secs            = 0;
-static uint32_t g_t_wait            = FALSE;
+static uint32_t g_t_mins                                = 0;
+static uint32_t g_t_secs                                = 0;
+static uint32_t g_t_wait                                = FALSE;
 
 
 // Snake info tracking
-t_node g_snake_cells[MAX_CELLS];                               // track the current snake 
-t_node *m_node_start          = &g_snake_cells;
-t_node *m_node_end            = &g_snake_cells[MAX_CELLS-1];  // addressing is 4bytes less than allocated cells; [length-1]
-t_node *m_node_head           = &g_snake_cells;    
-t_node *m_node_tail           = &g_snake_cells;
+t_node g_snake_cells[MAX_CELLS];                        // track the current snake 
+t_node *m_node_start                                    = &g_snake_cells;
+t_node *m_node_end                                      = &g_snake_cells[MAX_CELLS-1];  // Actual addressing is 4bytes less than 
+                                                                                        // allocated cells; [length-1]
+t_node *m_node_head                                     = &g_snake_cells;    
+t_node *m_node_tail                                     = &g_snake_cells;
 
 
 
@@ -73,12 +75,12 @@ void scr_debug(uint32_t value);  // Debugging function
 
 
 // Local calls
-void init_arr(uint8_t *in_arr, uint32_t a_size);
-void dump_arr_memory(uint8_t *in_arr, uint32_t a_size);
+
+
 void draw_snake();
 void draw_block(uint8_t *dp_buffer, uint32_t x_pos, uint8_t y_pos);
 
-void duck_sprite();
+
 void init_snake_sprite();
 // void dump_ds_buffer();
 void incr_snake_head();
@@ -136,8 +138,6 @@ void set_food_in_play_flag (uint8_t state) {
 void set_food_xy(int32_t *x_val, int32_t *y_val) {
     g_fd_x_val = *x_val;
     g_fd_y_val = *y_val;
-
-    // scr_debug(g_fd_x_val, g_fd_y_val);
 }
 
 /// Play sound - High pitch
@@ -146,7 +146,6 @@ void play_sound1( uint32_t duration) {
 
     for (i=0; i < duration; i++) {
             GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
-
             Delay_ms(SFX_FOOD_HIGH);
     }
 }
@@ -157,7 +156,6 @@ void play_sound2( uint32_t duration) {
 
     for (i=0; i < duration; i++) {
             GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
-
             Delay_ms(SFX_FOOD);
     }
 }
@@ -168,7 +166,6 @@ void play_sound3( uint32_t duration) {
 
     for (i=0; i < duration; i++) {
             GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
-
             Delay_ms(SFX_WALL);
     }
 }
@@ -193,6 +190,7 @@ void play_sfx_wall( uint32_t duration) {
     }
 }
 
+
 /// Play sound - High pitch
 ///
 void play_sfx_food( uint32_t duration) {
@@ -213,21 +211,23 @@ void play_sfx_food( uint32_t duration) {
     }
 }
 
+
+/// Game over
+/// 
 void game_over() {
     // void EXTIPA0();
     // Kill Timers
-    TIM2_CR1 = 0; // Start TIMER2 for game time
-    TIM3_CR1 = 0; // Start TIMER3 now
+    // // TIM2_CR1 = 0; // Kill TIMER2 for game time
+    TIM3_CR1 = 0; // Kill TIMER3 now
     play_sfx_wall(20);
     game_cur_screen_run_flag = FALSE;
     g_GAME_PHASE = PHASE_QUIT;  
 }
 
 
-
-
-
-
+int32_t get_init_count () {
+    return init_cur_count;
+}
 
 /// Move the snake
 ///
@@ -463,72 +463,9 @@ void incr_snake_tail() {
 
 }
 
-/// Initialize array to 0
-///
-void init_arr(uint8_t *in_arr, uint32_t a_size) {
-    uint32_t i=0;
-
-    for (i=0; i < a_size; i++) {
-        in_arr[i]=0xFF;
-    }
-}
 
 
 
-//==========================================================================================================
-/// Load the game screen
-///
-void load_duck_screen() {
-    uint32_t x_axis = 0;
-    uint32_t y_axis = 0;
-    uint32_t PX_BLOCK = 16;
-    uint32_t i=0;
-
-    uint32_t value = 0;
-
-    
-    
-    init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
-    // dump_arr_memory(&g_DS_BUFFER, MAX_BLOCK_SIZE);
-
-    // Set the current screen run flag
-    set_cur_screen_run_flag(TRUE);
-
-
-    // Setup screen 
-    TFT_Fill_Screen(CL_NAVY);
-   
-    TFT_SET_PEN(m_BLACK, 0);
-    TFT_SET_Brush(1, CL_AQUA, 0, 0 , 0 ,0);
-
-
-   // Load the duck sprite into video buffer
-    duck_sprite();
-
-    // set the offsets
-        // dump_ds_buffer();
-
-    for (i=0; i< 20; i++) {
-        
-        // if (i < 1) {
-        //     render_rect_mask(0, 0+6, 13+i, 9+6, m_NAVY);
-        // }
-        // render_rect_mask(0+ (i-1), 0+6, 13+i, 9+6, m_NAVY);
-        cleaning_buffer(m_NAVY);
-
-        // Delay_ms(10);
-        set_sprite_offset(i, 6);
-        dump_ds_buffer();
-    }
-
-
-    // hold here -may move this out later
-    while (cur_screen_run_flag == TRUE) {};
-
-    // Reset offset on quit
-    set_sprite_offset(0,0);
-    
-}
 
 /// Initial Game loading screen.
 ///
@@ -537,7 +474,7 @@ void load_snake_game() {
     // Set the game phase mode flag
     g_GAME_PHASE = PHASE1_READY;
 
-     init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+    //  init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
     // dump_arr_memory(&g_DS_BUFFER, MAX_BLOCK_SIZE);
 
     // Set the current screen run flag
@@ -575,6 +512,7 @@ void update_stats() {
 /// Update timer and print it to screen 
 ///
 void update_time() {
+    
     g_t_secs = g_time_count % 60;
     if (g_t_secs != 0) {
         g_t_wait = FALSE;
@@ -590,21 +528,23 @@ void update_time() {
 /// Initialize screen
 ///
 void init_snake_game() {
+    // init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+
      // Set the game phase mode flag
     g_GAME_PHASE = PHASE2_PLAYING;
-    
-    init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
 
     // Reset the current screen run flag to stay in this mode
     set_cur_screen_run_flag(TRUE);
+    game_cur_screen_run_flag=TRUE;
+
+    
 
      // Setup screen 
     TFT_Fill_Screen(CL_BLACK);
 
-    // Set snake colour
+    // Set snake colour and text output
     TFT_SET_Brush(1, CL_AQUA, 0, 0 , 0 ,0);
     set_brush_color(m_GREEN);
-
     TFT_SET_PEN(CL_GRAY, 0);
     TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
    
@@ -612,10 +552,17 @@ void init_snake_game() {
     init_snake_sprite();
 }
 
-/// Set the initial values of the snake
+
+/// Initialize the snake sprite 
 ///
 // ** Do not put in main game loop, this exactly sequence prevents image artifacting
 void init_snake_sprite() {
+    //Initialize pointer
+    m_node_head = m_node_start;
+    m_node_tail = m_node_start;
+    g_curr_snake_dir = MOVE_RIGHT;
+
+    // Set the Initial snake and food object
     m_node_head->node_x = 0;
     m_node_head->node_y = 1;
     print_snake(m_node_head, m_GREEN);
@@ -630,7 +577,7 @@ void start_snake_game() {
     Delay_ms(500); // Allow timers to wind up
 
 
-    /***** Main game Loop******/
+    // Game loop
     while (game_cur_screen_run_flag == TRUE) {
     // Hold here until TIMER3 pulse allows up to move
     };
@@ -673,8 +620,10 @@ void screen_refresh_TIM3() {
 void game_over_scr() {
      // Set the game phase mode flag
     g_GAME_PHASE = PHASE_QUIT;
+    set_game_phase (PHASE_QUIT);
     
-    init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+    
+    // init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
 
     // Set the current screen run flag
     set_cur_screen_run_flag(TRUE);
@@ -693,36 +642,88 @@ void game_over_scr() {
 
     sprintf(g_str_buffer, "Final score: \x20 %04d", g_game_score);
     TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 3*PX_BLOCK);
-
-
     
-
+    // Game loop 
     while (cur_screen_run_flag == TRUE) {}
     
     
 }
 
-void EE_write(uint8_t w_addr, uint8_t w_data) {
-    data_[0] = w_addr;
-    data_[1] = w_data;
+/// EEPROM - WRITE
+///
+void EE_write(uint8_t reg_addr, uint8_t tx_byte, uint32_t tx_size) {
+    tx_buffer_[0] = reg_addr;
+    tx_buffer_[1] = tx_byte;
     I2C1_Start();
 
-    // Issue I2c start signal
-    I2C1_Write(0x50, data_, 2, END_MODE_STOP);
+    // Issue I2c start signal; Plus 1 for reg_address + user data
+    I2C1_Write(0x50, tx_buffer_, 2, END_MODE_STOP);
 
 }
 
-uint8_t EE_read(uint8_t r_addr) {
-    data_[0] = r_addr;
-    I2C1_Start();
-    I2C1_Write(0x50, data_,1, END_MODE_RESTART);
-    I2C1_Read(0x50, data_, 1, END_MODE_STOP);
 
-    return data_[0];
+/// EEPROM - READ
+//
+void EE_read(uint8_t reg_addr, uint32_t rx_size) {
+    // Read size is +4 for the extra 2 bytes required
+    // rx_buffer_[0] = reg_addr;
+    I2C1_Start();
+    I2C1_Write(0x50, reg_addr, 1, END_MODE_RESTART);
+    I2C1_Read(0x50, rx_buffer_, rx_size +4, END_MODE_STOP);
+
+    // return rbuffer_[0];
 }
 
+
+void refresh_hs_scr(uint8_t cur_dir) {
+    int32_t xval = hs_cursor_x;
+    int32_t yval = hs_cursor_y;
+    
+    
+    TFT_Fill_Screen(CL_BLACK);
+    switch(cur_dir) {
+        case MOVE_UP:
+
+            if (init_cur > 0x5A) { 
+                init_cur = init_cursor_start;
+            }
+            ++init_cur;
+            break;
+
+        case MOVE_DOWN:
+            
+            if (init_cur < init_cursor_start) {
+                init_cur = 0x5A;
+            } else {
+                ++init_cur;
+            }
+            break;
+        case JBTN_DOWN:
+            //store value in array
+            ++init_cur_count;
+    }
+    
+    // Third initial has been entered, we are done
+    if (init_cur_count == 3) {
+        // quit
+        // g_cur_game_phase = PHASE_GAME_LOOP_OVER;
+        g_GAME_PHASE = PHASE_GAME_LOOP_OVER;
+    } else {
+        draw_ini_cell_xy(hs_cursor_x,hs_cursor_y,m_GRAY); 
+    }
+    
+    sprintf(g_str_buffer, "Enter high score: \x20\x20 ");
+    TFT_Write_Text(&g_str_buffer, 4*PX_BLOCK, 4*PX_BLOCK);
+    sprintf(g_str_buffer, "%c: \x20", init_cur);
+    TFT_Write_Text(&g_str_buffer, 11*PX_BLOCK, 4*PX_BLOCK);
+
+}
+
+/// Game over screen control PHASE = HSCORE
+/// 
 void game_high_score_scr() {
-
+    uint32_t tx_count = 0;
+    uint8_t byte;
 
     // Set the current screen run flag
     set_cur_screen_run_flag(TRUE);
@@ -737,23 +738,64 @@ void game_high_score_scr() {
     GPIOB_ODR |= 0xFF00; // PB6 PB7
     Delay_ms(10);
 
+    draw_ini_cell_xy(22,4,m_GRAY);
+    Delay_ms(100);
+    sprintf(g_str_buffer, "Enter high score: \x20\x20 ");
+    TFT_Write_Text(&g_str_buffer, 4*PX_BLOCK, 4*PX_BLOCK);
+        sprintf(g_str_buffer, "___: \x20 %d", g_game_score);
+    TFT_Write_Text(&g_str_buffer, 11*PX_BLOCK, 4*PX_BLOCK);
+
+
+
+
+
+
+    // Loop write single byte
     for (i = 0; i < 0x16; i++) {
-        EE_write(i, (0x32 +i) );
+        EE_write(i, (0x50 +i),1 );
         GPIOB_ODR++;
-        Delay_ms(5);
+        Delay_ms(50);
     }
+
+    // Write word
+    // for (tx_count=0; tx_count != '\0'; tx_count++) {
+    // for (i=0; i !='\0'; i++) {
+    // for (i=0; i !='\0'; i++) {
+        
+    //     EE_write(i, testing[i], 1 );
+    //     GPIOB_ODR++;
+    //     Delay_ms(100);
+    //     // sprintf(g_str_buffer, "I2C data: \x20 ");
+    //     // TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, tx_count*PX_BLOCK);
+    // }
+
+    // write 0xFF to end of EEPROM
+    // EE_write(++tx_count, 0xFF,1);
+    
 
     Delay_ms(10);
     GPIOB_ODR |= 0xFF00;
     Delay_ms(10);
 
-    for (i=0; i < 0x16; i++) {
-        rx_data_[i] = EE_read(i);
-        Delay_ms(10);
+    for (i=0; i < 0x1; i++) {
+        // rx_buffer_[i] = EE_read(i,1);
+        EE_read(i,16);
+        Delay_ms(100);
     } 
+        Delay_ms(100);
+       
+        // sprintf(g_str_buffer, "I2C data: \x20 %s", rx_buffer_);
+        TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 9*PX_BLOCK);
+    // for (i=0; i <10; i++) {
+    //     rx_buffer_[i] = EE_read(i,1);
+    //     EE_read(i,1);
+    //     Delay_ms(10);
 
-    sprintf(g_str_buffer, "testing: \x20 %s", rx_data_);
-    TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 4*PX_BLOCK);
+    //     // TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, i*PX_BLOCK);
+    // } //     // sprintf(g_str_buffer, "I2C data: \x20 %s", rx_buffer_);
+    
+
+ 
 
      
 
@@ -773,101 +815,10 @@ void game_high_score_scr() {
 
 
 
-void duck_sprite() {
-    // Sprite is 12x8 dimension
-    // Group the colours to reduce instruction calls for colour swapping
-    // if drawing directly
-    // m_YELLOW, 7 
-    // m_YELLOW 47 (410-457) 47+7 = 54
-    // m_BLACK, 7
-    // m_RED 5
-
-    // TFT_SET_Brush(1, m_YELLOW, 0, 0 , 0 ,0);
-    load_cell_xy(8,0, m_YELLOW);
-    load_cell_xy(9,0, m_YELLOW);
-    load_cell_xy(10,0, m_YELLOW);
-
-    // TFT_SET_Brush(1, m_YELLOW, 0, 0 , 0 ,0);
-    load_cell_xy(2,2,m_YELLOW); //face
-    load_cell_xy(3,2,m_YELLOW);
-    load_cell_xy(7,2,m_YELLOW);
-    load_cell_xy(8,2,m_YELLOW);
 
 
-    // Black sunglasses
-    // TFT_SET_Brush(1, m_BLACK, 0, 0 , 0 ,0);
-    load_cell_xy(7,1, m_BLACK); // Sunglasses
-    load_cell_xy(8,1, m_BLACK);
-    load_cell_xy(9,1, m_BLACK);
-    load_cell_xy(10,1, m_BLACK);
-    load_cell_xy(11,1, m_BLACK);
-    load_cell_xy(9,2, m_BLACK);
-    load_cell_xy(10,2, m_BLACK);
-
-
-
-    // TFT_SET_Brush(1, m_RED, 0, 0 , 0 ,0);
-    load_cell_xy(11,2, m_RED);
-    load_cell_xy(12,2, m_RED);
-    load_cell_xy(13,2, m_RED);
-    load_cell_xy(11,3, m_RED);
-    load_cell_xy(12,3, m_RED);
-
-    // TFT_SET_Brush(1, m_YELLOW, 0, 0 , 0 ,0);
-    load_cell_xy(1,3, m_YELLOW);
-    load_cell_xy(2,3, m_YELLOW);
-    load_cell_xy(3,3, m_YELLOW);
-    load_cell_xy(4,3, m_YELLOW);
-    load_cell_xy(8,3, m_YELLOW);
-    load_cell_xy(9,3, m_YELLOW);
-    load_cell_xy(10,3, m_YELLOW);
-    load_cell_xy(0,4, m_YELLOW);
-    load_cell_xy(1,4, m_YELLOW);
-    load_cell_xy(2,4, m_YELLOW);
-    load_cell_xy(3,4, m_YELLOW);
-    load_cell_xy(4,4, m_YELLOW);
-    load_cell_xy(5,4, m_YELLOW);
-    load_cell_xy(6,4, m_YELLOW);
-    load_cell_xy(7,4, m_YELLOW);
-    load_cell_xy(8,4, m_YELLOW);
-    load_cell_xy(9,4, m_YELLOW);
-    load_cell_xy(10,4, m_YELLOW);
-    load_cell_xy(1,5, m_YELLOW);
-    load_cell_xy(2,5, m_YELLOW);
-    load_cell_xy(3,5, m_YELLOW);
-    load_cell_xy(4,5, m_YELLOW);
-    load_cell_xy(5,5, m_YELLOW);
-    load_cell_xy(6,5, m_YELLOW);
-    load_cell_xy(7,5, m_YELLOW);
-    load_cell_xy(8,5, m_YELLOW);
-    load_cell_xy(9,5, m_YELLOW);
-    load_cell_xy(10,5, m_YELLOW);
-    load_cell_xy(2,6, m_YELLOW);
-    load_cell_xy(3,6, m_YELLOW);
-    load_cell_xy(4,6, m_YELLOW);
-    load_cell_xy(5,6, m_YELLOW);
-    load_cell_xy(6,6, m_YELLOW);
-    load_cell_xy(7,6, m_YELLOW);
-    load_cell_xy(8,6, m_YELLOW);
-    load_cell_xy(9,6, m_YELLOW);
-    load_cell_xy(10,6, m_YELLOW);
-    load_cell_xy(3,7,m_YELLOW);
-    load_cell_xy(4,7,m_YELLOW);
-    load_cell_xy(5,7,m_YELLOW);
-    load_cell_xy(6,7,m_YELLOW);
-    load_cell_xy(7,7,m_YELLOW);
-    load_cell_xy(8,7,m_YELLOW);
-    load_cell_xy(9,7,m_YELLOW);
-    load_cell_xy(4,8,m_YELLOW);
-    load_cell_xy(5,8,m_YELLOW);
-    load_cell_xy(6,8,m_YELLOW);
-    load_cell_xy(7,8,m_YELLOW);
-    load_cell_xy(8,8,m_YELLOW);
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-// /// Dump the entire contents of an array at given size to serial
+////////////////////////////////////////////////////////////////////////
+/// Dump the entire contents of an array at given size to serial
 // void dump_arr_memory(uint8_t *in_arr, uint32_t a_size) {
 //     uint32_t i = 0;
 

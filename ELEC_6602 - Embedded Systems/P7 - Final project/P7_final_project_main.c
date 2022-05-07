@@ -60,7 +60,7 @@
 /* Global variables*/
 // static volatile uint8_t DEV_MODE   = FALSE;
 static uint8_t g_cur_game_phase  = 0xFF;         // 0=intro screen; 1=main game
-static int32_t g_game_speed        = 1000;
+static int32_t g_game_speed        = 2500;
 
 uint32_t rx_buffer = 0;
 uint32_t debug_val;
@@ -71,18 +71,6 @@ uint8_t tx_data1 =0x55;
 
 /* Interrupt Handlers */
 
-/// USART1 Tx Interrupt
-// Bit7 TXE; Bit6 TC;  
-// TCIE interrupt generated in USART_CR1; Cleared by read  from USART_SR followed by wrte to USART_DR
-// void USART1_ISR() iv IVT_INT_USART1 {
-//     while ((USART1_SR & (1 << 7)) == 1)   {}     // Wait for TXE to clear
-//     //  USART1_SR &= ~(1 << 7);
-//     USART1_SR &= ~(0x3 << 6);
-//     //  rx_buffer = USART1_SR;
-//     //  USART1_DR = 0x50;
-//     Delay_ms(10);
-
-// }
 
 // PD2 = EXTI2[11:8]; PortD = b0011;
 // PD4 = EXTI4[3:0];  PortD = b0011;
@@ -91,7 +79,8 @@ uint8_t tx_data1 =0x55;
 // PC13  EXTI13[7:4]; PortC = b0010;
 
 
-// PC13 Joystick_button ISR
+/// PC13 Joystick_button ISR
+///
 void EXTI15_10() iv IVT_INT_EXTI15_10  {
 
     EXTI_PR |= 1 << 13;     // Rearm interrupt
@@ -103,6 +92,11 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
 
      switch (g_cur_game_phase)
     {
+    case PHASE_LOGO:
+        set_cur_screen_run_flag(FALSE);
+        g_cur_game_phase = PHASE1_READY; // load_duck
+        break;
+
     case PHASE_INTRO:
         set_cur_screen_run_flag(FALSE);
         g_cur_game_phase = PHASE1_READY; // load_snake_game
@@ -122,6 +116,11 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
 
     case PHASE_QUIT:
         set_cur_screen_run_flag(FALSE);
+        g_cur_game_phase = PHASE_HSCORE;
+        break;
+
+    case PHASE_HSCORE:
+        // set_cur_screen_run_flag(FALSE); wait until all 3 Initials are entered
         g_cur_game_phase = PHASE_HSCORE;
         break;
 
@@ -157,51 +156,65 @@ void EXTIPA0() iv IVT_INT_EXTI0  {
 
     
 }
-// PA6 - Joystick Right ISR
+/// PA6 - Joystick DOWN & RIGHT ISR
+///
 void EXTIPA6() iv IVT_INT_EXTI9_5  {
+    // DOWN
     if (GPIOB_IDR.B5 == 0) {
         while(GPIOB_IDR.B5 == 0) {GPIOC_ODR = ~GPIOC_ODR;}
         EXTI_PR |= 1 << 5;
 
-        if (g_curr_snake_dir != MOVE_UP) {
-            set_curr_snake_dir(MOVE_DOWN);
+        if (g_cur_game_phase == PHASE2_PLAYING) {
+            if (g_curr_snake_dir != MOVE_UP) {
+                set_curr_snake_dir(MOVE_DOWN);
+            }
+        } else if (g_cur_game_phase == PHASE_HSCORE) {
+            refresh_hs_scr(MOVE_DOWN);
         }
     }
-        
-    
+
+    // RIGHT    
     if (GPIOA_IDR.B6 == 0) {
-        EXTI_PR |= 1 << 6;
-        while (GPIOA_IDR.B6 == 0) {
-            GPIOB_ODR = ~GPIOB_ODR;
-            Delay_ms(1);
-        } 
-        if (g_curr_snake_dir != MOVE_LEFT) {
-            set_curr_snake_dir(MOVE_RIGHT);
-        }
-   
         
+        if (g_cur_game_phase == PHASE2_PLAYING) {
+
+            EXTI_PR |= 1 << 6;
+            while (GPIOA_IDR.B6 == 0) {
+                GPIOB_ODR = ~GPIOB_ODR;
+                Delay_ms(1);
+            } 
+            if (g_curr_snake_dir != MOVE_LEFT) {
+                set_curr_snake_dir(MOVE_RIGHT);
+            }
+        }
     }
+
 
 }
 
 
-// PD2 - Joystick LEFT ISR
+/// PD2 - Joystick LEFT ISR
+///
 void EXTIPD2() iv IVT_INT_EXTI2  {
     EXTI_PR |= 1 << 2;
      while (GPIOD_IDR.B2 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
 
-     if (g_curr_snake_dir != MOVE_RIGHT) {
-        set_curr_snake_dir(MOVE_LEFT);
+     if (g_cur_game_phase == PHASE2_PLAYING) {
+        if (g_curr_snake_dir != MOVE_RIGHT) {
+            set_curr_snake_dir(MOVE_LEFT);
+        }
      }
 
     
 }
 
 
-// PD4 - Joystick LEFT ISR
+/// PD4 - Joystick UP ISR
+///
 void EXTIPD4() iv IVT_INT_EXTI4  {
     EXTI_PR |= 1 << 4;
      while (GPIOD_IDR.B4 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
+
 
      if (g_curr_snake_dir != MOVE_DOWN) {
         set_curr_snake_dir(MOVE_UP);
@@ -215,27 +228,29 @@ void TIMER2_ISR() iv IVT_INT_TIM2 {
   
     update_game_time();
 
+    if (g_GAME_PHASE == PHASE2_PLAYING) {
 
-    //   /* clean screen mask */
-    //update direction and refresh screen here?
-    render_rect_mask(0,0,20,1, m_NAVY);
-    Delay_ms(50);
-    //  render_rect_mask(0,10,19,0, m_BLACK);
-    // /* Update time */
-    update_time();
+        //   /* clean screen mask */
+        //update direction and refresh screen here?
+        render_rect_mask(0,0,20,1, m_NAVY);
+        Delay_ms(50);
+        //  render_rect_mask(0,10,19,0, m_BLACK);
+        // /* Update time */
+        update_time();
 
-    // /* Update score */
-    update_stats();
-    // Delay_ms(100); // delay needed for screen to update
-       //     // Update game mode
-        //     sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d",g_debug );
-        //     TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 0*PX_BLOCK);
-    // Debug print to screen
-    // read adc
-    debug_val = ADC1_Read(3);
-    // debug_val = ADC1_DR;
-    //  scr_debug(debug_val);
-    //  ADC1_SR = 0;
+        // /* Update score */
+        update_stats();
+        // Delay_ms(100); // delay needed for screen to update
+        //     // Update game mode
+            //     sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d",g_debug );
+            //     TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 0*PX_BLOCK);
+        // Debug print to screen
+        // read adc
+        debug_val = ADC1_Read(3);
+        // debug_val = ADC1_DR;
+        //  scr_debug(debug_val);
+        //  ADC1_SR = 0;
+    }
 }
 
 /// TIMER3 ISR - Needs to have higher priority than TIM2 in order to update display properly
@@ -366,20 +381,20 @@ void init_timer2() {
     TIM2_PSC     = 7999;                        // Counter clock freq is equal to clk_PSC / (PSC[15:0] + 1) from datasheet
                                                 // We want 72MHz / (7999+1) = 9000 Num. clk cycles/sec
     TIM2_ARR     = 9000;                        // Set the auto-reload register to calclated value
-    TIM2_DIER  |= 1 << 0;                      // Enable TIMER2 Interrupt 
-    // TIM2_CR1     = 0x0001;                      // wait for game to startAfter timer setup, enable TIMER2 bit[1]; bit[4]=0 counting up.
+    TIM2_DIER   |= 1 << 0;                      // Enable TIMER2 Interrupt 
+    // TIM2_CR1     = 0x0001;                   // wait for game to startAfter timer setup, enable TIMER2 bit[1]; bit[4]=0 counting up.
 }
 
 /// Initialize TIMER3
 ///
 void init_timer3() {
-    RCC_APB1ENR |= (1 << 1);                   // Enable TIMER3 Clock
-    TIM3_CR1    = 0x0000;                       // Disable time for setup
-    TIM3_PSC    = 7999;                         // Counter clock freq is equal to clk_PSC / (PSC[15:0] + 1) from datasheet
+    RCC_APB1ENR |= (1 << 1);                    // Enable TIMER3 Clock
+    TIM3_CR1     = 0x0000;                      // Disable time for setup
+    TIM3_PSC     = 7999;                        // Counter clock freq is equal to clk_PSC / (PSC[15:0] + 1) from datasheet
                                                 // We want 72MHz / (7999+1) = 9000 Num. clk cycles/sec
-    TIM3_ARR    = g_game_speed;                         // auto-reload reg. 2 seconds so  double it = 9000*2 = 18000                                            
+    TIM3_ARR     = g_game_speed;                // auto-reload reg. 2 seconds so  double it = 9000*2 = 18000                                            
     TIM3_DIER   |= 1 << 0;                      // Enable interrupt
-    // TIM3_CR1     = 0x0001;                      // After timer setup, enable TIMER1 bit[1]; bit[4]=0 counting up.
+    // TIM3_CR1     = 0x0001;                   // After timer setup, enable TIMER1 bit[1]; bit[4]=0 counting up.
 
 }
 
@@ -393,7 +408,7 @@ void init_interrupt() {
 
     // PD2=Left, PD4=Up, PA6=Right, PB5=Down, PC13=J_button; 
     // AFIO_EXTICR1 |=
-    AFIO_EXTICR1 &= ~(0xF << 0);               // PD2 = EXTI0[3:0];  PortA = b0000;
+    AFIO_EXTICR1 &= ~(0xF << 0);                // PD2 = EXTI0[3:0];  PortA = b0000;
     AFIO_EXTICR1 |= 3 << 8;                     // PD2 = EXTI2[11:8]; PortD = b0011;
     AFIO_EXTICR2 |= 3 << 0;                     // PD4 = EXTI4[3:0];  PortD = b0011;
     AFIO_EXTICR2 |= 1 << 4;                     // PB5 = EXTI5[7:4];  PortB = b0001;
@@ -402,13 +417,13 @@ void init_interrupt() {
 
 
     // Configure edge trigger and maskability and mask enable
-    EXTI_FTSR |= 1 << 2;        // EXTI2 is FALLING EDGE
-    EXTI_FTSR |= 1 << 4;        // EXTI4 is FALLING EDGE
-    EXTI_FTSR |= 1 << 5;        // EXTI5 is FALLING EDGE
-    EXTI_FTSR |= 1 << 6;        // EXTI6 is FALLING EDGE
-    EXTI_FTSR |= 1 << 13;       // EXTI13 is FALLING EDGE
-    EXTI_RTSR |= 1 << 0;        // EXIT0 is RISING Edge
-    EXTI_IMR |= 0x00002075;      // Set EXTI 0,2,4,5,6,13 to not-maskable
+    EXTI_FTSR |= 1 << 2;                        // EXTI2 is FALLING EDGE
+    EXTI_FTSR |= 1 << 4;                        // EXTI4 is FALLING EDGE
+    EXTI_FTSR |= 1 << 5;                        // EXTI5 is FALLING EDGE
+    EXTI_FTSR |= 1 << 6;                        // EXTI6 is FALLING EDGE
+    EXTI_FTSR |= 1 << 13;                       // EXTI13 is FALLING EDGE
+    EXTI_RTSR |= 1 << 0;                        // EXIT0 is RISING Edge
+    EXTI_IMR  |= 0x00002075;                    // Set EXTI 0,2,4,5,6,13 to not-maskable
 
 
     /* Vector NVIC mapping enable - see ref. manual 10.1.2 -IRQ & Exception Vector table for mapping*/
@@ -419,7 +434,6 @@ void init_interrupt() {
     NVIC_ISER0 |= (uint32_t) 1 << 23;           // EXTI5  NVIC Pos=23: EXTI9_5 
     NVIC_ISER0 |= (uint32_t) 1 << 28;           // TIMER2  NVIC Pos=28
     NVIC_ISER0 |= (uint32_t) 1 << 29;           // TIMER3  NVIC Pos=29
-
     NVIC_ISER1 |= (uint32_t) 1 << 8;            // EXTI13 NVIC Pos=40: EXTI15_10
     NVIC_ISER1 |= (uint32_t) 1 << 5;            // USART1 NVIC Pos=37: ISER1[63:32]; 32+5 =37
 
@@ -486,37 +500,47 @@ void main() {
 
     /* Display execution stuff */
 
+    // load_duck_screen();
  
     /* Intro screen */
     // load_intro_screen();
 
 
-    /* **Game mode starts here* */
-    // load_duck_screen();
 
-    load_snake_game();
-
-    // initialize the screen ** NOTE this load sequence must be performed in this order
-    // of screen will have issues. 
-    init_snake_game();      
-
-    TIM2_CR1     = 0x0001; // Start TIMER2 for game time
-    TIM3_CR1    = 0x0001; // Start TIMER3 now
-    start_snake_game();
-
-    game_over_scr();
-    game_high_score_scr();
 
 
                     
 
-    TFT_SET_Brush(1, CL_BLACK, 0, 0, 0 ,0);
-    TFT_Rectangle(0, 0, 320, 240);
-    TFT_Fill_Screen(CL_GRAY);
+    // TFT_SET_Brush(1, CL_BLACK, 0, 0, 0 ,0);
+    // TFT_Rectangle(0, 0, 320, 240);
+    // TFT_Fill_Screen(CL_GRAY);
 
-    Delay_ms(3000);
+    // Delay_ms(3000);
 
     while (1) {
+        /* **Game mode starts here* */
+        load_snake_game();
+
+        // initialize the screen ** NOTE this load sequence must be performed in this order
+        // of screen will have issues. 
+        init_snake_game();   
+         render_rect_mask(0,0,20,1, m_NAVY);
+        Delay_ms(50);
+        //  render_rect_mask(0,10,19,0, m_BLACK);
+        // /* Update time */
+        update_time();
+
+        // /* Update score */
+        update_stats();   
+
+        TIM2_CR1     = 0x0001; // Start TIMER2 for game time
+        TIM3_CR1    = 0x0001; // Start TIMER3 now
+        start_snake_game();
+            g_GAME_PHASE = PHASE_QUIT;
+    set_game_phase (PHASE_QUIT);
+
+        game_over_scr();
+        game_high_score_scr();
         // load_intro_screen();
     }
 }

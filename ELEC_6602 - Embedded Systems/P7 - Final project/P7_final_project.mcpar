@@ -14,7 +14,7 @@ Value=0
 [BUILD_TYPE]
 Value=1
 [ACTIVE_TAB]
-Value=P7_final_project_main.c
+Value=cp_pix_render.h
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -42,7 +42,8 @@ File3=cp_pix_render.h
 File4=cp_game_ctl.h
 File5=P7_final_project_main.c
 File6=P7_final_project.lst
-Count=7
+File7=cp_game_over_ctl.h
+Count=8
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

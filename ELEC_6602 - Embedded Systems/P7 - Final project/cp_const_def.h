@@ -13,8 +13,7 @@ static const uint8_t TAIL_ON       = 1;
 static const uint8_t TAIL_OFF      = 0;
 
 
-// Extern
-volatile uint8_t cur_screen_run_flag = TRUE;
+
 
 
 static const uint32_t GPIO_INPUT_MASK      = 0x44444444;
@@ -25,6 +24,7 @@ static const int32_t MAX_COL_WIDTH      = 20;               // 320/16px = 20 blo
 static const int32_t MAX_ROW_LENGTH      = 15;               // 320/16px = 20 blocks
 static const int32_t MAX_BLOCK_COUNT    = 300;              // 20*15 = 300 blocks
 static const uint8_t PX_BLOCK           = 16;               // 16x16px pixel block size
+static const uint8_t INI_BLOCK           = 8;               // 16x16px pixel block size
 
 
 /* Game values */
@@ -36,19 +36,22 @@ typedef struct  {
 
 
 static const uint8_t PHASE_INTRO          = 0;
+static const uint8_t PHASE_LOGO          = 0;
 static const uint8_t PHASE1_READY         = 1; 
 static const uint8_t PHASE2_PLAYING       = 2; 
 static const uint8_t PHASE_QUIT           = 3; 
-static const uint8_t PHASE_HSCORE           = 3; 
+static const uint8_t PHASE_HSCORE           = 4; 
+static const uint8_t PHASE_GAME_LOOP_OVER   = 5; 
 
 static const uint8_t NORMAL_MODE         = 0;
 static const uint8_t WALL_COL_OFF        = 0x1;
 static const uint8_t DEV_MODE            = 0x3;
 
-static const uint8_t MOVE_RIGHT    = 0x0;             // End marker for display array matrix
-static const uint8_t MOVE_LEFT     = 0x1;             // End marker for display array matrix
-static const uint8_t MOVE_UP       = 0x2;             // End marker for display array matrix
-static const uint8_t MOVE_DOWN     = 0x3;             // End marker for display array matrix
+static const uint8_t MOVE_RIGHT    = 0x0;             
+static const uint8_t MOVE_LEFT     = 0x1;             
+static const uint8_t MOVE_UP       = 0x2;             
+static const uint8_t MOVE_DOWN     = 0x3;             
+static const uint8_t JBTN_DOWN     = 0x4;             
 static const uint16_t NEG_NULL     = -1;
 static const uint32_t SFX_FOOD     = 5;
 static const uint32_t SFX_FOOD_HIGH     = 1;
@@ -64,11 +67,22 @@ static const uint8_t m_BLACK            = 0;
 static const uint8_t m_YELLOW           = 1;
 static const uint8_t m_RED              = 2;
 static const uint8_t m_NAVY             = 3;
-static const uint8_t m_GRAY             = 3;
-static const uint8_t m_GREEN            = 4;
-static const uint8_t m_WHITE            = 5;
+static const uint8_t m_GRAY             = 4;
+static const uint8_t m_GREEN            = 5;
+static const uint8_t m_WHITE            = 6;
 static const uint8_t m_FUCHSIA            = 6;
 
+// Externs
+static volatile uint8_t cur_screen_run_flag       = TRUE;
+static volatile uint8_t g_GAME_PHASE             = PHASE1_READY;
+
+void set_cur_screen_run_flag(uint8_t run_flag) {
+    cur_screen_run_flag = run_flag;
+}
+
+void set_game_phase(uint8_t game_phase) {
+   g_GAME_PHASE = game_phase;
+}
 
 
 // CL_AQUA Aqua color 

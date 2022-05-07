@@ -1,19 +1,20 @@
 0	1	mikroCARM.exe -MSF -DBG -pSTM32F107VC -UICD -BIN -LHF -DL -SSA -O11111114 -fo72 -N"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P7 - Final project\P7_final_project.mcpar" -SP"D:\mikroC PRO for ARM\Defs\" -SP"D:\mikroC PRO for ARM\Uses\ST M3\" -SP"C:\GIT_REPO\unh_csci\ELEC_6602 - Embedded Systems\P7 - Final project\" -IP"D:\mikroC PRO for ARM\Uses\ST M3\" "P7_final_project_main.c" "P7_final_project_events_code.c" "P7_final_project_driver.c" "P7_final_project_resources.c" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" "__Lib_Delays.emcl" "__Lib_System_105_107.emcl" "__Lib_GPIO_32F10x_Defs.emcl" "__Lib_GPIO_32F10x.emcl" "__Lib_CType.emcl" "__Lib_CStdlib.emcl" "__Lib_Sprintf.emcl" "__Lib_ADC_12_32F10x_16ch.emcl" "__Lib_I2C_12.emcl" "__Lib_TFT.emcl" "__Lib_TFT_Defs.emcl" "__Lib_TouchPanel_TFT.emcl"	 
 diagnostics: 0	122	Compilation Started	stdint.h
-warning: 213	1505	Suspicious pointer conversion	cp_intro_screen_ctl.h
-warning: 234	1505	Suspicious pointer conversion	cp_intro_screen_ctl.h
-warning: 249	1508	Implicit conversion of int to ptr	cp_pix_render.h
+warning: 297	1508	Implicit conversion of int to ptr	cp_pix_render.h
+warning: 207	1505	Suspicious pointer conversion	cp_intro_screen_ctl.h
+warning: 228	1505	Suspicious pointer conversion	cp_intro_screen_ctl.h
 warning: 398	1506	Implicit conversion of pointer to int	cp_game_ctl.h
 warning: 398	1506	Implicit conversion of pointer to int	cp_game_ctl.h
-diagnostics: 522	123	Compiled Successfully	P7_final_project_main.c
+warning: 671	1508	Implicit conversion of int to ptr	cp_game_ctl.h
+diagnostics: 546	123	Compiled Successfully	P7_final_project_main.c
 diagnostics: 0	122	Compilation Started	p7_final_project_objects.h
 diagnostics: 26	123	Compiled Successfully	p7_final_project_objects.h
 diagnostics: 1	122	Compilation Started	p7_final_project_resources.h
 diagnostics: 212	123	Compiled Successfully	P7_final_project_driver.c
 diagnostics: 0	122	Compilation Started	P7_final_project_resources.c
 diagnostics: 0	123	Compiled Successfully	P7_final_project_resources.c
-diagnostics: 0	127	All files Compiled in 406 ms	 
+diagnostics: 0	127	All files Compiled in 438 ms	 
 diagnostics: 0	125	Project Linked Successfully	P7_final_project.mcpar
-diagnostics: 0	128	Linked in 344 ms	 
-diagnostics: 0	129	Project 'P7_final_project.mcpar' completed: 890 ms	 
-diagnostics: 0	103	Finished successfully: 07 May 2022, 00:12:17	P7_final_project.mcpar
+diagnostics: 0	128	Linked in 359 ms	 
+diagnostics: 0	129	Project 'P7_final_project.mcpar' completed: 953 ms	 
+diagnostics: 0	103	Finished successfully: 07 May 2022, 19:49:30	P7_final_project.mcpar
