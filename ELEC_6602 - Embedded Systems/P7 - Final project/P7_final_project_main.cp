@@ -117,6 +117,8 @@ void Process_TP_Down(unsigned int X, unsigned int Y);
 
 
 
+
+
 static const uint8_t TRUE = 1;
 static const uint8_t FALSE = 0;
 static const uint8_t ON = 1;
@@ -124,6 +126,9 @@ static const uint8_t OFF = 0;
 static const uint8_t TAIL_ON = 1;
 static const uint8_t TAIL_OFF = 0;
 
+
+
+volatile uint8_t cur_screen_run_flag = TRUE;
 
 
 static const uint32_t GPIO_INPUT_MASK = 0x44444444;
@@ -147,13 +152,21 @@ typedef struct {
 static const uint8_t PHASE_INTRO = 0;
 static const uint8_t PHASE1_READY = 1;
 static const uint8_t PHASE2_PLAYING = 2;
-static const uint8_t PHASE3_PLAYING = 3;
+static const uint8_t PHASE_QUIT = 3;
+static const uint8_t PHASE_HSCORE = 3;
+
+static const uint8_t NORMAL_MODE = 0;
+static const uint8_t WALL_COL_OFF = 0x1;
+static const uint8_t DEV_MODE = 0x3;
 
 static const uint8_t MOVE_RIGHT = 0x0;
 static const uint8_t MOVE_LEFT = 0x1;
 static const uint8_t MOVE_UP = 0x2;
 static const uint8_t MOVE_DOWN = 0x3;
 static const uint16_t NEG_NULL = -1;
+static const uint32_t SFX_FOOD = 5;
+static const uint32_t SFX_FOOD_HIGH = 1;
+static const uint32_t SFX_WALL = 10;
 
 
 static const uint32_t SCREEN_X_MAX = 320;
@@ -169,7 +182,7 @@ static const uint8_t m_GRAY = 3;
 static const uint8_t m_GREEN = 4;
 static const uint8_t m_WHITE = 5;
 static const uint8_t m_FUCHSIA = 6;
-#line 79 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
+#line 92 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
 void debug(uint32_t value) {
  Delay_ms(1);
  USART1_DR = 0xD;
@@ -185,7 +198,7 @@ void debug(uint32_t value) {
 static const uint32_t SCROLL_SPEED = 3;
 static const uint32_t X_SCROLL_SPEED = 1;
 
-static volatile uint8_t cur_screen_run_flag = TRUE;
+
  const uint8_t pub_msg[] = "PUDDLE ProDUCKtions presents:";
  const uint8_t dev_msg[] = "A Run Hop Games, game.";
  const uint8_t intro_msg[] = "Press Joystick/PC13 to contiue.";
@@ -467,7 +480,7 @@ void cleaning_buffer(uint8_t color_8bit);
 
 
 
-
+void dump_ds_buffer();
 
 
 
@@ -699,7 +712,9 @@ const static int32_t MAX_CELLS = 300;
 
 
 
+static volatile uint8_t game_cur_screen_run_flag = TRUE;
 static uint8_t g_GAME_PHASE = PHASE1_READY;
+static uint8_t g_GAME_MODE = NORMAL_MODE;
 static uint8_t g_curr_snake_dir = MOVE_RIGHT;
 static volatile uint8_t g_game_clock_delay_tim3 = ON;
 static volatile uint32_t g_time_count = 0;
@@ -711,6 +726,11 @@ static uint8_t g_food_in_play = FALSE;
 static int32_t g_fd_x_val = NEG_NULL;
 static int32_t g_fd_y_val = NEG_NULL;
 int32_t i=0;
+int32_t j=0;
+uint32_t i2c_status;
+uint8_t data_[128];
+uint8_t rx_data_[256];
+
 
 uint8_t g_str_buffer[128];
 
@@ -725,9 +745,15 @@ t_node *m_node_start = &g_snake_cells;
 t_node *m_node_end = &g_snake_cells[MAX_CELLS-1];
 t_node *m_node_head = &g_snake_cells;
 t_node *m_node_tail = &g_snake_cells;
-#line 69 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+
+
+
+
+
+
+
 void load_game_screen();
-uint8_t get_game_mode();
+uint8_t get_game_phase();
 void update_game_time();
 void move_snake();
 void set_curr_snake_dir();
@@ -743,11 +769,11 @@ void draw_block(uint8_t *dp_buffer, uint32_t x_pos, uint8_t y_pos);
 
 void duck_sprite();
 void init_snake_sprite();
-void dump_ds_buffer();
+
 void incr_snake_head();
 void incr_snake_tail();
 t_node* incr_node(t_node *_node);
-
+void game_over();
 
 
 
@@ -784,7 +810,7 @@ void update_game_time () {
 
 
 
-uint8_t get_game_mode() {
+uint8_t get_game_phase() {
  return g_GAME_PHASE;
 }
 
@@ -802,6 +828,93 @@ void set_food_xy(int32_t *x_val, int32_t *y_val) {
 
 
 }
+
+
+
+void play_sound1( uint32_t duration) {
+
+ for (i=0; i < duration; i++) {
+ GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+
+ Delay_ms(SFX_FOOD_HIGH);
+ }
+}
+
+
+
+void play_sound2( uint32_t duration) {
+
+ for (i=0; i < duration; i++) {
+ GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+
+ Delay_ms(SFX_FOOD);
+ }
+}
+
+
+
+void play_sound3( uint32_t duration) {
+
+ for (i=0; i < duration; i++) {
+ GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+
+ Delay_ms(SFX_WALL);
+ }
+}
+
+
+
+void play_sfx_wall( uint32_t duration) {
+
+ for (i=0; i < duration; i++) {
+ GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+ Delay_ms(5);
+ }
+
+ for (i=0; i < duration; i++) {
+ GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+ Delay_ms(10);
+ }
+
+ for (i=0; i < duration; i++) {
+ GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+ Delay_ms(15);
+ }
+}
+
+
+
+void play_sfx_food( uint32_t duration) {
+
+ for (i=0; i < duration; i++) {
+ GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+ Delay_ms(5);
+ }
+
+ for (i=0; i < duration; i++) {
+ GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+ Delay_ms(3);
+ }
+
+ for (i=0; i < duration; i++) {
+ GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+ Delay_ms(1);
+ }
+}
+
+void game_over() {
+
+
+ TIM2_CR1 = 0;
+ TIM3_CR1 = 0;
+ play_sfx_wall(20);
+ game_cur_screen_run_flag = FALSE;
+ g_GAME_PHASE = PHASE_QUIT;
+}
+
+
+
+
 
 
 
@@ -830,8 +943,15 @@ void move_snake() {
 
 
 
- if (m_node_head->node_x > MAX_COL_WIDTH-1) {
+
+ if (m_node_head->node_x > MAX_COL_WIDTH-1 ) {
+
+ if (g_GAME_MODE == NORMAL_MODE) {
+ game_over();
+
+ } else {
  m_node_head->node_x = 0;
+ }
  }
  }
  else if (g_curr_snake_dir == MOVE_LEFT) {
@@ -851,7 +971,12 @@ void move_snake() {
 
 
  if (m_node_head->node_x < 0) {
+ if (g_GAME_MODE == NORMAL_MODE) {
+ game_over();
+
+ } else {
  m_node_head->node_x = 19;
+ }
  }
 
  }
@@ -871,7 +996,12 @@ void move_snake() {
 
 
  if (m_node_head->node_y < 1 ) {
+ if (g_GAME_MODE == NORMAL_MODE) {
+ game_over();
+
+ } else {
  m_node_head->node_y = (MAX_ROW_LENGTH-1);
+ }
  }
  }
  else if (g_curr_snake_dir == MOVE_DOWN) {
@@ -890,7 +1020,12 @@ void move_snake() {
 
 
  if (m_node_head->node_y > MAX_ROW_LENGTH-1 ) {
+ if (g_GAME_MODE == NORMAL_MODE) {
+ game_over();
+
+ } else {
  m_node_head->node_y = 1;
+ }
  }
 
  }
@@ -908,7 +1043,7 @@ int32_t check_snake_collision(int16_t x_val, int16_t y_val, t_node * start_pos) 
  }
 
  do {
-
+ scr_debug(temp_itr->node_x, temp_itr->node_y );
 
 
  if (temp_itr->node_x == x_val && temp_itr->node_y == y_val) {
@@ -942,7 +1077,7 @@ void generate_food() {
  g_rand_num = (int32_t) (rand() % MAX_BLOCK_COUNT);
  }
 
- scr_debug(g_rand_num, temp_time);
+
 
  convert_lin_xy(&g_rand_num, &fd_x_val, &fd_y_val);
 
@@ -1117,7 +1252,12 @@ void update_stats() {
  TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 0*PX_BLOCK);
 
 
+ if (g_GAME_MODE == NORMAL_MODE) {
+ sprintf(g_str_buffer, "MODE: \x20 Normal" );
+ }
+ else {
  sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d;\x20 %d",g_debug, g_debug2 );
+ }
  TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 0*PX_BLOCK);
 }
 
@@ -1159,32 +1299,7 @@ void init_snake_game() {
 
  Delay_ms(100);
  init_snake_sprite();
-
- dump_ds_buffer();
-
-
 }
-
-
-
-
-void start_snake_game() {
- Delay_ms(500);
-
-
-
-
- while (cur_screen_run_flag == TRUE) {
-
-
-
- };
-
-
- set_sprite_offset(0,0);
-
-}
-
 
 
 
@@ -1199,7 +1314,22 @@ void init_snake_sprite() {
 
 
 
+
+void start_snake_game() {
+ Delay_ms(500);
+
+
+
+ while (game_cur_screen_run_flag == TRUE) {
+
+ };
+}
+
+
+
+
 void screen_refresh_TIM3() {
+
 
 
  if ( check_snake_collision((m_node_tail)->node_x, (m_node_tail)->node_y, m_node_tail+1) == FALSE ) {
@@ -1208,9 +1338,10 @@ void screen_refresh_TIM3() {
 
  draw_cell_xy(g_fd_x_val, g_fd_y_val, m_FUCHSIA);
  Delay_ms(5);
-
-
  move_snake();
+
+ if (g_GAME_PHASE != PHASE_QUIT) {
+
  print_snake(m_node_head, m_GREEN);
  Delay_ms(5);
 
@@ -1218,25 +1349,107 @@ void screen_refresh_TIM3() {
  if ( check_snake_collision(g_fd_x_val, g_fd_y_val, m_node_head) == FALSE ) {
  incr_snake_tail();
  } else {
+
+ play_sfx_food(20);
  g_game_score++;
  generate_food();
  }
+ }
+}
+
+
+
+void game_over_scr() {
+
+ g_GAME_PHASE = PHASE_QUIT;
+
+ init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+
+
+ set_cur_screen_run_flag(TRUE);
 
 
 
 
 
+ set_brush_color(m_BLACK);
 
- Delay_ms(1);
+ TFT_SET_PEN(CL_GRAY, 0);
+ TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
+
+ sprintf(g_str_buffer, "Total Time: \x20 %02d:%02d", g_t_mins, g_t_secs );
+ TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 2*PX_BLOCK);
+
+ sprintf(g_str_buffer, "Final score: \x20 %04d", g_game_score);
+ TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 3*PX_BLOCK);
 
 
 
 
-
+ while (cur_screen_run_flag == TRUE) {}
 
 
 }
-#line 591 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+
+void EE_write(uint8_t w_addr, uint8_t w_data) {
+ data_[0] = w_addr;
+ data_[1] = w_data;
+ I2C1_Start();
+
+
+ I2C1_Write(0x50, data_, 2, END_MODE_STOP);
+
+}
+
+uint8_t EE_read(uint8_t r_addr) {
+ data_[0] = r_addr;
+ I2C1_Start();
+ I2C1_Write(0x50, data_,1, END_MODE_RESTART);
+ I2C1_Read(0x50, data_, 1, END_MODE_STOP);
+
+ return data_[0];
+}
+
+void game_high_score_scr() {
+
+
+
+ set_cur_screen_run_flag(TRUE);
+
+
+ TFT_Fill_Screen(CL_BLACK);
+
+
+
+ I2C1_Init();
+
+ GPIOB_ODR |= 0xFF00;
+ Delay_ms(10);
+
+ for (i = 0; i < 0x16; i++) {
+ EE_write(i, (0x32 +i) );
+ GPIOB_ODR++;
+ Delay_ms(5);
+ }
+
+ Delay_ms(10);
+ GPIOB_ODR |= 0xFF00;
+ Delay_ms(10);
+
+ for (i=0; i < 0x16; i++) {
+ rx_data_[i] = EE_read(i);
+ Delay_ms(10);
+ }
+
+ sprintf(g_str_buffer, "testing: \x20 %s", rx_data_);
+ TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 4*PX_BLOCK);
+
+
+
+ while (cur_screen_run_flag == TRUE) {}
+
+}
+#line 776 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
 void duck_sprite() {
 
 
@@ -1328,14 +1541,16 @@ void duck_sprite() {
  load_cell_xy(7,8,m_YELLOW);
  load_cell_xy(8,8,m_YELLOW);
 }
-#line 61 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
-static volatile uint8_t DEV_MODE = FALSE;
+#line 62 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 static uint8_t g_cur_game_phase = 0xFF;
 static int32_t g_game_speed = 1000;
 
 uint32_t rx_buffer = 0;
 uint32_t debug_val;
-#line 92 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+uint32_t i2c_status1;
+uint8_t rx_data1 =0x32;
+uint8_t tx_data1 =0x55;
+#line 95 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 void EXTI15_10() iv IVT_INT_EXTI15_10 {
 
  EXTI_PR |= 1 << 13;
@@ -1343,7 +1558,7 @@ void EXTI15_10() iv IVT_INT_EXTI15_10 {
 
  while (GPIOC_IDR.B13 == 0) { GPIOB_ODR = ~GPIOB_ODR; }
 
- g_cur_game_phase = get_game_mode();
+ g_cur_game_phase = get_game_phase();
 
  switch (g_cur_game_phase)
  {
@@ -1364,6 +1579,11 @@ void EXTI15_10() iv IVT_INT_EXTI15_10 {
 
  break;
 
+ case PHASE_QUIT:
+ set_cur_screen_run_flag(FALSE);
+ g_cur_game_phase = PHASE_HSCORE;
+ break;
+
 
 
 
@@ -1372,9 +1592,30 @@ void EXTI15_10() iv IVT_INT_EXTI15_10 {
  default:
  break;
  }
-#line 151 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 }
 
+
+
+void EXTIPA0() iv IVT_INT_EXTI0 {
+ EXTI_PR |= 1 << 2;
+ while (GPIOA_IDR.B0 == 0) {GPIOB_ODR = ~GPIOB_ODR;}
+
+ if (g_cur_game_phase == PHASE2_PLAYING) {
+ set_cur_screen_run_flag(FALSE);
+ game_cur_screen_run_flag = FALSE;
+ g_cur_game_phase = PHASE_QUIT;
+
+
+ TIM2_CR1 = 0;
+ TIM3_CR1 = 0;
+ }
+ else if (g_cur_game_phase == PHASE_QUIT) {
+ set_cur_screen_run_flag(FALSE);
+ g_cur_game_phase = PHASE_HSCORE;
+ }
+
+
+}
 
 void EXTIPA6() iv IVT_INT_EXTI9_5 {
  if (GPIOB_IDR.B5 == 0) {
@@ -1400,9 +1641,8 @@ void EXTIPA6() iv IVT_INT_EXTI9_5 {
 
  }
 
-
-
 }
+
 
 
 void EXTIPD2() iv IVT_INT_EXTI2 {
@@ -1415,6 +1655,7 @@ void EXTIPD2() iv IVT_INT_EXTI2 {
 
 
 }
+
 
 
 void EXTIPD4() iv IVT_INT_EXTI4 {
@@ -1494,10 +1735,17 @@ void init_cfg_M_CTL() {
  RCC_APB2ENR |= 1 << 14;
  RCC_APB2ENR |= 1 << 9;
 
+ RCC_APB1ENR |= (uint32_t) 1 << 21;
 
- GPIOE_CRH = 0xFF00;
+
+ GPIO_Digital_Output(&GPIOE_BASE, _GPIO_PINMASK_14);
+ GPIOE_CRH &= (long int) ~(0xF << 24);
+ GPIOE_CRH &= (uint32_t) ~(0xC << 24) ;
+
  GPIOA_CRL &= ~(0xF << 12);
 
+
+ GPIOA_CRL |= 4 << 0;
 
  GPIOA_CRL |= 4 << 4;
  GPIOA_CRL |= 4 << 6;
@@ -1505,7 +1753,7 @@ void init_cfg_M_CTL() {
  GPIOD_CRL |= 4 << 2;
  GPIOD_CRL |= 4 << 4;
  GPIOC_CRH |= 4 << 5;
-#line 310 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+#line 330 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 }
 
 
@@ -1549,6 +1797,8 @@ void init_timer2() {
 
 }
 
+
+
 void init_timer3() {
  RCC_APB1ENR |= (1 << 1);
  TIM3_CR1 = 0x0000;
@@ -1561,6 +1811,7 @@ void init_timer3() {
 }
 
 
+
 void init_interrupt() {
 
 
@@ -1569,6 +1820,7 @@ void init_interrupt() {
 
 
 
+ AFIO_EXTICR1 &= ~(0xF << 0);
  AFIO_EXTICR1 |= 3 << 8;
  AFIO_EXTICR2 |= 3 << 0;
  AFIO_EXTICR2 |= 1 << 4;
@@ -1582,13 +1834,13 @@ void init_interrupt() {
  EXTI_FTSR |= 1 << 5;
  EXTI_FTSR |= 1 << 6;
  EXTI_FTSR |= 1 << 13;
+ EXTI_RTSR |= 1 << 0;
+ EXTI_IMR |= 0x00002075;
 
 
- EXTI_IMR |= 0x00002074;
 
 
-
-
+ NVIC_ISER0 |= (uint32_t) 1 << 6;
  NVIC_ISER0 |= (uint32_t) 1 << 8;
  NVIC_ISER0 |= (uint32_t) 1 << 10;
  NVIC_ISER0 |= (uint32_t) 1 << 23;
@@ -1633,11 +1885,9 @@ void main() {
 
 
  init_interrupt();
-
-
-
+#line 476 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
  Start_TP();
-#line 453 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+#line 497 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
  load_snake_game();
 
 
@@ -1648,10 +1898,15 @@ void main() {
  TIM3_CR1 = 0x0001;
  start_snake_game();
 
+ game_over_scr();
+ game_high_score_scr();
 
- TFT_SET_Brush(1, CL_RED, 0, 0, 0 ,0);
+
+
+
+ TFT_SET_Brush(1, CL_BLACK, 0, 0, 0 ,0);
  TFT_Rectangle(0, 0, 320, 240);
- TFT_Fill_Screen(CL_RED);
+ TFT_Fill_Screen(CL_GRAY);
 
  Delay_ms(3000);
 

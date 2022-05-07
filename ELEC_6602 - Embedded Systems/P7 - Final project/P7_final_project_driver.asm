@@ -697,31 +697,31 @@ MOVW	R1, #512
 MOVW	R0, #lo_addr(GPIOE_BASE+0)
 MOVT	R0, #hi_addr(GPIOE_BASE+0)
 BL	_GPIO_Digital_Output+0
-;P7_final_project_driver.c,192 :: 		TFT_BLED = 1;
+;P7_final_project_driver.c,193 :: 		TFT_BLED = 1;
 MOVS	R1, #1
 SXTB	R1, R1
 MOVW	R0, #lo_addr(GPIOE_ODR+0)
 MOVT	R0, #hi_addr(GPIOE_ODR+0)
 _SX	[R0, ByteOffset(GPIOE_ODR+0)]
-;P7_final_project_driver.c,193 :: 		TFT_Set_Default_Mode();
+;P7_final_project_driver.c,194 :: 		TFT_Set_Default_Mode();
 BL	_TFT_Set_Default_Mode+0
-;P7_final_project_driver.c,194 :: 		TP_TFT_Set_Default_Mode();
+;P7_final_project_driver.c,195 :: 		TP_TFT_Set_Default_Mode();
 BL	_TP_TFT_Set_Default_Mode+0
-;P7_final_project_driver.c,195 :: 		}
+;P7_final_project_driver.c,196 :: 		}
 L_end_Init_MCU:
 LDR	LR, [SP, #0]
 ADD	SP, SP, #4
 BX	LR
 ; end of _Init_MCU
 _Start_TP:
-;P7_final_project_driver.c,197 :: 		void Start_TP() {
+;P7_final_project_driver.c,198 :: 		void Start_TP() {
 SUB	SP, SP, #4
 STR	LR, [SP, #0]
-;P7_final_project_driver.c,198 :: 		Init_MCU();
+;P7_final_project_driver.c,199 :: 		Init_MCU();
 BL	_Init_MCU+0
-;P7_final_project_driver.c,200 :: 		InitializeTouchPanel();        // Must be enabled to work. This enables the display not just the touch
+;P7_final_project_driver.c,201 :: 		InitializeTouchPanel();        // Must be enabled to work. This enables the display not just the touch
 BL	P7_final_project_driver_InitializeTouchPanel+0
-;P7_final_project_driver.c,202 :: 		Delay_ms(1000);
+;P7_final_project_driver.c,203 :: 		Delay_ms(1000);
 MOVW	R7, #6911
 MOVT	R7, #183
 NOP
@@ -732,33 +732,33 @@ BNE	L_Start_TP24
 NOP
 NOP
 NOP
-;P7_final_project_driver.c,203 :: 		TFT_Fill_Screen(0);
+;P7_final_project_driver.c,204 :: 		TFT_Fill_Screen(0);
 MOVS	R0, #0
 BL	_TFT_Fill_Screen+0
-;P7_final_project_driver.c,205 :: 		TFT_Fill_Screen(0);
+;P7_final_project_driver.c,206 :: 		TFT_Fill_Screen(0);
 MOVS	R0, #0
 BL	_TFT_Fill_Screen+0
-;P7_final_project_driver.c,207 :: 		InitializeObjects();
+;P7_final_project_driver.c,208 :: 		InitializeObjects();
 BL	P7_final_project_driver_InitializeObjects+0
-;P7_final_project_driver.c,208 :: 		display_width = Screen1.Width;
+;P7_final_project_driver.c,209 :: 		display_width = Screen1.Width;
 MOVW	R0, #lo_addr(_Screen1+2)
 MOVT	R0, #hi_addr(_Screen1+2)
 LDRH	R1, [R0, #0]
 MOVW	R0, #lo_addr(_display_width+0)
 MOVT	R0, #hi_addr(_display_width+0)
 STRH	R1, [R0, #0]
-;P7_final_project_driver.c,209 :: 		display_height = Screen1.Height;
+;P7_final_project_driver.c,210 :: 		display_height = Screen1.Height;
 MOVW	R0, #lo_addr(_Screen1+4)
 MOVT	R0, #hi_addr(_Screen1+4)
 LDRH	R1, [R0, #0]
 MOVW	R0, #lo_addr(_display_height+0)
 MOVT	R0, #hi_addr(_display_height+0)
 STRH	R1, [R0, #0]
-;P7_final_project_driver.c,210 :: 		DrawScreen(&Screen1);
+;P7_final_project_driver.c,211 :: 		DrawScreen(&Screen1);
 MOVW	R0, #lo_addr(_Screen1+0)
 MOVT	R0, #hi_addr(_Screen1+0)
 BL	_DrawScreen+0
-;P7_final_project_driver.c,211 :: 		}
+;P7_final_project_driver.c,212 :: 		}
 L_end_Start_TP:
 LDR	LR, [SP, #0]
 ADD	SP, SP, #4

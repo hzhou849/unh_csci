@@ -58,12 +58,15 @@
 
 
 /* Global variables*/
-static volatile uint8_t DEV_MODE   = FALSE;
+// static volatile uint8_t DEV_MODE   = FALSE;
 static uint8_t g_cur_game_phase  = 0xFF;         // 0=intro screen; 1=main game
 static int32_t g_game_speed        = 1000;
 
 uint32_t rx_buffer = 0;
 uint32_t debug_val;
+uint32_t i2c_status1;
+uint8_t rx_data1 =0x32;
+uint8_t tx_data1 =0x55;
 
 
 /* Interrupt Handlers */
@@ -96,7 +99,7 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
 
     while (GPIOC_IDR.B13 == 0) { GPIOB_ODR = ~GPIOB_ODR; } 
 
-    g_cur_game_phase = get_game_mode();
+    g_cur_game_phase = get_game_phase();
 
      switch (g_cur_game_phase)
     {
@@ -117,6 +120,11 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
         // g_cur_game_phase = PHASE2_PLAYING;
         break;
 
+    case PHASE_QUIT:
+        set_cur_screen_run_flag(FALSE);
+        g_cur_game_phase = PHASE_HSCORE;
+        break;
+
     // case PHASE2_PLAYING:
     //     set_cur_screen_run_flag(FALSE); // Start snake game
     //     // g_cur_game_phase = PHASE2_PLAYING;
@@ -125,31 +133,30 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
     default:
         break;
     }
-    
-    // if (g_cur_game_phase == PHASE_INTRO) {
-
-    //     set_cur_screen_run_flag(FALSE);
-    //     // g_cur_game_phase = PHASE1_READY;
-    // }
-    // else if (g_cur_game_phase == PHASE1_READY) {
-    //     set_cur_screen_run_flag(FALSE);
-    //     // g_cur_game_phase = PHASE2_PLAYING; // load_snake_game
-    // }
-    // else if (g_cur_game_phase == PHASE2_PLAYING) {
-    //     // set_cur_screen_run_flag(FALSE);
-    //     // g_cur_game_phase = PHASE2_PLAYING; // start_snake_game
-        
-    //     Delay_ms(100);
-    // }
-    // // else if (g_cur_game_phase == PHASE2_READY) {
-    //     // set_cur_screen_run_flag(FALSE);
-    //     // g_cur_game_phase = PHASE2_PLAYING; // start_snake_game
-    //     // while playing
-    // // }
-
-
 }
 
+/// PA0 - Quit button
+///
+void EXTIPA0() iv IVT_INT_EXTI0  {
+    EXTI_PR |= 1 << 2;
+     while (GPIOA_IDR.B0 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
+
+     if (g_cur_game_phase == PHASE2_PLAYING) {
+        set_cur_screen_run_flag(FALSE);
+        game_cur_screen_run_flag = FALSE;
+        g_cur_game_phase = PHASE_QUIT;
+
+        // Kill Timers
+        TIM2_CR1 = 0; // Start TIMER2 for game time
+        TIM3_CR1 = 0; // Start TIMER3 now
+     }
+    else if (g_cur_game_phase == PHASE_QUIT) {
+        set_cur_screen_run_flag(FALSE);
+        g_cur_game_phase = PHASE_HSCORE;
+    }
+
+    
+}
 // PA6 - Joystick Right ISR
 void EXTIPA6() iv IVT_INT_EXTI9_5  {
     if (GPIOB_IDR.B5 == 0) {
@@ -175,9 +182,8 @@ void EXTIPA6() iv IVT_INT_EXTI9_5  {
         
     }
 
-    // set_cur_screen_run_flag(FALSE);
-
 }
+
 
 // PD2 - Joystick LEFT ISR
 void EXTIPD2() iv IVT_INT_EXTI2  {
@@ -190,6 +196,7 @@ void EXTIPD2() iv IVT_INT_EXTI2  {
 
     
 }
+
 
 // PD4 - Joystick LEFT ISR
 void EXTIPD4() iv IVT_INT_EXTI4  {
@@ -269,11 +276,18 @@ void init_cfg_M_CTL() {
     RCC_APB2ENR |= 1 << 14;                   // Enable GPIO clock for USART1
     RCC_APB2ENR |= 1 << 9;                   // Enable ADC1 Clock
 
+    RCC_APB1ENR |= (uint32_t) 1 << 21;          // Enable I2C1 Clock
+
     /* Config port direction & flags */
-    GPIOE_CRH = 0xFF00; 
+     GPIO_Digital_Output(&GPIOE_BASE, _GPIO_PINMASK_14); // added here to enabed PE14 for piezo buzzer
+    GPIOE_CRH &= (long int) ~(0xF << 24);
+    GPIOE_CRH &= (uint32_t) ~(0xC <<  24) ;                    // PE14 output for Piezo buzzer 0xc inverse of 0x3
+    // GPIOE_ODR=0xFFFF;
     GPIOA_CRL &= ~(0xF << 12);                 // PA3 - Analog input mode b0000 bit[15:12]
 
     /* Joystick configuration */
+    GPIOA_CRL |= 4 << 0;                       // Enable PA0;  Quit button      
+
     GPIOA_CRL |= 4 << 4;                       // Enable PA4;  Game TIMER3 control      
     GPIOA_CRL |= 4 << 6;                       // Enable PA6;  joystick=RIGHT      
     GPIOB_CRL |= 4 << 5;                       // Enable PB5;  joystick=DOWN      
@@ -295,7 +309,7 @@ void init_cfg_M_CTL() {
     // ADC1_CR2 |= (uint32_t) 1 << 21; // Start conversion of injected channels
     // ADC1_CR2 |= 1 << 20; // Exteral trigger conversion mode for regular channels
     // ADC1_CR2 = 0;
-    // ADC1_CR2 |= (uint32_t) 1 << 12; // JWSTART b111
+    // ADC1_CR2 |= (uint32_t) 1 << 12; // JWSTART b111~
     // ADC1_CR2 |= (uint32_t) 1 << 13; // JWSTART b111
     // ADC1_CR2 |= (uint32_t) 1 << 14; // JWSTART b111
     // ADC1_CR2 |= 1 << 1; // ADC continuous conversion on
@@ -305,6 +319,12 @@ void init_cfg_M_CTL() {
     //ADC1_CR1 = 0x0001
     //ADC1_CR2 = 0x000E 0001 b0- 0- 1110 0- 0- 0001 | 14,13,12 & 1 = ON
 
+    // I2C Initialization Advanced 
+    // GPIOB_CRL |= 0xFF << 6;  // I2c CNF is b11 reserved 11 AF-opendrain @ MODE:50Hz
+    // I2C1_CR2 = 0x0008;
+    // I2C1_CCR=0x0028;
+    // I2C1_TRISE = 0x0009;
+    // I2C1_CR1 = 0x0001; // Enable peripheral I2C
     
 
 }
@@ -336,10 +356,10 @@ void config_USART1() {
 
 }
 
-/// Initialize TIMER1
 
 
 /// Initialize TIMER2
+///
 void init_timer2() {
     RCC_APB1ENR |= 1 << 0;                      // Enable Clock for TIMER2 
     TIM2_CR1     = 0x0000;                      // Disable the timer for config setup
@@ -350,6 +370,8 @@ void init_timer2() {
     // TIM2_CR1     = 0x0001;                      // wait for game to startAfter timer setup, enable TIMER2 bit[1]; bit[4]=0 counting up.
 }
 
+/// Initialize TIMER3
+///
 void init_timer3() {
     RCC_APB1ENR |= (1 << 1);                   // Enable TIMER3 Clock
     TIM3_CR1    = 0x0000;                       // Disable time for setup
@@ -362,6 +384,7 @@ void init_timer3() {
 }
 
 /// Initialize and configure Interrupts
+///
 void init_interrupt() {
 
     // Reset the register to put it in a known state
@@ -370,6 +393,7 @@ void init_interrupt() {
 
     // PD2=Left, PD4=Up, PA6=Right, PB5=Down, PC13=J_button; 
     // AFIO_EXTICR1 |=
+    AFIO_EXTICR1 &= ~(0xF << 0);               // PD2 = EXTI0[3:0];  PortA = b0000;
     AFIO_EXTICR1 |= 3 << 8;                     // PD2 = EXTI2[11:8]; PortD = b0011;
     AFIO_EXTICR2 |= 3 << 0;                     // PD4 = EXTI4[3:0];  PortD = b0011;
     AFIO_EXTICR2 |= 1 << 4;                     // PB5 = EXTI5[7:4];  PortB = b0001;
@@ -378,18 +402,18 @@ void init_interrupt() {
 
 
     // Configure edge trigger and maskability and mask enable
-    EXTI_FTSR |= 1 << 2; // EXTI2 is FALLING EDGE
-    EXTI_FTSR |= 1 << 4; // EXTI4 is FALLING EDGE
-    EXTI_FTSR |= 1 << 5; // EXTI5 is FALLING EDGE
-    EXTI_FTSR |= 1 << 6; // EXTI6 is FALLING EDGE
-    EXTI_FTSR |= 1 << 13; // EXTI13 is FALLING EDGE
-    // EXTI_FTSR |= 1 << 13; // EXTI13 is FALLING EDGE
-    // EXTI_RTSR |= 
-    EXTI_IMR |= 0x00002074;      // Set EXTI2,4,5,6,13 to not-maskable
+    EXTI_FTSR |= 1 << 2;        // EXTI2 is FALLING EDGE
+    EXTI_FTSR |= 1 << 4;        // EXTI4 is FALLING EDGE
+    EXTI_FTSR |= 1 << 5;        // EXTI5 is FALLING EDGE
+    EXTI_FTSR |= 1 << 6;        // EXTI6 is FALLING EDGE
+    EXTI_FTSR |= 1 << 13;       // EXTI13 is FALLING EDGE
+    EXTI_RTSR |= 1 << 0;        // EXIT0 is RISING Edge
+    EXTI_IMR |= 0x00002075;      // Set EXTI 0,2,4,5,6,13 to not-maskable
 
 
     /* Vector NVIC mapping enable - see ref. manual 10.1.2 -IRQ & Exception Vector table for mapping*/
     // Set bit for Interrupt set-enable registers for EXTI2=8; EXTI4=10; EXTI5 & EXIT6=23(EXIT9_5); EXTI13 (EXTI_15_10)=40
+    NVIC_ISER0 |= (uint32_t) 1 << 6;            // EXTI0  NVIC Pos=6:  
     NVIC_ISER0 |= (uint32_t) 1 << 8;            // EXTI2  NVIC Pos=8:  
     NVIC_ISER0 |= (uint32_t) 1 << 10;           // EXTI4  NVIC Pos=10: 
     NVIC_ISER0 |= (uint32_t) 1 << 23;           // EXTI5  NVIC Pos=23: EXTI9_5 
@@ -436,9 +460,29 @@ void main() {
     init_interrupt();
 
 
+    
+
+    //  I2C1_Init();
+    // i2c_status1 = I2C1_Start();
+    // i2c_status1 = I2C1_Get_Status();
+
+    // I2C1_Write(0x50,&tx_data1, 1, END_MODE_STOP );
+    // I2C1_Read(0x50, &rx_data1, 1, END_MODE_STOP);
+    // sprintf(g_str_buffer, "testing: \x20 %c", rx_data1);
+    // TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 4*PX_BLOCK);
+
+
     /* Display Initializatiogitn */
     Start_TP();
 
+
+
+
+
+    //  /* Config port direction & flags */
+    // GPIOE_CRH |= (uint32_t) 3 <<  24 ;                    // PE14 output for Piezo buzzer
+    // GPIOE_CRH |= (uint32_t) 3 <<  24 ;                    // PE14 output for Piezo buzzer
+    // GPIOE_ODR=0xFFFF;
 
     /* Display execution stuff */
 
@@ -459,11 +503,16 @@ void main() {
     TIM2_CR1     = 0x0001; // Start TIMER2 for game time
     TIM3_CR1    = 0x0001; // Start TIMER3 now
     start_snake_game();
+
+    game_over_scr();
+    game_high_score_scr();
+
+
                     
 
-    TFT_SET_Brush(1, CL_RED, 0, 0, 0 ,0);
+    TFT_SET_Brush(1, CL_BLACK, 0, 0, 0 ,0);
     TFT_Rectangle(0, 0, 320, 240);
-    TFT_Fill_Screen(CL_RED);
+    TFT_Fill_Screen(CL_GRAY);
 
     Delay_ms(3000);
 

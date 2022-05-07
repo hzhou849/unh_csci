@@ -2,6 +2,9 @@ main
 	__CC2DW
 	__FillZeros
 	init_cfg_M_CTL
+		GPIO_Digital_Output
+			GPIO_Config
+				GPIO_Clk_Enable
 	config_USART1
 	init_timer2
 	init_timer3
@@ -9,8 +12,6 @@ main
 	Start_TP
 		Init_MCU
 			GPIO_Digital_Output
-				GPIO_Config
-					GPIO_Clk_Enable
 			TFT_Set_Default_Mode
 			TP_TFT_Set_Default_Mode
 		InitializeTouchPanel
@@ -193,9 +194,9 @@ main
 			generate_food
 				rand
 					srand
-				scr_debug
 				convert_lin_xy
 				check_snake_collision
+					scr_debug
 					incr_node
 				draw_cell_pos
 					set_brush_color
@@ -203,21 +204,13 @@ main
 					TFT_Rectangle
 				set_food_in_play_flag
 				set_food_xy
-		dump_ds_buffer
-			draw_cell_pos
 	start_snake_game
-		set_sprite_offset
-	TFT_Set_Brush
-	TFT_Rectangle
-	TFT_Fill_Screen
-EXTIPD4
-	set_curr_snake_dir
-TIMER2_ISR
-	update_game_time
-	render_rect_mask
+	game_over_scr
+		init_arr
+		set_cur_screen_run_flag
 		set_brush_color
-		TFT_Rectangle
-	update_time
+		TFT_Set_Pen
+		TFT_Set_Font
 		sprintf
 			_doprntf
 				isdigit
@@ -234,6 +227,64 @@ TIMER2_ISR
 				fround
 					_Mul_FP
 				_FloatToSignedIntegral
+		TFT_Write_Text
+	game_high_score_scr
+		set_cur_screen_run_flag
+		TFT_Fill_Screen
+		I2C1_Init
+			I2Cx_Init_Advanced
+				RCC_GetClocksFrequency
+					Get_Fosc_kHz
+				GPIO_Alternate_Function_Enable
+					GPIO_Configure_Pin
+						GPIO_Config
+		EE_write
+			I2C1_Start
+				I2Cx_Start
+					I2Cx_Wait_For_Idle
+						I2Cx_Is_Idle
+						TFT_Set_Index
+						TFT_Write_Command
+						TFT_SSD1963_8bit_Set_Index
+						TFT_SSD1963YT_8bit_Write_Command
+					ChekXForEvent
+						I2Cx_Get_Status
+					TFT_Set_Index
+					TFT_Write_Command
+					TFT_SSD1963_8bit_Set_Index
+					TFT_SSD1963YT_8bit_Write_Command
+			I2C1_Write
+				I2Cx_Write
+					ChekXForEvent
+					TFT_Set_Index
+					TFT_Write_Command
+					TFT_SSD1963_8bit_Set_Index
+					TFT_SSD1963YT_8bit_Write_Command
+		EE_read
+			I2C1_Start
+			I2C1_Write
+			I2C1_Read
+				I2Cx_Read
+					__CC2DW
+					ChekXForEvent
+					TFT_Set_Index
+					TFT_Write_Command
+					TFT_SSD1963_8bit_Set_Index
+					TFT_SSD1963YT_8bit_Write_Command
+		sprintf
+		TFT_Write_Text
+	TFT_Set_Brush
+	TFT_Rectangle
+	TFT_Fill_Screen
+EXTIPD4
+	set_curr_snake_dir
+TIMER2_ISR
+	update_game_time
+	render_rect_mask
+		set_brush_color
+		TFT_Rectangle
+	update_time
+		sprintf
 		TFT_Write_Text
 	update_stats
 		sprintf
@@ -253,13 +304,18 @@ TIMER3_ISR
 		draw_cell_xy
 		move_snake
 			incr_snake_head
+			game_over
+				play_sfx_wall
 		print_snake
 		incr_snake_tail
+		play_sfx_food
 		generate_food
+EXTIPD2
+	set_curr_snake_dir
 EXTI15_10
-	get_game_mode
+	get_game_phase
+	set_cur_screen_run_flag
+EXTIPA0
 	set_cur_screen_run_flag
 EXTIPA6
-	set_curr_snake_dir
-EXTIPD2
 	set_curr_snake_dir

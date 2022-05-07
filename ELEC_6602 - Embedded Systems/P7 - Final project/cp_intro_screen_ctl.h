@@ -18,7 +18,7 @@
 static const uint32_t SCROLL_SPEED = 3;
 static const uint32_t X_SCROLL_SPEED = 1;
 
-static volatile uint8_t cur_screen_run_flag = TRUE;
+
  const  uint8_t pub_msg[] = "PUDDLE ProDUCKtions presents:";
  const    uint8_t dev_msg[] = "A Run Hop Games, game.";
  const    uint8_t intro_msg[] = "Press Joystick/PC13 to contiue.";

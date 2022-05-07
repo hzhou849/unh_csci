@@ -189,6 +189,7 @@ void Check_TP() {
 
 void Init_MCU() {
   GPIO_Digital_Output(&GPIOE_BASE, _GPIO_PINMASK_9);
+ 
   TFT_BLED = 1;
   TFT_Set_Default_Mode();
   TP_TFT_Set_Default_Mode();

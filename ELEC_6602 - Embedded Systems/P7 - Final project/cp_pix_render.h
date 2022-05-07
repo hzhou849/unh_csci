@@ -44,7 +44,7 @@ void cleaning_buffer(uint8_t color_8bit);
 // void draw_snake();
 // void draw_block(uint8_t *dp_buffer, int32_t x_pos, uint8_t y_pos);
 
-// void dump_ds_buffer();
+void dump_ds_buffer(); // For large sprites; logos etc..
 //=================================================================================================================
 
 // Set the offset transform values for the current sprite in the video buffer

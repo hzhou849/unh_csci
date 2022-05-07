@@ -124,13 +124,8 @@ void print_int(uint32_t *int_num) {
 void main() {
 
  uint32_t sequence_count = 0;
-
-
-
  uint8_t ask_time_flag = FALSE;
  uint8_t r_key_rcvd = TRUE;
-
-
 
  uint32_t i=0;
 
@@ -346,7 +341,6 @@ void main() {
  }
 
 
-
  GPIOB_ODR = 0x0000;
  GPIOC_ODR = 0x0000;
  GPIOD_ODR = 0x0000;
@@ -354,11 +348,8 @@ void main() {
  TIM1_CNT = 0;
  TIM4_CNT = 0;
 
-
  }
  }
-
-
 
 
 

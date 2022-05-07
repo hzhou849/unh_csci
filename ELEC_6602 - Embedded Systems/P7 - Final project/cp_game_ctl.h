@@ -22,8 +22,10 @@ const static int32_t MAX_CELLS                            = 300;
 
 /* Global variables */
 
-// Game states flags
+// Game states flags - compiler has issues with declaring variables in functions.
+static volatile uint8_t game_cur_screen_run_flag = TRUE;
 static uint8_t g_GAME_PHASE                         = PHASE1_READY;
+static uint8_t g_GAME_MODE                          = NORMAL_MODE;
 static uint8_t g_curr_snake_dir                     = MOVE_RIGHT;
 static volatile uint8_t  g_game_clock_delay_tim3    = ON;
 static volatile uint32_t g_time_count               = 0;
@@ -34,7 +36,12 @@ static int32_t g_rand_num                          = 999;
 static uint8_t g_food_in_play                       = FALSE;
 static int32_t g_fd_x_val                          = NEG_NULL;
 static int32_t g_fd_y_val                          = NEG_NULL;
-int32_t i=0;
+int32_t i=0;    // Generic counters
+int32_t j=0;    // Generic counters
+uint32_t i2c_status;
+uint8_t data_[128];
+uint8_t rx_data_[256];
+
 
 uint8_t g_str_buffer[128];                                // General use string buffer for output text
 
@@ -57,7 +64,7 @@ t_node *m_node_tail           = &g_snake_cells;
 
 // External calls
 void load_game_screen();
-uint8_t get_game_mode();
+uint8_t get_game_phase();
 void update_game_time();
 void move_snake();
 void set_curr_snake_dir();
@@ -73,11 +80,11 @@ void draw_block(uint8_t *dp_buffer, uint32_t x_pos, uint8_t y_pos);
 
 void duck_sprite();
 void init_snake_sprite();
-void dump_ds_buffer();
+// void dump_ds_buffer();
 void incr_snake_head();
 void incr_snake_tail();
 t_node* incr_node(t_node *_node);
-
+void game_over();
 
 
 // Flag updating functions
@@ -114,7 +121,7 @@ void update_game_time () {
 
 /// Get the current game mode
 ///
-uint8_t get_game_mode() {
+uint8_t get_game_phase() {
     return g_GAME_PHASE;
 }
 
@@ -132,6 +139,93 @@ void set_food_xy(int32_t *x_val, int32_t *y_val) {
 
     // scr_debug(g_fd_x_val, g_fd_y_val);
 }
+
+/// Play sound - High pitch
+///
+void play_sound1( uint32_t duration) {
+
+    for (i=0; i < duration; i++) {
+            GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+
+            Delay_ms(SFX_FOOD_HIGH);
+    }
+}
+
+/// Play sound - High pitch
+///
+void play_sound2( uint32_t duration) {
+
+    for (i=0; i < duration; i++) {
+            GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+
+            Delay_ms(SFX_FOOD);
+    }
+}
+
+/// Play sound - High pitch
+///
+void play_sound3( uint32_t duration) {
+
+    for (i=0; i < duration; i++) {
+            GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+
+            Delay_ms(SFX_WALL);
+    }
+}
+
+/// Play sound - High pitch
+///
+void play_sfx_wall( uint32_t duration) {
+
+    for (i=0; i < duration; i++) {
+        GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+        Delay_ms(5);
+    }
+
+    for (i=0; i < duration; i++) {
+        GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+        Delay_ms(10);
+    }
+
+    for (i=0; i < duration; i++) {
+        GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+        Delay_ms(15);
+    }
+}
+
+/// Play sound - High pitch
+///
+void play_sfx_food( uint32_t duration) {
+
+    for (i=0; i < duration; i++) {
+            GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+            Delay_ms(5);
+    }
+
+      for (i=0; i < duration; i++) {
+            GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+            Delay_ms(3);
+    }
+
+         for (i=0; i < duration; i++) {
+            GPIOE_ODRbits.ODR14 = ~GPIOE_ODRbits.ODR14;
+            Delay_ms(1);
+    }
+}
+
+void game_over() {
+    // void EXTIPA0();
+    // Kill Timers
+    TIM2_CR1 = 0; // Start TIMER2 for game time
+    TIM3_CR1 = 0; // Start TIMER3 now
+    play_sfx_wall(20);
+    game_cur_screen_run_flag = FALSE;
+    g_GAME_PHASE = PHASE_QUIT;  
+}
+
+
+
+
 
 
 
@@ -159,9 +253,16 @@ void move_snake() {
         
         // Increment the snake head pointer
 
-        // Boundaries      
-        if (m_node_head->node_x > MAX_COL_WIDTH-1) { //0-indexed array
-            m_node_head->node_x = 0;
+        // Boundaries, Normal mode = game over     
+      
+        if (m_node_head->node_x > MAX_COL_WIDTH-1 ) { //0-indexed array
+            
+            if (g_GAME_MODE == NORMAL_MODE) {
+                game_over();
+            
+            } else {
+                m_node_head->node_x = 0;
+            }
         }
     } 
     else if (g_curr_snake_dir == MOVE_LEFT)  {
@@ -181,7 +282,12 @@ void move_snake() {
 
         // Boundaries      
         if (m_node_head->node_x < 0) {
+            if (g_GAME_MODE == NORMAL_MODE) {
+            game_over();
+
+            } else {
             m_node_head->node_x = 19;
+            }
         }
        
     }
@@ -201,7 +307,12 @@ void move_snake() {
 
         // Boundaries      
         if (m_node_head->node_y < 1 ) { // status bar is row 0
-            m_node_head->node_y = (MAX_ROW_LENGTH-1);
+            if (g_GAME_MODE == NORMAL_MODE) {
+                game_over();
+            
+            } else {
+                m_node_head->node_y = (MAX_ROW_LENGTH-1);
+            }
         }
     }
     else if (g_curr_snake_dir == MOVE_DOWN)  {
@@ -220,7 +331,12 @@ void move_snake() {
 
         // Boundaries      
         if (m_node_head->node_y > MAX_ROW_LENGTH-1 ) { // status bar is row 0
-            m_node_head->node_y = 1;
+            if (g_GAME_MODE == NORMAL_MODE) {
+                game_over();
+            
+            } else {
+                m_node_head->node_y = 1;
+            }
         }
 
     }
@@ -238,7 +354,7 @@ int32_t check_snake_collision(int16_t x_val, int16_t y_val, t_node * start_pos) 
     }
 
     do {
-        // scr_debug(temp_itr->node_x, temp_itr->node_y );
+        scr_debug(temp_itr->node_x, temp_itr->node_y );
         // draw_cell_xy(temp_itr->node_x, temp_itr->node_y+2, m_YELLOW);
         
         if (temp_itr->node_x == x_val && temp_itr->node_y == y_val) {
@@ -272,7 +388,7 @@ void generate_food() {
             g_rand_num = (int32_t)  (rand() % MAX_BLOCK_COUNT);// + MAX_COL_WIDTH because row 0 is reserved for info
         }   
         
-        scr_debug(g_rand_num, temp_time);
+        // scr_debug(g_rand_num, temp_time);
         // Convert the linear random number 
         convert_lin_xy(&g_rand_num, &fd_x_val, &fd_y_val);
 
@@ -447,7 +563,12 @@ void update_stats() {
     TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 0*PX_BLOCK);
 
     //  Update game mode - or debugging info for now
-    sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d;\x20 %d",g_debug, g_debug2 );       // ****Printout debugger
+    if (g_GAME_MODE == NORMAL_MODE) {
+        sprintf(g_str_buffer, "MODE: \x20 Normal" ); 
+    }
+    else {
+        sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d;\x20 %d",g_debug, g_debug2 );       // ****Printout debugger
+    }
     TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 0*PX_BLOCK);
 }
 
@@ -489,32 +610,7 @@ void init_snake_game() {
    
     Delay_ms(100);  // Delay to allow screen to get wiped
     init_snake_sprite();
-
-    dump_ds_buffer();
-
-
 }
-
-//==================================================================================================
-/// Main Snake game
-///
-void start_snake_game() {
-        Delay_ms(500); // Allow timers to wind up
-
-    /* Local variables */
-
-    /***** Main game Loop******/
-    while (cur_screen_run_flag == TRUE) {
-        // Hold here until TIMER3 pulse allows up to move
-        // g_game_clock_delay_tim3 = ON
-        
-    };
-
-    // Reset and cleanup offset on quit
-    set_sprite_offset(0,0);
-    // g_GAME_PHASE = QUIT;
-}
-
 
 /// Set the initial values of the snake
 ///
@@ -527,45 +623,144 @@ void init_snake_sprite() {
 }
 
 
+//==================================================================================================
+/// Main Snake game
+///
+void start_snake_game() {
+    Delay_ms(500); // Allow timers to wind up
+
+
+    /***** Main game Loop******/
+    while (game_cur_screen_run_flag == TRUE) {
+    // Hold here until TIMER3 pulse allows up to move
+    };
+}
+
+
 ///  Refresh game screen - This will be the game loop
 ///
 void screen_refresh_TIM3() {
         
-    // Clean previous buffered image out and update new movement; Check is tail is going to erase body before
+    // Clean previous buffered image out and update new movement; 
+    // Check is tail is going to erase body before
     if ( check_snake_collision((m_node_tail)->node_x, (m_node_tail)->node_y, m_node_tail+1) == FALSE ) {
         clean_tail(m_node_tail, m_BLACK);
     }
 
     draw_cell_xy(g_fd_x_val, g_fd_y_val, m_FUCHSIA); // refresh food
     Delay_ms(5);
-
-
     move_snake();
-    print_snake(m_node_head, m_GREEN);
-    Delay_ms(5); // Delay needed for screen to catch up                 
 
-    // Check if snake has collided with food if true, add to tail (don't erase tail)
-    if ( check_snake_collision(g_fd_x_val, g_fd_y_val, m_node_head) == FALSE ) {
-         incr_snake_tail();
-    } else {
-        g_game_score++;
-        generate_food();
+    if (g_GAME_PHASE != PHASE_QUIT) {
+
+        print_snake(m_node_head, m_GREEN);
+        Delay_ms(5);                
+
+        // Check if snake has collided with food if true, add to tail (don't erase tail)
+        if ( check_snake_collision(g_fd_x_val, g_fd_y_val, m_node_head) == FALSE ) {
+            incr_snake_tail();
+        } else {
+            // We have contact with food
+            play_sfx_food(20);
+            g_game_score++;
+            generate_food();
+        }
     }
+}
 
+/// Quit - HIGH SCORE screen
+///
+void game_over_scr() {
+     // Set the game phase mode flag
+    g_GAME_PHASE = PHASE_QUIT;
+    
+    init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
+
+    // Set the current screen run flag
+    set_cur_screen_run_flag(TRUE);
+
+    //  // Setup screen 
+    // TFT_Fill_Screen(CL_BLACK);
    
-    
-    
-    
-    // Reduce this delay with other non time sensitive operations
-    Delay_ms(1);
+    // TFT_SET_Brush(1, CL_AQUA, 0, 0 , 0 ,0);
+    set_brush_color(m_BLACK);
 
-    // if (g_food_in_play == FALSE) {
-    // }
+    TFT_SET_PEN(CL_GRAY, 0);
+    TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
 
-    // // Reset the food flag
-    // g_food_in_play = TRUE;
+    sprintf(g_str_buffer, "Total Time: \x20 %02d:%02d", g_t_mins, g_t_secs );
+    TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 2*PX_BLOCK);
+
+    sprintf(g_str_buffer, "Final score: \x20 %04d", g_game_score);
+    TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 3*PX_BLOCK);
+
+
+    
+
+    while (cur_screen_run_flag == TRUE) {}
+    
     
 }
+
+void EE_write(uint8_t w_addr, uint8_t w_data) {
+    data_[0] = w_addr;
+    data_[1] = w_data;
+    I2C1_Start();
+
+    // Issue I2c start signal
+    I2C1_Write(0x50, data_, 2, END_MODE_STOP);
+
+}
+
+uint8_t EE_read(uint8_t r_addr) {
+    data_[0] = r_addr;
+    I2C1_Start();
+    I2C1_Write(0x50, data_,1, END_MODE_RESTART);
+    I2C1_Read(0x50, data_, 1, END_MODE_STOP);
+
+    return data_[0];
+}
+
+void game_high_score_scr() {
+
+
+    // Set the current screen run flag
+    set_cur_screen_run_flag(TRUE);
+
+    // High score loop
+    TFT_Fill_Screen(CL_BLACK);
+    // sprintf(g_str_buffer, "Enter High score: \x20 %04d", g_game_score);
+    // TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 2*PX_BLOCK);
+
+    I2C1_Init();
+   
+    GPIOB_ODR |= 0xFF00; // PB6 PB7
+    Delay_ms(10);
+
+    for (i = 0; i < 0x16; i++) {
+        EE_write(i, (0x32 +i) );
+        GPIOB_ODR++;
+        Delay_ms(5);
+    }
+
+    Delay_ms(10);
+    GPIOB_ODR |= 0xFF00;
+    Delay_ms(10);
+
+    for (i=0; i < 0x16; i++) {
+        rx_data_[i] = EE_read(i);
+        Delay_ms(10);
+    } 
+
+    sprintf(g_str_buffer, "testing: \x20 %s", rx_data_);
+    TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 4*PX_BLOCK);
+
+     
+
+    while (cur_screen_run_flag == TRUE) {}
+
+}
+
 
 
 
@@ -716,4 +911,3 @@ void duck_sprite() {
 //         incr_snake_tail();
 //     }
 // }
-
