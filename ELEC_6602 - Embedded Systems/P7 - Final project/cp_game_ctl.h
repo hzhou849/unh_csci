@@ -78,20 +78,14 @@ void update_game_time();
 void move_snake();
 void set_curr_snake_dir();
 void scr_debug(uint32_t value);  // Debugging function
-
 void update_game_time ();
 void update_game_speed();
 void set_secret_mode ();
 
 // Local calls
-
-
 void draw_snake();
 void draw_block(uint8_t *dp_buffer, uint32_t x_pos, uint8_t y_pos);
-
-
 void init_snake_sprite();
-// void dump_ds_buffer();
 void incr_snake_head();
 void incr_snake_tail();
 t_node* incr_node(t_node *_node);
@@ -163,6 +157,7 @@ void update_game_time () {
 
 }
 
+/// Set the developer mode
 void set_secret_mode() {
     g_GAME_MODE = DEV_MODE;
 }
@@ -279,10 +274,7 @@ void game_over() {
     game_cur_screen_run_flag = FALSE;
 }
 
-// /// Get the position of the intials counter
-// int32_t get_init_count () {
-//     return init_cur_count;
-// }
+
 
 /// Move the snake
 ///
@@ -294,6 +286,7 @@ void move_snake() {
 
     if (g_curr_snake_dir == MOVE_RIGHT) {
 
+        // Increment the snake head pointer
         if (m_node_head+1 > m_node_end) {
             m_node_start->node_x = ++temp_x;
             m_node_start->node_y = temp_y;
@@ -305,8 +298,6 @@ void move_snake() {
             (m_node_head+1)->node_y = temp_y;
             incr_snake_head();
         }
-        
-        // Increment the snake head pointer
 
         // Boundaries, Normal mode = game over     
       
@@ -398,6 +389,7 @@ void move_snake() {
 
 }
 
+
 /// Check snake collision
 ///
 int32_t check_snake_collision(int16_t x_val, int16_t y_val, t_node * start_pos) {
@@ -422,6 +414,7 @@ int32_t check_snake_collision(int16_t x_val, int16_t y_val, t_node * start_pos) 
     
     return FALSE;
 }
+
 
 /// Generate food() 
 ///
@@ -478,7 +471,6 @@ void incr_snake_head() {
         // node_head = node_restart_head; // Wrap around array if end is reached
         m_node_head = m_node_start; // Wrap around array if end is reached
     }
-
 }
 
 /// Increment iterator nodes - ** Compiler will aonly let you set ptr to node if you return it
@@ -519,9 +511,6 @@ void incr_snake_tail() {
 }
 
 
-
-
-
 /// Initial Game loading screen.
 ///
 void load_snake_game() {
@@ -530,7 +519,6 @@ void load_snake_game() {
     set_game_phase(PHASE1_READY);
 
     //  init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
-    // dump_arr_memory(&g_DS_BUFFER, MAX_BLOCK_SIZE);
 
     // Set the current screen run flag
     set_cur_screen_run_flag(TRUE);
@@ -541,7 +529,6 @@ void load_snake_game() {
     set_brush_color(m_BLACK);
 
     TFT_SET_PEN(CL_GRAY, 0);
-    // TFT_SET_PEN(CL_AQUA, 0);
     TFT_Set_Font(TFT_defaultFont, CL_AQUA, FO_HORIZONTAL );
     TFT_Write_Text("SNAKE!", 8 * PX_BLOCK, 6 * PX_BLOCK);
     TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
@@ -553,6 +540,7 @@ void load_snake_game() {
     // Wipe the screen after
      TFT_Fill_Screen(CL_BLACK);
 }
+
 
 /// Update the score and print it to screen
 ///
@@ -571,6 +559,7 @@ void update_stats() {
     sprintf(g_str_buffer, "x: %d", game_speed ); 
     TFT_Write_Text(&g_str_buffer, 6*PX_BLOCK, 0*PX_BLOCK);
 }
+
 
 /// Update time clock and print it to screen 
 ///
@@ -610,6 +599,7 @@ void update_time() {
 
 }
 
+
 /// Initialize screen
 ///
 void init_snake_game() {
@@ -621,8 +611,6 @@ void init_snake_game() {
     // Reset the current screen run flag to stay in this mode
     set_cur_screen_run_flag(TRUE);
     game_cur_screen_run_flag=TRUE;
-
-    
 
      // Setup screen 
     TFT_Fill_Screen(CL_BLACK);
@@ -730,16 +718,10 @@ void game_over_scr() {
     // g_GAME_PHASE = PHASE_QUIT;
     set_game_phase (PHASE_QUIT);
     
-    
-    // init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
-
     // Set the current screen run flag
     set_cur_screen_run_flag(TRUE);
 
     //  // Setup screen 
-    // TFT_Fill_Screen(CL_BLACK);
-   
-    // TFT_SET_Brush(1, CL_AQUA, 0, 0 , 0 ,0);
     set_brush_color(m_BLACK);
 
     TFT_SET_PEN(CL_GRAY, 0);
@@ -757,17 +739,6 @@ void game_over_scr() {
     
 }
 
-/// EEPROM - WRITE
-///
-// void EE_write(uint8_t reg_addr, uint8_t tx_byte, uint32_t tx_size) {
-//     tx_buffer_[0] = reg_addr;
-//     tx_buffer_[1] = tx_byte;
-//     I2C1_Start();
-
-//     // Issue I2c start signal; Plus 1 for reg_address + user data
-//     I2C1_Write(0x50, tx_buffer_, 2, END_MODE_STOP);
-
-// }
 
 
 /// Converts and breaks down int number into array cells [x,y,z]
@@ -995,18 +966,6 @@ void EE_write(uint8_t row, uint8_t *tx_data_in, uint32_t tx_size) {
 }
 
 
-// /// EEPROM - READ
-// //
-// void EE_read(uint8_t reg_addr, uint32_t rx_size) {
-//     // Read size is +4 for the extra 2 bytes required
-//     // rx_buffer_[0] = reg_addr;
-//     I2C1_Start();
-//     I2C1_Write(0x50, reg_addr, 1, END_MODE_RESTART);
-//     I2C1_Read(0x50, rx_buffer_, rx_size +4, END_MODE_STOP);
-
-//     // return rbuffer_[0];
-// }
-
 /// EEPROM - READ
 //
 void EE_read(uint8_t reg_addr, uint8_t *read_buffer, uint32_t rx_size) {
@@ -1153,16 +1112,6 @@ void print_top_score_list() {
     
     // Fetch the High scores and load them into buffer
     EE_read(0, &hs_buffer, 71);
-    // sprintf(g_str_buffer, "I2C data: \x20 %s", hs_buffer);
-    TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 9*PX_BLOCK);
-    // for (i=0; i <10; i++) {
-    //     rx_buffer_[i] = EE_read(i,1);
-    //     EE_read(i,1);
-    //     Delay_ms(10);
-
-    //     // TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, i*PX_BLOCK);
-    // } //     // sprintf(g_str_buffer, "I2C data: \x20 %s", rx_buffer_);
-    // Delay_ms(2000);
     TFT_Fill_Screen(CL_BLACK);
     sprintf(g_str_buffer, "TOP SCORES:\x20  %s | \x20 %c",hs_buffer, hs_buffer[0]);
     TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 1*PX_BLOCK);
@@ -1182,9 +1131,6 @@ void print_top_score_list() {
         temp_score[5] = hs_buffer[(i*7) + 7];
         temp_score[6] = hs_buffer[(i*7) + 8];
 
-
-
-        // sprintf(g_str_buffer, "sorting[%d]:\x20  %s | \x20 %c", i, hs_buffer, hs_buffer[i]);
         sprintf(g_str_buffer, "score[%d]:\x20  %s | \x20 %c%c%c%c%c%c%c", i , temp_score, 
             hs_buffer[(i*7) + 2], 
             hs_buffer[(i*7) + 3], 
@@ -1194,15 +1140,9 @@ void print_top_score_list() {
             hs_buffer[(i*7) + 7], 
             hs_buffer[(i*7) + 8]
             );
-    //     // sprintf(g_str_buffer, "sorting:\0x20  %s |", hs_buffer);
-        //  sprintf(g_str_buffer, "I2C data: \x20 %s", hs_buffer);
         TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, (i+2)*PX_BLOCK);
-    //     // sprintf(g_str_buffer, "atoi[%d]:\0x20  %d", i, int_score);
-    //     // TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, (i+1)*PX_BLOCK);
       Delay_ms(100);
     }
- 
-
      
     /// Wait here until use has finished entering highscore
     while (cur_screen_run_flag == TRUE) {}
@@ -1216,93 +1156,4 @@ void print_top_score_list() {
 
 
 
-
-
-
-
-
 #endif //_CP_GAME_CTL_H
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////
-/// Dump the entire contents of an array at given size to serial
-// void dump_arr_memory(uint8_t *in_arr, uint32_t a_size) {
-//     uint32_t i = 0;
-
-//     for ( i=0; i < MAX_BLOCK_COUNT; i++) {
-        
-//         // Critical delay and waits required for write to USART
-//         while ( (USART1_SR & (1 << 7 )) == 0) {}
-//         Delay_ms(10);                                   
-//         USART1_DR = (uint32_t)in_arr[i];
-//         Delay_ms(10);
-            
-//     }
-// }
-
-// void debug(uint32_t val) {
-//          // Critical delay and waits required for write to USART
-//         while ( (USART1_SR & (1 << 7 )) == 0) {}
-//         Delay_ms(10);                                   
-//         USART1_DR = (uint32_t)val;
-//         Delay_ms(10);
-// }
-
-// void update_snake_info(uint32_t head_x, uint32_t head_y, uint8_t tail_flag) 
-// {
-//     snake_info[0] = head_x;
-//     snake_info[1] = head_y;
-  
-//     // assign current node head
-//     node_head->node_x = head_x;
-//     node_head->node_y = head_y;
-
-
-//     // increment head
-//     incr_snake_head();
-
-//     // OPTIONAL update tail too
-//     if (tail_flag == TAIL_ON) {
-//     // assign node tail
-//     node_tail->node_x = head_x;
-//     node_tail->node_y = head_y;
-//         incr_snake_tail();
-//     }
-// }
-
-
-/// old sort
- //===============================================================
-    // for (i=0; i < 10; i++ ) { // 10 rows 0-9
-    //     // yRow x width of entry(7) + offset of byte
-
-    //     // Check the 1000s 
-    //     cell_pos = (i*7) + 3;
-    //     if ( hs_buffer[cell_pos] < user_score_entry[3] ) {
-    //         break;
-    //     } else if (hs_buffer[cell_pos] == user_score_entry[3] {
-
-    //         row_found =i;
-    //     }
-
-
-    //     // Check the 100s
-    //     else if (hs_buffer[++cell_pos] < user_score_entry[4] ) {
-    //         row_found = i;
-    //     }
-    //     // Check the 10s
-    //     else if (hs_buffer[++cell_pos] < user_entry_entry[5]) {
-    //         row_found = i;
-    //     }
-    //     else if (hs_buffer[++cell_pos] < user_score_entry[6]) {
-    //         row_found = i;
-    //     } else {
-    //         // Nothing found, user must be the first entry
-    //         row_found = 0;
-    //     }
-    // }

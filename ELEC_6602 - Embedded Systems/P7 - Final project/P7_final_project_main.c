@@ -5,7 +5,10 @@
 // Course: ELEC 6602 - Embedded Systems
 
 // Description: 
-//                 Snake
+//                      Snake game. Player can use the Joystick UP/DOWN/LEFT/RIGHT.
+//                      For DEV mode, on the ready screen, enter UP, LEFT, LEFT to enable
+//                      this mode, which will disable all collision.
+//
 //      
 //      Objective 1: - Flow Diagram rough sketch
 //
@@ -73,7 +76,6 @@ uint8_t dev_position = 0;
 
 /* Interrupt Handlers */
 
-
 // PD2 = EXTI2[11:8]; PortD = b0011;
 // PD4 = EXTI4[3:0];  PortD = b0011;
 // PB5 = EXTI5[7:4];  PortB = b0001;
@@ -112,7 +114,6 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
     case PHASE2_PLAYING:
         Delay_ms(100);
         // set_cur_screen_run_flag(FALSE); 
-
         // g_cur_game_phase = PHASE2_PLAYING;
         break;
 
@@ -130,18 +131,12 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
         set_cur_screen_run_flag(FALSE);
         g_cur_game_phase = PHASE1_READY; // PHASE1_ready? seems to cause problems
         break;
-
      
-
-    // case PHASE2_PLAYING:
-    //     set_cur_screen_run_flag(FALSE); // Start snake game
-    //     // g_cur_game_phase = PHASE2_PLAYING;
-    //     break;
-    
     default:
         break;
     }
 }
+
 
 /// PA0 - Quit button
 ///
@@ -204,7 +199,6 @@ void EXTIPA6() iv IVT_INT_EXTI9_5  {
         }
     }
 
-
 }
 
 
@@ -227,7 +221,6 @@ void EXTIPD2() iv IVT_INT_EXTI2  {
             set_curr_snake_dir(MOVE_LEFT);
         }
      }
-
     
 }
 
@@ -253,6 +246,7 @@ void EXTIPD4() iv IVT_INT_EXTI4  {
     }
 }
 
+
 /// TIMER2 ISR
 void TIMER2_ISR() iv IVT_INT_TIM2 {
     TIM2_SR &= ~(1<<0);         // Bit[0] UIF interrupt reset set to 0
@@ -276,8 +270,7 @@ void TIMER2_ISR() iv IVT_INT_TIM2 {
         update_stats();
 
 
-        // Debug print to screen
-        // read adc
+        // Adjust game speed with ADC1
         if (adc_val != ADC1_Read(3)) {
             adc_val = ADC1_Read(3);
             adc_val = adc_val/ 215;  // 9000/500 = 18 @ 500ticks  steps so (3883-6)/18 215
@@ -300,11 +293,6 @@ void TIMER3_ISR() iv IVT_INT_TIM3 {
     TIM3_SR &= ~(1<<0);         // Bit[0] UIF interrupt reset set to 0
 
     toggle_game_clock_delay(); 
-    // Clean previous buffered image out and update new movement
-        // cleaning_buffer(m_BLACK);  
-        //         Delay_ms(100);
-        // move_snake();
-        // dump_ds_buffer();  
 
     screen_refresh_TIM3();
 }
@@ -481,7 +469,7 @@ void init_interrupt() {
     NVIC_ISER1 |= (uint32_t) 1 << 5;            // USART1 NVIC Pos=37: ISER1[63:32]; 32+5 =37
 
     /* Interrupt Priority settings */
-    
+
     // // TIMER 2 Priority 
     // NVIC_IPR7 |= (uint32_t) 0xFE << 0;
     // // TIMER3 is NVIC Pos 29
@@ -515,31 +503,18 @@ void main() {
 
     /* Interrupt setup and configuration */
     init_interrupt();
-
-
     
 
-    //  I2C1_Init();
+    // I2C1_Init();
     // i2c_status1 = I2C1_Start();
     // i2c_status1 = I2C1_Get_Status();
 
     // I2C1_Write(0x50,&tx_data1, 1, END_MODE_STOP );
     // I2C1_Read(0x50, &rx_data1, 1, END_MODE_STOP);
-    // sprintf(g_str_buffer, "testing: \x20 %c", rx_data1);
-    // TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 4*PX_BLOCK);
 
 
-    /* Display Initializatiogitn */
+    /* Display Initialization */
     Start_TP();
-
-
-
-
-
-    //  /* Config port direction & flags */
-    // GPIOE_CRH |= (uint32_t) 3 <<  24 ;                    // PE14 output for Piezo buzzer
-    // GPIOE_CRH |= (uint32_t) 3 <<  24 ;                    // PE14 output for Piezo buzzer
-    // GPIOE_ODR=0xFFFF;
 
     /* Display execution stuff */
 
@@ -549,17 +524,7 @@ void main() {
     load_intro_screen();
 
 
-
-
-
-                    
-
-    // TFT_SET_Brush(1, CL_BLACK, 0, 0, 0 ,0);
-    // TFT_Rectangle(0, 0, 320, 240);
-    // TFT_Fill_Screen(CL_GRAY);
-
-    // Delay_ms(3000);
-
+    // Loop the game
     while (1) {
         /* **Game mode starts here* */
         dev_position = 0;
@@ -578,14 +543,13 @@ void main() {
         update_stats();   
 
         TIM2_CR1     = 0x0001; // Start TIMER2 for game time
-        TIM3_CR1    = 0x0001; // Start TIMER3 now
+        TIM3_CR1     = 0x0001; // Start TIMER3 now
         start_snake_game();
-            g_GAME_PHASE = PHASE_QUIT;
-    set_game_phase (PHASE_QUIT);
+        g_GAME_PHASE = PHASE_QUIT;
+        set_game_phase (PHASE_QUIT);
 
         game_over_scr();
         game_high_score_scr();
         print_top_score_list();
-        // load_intro_screen();
     }
 }

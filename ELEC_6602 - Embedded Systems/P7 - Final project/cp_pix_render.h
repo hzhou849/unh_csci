@@ -10,15 +10,10 @@
 #include "cp_const_def.h"
 
 /* Constants */
-
-
-
 static const uint8_t SHIFT_UP           = 0xC1;
 static const uint8_t SHIFT_DOWN         = 0xC2;
 static const uint8_t SHIFT_LEFT         = 0xC3;
 static const uint8_t SHIFT_RIGHT        = 0xC4;
-
-
 
 /* Global variables */
 static volatile uint8_t CUR_BRUSH_COLOUR = m_BLACK; 
@@ -29,7 +24,6 @@ static int32_t offset_x = 0;
 static int32_t offset_y = 0;
 
 /* Prototypes */
-// int32_t get_offset_y();
 void cleaning_buffer (uint8_t color_8bit);
 void convert_lin_xy ( int32_t *cell_pos, int32_t *x_var, int32_t *y_var );
 void draw_cell_pos ( int32_t *linear_pos, uint8_t color_8bit);
@@ -43,11 +37,6 @@ int32_t get_offset_x ();
 
 void dump_arr_memory(uint8_t *in_arr, uint32_t a_size);
 void draw_ini_cell_xy(int16_t x_var, int16_t y_var, uint8_t color_8bit );
-
-// void init_arr(uint8_t *in_arr, int32_t a_size);
-// void dump_arr_memory(uint8_t *in_arr, int32_t a_size);
-// void draw_snake();
-// void draw_block(uint8_t *dp_buffer, int32_t x_pos, uint8_t y_pos);
 
 void dump_ds_buffer(); // For large sprites; logos etc..
 //=================================================================================================================
@@ -328,42 +317,5 @@ void cleaning_buffer(uint8_t color_8bit) {
 }
 
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// Graveyard code
-
-
-
-// void transform_sprite_(uint8_t transform_dir) {
-//     int32_t i=0;
-
-//     for (i=0; i < MAX_BLOCK_COUNT  ; i++) {
-
-//         if (g_DS_BUFFER[i] != 0xFF) {
-//             draw_cell_pos( i, g_DS_BUFFER[i] ); // pass the colour code
-//         }
-
-//     }
-// }
-
-/// Load the cell data in to the display buffer, to be drawn later
-// void load_snake_xy(int32_t x_var, int32_t y_var, uint8_t clr_code) {
-//     int32_t linear_val = 0;
-//     uint8_t color_8bit = clr_code;
-
-// // //   Draw the sprite directly
-// //        TFT_Rectangle(
-// //             PX_BLOCK * x_var,                   // Upper-left X
-// //             (y_var * PX_BLOCK),                 // Upper-left Y
-// //             PX_BLOCK + (PX_BLOCK * x_var),      // Lower-right X
-// //             PX_BLOCK + (PX_BLOCK * y_var)       // Lower-right Y
-// //             );
-
-//     // Convert to linear array  x + (y * col_width)
-//     linear_val = ( (y_var * MAX_COL_WIDTH) + x_var );
-
-//     g_DS_BUFFER[linear_val] = color_8bit;
-
-// }
 
 #endif // _CP_PIX_RENDER_H
