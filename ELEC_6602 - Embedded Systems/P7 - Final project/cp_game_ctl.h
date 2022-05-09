@@ -24,6 +24,7 @@ static volatile uint8_t game_cur_screen_run_flag        = TRUE;
 
 static uint8_t g_TIME_TRACK_MODE                        = TOTAL_TIME;
 static uint8_t g_GAME_MODE                              = NORMAL_MODE;  // DEV_MODE 
+// static uint8_t g_GAME_MODE                              = DEV_MODE;  // DEV_MODE 
 static uint8_t g_curr_snake_dir                         = MOVE_RIGHT;
 static volatile uint8_t  g_game_clock_delay_tim3        = ON;
 static uint32_t g_game_score                            = 0;
@@ -43,9 +44,11 @@ static uint8_t  rx_buffer_[256];
 static int32_t hs_cursor_x                              = HS_CURSOR_START_X;
 static int32_t hs_cursor_y                              = HS_CURSOR_START_Y;
 uint8_t init_cur                                        = init_cursor_start; // 'A' -1
+int32_t game_speed                                    =1;
 
 
-uint8_t g_str_buffer[128];                                // General use string buffer for output text
+
+uint8_t g_str_buffer[256];                                // General use string buffer for output text
 
 // Time tracking
 static volatile uint32_t g_time_count                   = 0;
@@ -77,7 +80,8 @@ void set_curr_snake_dir();
 void scr_debug(uint32_t value);  // Debugging function
 
 void update_game_time ();
-
+void update_game_speed();
+void set_secret_mode ();
 
 // Local calls
 
@@ -127,6 +131,17 @@ void reset_game_values () {
     hs_cursor_x          = HS_CURSOR_START_X;
     hs_cursor_y          = HS_CURSOR_START_Y;
 
+    user_score_entry[3] = 0;
+    user_score_entry[4] = 0;
+    user_score_entry[5] = 0;
+    user_score_entry[6] = 0;
+
+}
+
+/// Update game sped
+///
+void update_game_speed(uint32_t gspeed) {
+    game_speed = gspeed;
 }
 
 /// Set the snake direction 
@@ -146,6 +161,10 @@ void toggle_game_clock_delay() {
 void update_game_time () {
     g_time_count++;
 
+}
+
+void set_secret_mode() {
+    g_GAME_MODE = DEV_MODE;
 }
 
 void update_session_time() {
@@ -543,12 +562,14 @@ void update_stats() {
 
     //  Update game mode - or debugging info for now
     if (g_GAME_MODE == NORMAL_MODE) {
-        sprintf(g_str_buffer, "MODE: \x20 Normal" ); 
+        sprintf(g_str_buffer, "MODE: \x20 NORM" ); 
     }
     else {
         sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d;\x20 %d",g_debug, g_debug2 );       // ****Printout debugger
     }
-    TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 0*PX_BLOCK);
+    TFT_Write_Text(&g_str_buffer, 8*PX_BLOCK, 0*PX_BLOCK); // Print mode
+    sprintf(g_str_buffer, "x: %d", game_speed ); 
+    TFT_Write_Text(&g_str_buffer, 6*PX_BLOCK, 0*PX_BLOCK);
 }
 
 /// Update time clock and print it to screen 
@@ -749,66 +770,82 @@ void game_over_scr() {
 // }
 
 
-
-void convert_int_ascii(uint8_t in_array) {
-      int32_t temp_score = g_game_score;
+/// Converts and breaks down int number into array cells [x,y,z]
+///
+void convert_int_ascii(uint8_t *in_array, int32_t entry_row ) {
+    int32_t temp_score = g_game_score;
     int32_t temp_val = 0;
     int32_t temp_dvdnd = 0;
+
      // Convert integer to ascii into invidual array
         // Write the score into the array starting at array[3]
-            // y=0 * 7 + 4 = 1000s
-            // y=0 * 7 + 5 = 100s
-            // y=0 * 7 + 6 = 10s
-            // y=0 * 7 + 7 = 1s
+            // y=R * 7 + 4 = 1000s
+            // y=R * 7 + 5 = 100s
+            // y=R * 7 + 6 = 10s
+            // y=R * 7 + 7 = 1s
+
+    int32_t num_pos_ths = (entry_row * 7) + 3;       // 1000s pos
+    int32_t num_pos_hds = (entry_row * 7) + 4;       // 100s
+    int32_t num_pos_ten = (entry_row * 7) + 5;       // 10s
+    int32_t num_pos_one = (entry_row * 7) + 6;       // 10s
 
         // 0x30 = 0 Ascii 
         // Get the 1000s 
         if (temp_score >= 1000 & g_game_score <= 9999) {
             temp_dvdnd = (temp_score / 1000);
             temp_val = temp_dvdnd +0x30; 
-            user_score_entry[3] = temp_val; 
+            in_array[num_pos_ths] = temp_val; 
 
             // remove the 1000s from the score for 100s processing
             temp_score = temp_score - (1000 * temp_dvdnd);
 
         } else {
-            user_score_entry[3] = 0x30;  // d0;
+            in_array[num_pos_ths] = 0x30;  // d0;
         }
 
         //Get the 100s 999
         if (temp_score >= 100 ) {
             temp_dvdnd = (temp_score / 100);
             temp_val = temp_dvdnd + 0x30;
-            user_score_entry[4] = temp_val;
+            in_array[num_pos_hds] = temp_val;
 
             // Remove the 100s from the score for 10s processing
             temp_score = temp_score - (100 * temp_dvdnd);
 
         } else {
-            user_score_entry[4] = 0x30;
+            in_array[num_pos_hds] = 0x30;
         }
 
         // Get the 10s 99
         if (temp_score >= 10) {
             temp_dvdnd = (temp_score / 10);
             temp_val = temp_dvdnd + 0x30;
-            user_score_entry[5] = temp_val;
+            in_array[num_pos_ten] = temp_val;
 
             // Remove the 10s from the score for 10s processing
             temp_score = temp_score - (10 * temp_dvdnd);
         }  else {
-            user_score_entry[5] = 0x30;
+            in_array[num_pos_ten] = 0x30;
         }
 
          // Get the 1s 9, whatever is left should be 0-9
-            user_score_entry[6] = temp_score + 0x30;
+            in_array[num_pos_one] = temp_score + 0x30;
 }
 
+
+/// Refresh high score screen
+///
 void refresh_hs_scr(uint8_t cur_dir) {
     int32_t xval = hs_cursor_x;
     int32_t yval = hs_cursor_y;
   
-    
+    // If no score, skip this step all together
+    // if (g_game_score == 0) {
+    //     set_cur_screen_run_flag(FALSE); // exit this phase move to show top score list
+    //     set_game_phase(PHASE_PRINT_TOP_TEN);
+    //     return;
+    // }
+
     TFT_Fill_Screen(CL_BLACK);
     switch(cur_dir) {
         case MOVE_UP:
@@ -834,11 +871,11 @@ void refresh_hs_scr(uint8_t cur_dir) {
 
     }
     
-    // Third initial has been entered, we are done
+    // Third initial has been entered, we are done add to entry array
     if (init_cur_pos >= 3) {
         // Format of entry is [A,B,C,0,1,2,3]
        
-       convert_int_ascii(&user_score_entry);
+       convert_int_ascii(&user_score_entry, 0);
 
 
         set_cur_screen_run_flag(FALSE); // exit this phase move to show top score list
@@ -862,6 +899,7 @@ void refresh_hs_scr(uint8_t cur_dir) {
         Delay_ms(200); // Small wait for the user experience
     }
     
+    /// After this jump to print highschore 
 
 }
 
@@ -869,41 +907,90 @@ void refresh_hs_scr(uint8_t cur_dir) {
 /// 
 void game_high_score_scr() {
    
-    // Set the current screen run flag and phase to hscore
-    set_cur_screen_run_flag(TRUE);
     set_game_phase(PHASE_HSCORE);
+    // if (g_game_score > 0) {
+        
+        // Set the current screen run flag and phase to hscore
+        set_cur_screen_run_flag(TRUE);
 
-    // High score loop
-    TFT_Fill_Screen(CL_BLACK);
+        // High score loop
+        TFT_Fill_Screen(CL_BLACK);
 
-    // Print the first frame of the high score animation
-    draw_ini_cell_xy(hs_cursor_x,hs_cursor_y,m_GRAY);
-    Delay_ms(100);
-    sprintf(g_str_buffer, "Enter high score: \x20 ");
-    TFT_Write_Text(&g_str_buffer, 2*PX_BLOCK, 4*PX_BLOCK);
-    sprintf(g_str_buffer, "%c \x20_\x20_: \x20 %04d", init_cur, g_game_score);
-    TFT_Write_Text(&g_str_buffer, 10*PX_BLOCK, 4*PX_BLOCK);
+        // Print the first frame of the high score animation
+        draw_ini_cell_xy(hs_cursor_x,hs_cursor_y,m_GRAY);
+        Delay_ms(100);
+        sprintf(g_str_buffer, "Enter high score: \x20 ");
+        TFT_Write_Text(&g_str_buffer, 2*PX_BLOCK, 4*PX_BLOCK);
+        sprintf(g_str_buffer, "%c \x20_\x20_: \x20 %04d", init_cur, g_game_score);
+        TFT_Write_Text(&g_str_buffer, 10*PX_BLOCK, 4*PX_BLOCK);
 
-    while (cur_screen_run_flag == TRUE) {}
+        while (cur_screen_run_flag == TRUE) {}
+    // }
 
     // set_game_phase(PHASE2_PLAYING); // change to restart game working
     set_game_phase(PHASE_PRINT_TOP_TEN); // change to restart game
 
 }
 
-void EE_write(uint8_t reg_addr, uint8_t tx_byte, uint32_t tx_size) {
-    tx_buffer_[0] = reg_addr;
-    tx_buffer_[1] = 'W';
-    tx_buffer_[2] = 'T';
-    tx_buffer_[3] = 'F';
-    tx_buffer_[4] = '9';
-    tx_buffer_[5] = '7';
-    tx_buffer_[6] = '5';
+void EE_write(uint8_t row, uint8_t *tx_data_in, uint32_t tx_size) {
+    uint8_t tx_data_[8];
+    uint8_t reg_addr=0;
+        row =0;
+    // tx_data_[0] = reg_addr; // reserved
+    // compiler does not do conversion math from 32_t to 8_t properly
+    switch (row) {
+        case 0:
+            reg_addr = 0;
+            break;
+        case 1:
+            reg_addr = 7;
+            break;
+        case 2:
+            reg_addr = 14;
+            break;
+        case 3: 
+            reg_addr = 21;
+            break;
+        case 4: 
+            reg_addr = 28;
+            break;
+        case 4: 
+            reg_addr = 35;
+            break;
+        default:
+        break;
+    }
+
+
+    tx_data_[0] = 0; // reserved
+    // tx_buffer_[1] = 'W';
+    // tx_buffer_[2] = 'T';
+    // tx_buffer_[3] = 'F';
+    // tx_buffer_[4] = '9';
+    // tx_buffer_[5] = '7';
+    // tx_buffer_[6] = '5';
+    tx_data_[1] = tx_data_in[0];    // Initial 1    
+    tx_data_[2] = tx_data_in[1];    // Initial 2
+    tx_data_[3] = tx_data_in[2];    // Initial 3
+    tx_data_[4] = tx_data_in[3];    // Score 1000s
+    tx_data_[5] = tx_data_in[4];    // Score 100s
+    tx_data_[6] = tx_data_in[5];    // Score 10s
+    tx_data_[7] = tx_data_in[6];    // Score 1s
+
+    // tx_data_[1] = 0x39;    // Initial 1    
+    // tx_data_[2] = 0x39;    // Initial 2
+    // tx_data_[3] = 0x39;    // Initial 3
+    // tx_data_[4] = 0x39;    // Score 1000s
+    // tx_data_[5] = 0x39;    // Score 100s
+    // tx_data_[6] = 0x39;    // Score 10s
+    // tx_data_[7] = 0x39;    // Score 1s
 
     I2C1_Start();
+    Delay_ms(10);
 
     // Issue I2c start signal; Plus 1 for reg_address + user data
-    I2C1_Write(0x50, tx_buffer_, tx_size, END_MODE_STOP);
+    I2C1_Write(0x50, tx_data_, tx_size+1, END_MODE_STOP);
+    Delay_ms(100);
 
 }
 
@@ -923,11 +1010,12 @@ void EE_write(uint8_t reg_addr, uint8_t tx_byte, uint32_t tx_size) {
 /// EEPROM - READ
 //
 void EE_read(uint8_t reg_addr, uint8_t *read_buffer, uint32_t rx_size) {
+    // First 4 cells of array are empty
     // Read size is +4 for the extra 2 bytes required
     // rx_buffer_[0] = reg_addr;
     I2C1_Start();
     I2C1_Write(0x50, reg_addr, 1, END_MODE_RESTART);
-    I2C1_Read(0x50, rx_buffer_, rx_size +4, END_MODE_STOP);
+    I2C1_Read(0x50, read_buffer, rx_size +4, END_MODE_STOP);
 
     // return rbuffer_[0];
 }
@@ -936,47 +1024,69 @@ void EE_read(uint8_t reg_addr, uint8_t *read_buffer, uint32_t rx_size) {
 /// Find by sorting where ther user score fits in the list
 ///
 /// returns row where user score will be placed
-void sort_score(uint8_t *hs_buffer) {
+int32_t sort_score(uint8_t *in_arr) {
     int32_t cell_pos = 0;
-    int32_t row_found = 0;
-    uint8_t temp_score1[7];
+    int32_t row_found = -1;
+    uint8_t temp_entry[7];
+    uint8_t temp_ee_score[4];
+    uint8_t temp_player_score[4];
+    int32_t eeprom_score;
+    int32_t player_score;
     
 
     // Data entry is fixed: [A,B,C,1,2,3,4]
 
+
     // First we need to find the row to start eliminating from
-    // for (i=0; i < 10; i++ ) { // 10 rows 0-9
-    //     // yRow x width of entry(7) + offset of byte
+    // yRow x width of entry(7) + offset of byte
+    // Top 10 rows 0-9
+    for (i=0; i < 15; i++ ) {
 
-    //     // Check the 1000s 
-    //     cell_pos = (i*7) + 3;
-    //     if ( hs_buffer[cell_pos] < user_score_entry[3] ) {
-    //         break;
-    //     } else if (hs_buffer[cell_pos] == user_score_entry[3] {
+        // Check the 1000s 
+        // cell_pos = (i*7) + 3 = temp_score[0];
+        // cell_pos = (i*7) + 4 = temp_score[1];
+        // cell_pos = (i*7) + 5 = temp_score[2];
+        // cell_pos = (i*7) + 6 = temp_score[3];
+        // Copy Row i of scores from EEPROM to temp array 
+        
+    // I2C read leaves first 4 cells empty so need to offset +4 i =4
+        temp_ee_score[0] = in_arr[(i*7) + 7];
+        temp_ee_score[1] = in_arr[(i*7) + 8];
+        temp_ee_score[2] = in_arr[(i*7) + 9];
+        temp_ee_score[3] = in_arr[(i*7) + 10];
 
-    //         row_found =i;
-    //     }
-
-
-    //     // Check the 100s
-    //     else if (hs_buffer[++cell_pos] < user_score_entry[4] ) {
-    //         row_found = i;
-    //     }
-    //     // Check the 10s
-    //     else if (hs_buffer[++cell_pos] < user_entry_entry[5]) {
-    //         row_found = i;
-    //     }
-    //     else if (hs_buffer[++cell_pos] < user_score_entry[6]) {
-    //         row_found = i;
-    //     } else {
-    //         // Nothing found, user must be the first entry
-    //         row_found = 0;
-    //     }
-    // }
-
-    // We now know which row is the one in question
+        // Copy the user score entry to temp arry to covert to int
+        temp_player_score[0] = user_score_entry[3];
+        temp_player_score[1] = user_score_entry[4];
+        temp_player_score[2] = user_score_entry[5];
+        temp_player_score[3] = user_score_entry[7];
 
 
+        eeprom_score = atoi(temp_ee_score);
+        player_score = atoi(temp_player_score);
+
+        // sprintf(g_str_buffer, "[%d]:\x20  %d | \x20 %c | \x20 ai: %d", i, player_score, in_arr[i], eeprom_score);
+        // TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, i*PX_BLOCK);
+
+        sprintf(g_str_buffer, "atoi[%d]:\x20  %s \x20 | \x20 %c", i, user_score_entry, temp_ee_score[i]);
+        TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, (i+1)*PX_BLOCK);
+
+        // We found the row to insert the score in.
+        if (player_score > eeprom_score || temp_ee_score[0] > 0x39 ) {
+            row_found = i;
+            sprintf(g_str_buffer, "found i [%d]", i);
+            TFT_Write_Text(&g_str_buffer, 13*PX_BLOCK, (i+1)*PX_BLOCK);
+            i = 999;
+        } else if (i==15) {
+            return -1; // nothing found
+        }
+    
+      Delay_ms(100);
+    }
+
+
+    // while(GPIOB_IDR.B0 == 0) {}
+    return row_found;
 }
 
 /// Final screen print the top scores screen
@@ -987,6 +1097,11 @@ void print_top_score_list() {
     uint8_t hs_buffer[128];
     uint8_t atest[4]; 
     int32_t test_num;
+    int32_t row_to_write;
+
+    //----testing
+        uint8_t temp_score[12];
+    int32_t int_score;
 
     set_cur_screen_run_flag(TRUE);
 
@@ -1001,7 +1116,11 @@ void print_top_score_list() {
     EE_read(0, &hs_buffer, 71);
 
     // Sort the high scores.
-    // sort_score();
+    row_to_write = sort_score(&hs_buffer);
+
+    if (row_to_write >=0 ) {
+        EE_write( (uint8_t) row_to_write, &user_score_entry,7 );
+    } 
     
 
     sprintf(g_str_buffer, "TOP SCORES:");
@@ -1025,38 +1144,16 @@ void print_top_score_list() {
          sprintf(g_str_buffer, "test num is greater");
         TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 6*PX_BLOCK); 
     }   
-    
-
    
     GPIOB_ODR |= 0xFF00; // PB6 PB7
     Delay_ms(10);
 
+    Delay_ms(1000);
 
-    // // Loop write single byte
-    // for (i = 0; i < 0x16; i++) {
-    //     EE_write(i, (0x50 +i),1 );
-    //     GPIOB_ODR++;
-    //     Delay_ms(50);
-    // }
-
-    // EE_write(0, (0x0),7 );
- 
-
-    Delay_ms(10);
-    GPIOB_ODR |= 0xFF00;
-    Delay_ms(10);
-
-    // for (i=0; i < 0x1; i++) {
-    //     // rx_buffer_[i] = EE_read(i,1);
-    //     EE_read(i,16);
-    //     Delay_ms(100);
-    // } 
-
-    // EE_read(0,71);
-
-        Delay_ms(100);
-       
-    sprintf(g_str_buffer, "I2C data: \x20 %s", rx_buffer_);
+    
+    // Fetch the High scores and load them into buffer
+    EE_read(0, &hs_buffer, 71);
+    // sprintf(g_str_buffer, "I2C data: \x20 %s", hs_buffer);
     TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 9*PX_BLOCK);
     // for (i=0; i <10; i++) {
     //     rx_buffer_[i] = EE_read(i,1);
@@ -1065,8 +1162,45 @@ void print_top_score_list() {
 
     //     // TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, i*PX_BLOCK);
     // } //     // sprintf(g_str_buffer, "I2C data: \x20 %s", rx_buffer_);
-    
+    // Delay_ms(2000);
+    TFT_Fill_Screen(CL_BLACK);
+    sprintf(g_str_buffer, "TOP SCORES:\x20  %s | \x20 %c",hs_buffer, hs_buffer[0]);
+    TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 1*PX_BLOCK);
+    for (i=0; i < 5; i++ ) {
 
+    //     // Check the 1000s 
+    //     // cell_pos = (i*7) + 3 = temp_score[0];
+    //     // cell_pos = (i*7) + 4 = temp_score[1];
+    //     // cell_pos = (i*7) + 5 = temp_score[2];
+    //     // cell_pos = (i*7) + 6 = temp_score[3];
+        // Copy Row i of scores from EEPROM to temp array 
+        temp_score[0] = hs_buffer[(i*7) + 2];
+        temp_score[1] = hs_buffer[(i*7) + 3];
+        temp_score[2] = hs_buffer[(i*7) + 4];
+        temp_score[3] = hs_buffer[(i*7) + 5];
+        temp_score[4] = hs_buffer[(i*7) + 6];
+        temp_score[5] = hs_buffer[(i*7) + 7];
+        temp_score[6] = hs_buffer[(i*7) + 8];
+
+
+
+        // sprintf(g_str_buffer, "sorting[%d]:\x20  %s | \x20 %c", i, hs_buffer, hs_buffer[i]);
+        sprintf(g_str_buffer, "score[%d]:\x20  %s | \x20 %c%c%c%c%c%c%c", i , temp_score, 
+            hs_buffer[(i*7) + 2], 
+            hs_buffer[(i*7) + 3], 
+            hs_buffer[(i*7) + 4], 
+            hs_buffer[(i*7) + 5], 
+            hs_buffer[(i*7) + 6], 
+            hs_buffer[(i*7) + 7], 
+            hs_buffer[(i*7) + 8]
+            );
+    //     // sprintf(g_str_buffer, "sorting:\0x20  %s |", hs_buffer);
+        //  sprintf(g_str_buffer, "I2C data: \x20 %s", hs_buffer);
+        TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, (i+2)*PX_BLOCK);
+    //     // sprintf(g_str_buffer, "atoi[%d]:\0x20  %d", i, int_score);
+    //     // TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, (i+1)*PX_BLOCK);
+      Delay_ms(100);
+    }
  
 
      
@@ -1078,6 +1212,8 @@ void print_top_score_list() {
     set_game_phase(PHASE1_READY); // change to restart game
 
 }
+
+
 
 
 
@@ -1138,3 +1274,35 @@ void print_top_score_list() {
 //         incr_snake_tail();
 //     }
 // }
+
+
+/// old sort
+ //===============================================================
+    // for (i=0; i < 10; i++ ) { // 10 rows 0-9
+    //     // yRow x width of entry(7) + offset of byte
+
+    //     // Check the 1000s 
+    //     cell_pos = (i*7) + 3;
+    //     if ( hs_buffer[cell_pos] < user_score_entry[3] ) {
+    //         break;
+    //     } else if (hs_buffer[cell_pos] == user_score_entry[3] {
+
+    //         row_found =i;
+    //     }
+
+
+    //     // Check the 100s
+    //     else if (hs_buffer[++cell_pos] < user_score_entry[4] ) {
+    //         row_found = i;
+    //     }
+    //     // Check the 10s
+    //     else if (hs_buffer[++cell_pos] < user_entry_entry[5]) {
+    //         row_found = i;
+    //     }
+    //     else if (hs_buffer[++cell_pos] < user_score_entry[6]) {
+    //         row_found = i;
+    //     } else {
+    //         // Nothing found, user must be the first entry
+    //         row_found = 0;
+    //     }
+    // }

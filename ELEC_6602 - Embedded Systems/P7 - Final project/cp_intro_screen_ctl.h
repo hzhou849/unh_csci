@@ -18,10 +18,12 @@ static const uint32_t SCROLL_SPEED = 3;
 static const uint32_t X_SCROLL_SPEED = 1;
 
 
- const  uint8_t pub_msg[] = "PUDDLE ProDUCKtions presents:";
- const  uint8_t dev_msg[] = "A Run Hop Games, game.";
+//  const  uint8_t pub_msg[] = "PUDDLE ProDUCKtions presents:";
+ const  uint8_t pub_msg[] = "Run Hop Games presents:";
+//  const  uint8_t dev_msg[] = "A Run Hop Games, game.";
  const  uint8_t intro_msg[] = "Press Joystick/PC13 to contiue.";
-
+uint8_t g_DS_BUFFERi[300];
+uint8_t intro_game_phase = PHASE_LOGO;
 
 //================================================================================================
 /* Prototypes */
@@ -36,6 +38,7 @@ void draw_intro_screen(uint32_t x_axis, uint32_t y_axis);
 void draw_rectangle(uint32_t x_axis, uint32_t y_axis);
 void set_cur_screen_run_flag(uint8_t run_flag);
 void draw_info_text(uint32_t x_axis, uint32_t y_axi);
+void get_intro_game_phase();
 
 // void duck_sprite();
 
@@ -102,6 +105,8 @@ void load_intro_screen() {
     uint32_t  prev_val2 = 5;
     uint32_t counter = 1;
     
+    intro_game_phase = PHASE_INTRO;
+    cur_screen_run_flag = TRUE;
     
 
     // Hold here for button press to start
@@ -210,7 +215,7 @@ void draw_info_text(uint32_t x_axis, uint32_t y_axis) {
 void draw_rectangle(uint32_t x_axis, uint32_t y_axis) {
 
     TFT_SET_Brush(1, CL_BLACK, 0, 0, 0 ,0);
-    TFT_Rectangle(x_axis, y_axis, x_axis+255, y_axis+15);   // 15 is miny to hide text
+    TFT_Rectangle(x_axis, y_axis, x_axis+255, y_axis+17);   // 15 is miny to hide text
     // TFT_SET_Brush(1, CL_BLACK, 0, 0, 0 ,0);
     // TFT_Rectangle(10, 10, 320, 240);
 }
@@ -245,7 +250,7 @@ void load_duck_screen() {
 
     uint32_t value = 0;
 
-    
+    intro_game_phase = PHASE_LOGO;
     
     init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
     // dump_arr_memory(&g_DS_BUFFER, MAX_BLOCK_SIZE);
@@ -259,27 +264,31 @@ void load_duck_screen() {
    
     TFT_SET_PEN(m_BLACK, 0);
     TFT_SET_Brush(1, CL_AQUA, 0, 0 , 0 ,0);
+    
 
 
    // Load the duck sprite into video buffer
     duck_sprite();
+    set_sprite_offset(0, 6);
+    TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
+    TFT_Write_Text("A PUDDLE ProDUCKtions ", 6*PX_BLOCK, 13*PX_BLOCK);
 
     // set the offsets
-        // dump_ds_buffer();
+    // dump_ds_buffer();
+    // Delay_ms(1000);
 
-    for (i=0; i< 20; i++) {
+    // for (i=0; i< 20; i++) {
         
-        // if (i < 1) {
-        //     render_rect_mask(0, 0+6, 13+i, 9+6, m_NAVY);
-        // }
-        // render_rect_mask(0+ (i-1), 0+6, 13+i, 9+6, m_NAVY);
-        cleaning_buffer(m_NAVY);
+    //     // if (i < 1) {
+    //     //     render_rect_mask(0, 0+6, 13+i, 9+6, m_NAVY);
+    //     // }
+    //     // render_rect_mask(0+ (i-1), 0+6, 13+i, 9+6, m_NAVY);
+    //     cleaning_buffer(m_NAVY);
 
-        // Delay_ms(10);
-        set_sprite_offset(i, 6);
-        dump_ds_buffer();
-    }
-
+    //     // Delay_ms(10);
+    //     set_sprite_offset(i, 6);
+    //     dump_ds_buffer();
+    // }
 
     // hold here -may move this out later
     while (cur_screen_run_flag == TRUE) {};
@@ -292,7 +301,6 @@ void load_duck_screen() {
 
 
 
-#endif // _CP_SCREENS_CTL_H
 
 void duck_sprite() {
     // Sprite is 12x8 dimension
@@ -302,87 +310,91 @@ void duck_sprite() {
     // m_YELLOW 47 (410-457) 47+7 = 54
     // m_BLACK, 7
     // m_RED 5
+    int32_t xfs = 3;
+    int32_t yfs = 2;
 
     // TFT_SET_Brush(1, m_YELLOW, 0, 0 , 0 ,0);
-    load_cell_xy(8,0, m_YELLOW);
-    load_cell_xy(9,0, m_YELLOW);
-    load_cell_xy(10,0, m_YELLOW);
+    draw_cell_xy(8 + xfs,0 + yfs, m_YELLOW);
+    draw_cell_xy(9 + xfs,0 + yfs, m_YELLOW);
+    draw_cell_xy(10 + xfs,0 + yfs, m_YELLOW);
 
     // TFT_SET_Brush(1, m_YELLOW, 0, 0 , 0 ,0);
-    load_cell_xy(2,2,m_YELLOW); //face
-    load_cell_xy(3,2,m_YELLOW);
-    load_cell_xy(7,2,m_YELLOW);
-    load_cell_xy(8,2,m_YELLOW);
+    draw_cell_xy(2 + xfs, 2+yfs, m_YELLOW); //face
+    draw_cell_xy(3 + xfs, 2+yfs, m_YELLOW);
+    draw_cell_xy(7 + xfs, 2+yfs, m_YELLOW);
+    draw_cell_xy(8 + xfs, 2+yfs, m_YELLOW);
 
 
     // Black sunglasses
     // TFT_SET_Brush(1, m_BLACK, 0, 0 , 0 ,0);
-    load_cell_xy(7,1, m_BLACK); // Sunglasses
-    load_cell_xy(8,1, m_BLACK);
-    load_cell_xy(9,1, m_BLACK);
-    load_cell_xy(10,1, m_BLACK);
-    load_cell_xy(11,1, m_BLACK);
-    load_cell_xy(9,2, m_BLACK);
-    load_cell_xy(10,2, m_BLACK);
+    draw_cell_xy(7 + xfs,1+yfs, m_BLACK); // Sunglasses
+    draw_cell_xy(8 + xfs,1+yfs, m_BLACK);
+    draw_cell_xy(9 + xfs,1+yfs, m_BLACK);
+    draw_cell_xy(10 + xfs, 1+yfs, m_BLACK);
+    draw_cell_xy(11 + xfs, 1+yfs, m_BLACK);
+    draw_cell_xy(9 + xfs,2+yfs, m_BLACK);
+    draw_cell_xy(10+xfs,2+yfs, m_BLACK);
 
 
 
     // TFT_SET_Brush(1, m_RED, 0, 0 , 0 ,0);
-    load_cell_xy(11,2, m_RED);
-    load_cell_xy(12,2, m_RED);
-    load_cell_xy(13,2, m_RED);
-    load_cell_xy(11,3, m_RED);
-    load_cell_xy(12,3, m_RED);
+    draw_cell_xy(11+xfs,2+yfs, m_RED);
+    draw_cell_xy(12+xfs,2+yfs, m_RED);
+    draw_cell_xy(13+xfs,2+yfs, m_RED);
+    draw_cell_xy(11+xfs,3+yfs, m_RED);
+    draw_cell_xy(12+xfs,3+yfs, m_RED);
 
     // TFT_SET_Brush(1, m_YELLOW, 0, 0 , 0 ,0);
-    load_cell_xy(1,3, m_YELLOW);
-    load_cell_xy(2,3, m_YELLOW);
-    load_cell_xy(3,3, m_YELLOW);
-    load_cell_xy(4,3, m_YELLOW);
-    load_cell_xy(8,3, m_YELLOW);
-    load_cell_xy(9,3, m_YELLOW);
-    load_cell_xy(10,3, m_YELLOW);
-    load_cell_xy(0,4, m_YELLOW);
-    load_cell_xy(1,4, m_YELLOW);
-    load_cell_xy(2,4, m_YELLOW);
-    load_cell_xy(3,4, m_YELLOW);
-    load_cell_xy(4,4, m_YELLOW);
-    load_cell_xy(5,4, m_YELLOW);
-    load_cell_xy(6,4, m_YELLOW);
-    load_cell_xy(7,4, m_YELLOW);
-    load_cell_xy(8,4, m_YELLOW);
-    load_cell_xy(9,4, m_YELLOW);
-    load_cell_xy(10,4, m_YELLOW);
-    load_cell_xy(1,5, m_YELLOW);
-    load_cell_xy(2,5, m_YELLOW);
-    load_cell_xy(3,5, m_YELLOW);
-    load_cell_xy(4,5, m_YELLOW);
-    load_cell_xy(5,5, m_YELLOW);
-    load_cell_xy(6,5, m_YELLOW);
-    load_cell_xy(7,5, m_YELLOW);
-    load_cell_xy(8,5, m_YELLOW);
-    load_cell_xy(9,5, m_YELLOW);
-    load_cell_xy(10,5, m_YELLOW);
-    load_cell_xy(2,6, m_YELLOW);
-    load_cell_xy(3,6, m_YELLOW);
-    load_cell_xy(4,6, m_YELLOW);
-    load_cell_xy(5,6, m_YELLOW);
-    load_cell_xy(6,6, m_YELLOW);
-    load_cell_xy(7,6, m_YELLOW);
-    load_cell_xy(8,6, m_YELLOW);
-    load_cell_xy(9,6, m_YELLOW);
-    load_cell_xy(10,6, m_YELLOW);
-    load_cell_xy(3,7,m_YELLOW);
-    load_cell_xy(4,7,m_YELLOW);
-    load_cell_xy(5,7,m_YELLOW);
-    load_cell_xy(6,7,m_YELLOW);
-    load_cell_xy(7,7,m_YELLOW);
-    load_cell_xy(8,7,m_YELLOW);
-    load_cell_xy(9,7,m_YELLOW);
-    load_cell_xy(4,8,m_YELLOW);
-    load_cell_xy(5,8,m_YELLOW);
-    load_cell_xy(6,8,m_YELLOW);
-    load_cell_xy(7,8,m_YELLOW);
-    load_cell_xy(8,8,m_YELLOW);
+    draw_cell_xy(1+xfs,3+yfs, m_YELLOW);
+    draw_cell_xy(2+xfs,3+yfs, m_YELLOW);
+    draw_cell_xy(3+xfs,3+yfs, m_YELLOW);
+    draw_cell_xy(4+xfs,3+yfs, m_YELLOW);
+    draw_cell_xy(8+xfs,3+yfs, m_YELLOW);
+    draw_cell_xy(9+xfs,3+yfs, m_YELLOW);
+    draw_cell_xy(10+xfs,3+yfs, m_YELLOW);
+    draw_cell_xy(0+xfs,4+yfs, m_YELLOW);
+    draw_cell_xy(1+xfs,4+yfs, m_YELLOW);
+    draw_cell_xy(2+xfs,4+yfs, m_YELLOW);
+    draw_cell_xy(3+xfs,4+yfs, m_YELLOW);
+    draw_cell_xy(4+xfs,4+yfs, m_YELLOW);
+    draw_cell_xy(5+xfs,4+yfs, m_YELLOW);
+    draw_cell_xy(6+xfs,4+yfs, m_YELLOW);
+    draw_cell_xy(7+xfs,4+yfs, m_YELLOW);
+    draw_cell_xy(8+xfs,4+yfs, m_YELLOW);
+    draw_cell_xy(9+xfs,4+yfs, m_YELLOW);
+    draw_cell_xy(10+xfs,4+yfs, m_YELLOW);
+    draw_cell_xy(1+xfs,5+yfs, m_YELLOW);
+    draw_cell_xy(2+xfs,5+yfs, m_YELLOW);
+    draw_cell_xy(3+xfs,5+yfs, m_YELLOW);
+    draw_cell_xy(4+xfs,5+yfs, m_YELLOW);
+    draw_cell_xy(5+xfs,5+yfs, m_YELLOW);
+    draw_cell_xy(6+xfs,5+yfs, m_YELLOW);
+    draw_cell_xy(7+xfs,5+yfs, m_YELLOW);
+    draw_cell_xy(8+xfs,5+yfs, m_YELLOW);
+    draw_cell_xy(9+xfs,5+yfs, m_YELLOW);
+    draw_cell_xy(10+xfs,5+yfs, m_YELLOW);
+    draw_cell_xy(2+xfs,6+yfs, m_YELLOW);
+    draw_cell_xy(3+xfs,6+yfs, m_YELLOW);
+    draw_cell_xy(4+xfs,6+yfs, m_YELLOW);
+    draw_cell_xy(5+xfs,6+yfs, m_YELLOW);
+    draw_cell_xy(6+xfs,6+yfs, m_YELLOW);
+    draw_cell_xy(7+xfs,6+yfs, m_YELLOW);
+    draw_cell_xy(8+xfs,6+yfs, m_YELLOW);
+    draw_cell_xy(9+xfs,6+yfs, m_YELLOW);
+    draw_cell_xy(10+xfs,6+yfs, m_YELLOW);
+    draw_cell_xy(3+xfs,7+yfs,m_YELLOW);
+    draw_cell_xy(4+xfs,7+yfs,m_YELLOW);
+    draw_cell_xy(5+xfs,7+yfs,m_YELLOW);
+    draw_cell_xy(6+xfs,7+yfs,m_YELLOW);
+    draw_cell_xy(7+xfs,7+yfs,m_YELLOW);
+    draw_cell_xy(8+xfs,7+yfs,m_YELLOW);
+    draw_cell_xy(9+xfs,7+yfs,m_YELLOW);
+    draw_cell_xy(4+xfs,8+yfs,m_YELLOW);
+    draw_cell_xy(5+xfs,8+yfs,m_YELLOW);
+    draw_cell_xy(6+xfs,8+yfs,m_YELLOW);
+    draw_cell_xy(7+xfs,8+yfs,m_YELLOW);
+    draw_cell_xy(8+xfs,8+yfs,m_YELLOW);
+
 }
 
+#endif // _CP_SCREENS_CTL_H

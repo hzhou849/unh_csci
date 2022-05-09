@@ -59,14 +59,16 @@
 
 /* Global variables*/
 // static volatile uint8_t DEV_MODE   = FALSE;
-static uint8_t g_cur_game_phase  = 0xFF;         // 0=intro screen; 1=main game
-static int32_t g_game_speed        = 1500;
+static uint8_t g_cur_game_phase  = PHASE_LOGO;         // 0=intro screen; 1=main game
+static int32_t g_game_speed        = 500;
+
 
 uint32_t rx_buffer = 0;
-uint32_t debug_val;
+uint32_t adc_val;
 uint32_t i2c_status1;
 uint8_t rx_data1 =0x32;
 uint8_t tx_data1 =0x55;
+uint8_t dev_position = 0;
 
 
 /* Interrupt Handlers */
@@ -94,7 +96,7 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
     {
     case PHASE_LOGO:
         set_cur_screen_run_flag(FALSE);
-        g_cur_game_phase = PHASE1_READY; // load_duck
+        g_cur_game_phase = PHASE_INTRO; // load_duck
         break;
 
     case PHASE_INTRO:
@@ -145,6 +147,7 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
 ///
 void EXTIPA0() iv IVT_INT_EXTI0  {
     EXTI_PR |= 1 << 2;
+    
      while (GPIOA_IDR.B0 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
      g_cur_game_phase = get_game_phase();
 
@@ -212,6 +215,13 @@ void EXTIPD2() iv IVT_INT_EXTI2  {
      while (GPIOD_IDR.B2 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
      g_cur_game_phase = get_game_phase();
 
+      if (g_cur_game_phase == PHASE1_READY && dev_position == 1) {
+        dev_position++;
+    }else if (g_cur_game_phase == PHASE1_READY && dev_position == 2) {
+        TFT_Write_Text("DEV MODE ENABLED!", 7*PX_BLOCK, 3*PX_BLOCK);
+        set_secret_mode(); // set developer mode
+    }
+
      if (g_cur_game_phase == PHASE2_PLAYING) {
         if (g_curr_snake_dir != MOVE_RIGHT) {
             set_curr_snake_dir(MOVE_LEFT);
@@ -229,6 +239,10 @@ void EXTIPD4() iv IVT_INT_EXTI4  {
      while (GPIOD_IDR.B4 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
     g_cur_game_phase = get_game_phase();
         
+    if (g_cur_game_phase == PHASE1_READY && dev_position == 0) {
+        dev_position++;
+    }
+
     if (g_cur_game_phase == PHASE2_PLAYING) {
 
         if (g_curr_snake_dir != MOVE_DOWN) {
@@ -250,27 +264,33 @@ void TIMER2_ISR() iv IVT_INT_TIM2 {
 
         // Increment the session time counter - this resets after each session to 0
         update_session_time();
-        //   /* clean screen mask */
-        //update direction and refresh screen here?
+
+        // clean screen mask 
         render_rect_mask(0,0,20,1, m_NAVY);
         Delay_ms(50);
-        //  render_rect_mask(0,10,19,0, m_BLACK);
 
-        // /* Update time - refresh display */
+        // Update time - refresh display 
         update_time();
 
-        // /* Update score */
+        // Update score 
         update_stats();
-        // Delay_ms(100); // delay needed for screen to update
-        //     // Update game mode
-            //     sprintf(g_str_buffer, "MODE: \x20 DEV:\x20 %d",g_debug );
-            //     TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 0*PX_BLOCK);
+
+
         // Debug print to screen
         // read adc
-        debug_val = ADC1_Read(3);
-        // debug_val = ADC1_DR;
-        //  scr_debug(debug_val);
-        //  ADC1_SR = 0;
+        if (adc_val != ADC1_Read(3)) {
+            adc_val = ADC1_Read(3);
+            adc_val = adc_val/ 215;  // 9000/500 = 18 @ 500ticks  steps so (3883-6)/18 215
+            update_game_speed(adc_val);
+            
+            if (adc_val <= 0 ) {
+                TIM3_ARR = 500;
+            } else {
+                TIM3_ARR =  (adc_val * 500);
+            }
+            TIM3_CNT = 0;
+        }
+     
     } 
 }
 
@@ -316,7 +336,7 @@ void init_cfg_M_CTL() {
     RCC_APB1ENR |= (uint32_t) 1 << 21;          // Enable I2C1 Clock
 
     /* Config port direction & flags */
-     GPIO_Digital_Output(&GPIOE_BASE, _GPIO_PINMASK_14); // added here to enabed PE14 for piezo buzzer
+    GPIO_Digital_Output(&GPIOE_BASE, _GPIO_PINMASK_14); // added here to enabed PE14 for piezo buzzer
     GPIOE_CRH &= (long int) ~(0xF << 24);
     GPIOE_CRH &= (uint32_t) ~(0xC <<  24) ;                    // PE14 output for Piezo buzzer 0xc inverse of 0x3
     // GPIOE_ODR=0xFFFF;
@@ -324,6 +344,7 @@ void init_cfg_M_CTL() {
 
     /* Joystick configuration */
     GPIOA_CRL |= 4 << 0;                       // Enable PA0;  Quit button      
+    GPIOC_CRL |= 4 << 4;                       // Enable PB0;  Extra button      
 
     GPIOA_CRL |= 4 << 4;                       // Enable PA4;  Game TIMER3 control      
     GPIOA_CRL |= 4 << 6;                       // Enable PA6;  joystick=RIGHT      
@@ -522,10 +543,10 @@ void main() {
 
     /* Display execution stuff */
 
-    // load_duck_screen();
+    load_duck_screen();
  
-    /* Intro screen */
-    // load_intro_screen();
+    // /* Intro screen */
+    load_intro_screen();
 
 
 
@@ -541,6 +562,7 @@ void main() {
 
     while (1) {
         /* **Game mode starts here* */
+        dev_position = 0;
         load_snake_game();
 
         // initialize the screen ** NOTE this load sequence must be performed in this order

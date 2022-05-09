@@ -35,8 +35,8 @@ typedef struct  {
 } t_node;
 
 
+static const uint8_t PHASE_LOGO          = 0xF;
 static const uint8_t PHASE_INTRO          = 0;
-static const uint8_t PHASE_LOGO          = 0;
 static const uint8_t PHASE1_READY         = 1; 
 static const uint8_t PHASE2_PLAYING       = 2; 
 static const uint8_t PHASE_QUIT           = 3; 

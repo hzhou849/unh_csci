@@ -126,53 +126,23 @@ main
 			TP_TFT_Init
 			TP_TFT_Set_ADC_Threshold
 			TFT_Fill_Screen
-	load_snake_game
-		set_game_phase
+	load_duck_screen
+		init_arr
 		set_cur_screen_run_flag
 		TFT_Fill_Screen
-		TFT_Set_Brush
-		set_brush_color
-			color_convert_32
-			TFT_Set_Brush
 		TFT_Set_Pen
-		TFT_Set_Font
-		TFT_Write_Text
-			TFT_Move_Cursor
-			_TFT_Write_Char_E
-				_TFT_getHeader
-				TFT_Dot
-					Is_SSD1963_Set
-					TFT_Set_Address_SSD1963II
-					TFT_Set_Address_SSD1963I
-					TFT_Set_Address
-					TFT_Set_Address_SST7715R
-					TFT_Set_Address_HX8352A
-					TFT_Set_Address_R61526
-					TFT_Set_Address_ILI9481
-					TFT_Set_Address_ILI9342
-					TFT_Set_Address_ILI9340
-					TFT_Write_Data
-					TFT_16bit_Write_Data
-					TFT_SSD1963_8bit_Write_Data
-			_TFT_Write_Char
-				TFT_Set_Font
-				TFT_Dot
-	init_snake_game
-		set_cur_screen_run_flag
-		TFT_Fill_Screen
 		TFT_Set_Brush
-		set_brush_color
-		TFT_Set_Pen
-		TFT_Set_Font
-		init_snake_sprite
-			reset_game_values
-			print_snake
-				draw_cell_xy
-					set_brush_color
-					TFT_Rectangle
-						TFT_H_Line
+		duck_sprite
+			__CC2DW
+			draw_cell_xy
+				set_brush_color
+					color_convert_32
+					TFT_Set_Brush
+				TFT_Rectangle
+					TFT_H_Line
+						Is_SSD1963_Set
+						TFT_Dot
 							Is_SSD1963_Set
-							TFT_Dot
 							TFT_Set_Address_SSD1963II
 							TFT_Set_Address_SSD1963I
 							TFT_Set_Address
@@ -185,12 +155,66 @@ main
 							TFT_Write_Data
 							TFT_16bit_Write_Data
 							TFT_SSD1963_8bit_Write_Data
-						TFT_V_Line
-							TFT_Dot
-						TFT_GetCurrentColor
-							TFT_Color16bitToRGB
-							TFT_RGBToColor16bit
-						TFT_Set_Pen
+						TFT_Set_Address_SSD1963II
+						TFT_Set_Address_SSD1963I
+						TFT_Set_Address
+						TFT_Set_Address_SST7715R
+						TFT_Set_Address_HX8352A
+						TFT_Set_Address_R61526
+						TFT_Set_Address_ILI9481
+						TFT_Set_Address_ILI9342
+						TFT_Set_Address_ILI9340
+						TFT_Write_Data
+						TFT_16bit_Write_Data
+						TFT_SSD1963_8bit_Write_Data
+					TFT_V_Line
+						TFT_Dot
+					TFT_GetCurrentColor
+						TFT_Color16bitToRGB
+						TFT_RGBToColor16bit
+					TFT_Set_Pen
+		set_sprite_offset
+		TFT_Set_Font
+		TFT_Write_Text
+			TFT_Move_Cursor
+			_TFT_Write_Char_E
+				_TFT_getHeader
+				TFT_Dot
+			_TFT_Write_Char
+				TFT_Set_Font
+				TFT_Dot
+	load_intro_screen
+		__CC2DW
+		TFT_Fill_Screen
+		draw_info_text
+			TFT_Set_Font
+			TFT_Write_Text
+		draw_rectangle
+			TFT_Set_Brush
+			TFT_Rectangle
+		draw_intro_screen
+			TFT_Set_Font
+			TFT_Write_Text
+	load_snake_game
+		set_game_phase
+		set_cur_screen_run_flag
+		TFT_Fill_Screen
+		TFT_Set_Brush
+		set_brush_color
+		TFT_Set_Pen
+		TFT_Set_Font
+		TFT_Write_Text
+	init_snake_game
+		set_cur_screen_run_flag
+		TFT_Fill_Screen
+		TFT_Set_Brush
+		set_brush_color
+		TFT_Set_Pen
+		TFT_Set_Font
+		init_snake_sprite
+			reset_game_values
+			print_snake
+				draw_cell_xy
 			generate_food
 				rand
 					srand
@@ -243,8 +267,8 @@ main
 		sprintf
 		TFT_Write_Text
 	game_high_score_scr
-		set_cur_screen_run_flag
 		set_game_phase
+		set_cur_screen_run_flag
 		TFT_Fill_Screen
 		draw_ini_cell_xy
 			set_brush_color
@@ -291,10 +315,17 @@ main
 					TFT_Write_Command
 					TFT_SSD1963_8bit_Set_Index
 					TFT_SSD1963YT_8bit_Write_Command
+		sort_score
+			atoi
+				isdigit
+			sprintf
+			TFT_Write_Text
+		EE_write
+			I2C1_Start
+			I2C1_Write
 		sprintf
 		TFT_Write_Text
 		atoi
-			isdigit
 		set_game_phase
 EXTIPD4
 	get_game_phase
@@ -321,6 +352,7 @@ TIMER2_ISR
 		ADC1_Get_Sample
 			ADCx_Get_Sample
 				Delay_1us
+	update_game_speed
 TIMER3_ISR
 	get_game_phase
 	toggle_game_clock_delay
@@ -339,6 +371,8 @@ TIMER3_ISR
 		generate_food
 EXTIPD2
 	get_game_phase
+	TFT_Write_Text
+	set_secret_mode
 	set_curr_snake_dir
 EXTI15_10
 	get_game_phase

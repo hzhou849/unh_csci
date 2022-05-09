@@ -272,12 +272,12 @@ void load_cell_xy(int32_t x_var, int32_t y_var, uint8_t clr_code) {
     uint8_t color_8bit = clr_code;
 
 // //   Draw the sprite directly - Debug  sprite printout
-//        TFT_Rectangle(
-//             PX_BLOCK * x_var,                   // Upper-left X
-//             (y_var * PX_BLOCK),                 // Upper-left Y
-//             PX_BLOCK + (PX_BLOCK * x_var),      // Lower-right X
-//             PX_BLOCK + (PX_BLOCK * y_var)       // Lower-right Y
-//             );
+    //    TFT_Rectangle(
+    //         PX_BLOCK * x_var,                   // Upper-left X
+    //         (y_var * PX_BLOCK),                 // Upper-left Y
+    //         PX_BLOCK + (PX_BLOCK * x_var),      // Lower-right X
+    //         PX_BLOCK + (PX_BLOCK * y_var)       // Lower-right Y
+    //         );
 
     // Convert to linear array  x + (y * col_width)
     linear_val = ( (y_var * MAX_COL_WIDTH) + x_var );
@@ -315,20 +315,23 @@ void clean_tail(t_node * node_tail,  uint8_t color_8bit) {
 }
 
 
+void cleaning_buffer(uint8_t color_8bit) {
+    int32_t i=0;
+
+    for (i=0; i < MAX_BLOCK_COUNT  ; i++) {
+
+        if (g_DS_BUFFER[i] != 0xFF) {
+            draw_cell_pos(i, color_8bit ); // pass the colour code~
+        }
+
+    }
+}
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Graveyard code
 
-// void cleaning_buffer(uint8_t color_8bit) {
-//     int32_t i=0;
-
-//     for (i=0; i < MAX_BLOCK_COUNT  ; i++) {
-
-//         if (g_DS_BUFFER[i] != 0xFF) {
-//             draw_cell_pos(i, color_8bit ); // pass the colour code~
-//         }
-
-//     }
-// }
 
 
 // void transform_sprite_(uint8_t transform_dir) {
