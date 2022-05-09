@@ -5,4 +5,22 @@
     <Enabled>True</Enabled>
     <Type>0</Type>
   </BP>
+  <BP>
+    <UnitName>cp_game_ctl.h</UnitName>
+    <Line>514</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+  <BP>
+    <UnitName>cp_game_ctl.h</UnitName>
+    <Line>516</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
+  <BP>
+    <UnitName>cp_game_ctl.h</UnitName>
+    <Line>253</Line>
+    <Enabled>True</Enabled>
+    <Type>0</Type>
+  </BP>
 </BREAKS>

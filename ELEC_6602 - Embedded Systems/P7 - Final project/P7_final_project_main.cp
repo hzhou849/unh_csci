@@ -138,7 +138,7 @@ static const int32_t MAX_COL_WIDTH = 20;
 static const int32_t MAX_ROW_LENGTH = 15;
 static const int32_t MAX_BLOCK_COUNT = 300;
 static const uint8_t PX_BLOCK = 16;
-static const uint8_t INI_BLOCK = 8;
+static const uint8_t INI_BLOCK = 10;
 
 
 
@@ -155,11 +155,14 @@ static const uint8_t PHASE1_READY = 1;
 static const uint8_t PHASE2_PLAYING = 2;
 static const uint8_t PHASE_QUIT = 3;
 static const uint8_t PHASE_HSCORE = 4;
-static const uint8_t PHASE_GAME_LOOP_OVER = 5;
+static const uint8_t PHASE_PRINT_TOP_TEN = 5;
 
 static const uint8_t NORMAL_MODE = 0;
 static const uint8_t WALL_COL_OFF = 0x1;
 static const uint8_t DEV_MODE = 0x3;
+
+static const uint8_t TOTAL_TIME = 0x1A;
+static const uint8_t SESSION_TIME = 0x1F;
 
 static const uint8_t MOVE_RIGHT = 0x0;
 static const uint8_t MOVE_LEFT = 0x1;
@@ -174,6 +177,8 @@ static const uint32_t SFX_WALL = 10;
 
 static const uint32_t SCREEN_X_MAX = 320;
 static const uint32_t SCREEN_Y_MAX = 240;
+static const uint32_t HS_CURSOR_START_X = 16;
+static const uint32_t HS_CURSOR_START_Y = 4;
 
 
 
@@ -197,7 +202,7 @@ void set_cur_screen_run_flag(uint8_t run_flag) {
 void set_game_phase(uint8_t game_phase) {
  g_GAME_PHASE = game_phase;
 }
-#line 106 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
+#line 111 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_const_def.h"
 void debug(uint32_t value) {
  Delay_ms(1);
  USART1_DR = 0xD;
@@ -241,6 +246,7 @@ int32_t color_convert_32 (uint8_t color_8bit);
 int32_t get_offset_x ();
 
 void dump_arr_memory(uint8_t *in_arr, uint32_t a_size);
+void draw_ini_cell_xy(int16_t x_var, int16_t y_var, uint8_t color_8bit );
 
 
 
@@ -479,7 +485,6 @@ void load_cell_xy(int32_t x_var, int32_t y_var, uint8_t clr_code) {
 
 
  linear_val = ( (y_var * MAX_COL_WIDTH) + x_var );
-
  g_DS_BUFFER[linear_val] = color_8bit;
 
 }
@@ -906,6 +911,7 @@ char * strtok(char * s1, char * s2);
 static const uint8_t EOF_ARRAY = 0xFF;
 const static int32_t MAX_CELLS = 300;
 static const uint32_t EEPROM_MAX_SIZE =100;
+static const uint8_t init_cursor_start = 0x41;
 
 
 
@@ -913,10 +919,10 @@ static const uint32_t EEPROM_MAX_SIZE =100;
 
 static volatile uint8_t game_cur_screen_run_flag = TRUE;
 
-static uint8_t g_GAME_MODE = DEV_MODE;
+static uint8_t g_TIME_TRACK_MODE = TOTAL_TIME;
+static uint8_t g_GAME_MODE = NORMAL_MODE;
 static uint8_t g_curr_snake_dir = MOVE_RIGHT;
 static volatile uint8_t g_game_clock_delay_tim3 = ON;
-static volatile uint32_t g_time_count = 0;
 static uint32_t g_game_score = 0;
 static int32_t g_debug = 0;
 static int32_t g_debug2 = 2;
@@ -924,20 +930,23 @@ static int32_t g_rand_num = 999;
 static uint8_t g_food_in_play = FALSE;
 static int32_t g_fd_x_val = NEG_NULL;
 static int32_t g_fd_y_val = NEG_NULL;
-static int32_t init_cursor_start = 0x40;
-static int32_t init_cur_count = 1;
+static int32_t init_cur_pos = 0;
+static uint8_t user_score_entry[7];
 static int32_t i =0;
 static int32_t j =0;
 static uint32_t i2c_status;
 static uint8_t tx_buffer_[128];
 static uint8_t rx_buffer_[256];
-static int32_t hs_cursor_x = 22;
-static int32_t hs_cursor_y = 4;
-uint8_t init_cur = 0x40;
+static int32_t hs_cursor_x = HS_CURSOR_START_X;
+static int32_t hs_cursor_y = HS_CURSOR_START_Y;
+uint8_t init_cur = init_cursor_start;
 
 
 uint8_t g_str_buffer[128];
 
+
+static volatile uint32_t g_time_count = 0;
+static volatile uint32_t g_session_count = 0;
 static uint32_t g_t_mins = 0;
 static uint32_t g_t_secs = 0;
 static uint32_t g_t_wait = FALSE;
@@ -964,6 +973,7 @@ void move_snake();
 void set_curr_snake_dir();
 void scr_debug(uint32_t value);
 
+void update_game_time ();
 
 
 
@@ -979,7 +989,7 @@ void incr_snake_head();
 void incr_snake_tail();
 t_node* incr_node(t_node *_node);
 void game_over();
-
+int32_t get_initial_cur_pos ();
 
 
 void update_snake_info(int32_t head_x, int32_t head_y);
@@ -997,6 +1007,27 @@ void scr_debug(int32_t value, int32_t value2) {
 
 
 
+void reset_game_values () {
+ i =0;
+ j =0;
+ g_session_count = 0;
+ g_game_score = 0;
+ g_debug = 0;
+ g_debug2 = 2;
+ g_rand_num = 999;
+ g_food_in_play = FALSE;
+ g_fd_x_val = NEG_NULL;
+ g_fd_y_val = NEG_NULL;
+ init_cur = init_cursor_start;
+ init_cur_pos = 0;
+
+ hs_cursor_x = HS_CURSOR_START_X;
+ hs_cursor_y = HS_CURSOR_START_Y;
+
+}
+
+
+
 void set_curr_snake_dir(uint8_t new_dir) {
  g_curr_snake_dir = new_dir;
 }
@@ -1011,12 +1042,22 @@ void toggle_game_clock_delay() {
 
 void update_game_time () {
  g_time_count++;
+
+}
+
+void update_session_time() {
+ g_session_count++;
 }
 
 
 
 uint8_t get_game_phase() {
  return g_GAME_PHASE;
+}
+
+
+int32_t get_initial_cur_pos () {
+ return init_cur_pos;
 }
 
 
@@ -1112,14 +1153,14 @@ void game_over() {
 
  TIM3_CR1 = 0;
  play_sfx_wall(20);
- game_cur_screen_run_flag = FALSE;
  g_GAME_PHASE = PHASE_QUIT;
+ game_cur_screen_run_flag = FALSE;
 }
 
 
-int32_t get_init_count () {
- return init_cur_count;
-}
+
+
+
 
 
 
@@ -1364,7 +1405,7 @@ void incr_snake_tail() {
 void load_snake_game() {
 
 
- g_GAME_PHASE = PHASE1_READY;
+ set_game_phase(PHASE1_READY);
 
 
 
@@ -1378,11 +1419,17 @@ void load_snake_game() {
  set_brush_color(m_BLACK);
 
  TFT_SET_PEN(CL_GRAY, 0);
+
+ TFT_Set_Font(TFT_defaultFont, CL_AQUA, FO_HORIZONTAL );
+ TFT_Write_Text("SNAKE!", 8 * PX_BLOCK, 6 * PX_BLOCK);
  TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
- TFT_Write_Text("READY?", 7 * PX_BLOCK, 6 * PX_BLOCK);
- TFT_Write_Text("Press Joytick/PC13 to start", 5*PX_BLOCK, 7*PX_BLOCK);
+ TFT_Write_Text("v.1.0", 18* PX_BLOCK, 0 * PX_BLOCK);
+ TFT_Write_Text("By Howard Zhou", 13 * PX_BLOCK, 14 * PX_BLOCK);
+ TFT_Write_Text("Press Joytick/PC13 to start", 5*PX_BLOCK, 11*PX_BLOCK);
 
  while (cur_screen_run_flag == TRUE) {};
+
+ TFT_Fill_Screen(CL_BLACK);
 }
 
 
@@ -1405,7 +1452,10 @@ void update_stats() {
 
 void update_time() {
 
- g_t_secs = g_time_count % 60;
+
+ if (g_TIME_TRACK_MODE == SESSION_TIME) {
+ g_t_secs = g_session_count % 60;
+
  if (g_t_secs != 0) {
  g_t_wait = FALSE;
  }
@@ -1413,8 +1463,27 @@ void update_time() {
  g_t_mins++;
  g_t_wait = TRUE;
  }
- sprintf(g_str_buffer, "Time: \x20 %02d:%02d", g_t_mins, g_t_secs );
+
+
+ sprintf(g_str_buffer, "GTIM: \x20 %02d:%02d", g_t_mins-1, g_t_secs );
+
+ } else {
+ g_t_secs = g_time_count % 60;
+
+ if (g_t_secs != 0) {
+ g_t_wait = FALSE;
+ }
+ if (g_t_secs == 0 && g_t_wait == FALSE) {
+ g_t_mins++;
+ g_t_wait = TRUE;
+ }
+
+ sprintf(g_str_buffer, "Time: \x20 %02d:%02d", g_t_mins-1, g_t_secs );
+ }
+
+
  TFT_Write_Text(&g_str_buffer, 15*PX_BLOCK, 0*PX_BLOCK);
+
 }
 
 
@@ -1450,6 +1519,10 @@ void init_snake_game() {
 
 void init_snake_sprite() {
 
+
+ reset_game_values();
+
+
  m_node_head = m_node_start;
  m_node_tail = m_node_start;
  g_curr_snake_dir = MOVE_RIGHT;
@@ -1459,6 +1532,9 @@ void init_snake_sprite() {
  m_node_head->node_y = 1;
  print_snake(m_node_head, m_GREEN);
  generate_food();
+
+
+ g_session_count = 0;
 }
 
 
@@ -1511,7 +1587,23 @@ void screen_refresh_TIM3() {
 
 void game_over_scr() {
 
- g_GAME_PHASE = PHASE_QUIT;
+
+ update_session_time();
+
+
+ render_rect_mask(0,0,20,1, m_NAVY);
+ Delay_ms(50);
+
+
+
+ update_time();
+
+
+ update_stats();
+
+
+
+
  set_game_phase (PHASE_QUIT);
 
 
@@ -1529,7 +1621,7 @@ void game_over_scr() {
  TFT_SET_PEN(CL_GRAY, 0);
  TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
 
- sprintf(g_str_buffer, "Total Time: \x20 %02d:%02d", g_t_mins, g_t_secs );
+ sprintf(g_str_buffer, "Total Time: \x20 %02d:%02d", g_t_mins-1, g_t_secs );
  TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 2*PX_BLOCK);
 
  sprintf(g_str_buffer, "Final score: \x20 %04d", g_game_score);
@@ -1540,32 +1632,60 @@ void game_over_scr() {
 
 
 }
+#line 753 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+void convert_int_ascii(uint8_t in_array) {
+ int32_t temp_score = g_game_score;
+ int32_t temp_val = 0;
+ int32_t temp_dvdnd = 0;
 
 
 
-void EE_write(uint8_t reg_addr, uint8_t tx_byte, uint32_t tx_size) {
- tx_buffer_[0] = reg_addr;
- tx_buffer_[1] = tx_byte;
- I2C1_Start();
 
 
- I2C1_Write(0x50, tx_buffer_, 2, END_MODE_STOP);
 
+
+
+
+ if (temp_score >= 1000 & g_game_score <= 9999) {
+ temp_dvdnd = (temp_score / 1000);
+ temp_val = temp_dvdnd +0x30;
+ user_score_entry[3] = temp_val;
+
+
+ temp_score = temp_score - (1000 * temp_dvdnd);
+
+ } else {
+ user_score_entry[3] = 0x30;
+ }
+
+
+ if (temp_score >= 100 ) {
+ temp_dvdnd = (temp_score / 100);
+ temp_val = temp_dvdnd + 0x30;
+ user_score_entry[4] = temp_val;
+
+
+ temp_score = temp_score - (100 * temp_dvdnd);
+
+ } else {
+ user_score_entry[4] = 0x30;
+ }
+
+
+ if (temp_score >= 10) {
+ temp_dvdnd = (temp_score / 10);
+ temp_val = temp_dvdnd + 0x30;
+ user_score_entry[5] = temp_val;
+
+
+ temp_score = temp_score - (10 * temp_dvdnd);
+ } else {
+ user_score_entry[5] = 0x30;
+ }
+
+
+ user_score_entry[6] = temp_score + 0x30;
 }
-
-
-
-
-void EE_read(uint8_t reg_addr, uint32_t rx_size) {
-
-
- I2C1_Start();
- I2C1_Write(0x50, reg_addr, 1, END_MODE_RESTART);
- I2C1_Read(0x50, rx_buffer_, rx_size +4, END_MODE_STOP);
-
-
-}
-
 
 void refresh_hs_scr(uint8_t cur_dir) {
  int32_t xval = hs_cursor_x;
@@ -1583,59 +1703,170 @@ void refresh_hs_scr(uint8_t cur_dir) {
  break;
 
  case MOVE_DOWN:
-
  if (init_cur < init_cursor_start) {
  init_cur = 0x5A;
  } else {
- ++init_cur;
+ --init_cur;
  }
  break;
  case JBTN_DOWN:
 
- ++init_cur_count;
+ user_score_entry[get_initial_cur_pos()] = init_cur;
+ ++init_cur_pos;
+ ++hs_cursor_x;
+
  }
 
 
- if (init_cur_count == 3) {
+ if (init_cur_pos >= 3) {
 
 
- g_GAME_PHASE = PHASE_GAME_LOOP_OVER;
+ convert_int_ascii(&user_score_entry);
+
+
+ set_cur_screen_run_flag(FALSE);
+ set_game_phase(PHASE_PRINT_TOP_TEN);
  } else {
  draw_ini_cell_xy(hs_cursor_x,hs_cursor_y,m_GRAY);
+ sprintf(g_str_buffer, "Enter high score: \x20 ");
+ TFT_Write_Text(&g_str_buffer, 2*PX_BLOCK, 4*PX_BLOCK);
+
+ if (get_initial_cur_pos() == 0) {
+ sprintf(g_str_buffer, "%c \x20_\x20_: \x20 %04d", init_cur, g_game_score);
+ } else if (get_initial_cur_pos() == 1) {
+ sprintf(g_str_buffer, "%c\x20%c\x20_: \x20 %04d", user_score_entry[0], init_cur, g_game_score);
+ } else if (get_initial_cur_pos() == 2) {
+ sprintf(g_str_buffer, "%c\x20%c\x20%c: \x20 %04d", user_score_entry[0], user_score_entry[1], init_cur, g_game_score);
+ } else {
+ sprintf(g_str_buffer, "FINISHED");
  }
 
- sprintf(g_str_buffer, "Enter high score: \x20\x20 ");
- TFT_Write_Text(&g_str_buffer, 4*PX_BLOCK, 4*PX_BLOCK);
- sprintf(g_str_buffer, "%c: \x20", init_cur);
- TFT_Write_Text(&g_str_buffer, 11*PX_BLOCK, 4*PX_BLOCK);
+ TFT_Write_Text(&g_str_buffer, 10*PX_BLOCK, 4*PX_BLOCK);
+ Delay_ms(200);
+ }
+
 
 }
 
 
 
 void game_high_score_scr() {
- uint32_t tx_count = 0;
- uint8_t byte;
 
 
  set_cur_screen_run_flag(TRUE);
+ set_game_phase(PHASE_HSCORE);
 
 
  TFT_Fill_Screen(CL_BLACK);
 
 
+ draw_ini_cell_xy(hs_cursor_x,hs_cursor_y,m_GRAY);
+ Delay_ms(100);
+ sprintf(g_str_buffer, "Enter high score: \x20 ");
+ TFT_Write_Text(&g_str_buffer, 2*PX_BLOCK, 4*PX_BLOCK);
+ sprintf(g_str_buffer, "%c \x20_\x20_: \x20 %04d", init_cur, g_game_score);
+ TFT_Write_Text(&g_str_buffer, 10*PX_BLOCK, 4*PX_BLOCK);
+
+ while (cur_screen_run_flag == TRUE) {}
+
+
+ set_game_phase(PHASE_PRINT_TOP_TEN);
+
+}
+
+void EE_write(uint8_t reg_addr, uint8_t tx_byte, uint32_t tx_size) {
+ tx_buffer_[0] = reg_addr;
+ tx_buffer_[1] = 'W';
+ tx_buffer_[2] = 'T';
+ tx_buffer_[3] = 'F';
+ tx_buffer_[4] = '9';
+ tx_buffer_[5] = '7';
+ tx_buffer_[6] = '5';
+
+ I2C1_Start();
+
+
+ I2C1_Write(0x50, tx_buffer_, tx_size, END_MODE_STOP);
+
+}
+#line 925 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+void EE_read(uint8_t reg_addr, uint8_t *read_buffer, uint32_t rx_size) {
+
+
+ I2C1_Start();
+ I2C1_Write(0x50, reg_addr, 1, END_MODE_RESTART);
+ I2C1_Read(0x50, rx_buffer_, rx_size +4, END_MODE_STOP);
+
+
+}
+
+
+
+
+
+void sort_score(uint8_t *hs_buffer) {
+ int32_t cell_pos = 0;
+ int32_t row_found = 0;
+ uint8_t temp_score1[7];
+#line 980 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+}
+
+
+
+void print_top_score_list() {
+ uint32_t tx_count = 0;
+ uint8_t byte;
+ uint8_t hs_buffer[128];
+ uint8_t atest[4];
+ int32_t test_num;
+
+ set_cur_screen_run_flag(TRUE);
+
+
+
+ TFT_Fill_Screen(CL_BLACK);
+
 
  I2C1_Init();
 
+
+ EE_read(0, &hs_buffer, 71);
+
+
+
+
+
+ sprintf(g_str_buffer, "TOP SCORES:");
+ TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 2*PX_BLOCK);
+
+
+ sprintf(g_str_buffer, "test: %s", user_score_entry);
+ TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 4*PX_BLOCK);
+
+ user_score_entry[3] = 0x30+5;
+ atest[0] = user_score_entry[3];
+ atest[1] = user_score_entry[4];
+ atest[2] = user_score_entry[5];
+ atest[3] = user_score_entry[6];
+
+ test_num = atoi(atest);
+ sprintf(g_str_buffer, "atoi: %d", test_num);
+ TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 5*PX_BLOCK);
+
+ if (test_num > 999) {
+ sprintf(g_str_buffer, "test num is greater");
+ TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 6*PX_BLOCK);
+ }
+
+
+
+ GPIOB_ODR |= 0xFF00;
+ Delay_ms(10);
+#line 1045 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+ Delay_ms(10);
  GPIOB_ODR |= 0xFF00;
  Delay_ms(10);
 
- draw_ini_cell_xy(22,4,m_GRAY);
- Delay_ms(100);
- sprintf(g_str_buffer, "Enter high score: \x20\x20 ");
- TFT_Write_Text(&g_str_buffer, 4*PX_BLOCK, 4*PX_BLOCK);
- sprintf(g_str_buffer, "___: \x20 %d", g_game_score);
- TFT_Write_Text(&g_str_buffer, 11*PX_BLOCK, 4*PX_BLOCK);
 
 
 
@@ -1643,32 +1874,22 @@ void game_high_score_scr() {
 
 
 
- for (i = 0; i < 0x16; i++) {
- EE_write(i, (0x50 +i),1 );
- GPIOB_ODR++;
- Delay_ms(50);
- }
-#line 776 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
- Delay_ms(10);
- GPIOB_ODR |= 0xFF00;
- Delay_ms(10);
 
- for (i=0; i < 0x1; i++) {
-
- EE_read(i,16);
- Delay_ms(100);
- }
  Delay_ms(100);
 
-
+ sprintf(g_str_buffer, "I2C data: \x20 %s", rx_buffer_);
  TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 9*PX_BLOCK);
-#line 802 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
+#line 1074 "c:/git_repo/unh_csci/elec_6602 - embedded systems/p7 - final project/cp_game_ctl.h"
  while (cur_screen_run_flag == TRUE) {}
+
+
+
+ set_game_phase(PHASE1_READY);
 
 }
 #line 62 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 static uint8_t g_cur_game_phase = 0xFF;
-static int32_t g_game_speed = 2500;
+static int32_t g_game_speed = 1500;
 
 uint32_t rx_buffer = 0;
 uint32_t debug_val;
@@ -1716,8 +1937,15 @@ void EXTI15_10() iv IVT_INT_EXTI15_10 {
 
  case PHASE_HSCORE:
 
- g_cur_game_phase = PHASE_HSCORE;
+ refresh_hs_scr(JBTN_DOWN);
  break;
+
+ case PHASE_PRINT_TOP_TEN:
+ set_cur_screen_run_flag(FALSE);
+ g_cur_game_phase = PHASE1_READY;
+ break;
+
+
 
 
 
@@ -1734,6 +1962,7 @@ void EXTI15_10() iv IVT_INT_EXTI15_10 {
 void EXTIPA0() iv IVT_INT_EXTI0 {
  EXTI_PR |= 1 << 2;
  while (GPIOA_IDR.B0 == 0) {GPIOB_ODR = ~GPIOB_ODR;}
+ g_cur_game_phase = get_game_phase();
 
  if (g_cur_game_phase == PHASE2_PLAYING) {
  set_cur_screen_run_flag(FALSE);
@@ -1741,7 +1970,7 @@ void EXTIPA0() iv IVT_INT_EXTI0 {
  g_cur_game_phase = PHASE_QUIT;
 
 
- TIM2_CR1 = 0;
+
  TIM3_CR1 = 0;
  }
  else if (g_cur_game_phase == PHASE_QUIT) {
@@ -1754,6 +1983,8 @@ void EXTIPA0() iv IVT_INT_EXTI0 {
 
 
 void EXTIPA6() iv IVT_INT_EXTI9_5 {
+ g_cur_game_phase = get_game_phase();
+
 
  if (GPIOB_IDR.B5 == 0) {
  while(GPIOB_IDR.B5 == 0) {GPIOC_ODR = ~GPIOC_ODR;}
@@ -1770,6 +2001,8 @@ void EXTIPA6() iv IVT_INT_EXTI9_5 {
 
 
  if (GPIOA_IDR.B6 == 0) {
+ while(GPIOA_IDR.B6 == 0) {GPIOC_ODR = ~GPIOC_ODR;}
+ g_cur_game_phase = get_game_phase();
 
  if (g_cur_game_phase == PHASE2_PLAYING) {
 
@@ -1793,6 +2026,7 @@ void EXTIPA6() iv IVT_INT_EXTI9_5 {
 void EXTIPD2() iv IVT_INT_EXTI2 {
  EXTI_PR |= 1 << 2;
  while (GPIOD_IDR.B2 == 0) {GPIOB_ODR = ~GPIOB_ODR;}
+ g_cur_game_phase = get_game_phase();
 
  if (g_cur_game_phase == PHASE2_PLAYING) {
  if (g_curr_snake_dir != MOVE_RIGHT) {
@@ -1809,26 +2043,34 @@ void EXTIPD2() iv IVT_INT_EXTI2 {
 void EXTIPD4() iv IVT_INT_EXTI4 {
  EXTI_PR |= 1 << 4;
  while (GPIOD_IDR.B4 == 0) {GPIOB_ODR = ~GPIOB_ODR;}
+ g_cur_game_phase = get_game_phase();
 
+ if (g_cur_game_phase == PHASE2_PLAYING) {
 
  if (g_curr_snake_dir != MOVE_DOWN) {
  set_curr_snake_dir(MOVE_UP);
+ }
+ } else if (g_cur_game_phase == PHASE_HSCORE) {
+ refresh_hs_scr(MOVE_UP);
  }
 }
 
 
 void TIMER2_ISR() iv IVT_INT_TIM2 {
  TIM2_SR &= ~(1<<0);
-
+ g_cur_game_phase = get_game_phase();
 
  update_game_time();
 
  if (g_GAME_PHASE == PHASE2_PLAYING) {
 
 
+ update_session_time();
+
 
  render_rect_mask(0,0,20,1, m_NAVY);
  Delay_ms(50);
+
 
 
  update_time();
@@ -1850,6 +2092,7 @@ void TIMER2_ISR() iv IVT_INT_TIM2 {
 
 
 void TIMER3_ISR() iv IVT_INT_TIM3 {
+ g_cur_game_phase = get_game_phase();
  TIM3_SR &= ~(1<<0);
 
  toggle_game_clock_delay();
@@ -1904,7 +2147,7 @@ void init_cfg_M_CTL() {
  GPIOD_CRL |= 4 << 2;
  GPIOD_CRL |= 4 << 4;
  GPIOC_CRH |= 4 << 5;
-#line 345 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+#line 367 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
 }
 
 
@@ -2035,9 +2278,9 @@ void main() {
 
 
  init_interrupt();
-#line 490 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+#line 512 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
  Start_TP();
-#line 520 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
+#line 542 "C:/GIT_REPO/unh_csci/ELEC_6602 - Embedded Systems/P7 - Final project/P7_final_project_main.c"
  while (1) {
 
  load_snake_game();
@@ -2062,6 +2305,7 @@ void main() {
 
  game_over_scr();
  game_high_score_scr();
+ print_top_score_list();
 
  }
 }

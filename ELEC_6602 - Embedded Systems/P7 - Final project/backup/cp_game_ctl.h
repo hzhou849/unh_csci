@@ -62,7 +62,7 @@ static int16_t *s_food_y = &snake_info[6];
 // External calls
 void load_game_screen();
 uint8_t get_game_mode();
-void update_game_time();
+void update_session_time();
 void move_snake();
 void set_curr_snake_dir();
 void scr_debug(uint32_t * value);  // Debugging function
@@ -98,7 +98,7 @@ void toggle_game_clock_delay() {
 }
 
 // Update the game timer
-void update_game_time () {
+void update_session_time () {
     g_time_count++;
 }
 

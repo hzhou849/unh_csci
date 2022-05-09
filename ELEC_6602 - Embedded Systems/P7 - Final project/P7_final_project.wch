@@ -1203,15 +1203,15 @@
 <item n="_node_x" r="1" s="False" e="False" i="0"/>
 <item n="_node_y" r="1" s="False" e="False" i="1"/>
 </item>
-<item n="check_snake_collision_temp_itr_L0" r="1" s="False" e="False" i="1742">
+<item n="check_snake_collision_temp_itr_L0" r="1" s="False" e="False" i="1761">
 <item n="_node_x" r="0" s="True" e="False" i="0"/>
 <item n="_node_y" r="0" s="True" e="False" i="1"/>
 </item>
-<item n="_m_node_head" r="1" s="False" e="False" i="1687">
+<item n="_m_node_head" r="1" s="False" e="False" i="1694">
 <item n="_node_x" r="0" s="True" e="False" i="0"/>
 <item n="_node_y" r="0" s="True" e="False" i="1"/>
 </item>
-<item n="_m_node_tail" r="1" s="False" e="False" i="1688">
+<item n="_m_node_tail" r="1" s="False" e="False" i="1695">
 <item n="_node_x" r="0" s="True" e="False" i="0"/>
 <item n="_node_y" r="0" s="True" e="False" i="1"/>
 </item>
@@ -1243,7 +1243,6 @@
 <item n="GPIOD_CRH" r="1" s="False" e="False" i="7"/>
 <item n="P7_final_project_main_g_curr_snake_dir" r="0" s="False" e="False" i="8"/>
 <item n="P7_final_project_main_game_cur_screen_run_flag" r="0" s="False" e="False" i="9"/>
-<item n="game_high_score_scr_testing_L0" r="1" s="False" e="True" i="1756">
-<item n="" r="4" s="False" e="False" i="0"/>
-</item>
+<item n="P7_final_project_main_g_t_mins" r="0" s="False" e="False" i="10"/>
+<item n="P7_final_project_main_g_t_secs" r="0" s="False" e="False" i="11"/>
 </WCH>

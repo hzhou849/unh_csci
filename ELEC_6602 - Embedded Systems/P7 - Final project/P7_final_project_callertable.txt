@@ -127,6 +127,7 @@ main
 			TP_TFT_Set_ADC_Threshold
 			TFT_Fill_Screen
 	load_snake_game
+		set_game_phase
 		set_cur_screen_run_flag
 		TFT_Fill_Screen
 		TFT_Set_Brush
@@ -164,6 +165,7 @@ main
 		TFT_Set_Pen
 		TFT_Set_Font
 		init_snake_sprite
+			reset_game_values
 			print_snake
 				draw_cell_xy
 					set_brush_color
@@ -229,6 +231,10 @@ main
 	start_snake_game
 	set_game_phase
 	game_over_scr
+		update_session_time
+		render_rect_mask
+		update_time
+		update_stats
 		set_game_phase
 		set_cur_screen_run_flag
 		set_brush_color
@@ -238,6 +244,15 @@ main
 		TFT_Write_Text
 	game_high_score_scr
 		set_cur_screen_run_flag
+		set_game_phase
+		TFT_Fill_Screen
+		draw_ini_cell_xy
+			set_brush_color
+			TFT_Rectangle
+		sprintf
+		TFT_Write_Text
+	print_top_score_list
+		set_cur_screen_run_flag
 		TFT_Fill_Screen
 		I2C1_Init
 			I2Cx_Init_Advanced
@@ -246,12 +261,7 @@ main
 				GPIO_Alternate_Function_Enable
 					GPIO_Configure_Pin
 						GPIO_Config
-		draw_ini_cell_xy
-			set_brush_color
-			TFT_Rectangle
-		sprintf
-		TFT_Write_Text
-		EE_write
+		EE_read
 			I2C1_Start
 				I2Cx_Start
 					I2Cx_Wait_For_Idle
@@ -273,9 +283,6 @@ main
 					TFT_Write_Command
 					TFT_SSD1963_8bit_Set_Index
 					TFT_SSD1963YT_8bit_Write_Command
-		EE_read
-			I2C1_Start
-			I2C1_Write
 			I2C1_Read
 				I2Cx_Read
 					__CC2DW
@@ -284,10 +291,27 @@ main
 					TFT_Write_Command
 					TFT_SSD1963_8bit_Set_Index
 					TFT_SSD1963YT_8bit_Write_Command
+		sprintf
+		TFT_Write_Text
+		atoi
+			isdigit
+		set_game_phase
 EXTIPD4
+	get_game_phase
 	set_curr_snake_dir
+	refresh_hs_scr
+		TFT_Fill_Screen
+		get_initial_cur_pos
+		convert_int_ascii
+		set_cur_screen_run_flag
+		set_game_phase
+		draw_ini_cell_xy
+		sprintf
+		TFT_Write_Text
 TIMER2_ISR
+	get_game_phase
 	update_game_time
+	update_session_time
 	render_rect_mask
 	update_time
 	update_stats
@@ -298,6 +322,7 @@ TIMER2_ISR
 			ADCx_Get_Sample
 				Delay_1us
 TIMER3_ISR
+	get_game_phase
 	toggle_game_clock_delay
 	screen_refresh_TIM3
 		check_snake_collision
@@ -313,16 +338,16 @@ TIMER3_ISR
 		play_sfx_food
 		generate_food
 EXTIPD2
+	get_game_phase
 	set_curr_snake_dir
 EXTI15_10
 	get_game_phase
 	set_cur_screen_run_flag
+	refresh_hs_scr
 EXTIPA0
+	get_game_phase
 	set_cur_screen_run_flag
 EXTIPA6
+	get_game_phase
 	set_curr_snake_dir
 	refresh_hs_scr
-		TFT_Fill_Screen
-		draw_ini_cell_xy
-		sprintf
-		TFT_Write_Text

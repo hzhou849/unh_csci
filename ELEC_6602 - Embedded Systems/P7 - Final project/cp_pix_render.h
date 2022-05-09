@@ -42,6 +42,7 @@ int32_t color_convert_32 (uint8_t color_8bit);
 int32_t get_offset_x ();
 
 void dump_arr_memory(uint8_t *in_arr, uint32_t a_size);
+void draw_ini_cell_xy(int16_t x_var, int16_t y_var, uint8_t color_8bit );
 
 // void init_arr(uint8_t *in_arr, int32_t a_size);
 // void dump_arr_memory(uint8_t *in_arr, int32_t a_size);
@@ -280,7 +281,6 @@ void load_cell_xy(int32_t x_var, int32_t y_var, uint8_t clr_code) {
 
     // Convert to linear array  x + (y * col_width)
     linear_val = ( (y_var * MAX_COL_WIDTH) + x_var );
-
     g_DS_BUFFER[linear_val] = color_8bit;
 
 }

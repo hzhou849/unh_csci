@@ -60,7 +60,7 @@
 /* Global variables*/
 // static volatile uint8_t DEV_MODE   = FALSE;
 static uint8_t g_cur_game_phase  = 0xFF;         // 0=intro screen; 1=main game
-static int32_t g_game_speed        = 2500;
+static int32_t g_game_speed        = 1500;
 
 uint32_t rx_buffer = 0;
 uint32_t debug_val;
@@ -121,8 +121,15 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
 
     case PHASE_HSCORE:
         // set_cur_screen_run_flag(FALSE); wait until all 3 Initials are entered
-        g_cur_game_phase = PHASE_HSCORE;
+         refresh_hs_scr(JBTN_DOWN);
         break;
+    
+    case PHASE_PRINT_TOP_TEN:
+        set_cur_screen_run_flag(FALSE);
+        g_cur_game_phase = PHASE1_READY; // PHASE1_ready? seems to cause problems
+        break;
+
+     
 
     // case PHASE2_PLAYING:
     //     set_cur_screen_run_flag(FALSE); // Start snake game
@@ -139,6 +146,7 @@ void EXTI15_10() iv IVT_INT_EXTI15_10  {
 void EXTIPA0() iv IVT_INT_EXTI0  {
     EXTI_PR |= 1 << 2;
      while (GPIOA_IDR.B0 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
+     g_cur_game_phase = get_game_phase();
 
      if (g_cur_game_phase == PHASE2_PLAYING) {
         set_cur_screen_run_flag(FALSE);
@@ -146,7 +154,7 @@ void EXTIPA0() iv IVT_INT_EXTI0  {
         g_cur_game_phase = PHASE_QUIT;
 
         // Kill Timers
-        TIM2_CR1 = 0; // Start TIMER2 for game time
+        // TIM2_CR1 = 0; // Start TIMER2 for game time
         TIM3_CR1 = 0; // Start TIMER3 now
      }
     else if (g_cur_game_phase == PHASE_QUIT) {
@@ -156,10 +164,12 @@ void EXTIPA0() iv IVT_INT_EXTI0  {
 
     
 }
-/// PA6 - Joystick DOWN & RIGHT ISR
+/// PA6/PB5 - Joystick DOWN & RIGHT ISR
 ///
 void EXTIPA6() iv IVT_INT_EXTI9_5  {
-    // DOWN
+    g_cur_game_phase = get_game_phase();
+
+    // DOWN 
     if (GPIOB_IDR.B5 == 0) {
         while(GPIOB_IDR.B5 == 0) {GPIOC_ODR = ~GPIOC_ODR;}
         EXTI_PR |= 1 << 5;
@@ -175,6 +185,8 @@ void EXTIPA6() iv IVT_INT_EXTI9_5  {
 
     // RIGHT    
     if (GPIOA_IDR.B6 == 0) {
+         while(GPIOA_IDR.B6 == 0) {GPIOC_ODR = ~GPIOC_ODR;}
+        g_cur_game_phase = get_game_phase();
         
         if (g_cur_game_phase == PHASE2_PLAYING) {
 
@@ -198,6 +210,7 @@ void EXTIPA6() iv IVT_INT_EXTI9_5  {
 void EXTIPD2() iv IVT_INT_EXTI2  {
     EXTI_PR |= 1 << 2;
      while (GPIOD_IDR.B2 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
+     g_cur_game_phase = get_game_phase();
 
      if (g_cur_game_phase == PHASE2_PLAYING) {
         if (g_curr_snake_dir != MOVE_RIGHT) {
@@ -214,28 +227,36 @@ void EXTIPD2() iv IVT_INT_EXTI2  {
 void EXTIPD4() iv IVT_INT_EXTI4  {
     EXTI_PR |= 1 << 4;
      while (GPIOD_IDR.B4 == 0) {GPIOB_ODR = ~GPIOB_ODR;} 
+    g_cur_game_phase = get_game_phase();
+        
+    if (g_cur_game_phase == PHASE2_PLAYING) {
 
-
-     if (g_curr_snake_dir != MOVE_DOWN) {
-        set_curr_snake_dir(MOVE_UP);
-     }
+        if (g_curr_snake_dir != MOVE_DOWN) {
+            set_curr_snake_dir(MOVE_UP);
+        } 
+    } else if (g_cur_game_phase == PHASE_HSCORE) { 
+        refresh_hs_scr(MOVE_UP);
+    }
 }
 
 /// TIMER2 ISR
 void TIMER2_ISR() iv IVT_INT_TIM2 {
     TIM2_SR &= ~(1<<0);         // Bit[0] UIF interrupt reset set to 0
-
+    g_cur_game_phase = get_game_phase();
   
     update_game_time();
 
     if (g_GAME_PHASE == PHASE2_PLAYING) {
 
+        // Increment the session time counter - this resets after each session to 0
+        update_session_time();
         //   /* clean screen mask */
         //update direction and refresh screen here?
         render_rect_mask(0,0,20,1, m_NAVY);
         Delay_ms(50);
         //  render_rect_mask(0,10,19,0, m_BLACK);
-        // /* Update time */
+
+        // /* Update time - refresh display */
         update_time();
 
         // /* Update score */
@@ -250,11 +271,12 @@ void TIMER2_ISR() iv IVT_INT_TIM2 {
         // debug_val = ADC1_DR;
         //  scr_debug(debug_val);
         //  ADC1_SR = 0;
-    }
+    } 
 }
 
 /// TIMER3 ISR - Needs to have higher priority than TIM2 in order to update display properly
 void TIMER3_ISR() iv IVT_INT_TIM3 {
+    g_cur_game_phase = get_game_phase();
     TIM3_SR &= ~(1<<0);         // Bit[0] UIF interrupt reset set to 0
 
     toggle_game_clock_delay(); 
@@ -541,6 +563,7 @@ void main() {
 
         game_over_scr();
         game_high_score_scr();
+        print_top_score_list();
         // load_intro_screen();
     }
 }

@@ -14,6 +14,7 @@
 static const uint8_t EOF_ARRAY     = 0xFF;             // End marker for display array matrix
 const static int32_t MAX_CELLS                            = 300;
 static const uint32_t EEPROM_MAX_SIZE               =100; // 3 Initials, 4 for score = 7 chars x 10 rows = 70 Minimun
+static const uint8_t init_cursor_start                        = 0x41;          // '@'; 1 char less than 'A' allow for increment algorithm
 
 
 /* Global variables */
@@ -21,10 +22,10 @@ static const uint32_t EEPROM_MAX_SIZE               =100; // 3 Initials, 4 for s
 // compiler has issues with declaring variables in functions.
 static volatile uint8_t game_cur_screen_run_flag        = TRUE;
 
-static uint8_t g_GAME_MODE                              = DEV_MODE;
+static uint8_t g_TIME_TRACK_MODE                        = TOTAL_TIME;
+static uint8_t g_GAME_MODE                              = NORMAL_MODE;  // DEV_MODE 
 static uint8_t g_curr_snake_dir                         = MOVE_RIGHT;
 static volatile uint8_t  g_game_clock_delay_tim3        = ON;
-static volatile uint32_t g_time_count                   = 0;
 static uint32_t g_game_score                            = 0;
 static int32_t g_debug                                  = 0;
 static int32_t g_debug2                                 = 2;
@@ -32,20 +33,23 @@ static int32_t g_rand_num                               = 999;
 static uint8_t g_food_in_play                           = FALSE;
 static int32_t g_fd_x_val                               = NEG_NULL;
 static int32_t g_fd_y_val                               = NEG_NULL;
-static int32_t init_cursor_start                        = 0x40;          // '@'; 1 char less than 'A' allow for increment algorithm
-static int32_t init_cur_count                           = 1; 
+static int32_t init_cur_pos                           = 0; 
+static uint8_t user_score_entry[7];
 static int32_t i                                               =0;    // Generic counters
 static int32_t j             =0;    // Generic counters
 static uint32_t i2c_status;
 static uint8_t  tx_buffer_[128];
 static uint8_t  rx_buffer_[256];
-static int32_t hs_cursor_x = 22;
-static int32_t hs_cursor_y = 4;
-uint8_t init_cur = 0x40; // 'A' -1
+static int32_t hs_cursor_x                              = HS_CURSOR_START_X;
+static int32_t hs_cursor_y                              = HS_CURSOR_START_Y;
+uint8_t init_cur                                        = init_cursor_start; // 'A' -1
 
 
 uint8_t g_str_buffer[128];                                // General use string buffer for output text
 
+// Time tracking
+static volatile uint32_t g_time_count                   = 0;
+static volatile uint32_t g_session_count                = 0;
 static uint32_t g_t_mins                                = 0;
 static uint32_t g_t_secs                                = 0;
 static uint32_t g_t_wait                                = FALSE;
@@ -72,6 +76,7 @@ void move_snake();
 void set_curr_snake_dir();
 void scr_debug(uint32_t value);  // Debugging function
 
+void update_game_time ();
 
 
 // Local calls
@@ -87,7 +92,7 @@ void incr_snake_head();
 void incr_snake_tail();
 t_node* incr_node(t_node *_node);
 void game_over();
-
+int32_t get_initial_cur_pos ();
 
 // Flag updating functions
 void update_snake_info(int32_t head_x, int32_t head_y);
@@ -102,6 +107,27 @@ void scr_debug(int32_t value, int32_t value2) {
 }
 //=============================================================================================================
 /* Interrupt Functions */
+
+/// Reset game values
+///
+void reset_game_values () {
+    i =0;    // Generic counters
+    j =0;    // Generic counters
+    g_session_count      = 0;
+    g_game_score         = 0;
+    g_debug              = 0;
+    g_debug2             = 2;
+    g_rand_num           = 999;
+    g_food_in_play       = FALSE;
+    g_fd_x_val           = NEG_NULL;
+    g_fd_y_val           = NEG_NULL;
+    init_cur    = init_cursor_start;         
+    init_cur_pos         = 0; 
+
+    hs_cursor_x          = HS_CURSOR_START_X;
+    hs_cursor_y          = HS_CURSOR_START_Y;
+
+}
 
 /// Set the snake direction 
 ///
@@ -119,12 +145,22 @@ void toggle_game_clock_delay() {
 ///
 void update_game_time () {
     g_time_count++;
+
+}
+
+void update_session_time() {
+    g_session_count++;
 }
 
 /// Get the current game mode
 ///
 uint8_t get_game_phase() {
     return g_GAME_PHASE;
+}
+
+/// Get Initial curson position
+int32_t get_initial_cur_pos () {
+    return init_cur_pos; 
 }
 
 /// Set g_food_in_play flag
@@ -220,14 +256,14 @@ void game_over() {
     // // TIM2_CR1 = 0; // Kill TIMER2 for game time
     TIM3_CR1 = 0; // Kill TIMER3 now
     play_sfx_wall(20);
-    game_cur_screen_run_flag = FALSE;
     g_GAME_PHASE = PHASE_QUIT;  
+    game_cur_screen_run_flag = FALSE;
 }
 
-
-int32_t get_init_count () {
-    return init_cur_count;
-}
+// /// Get the position of the intials counter
+// int32_t get_init_count () {
+//     return init_cur_count;
+// }
 
 /// Move the snake
 ///
@@ -472,7 +508,7 @@ void incr_snake_tail() {
 void load_snake_game() {
 
     // Set the game phase mode flag
-    g_GAME_PHASE = PHASE1_READY;
+    set_game_phase(PHASE1_READY);
 
     //  init_arr(&g_DS_BUFFER, MAX_BLOCK_COUNT);
     // dump_arr_memory(&g_DS_BUFFER, MAX_BLOCK_SIZE);
@@ -486,11 +522,17 @@ void load_snake_game() {
     set_brush_color(m_BLACK);
 
     TFT_SET_PEN(CL_GRAY, 0);
+    // TFT_SET_PEN(CL_AQUA, 0);
+    TFT_Set_Font(TFT_defaultFont, CL_AQUA, FO_HORIZONTAL );
+    TFT_Write_Text("SNAKE!", 8 * PX_BLOCK, 6 * PX_BLOCK);
     TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
-    TFT_Write_Text("READY?", 7 * PX_BLOCK, 6 * PX_BLOCK);
-    TFT_Write_Text("Press Joytick/PC13 to start", 5*PX_BLOCK, 7*PX_BLOCK);
+    TFT_Write_Text("v.1.0", 18* PX_BLOCK, 0 * PX_BLOCK);
+    TFT_Write_Text("By Howard Zhou", 13 * PX_BLOCK, 14 * PX_BLOCK);
+    TFT_Write_Text("Press Joytick/PC13 to start", 5*PX_BLOCK, 11*PX_BLOCK);
     
     while (cur_screen_run_flag == TRUE) {};
+    // Wipe the screen after
+     TFT_Fill_Screen(CL_BLACK);
 }
 
 /// Update the score and print it to screen
@@ -509,20 +551,42 @@ void update_stats() {
     TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 0*PX_BLOCK);
 }
 
-/// Update timer and print it to screen 
+/// Update time clock and print it to screen 
 ///
 void update_time() {
+
+    // Print session time else print total clock time
+    if (g_TIME_TRACK_MODE == SESSION_TIME) {
+        g_t_secs = g_session_count % 60;
+
+        if (g_t_secs != 0) {
+            g_t_wait = FALSE;
+        }
+        if (g_t_secs == 0 && g_t_wait == FALSE) {
+            g_t_mins++;
+            g_t_wait = TRUE;
+        }
+
+        // g_t_mins -1 is becuase count starts from 1 as 0 mod x always equals zero.
+        sprintf(g_str_buffer, "GTIM: \x20 %02d:%02d", g_t_mins-1, g_t_secs ); 
+
+    } else {
+        g_t_secs = g_time_count % 60;
+
+        if (g_t_secs != 0) {
+            g_t_wait = FALSE;
+        }
+        if (g_t_secs == 0 && g_t_wait == FALSE) {
+            g_t_mins++;
+            g_t_wait = TRUE;
+        }
+        // g_t_mins -1 is becuase count starts from 1 as 0 mod x always equals zero.
+        sprintf(g_str_buffer, "Time: \x20 %02d:%02d", g_t_mins-1, g_t_secs ); 
+    }
     
-    g_t_secs = g_time_count % 60;
-    if (g_t_secs != 0) {
-        g_t_wait = FALSE;
-    }
-    if (g_t_secs == 0 && g_t_wait == FALSE) {
-        g_t_mins++;
-        g_t_wait = TRUE;
-    }
-    sprintf(g_str_buffer, "Time: \x20 %02d:%02d", g_t_mins, g_t_secs );
+
     TFT_Write_Text(&g_str_buffer, 15*PX_BLOCK, 0*PX_BLOCK);
+
 }
 
 /// Initialize screen
@@ -557,6 +621,10 @@ void init_snake_game() {
 ///
 // ** Do not put in main game loop, this exactly sequence prevents image artifacting
 void init_snake_sprite() {
+    
+    // Reset all game variables
+    reset_game_values();
+
     //Initialize pointer
     m_node_head = m_node_start;
     m_node_tail = m_node_start;
@@ -567,6 +635,9 @@ void init_snake_sprite() {
     m_node_head->node_y = 1;
     print_snake(m_node_head, m_GREEN);
     generate_food();
+
+    // Reset session timer counter
+    g_session_count = 0;
 }
 
 
@@ -618,8 +689,24 @@ void screen_refresh_TIM3() {
 /// Quit - HIGH SCORE screen
 ///
 void game_over_scr() {
+
+    // Update the stats one last time
+      update_session_time();
+        //   /* clean screen mask */
+        //update direction and refresh screen here?
+        render_rect_mask(0,0,20,1, m_NAVY);
+        Delay_ms(50);
+        //  render_rect_mask(0,10,19,0, m_BLACK);
+
+        // /* Update time - refresh display */
+        update_time();
+
+        // /* Update score */
+        update_stats();
+
+
      // Set the game phase mode flag
-    g_GAME_PHASE = PHASE_QUIT;
+    // g_GAME_PHASE = PHASE_QUIT;
     set_game_phase (PHASE_QUIT);
     
     
@@ -637,13 +724,13 @@ void game_over_scr() {
     TFT_SET_PEN(CL_GRAY, 0);
     TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL );
 
-    sprintf(g_str_buffer, "Total Time: \x20 %02d:%02d", g_t_mins, g_t_secs );
+    sprintf(g_str_buffer, "Total Time: \x20 %02d:%02d", g_t_mins-1, g_t_secs );
     TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 2*PX_BLOCK);
 
     sprintf(g_str_buffer, "Final score: \x20 %04d", g_game_score);
     TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 3*PX_BLOCK);
     
-    // Game loop 
+  
     while (cur_screen_run_flag == TRUE) {}
     
     
@@ -651,34 +738,76 @@ void game_over_scr() {
 
 /// EEPROM - WRITE
 ///
-void EE_write(uint8_t reg_addr, uint8_t tx_byte, uint32_t tx_size) {
-    tx_buffer_[0] = reg_addr;
-    tx_buffer_[1] = tx_byte;
-    I2C1_Start();
+// void EE_write(uint8_t reg_addr, uint8_t tx_byte, uint32_t tx_size) {
+//     tx_buffer_[0] = reg_addr;
+//     tx_buffer_[1] = tx_byte;
+//     I2C1_Start();
 
-    // Issue I2c start signal; Plus 1 for reg_address + user data
-    I2C1_Write(0x50, tx_buffer_, 2, END_MODE_STOP);
+//     // Issue I2c start signal; Plus 1 for reg_address + user data
+//     I2C1_Write(0x50, tx_buffer_, 2, END_MODE_STOP);
 
+// }
+
+
+
+void convert_int_ascii(uint8_t in_array) {
+      int32_t temp_score = g_game_score;
+    int32_t temp_val = 0;
+    int32_t temp_dvdnd = 0;
+     // Convert integer to ascii into invidual array
+        // Write the score into the array starting at array[3]
+            // y=0 * 7 + 4 = 1000s
+            // y=0 * 7 + 5 = 100s
+            // y=0 * 7 + 6 = 10s
+            // y=0 * 7 + 7 = 1s
+
+        // 0x30 = 0 Ascii 
+        // Get the 1000s 
+        if (temp_score >= 1000 & g_game_score <= 9999) {
+            temp_dvdnd = (temp_score / 1000);
+            temp_val = temp_dvdnd +0x30; 
+            user_score_entry[3] = temp_val; 
+
+            // remove the 1000s from the score for 100s processing
+            temp_score = temp_score - (1000 * temp_dvdnd);
+
+        } else {
+            user_score_entry[3] = 0x30;  // d0;
+        }
+
+        //Get the 100s 999
+        if (temp_score >= 100 ) {
+            temp_dvdnd = (temp_score / 100);
+            temp_val = temp_dvdnd + 0x30;
+            user_score_entry[4] = temp_val;
+
+            // Remove the 100s from the score for 10s processing
+            temp_score = temp_score - (100 * temp_dvdnd);
+
+        } else {
+            user_score_entry[4] = 0x30;
+        }
+
+        // Get the 10s 99
+        if (temp_score >= 10) {
+            temp_dvdnd = (temp_score / 10);
+            temp_val = temp_dvdnd + 0x30;
+            user_score_entry[5] = temp_val;
+
+            // Remove the 10s from the score for 10s processing
+            temp_score = temp_score - (10 * temp_dvdnd);
+        }  else {
+            user_score_entry[5] = 0x30;
+        }
+
+         // Get the 1s 9, whatever is left should be 0-9
+            user_score_entry[6] = temp_score + 0x30;
 }
-
-
-/// EEPROM - READ
-//
-void EE_read(uint8_t reg_addr, uint32_t rx_size) {
-    // Read size is +4 for the extra 2 bytes required
-    // rx_buffer_[0] = reg_addr;
-    I2C1_Start();
-    I2C1_Write(0x50, reg_addr, 1, END_MODE_RESTART);
-    I2C1_Read(0x50, rx_buffer_, rx_size +4, END_MODE_STOP);
-
-    // return rbuffer_[0];
-}
-
 
 void refresh_hs_scr(uint8_t cur_dir) {
     int32_t xval = hs_cursor_x;
     int32_t yval = hs_cursor_y;
-    
+  
     
     TFT_Fill_Screen(CL_BLACK);
     switch(cur_dir) {
@@ -691,101 +820,244 @@ void refresh_hs_scr(uint8_t cur_dir) {
             break;
 
         case MOVE_DOWN:
-            
             if (init_cur < init_cursor_start) {
                 init_cur = 0x5A;
             } else {
-                ++init_cur;
+                --init_cur;
             }
             break;
         case JBTN_DOWN:
-            //store value in array
-            ++init_cur_count;
+            //store value in array increment the cursor position
+            user_score_entry[get_initial_cur_pos()] = init_cur;
+            ++init_cur_pos;
+            ++hs_cursor_x;
+
     }
     
     // Third initial has been entered, we are done
-    if (init_cur_count == 3) {
-        // quit
-        // g_cur_game_phase = PHASE_GAME_LOOP_OVER;
-        g_GAME_PHASE = PHASE_GAME_LOOP_OVER;
+    if (init_cur_pos >= 3) {
+        // Format of entry is [A,B,C,0,1,2,3]
+       
+       convert_int_ascii(&user_score_entry);
+
+
+        set_cur_screen_run_flag(FALSE); // exit this phase move to show top score list
+        set_game_phase(PHASE_PRINT_TOP_TEN);
     } else {
         draw_ini_cell_xy(hs_cursor_x,hs_cursor_y,m_GRAY); 
+        sprintf(g_str_buffer, "Enter high score: \x20 ");
+        TFT_Write_Text(&g_str_buffer, 2*PX_BLOCK, 4*PX_BLOCK);
+
+        if (get_initial_cur_pos() == 0) {
+            sprintf(g_str_buffer, "%c \x20_\x20_: \x20 %04d", init_cur, g_game_score);
+        } else if (get_initial_cur_pos() == 1) {
+            sprintf(g_str_buffer, "%c\x20%c\x20_: \x20 %04d", user_score_entry[0], init_cur, g_game_score);
+        } else if (get_initial_cur_pos() == 2) {
+            sprintf(g_str_buffer, "%c\x20%c\x20%c: \x20 %04d", user_score_entry[0], user_score_entry[1], init_cur, g_game_score);
+        } else {
+            sprintf(g_str_buffer, "FINISHED");
+        }
+
+        TFT_Write_Text(&g_str_buffer, 10*PX_BLOCK, 4*PX_BLOCK);
+        Delay_ms(200); // Small wait for the user experience
     }
     
-    sprintf(g_str_buffer, "Enter high score: \x20\x20 ");
-    TFT_Write_Text(&g_str_buffer, 4*PX_BLOCK, 4*PX_BLOCK);
-    sprintf(g_str_buffer, "%c: \x20", init_cur);
-    TFT_Write_Text(&g_str_buffer, 11*PX_BLOCK, 4*PX_BLOCK);
 
 }
 
 /// Game over screen control PHASE = HSCORE
 /// 
 void game_high_score_scr() {
-    uint32_t tx_count = 0;
-    uint8_t byte;
-
-    // Set the current screen run flag
+   
+    // Set the current screen run flag and phase to hscore
     set_cur_screen_run_flag(TRUE);
+    set_game_phase(PHASE_HSCORE);
 
     // High score loop
     TFT_Fill_Screen(CL_BLACK);
-    // sprintf(g_str_buffer, "Enter High score: \x20 %04d", g_game_score);
-    // TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 2*PX_BLOCK);
 
+    // Print the first frame of the high score animation
+    draw_ini_cell_xy(hs_cursor_x,hs_cursor_y,m_GRAY);
+    Delay_ms(100);
+    sprintf(g_str_buffer, "Enter high score: \x20 ");
+    TFT_Write_Text(&g_str_buffer, 2*PX_BLOCK, 4*PX_BLOCK);
+    sprintf(g_str_buffer, "%c \x20_\x20_: \x20 %04d", init_cur, g_game_score);
+    TFT_Write_Text(&g_str_buffer, 10*PX_BLOCK, 4*PX_BLOCK);
+
+    while (cur_screen_run_flag == TRUE) {}
+
+    // set_game_phase(PHASE2_PLAYING); // change to restart game working
+    set_game_phase(PHASE_PRINT_TOP_TEN); // change to restart game
+
+}
+
+void EE_write(uint8_t reg_addr, uint8_t tx_byte, uint32_t tx_size) {
+    tx_buffer_[0] = reg_addr;
+    tx_buffer_[1] = 'W';
+    tx_buffer_[2] = 'T';
+    tx_buffer_[3] = 'F';
+    tx_buffer_[4] = '9';
+    tx_buffer_[5] = '7';
+    tx_buffer_[6] = '5';
+
+    I2C1_Start();
+
+    // Issue I2c start signal; Plus 1 for reg_address + user data
+    I2C1_Write(0x50, tx_buffer_, tx_size, END_MODE_STOP);
+
+}
+
+
+// /// EEPROM - READ
+// //
+// void EE_read(uint8_t reg_addr, uint32_t rx_size) {
+//     // Read size is +4 for the extra 2 bytes required
+//     // rx_buffer_[0] = reg_addr;
+//     I2C1_Start();
+//     I2C1_Write(0x50, reg_addr, 1, END_MODE_RESTART);
+//     I2C1_Read(0x50, rx_buffer_, rx_size +4, END_MODE_STOP);
+
+//     // return rbuffer_[0];
+// }
+
+/// EEPROM - READ
+//
+void EE_read(uint8_t reg_addr, uint8_t *read_buffer, uint32_t rx_size) {
+    // Read size is +4 for the extra 2 bytes required
+    // rx_buffer_[0] = reg_addr;
+    I2C1_Start();
+    I2C1_Write(0x50, reg_addr, 1, END_MODE_RESTART);
+    I2C1_Read(0x50, rx_buffer_, rx_size +4, END_MODE_STOP);
+
+    // return rbuffer_[0];
+}
+
+
+/// Find by sorting where ther user score fits in the list
+///
+/// returns row where user score will be placed
+void sort_score(uint8_t *hs_buffer) {
+    int32_t cell_pos = 0;
+    int32_t row_found = 0;
+    uint8_t temp_score1[7];
+    
+
+    // Data entry is fixed: [A,B,C,1,2,3,4]
+
+    // First we need to find the row to start eliminating from
+    // for (i=0; i < 10; i++ ) { // 10 rows 0-9
+    //     // yRow x width of entry(7) + offset of byte
+
+    //     // Check the 1000s 
+    //     cell_pos = (i*7) + 3;
+    //     if ( hs_buffer[cell_pos] < user_score_entry[3] ) {
+    //         break;
+    //     } else if (hs_buffer[cell_pos] == user_score_entry[3] {
+
+    //         row_found =i;
+    //     }
+
+
+    //     // Check the 100s
+    //     else if (hs_buffer[++cell_pos] < user_score_entry[4] ) {
+    //         row_found = i;
+    //     }
+    //     // Check the 10s
+    //     else if (hs_buffer[++cell_pos] < user_entry_entry[5]) {
+    //         row_found = i;
+    //     }
+    //     else if (hs_buffer[++cell_pos] < user_score_entry[6]) {
+    //         row_found = i;
+    //     } else {
+    //         // Nothing found, user must be the first entry
+    //         row_found = 0;
+    //     }
+    // }
+
+    // We now know which row is the one in question
+
+
+}
+
+/// Final screen print the top scores screen
+/// 
+void print_top_score_list() {
+    uint32_t tx_count = 0;
+    uint8_t byte;
+    uint8_t hs_buffer[128];
+    uint8_t atest[4]; 
+    int32_t test_num;
+
+    set_cur_screen_run_flag(TRUE);
+
+
+    // Setup screen 
+    TFT_Fill_Screen(CL_BLACK);
+
+    // Initialize the I2C bus
     I2C1_Init();
+
+    // Fetch the High scores and load them into buffer
+    EE_read(0, &hs_buffer, 71);
+
+    // Sort the high scores.
+    // sort_score();
+    
+
+    sprintf(g_str_buffer, "TOP SCORES:");
+    TFT_Write_Text(&g_str_buffer, 7*PX_BLOCK, 2*PX_BLOCK);
+
+    // Print the user entry
+    sprintf(g_str_buffer, "test: %s", user_score_entry);
+    TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 4*PX_BLOCK);    
+
+    user_score_entry[3] = 0x30+5;
+    atest[0] = user_score_entry[3];
+    atest[1] = user_score_entry[4];
+    atest[2] = user_score_entry[5];
+    atest[3] = user_score_entry[6];
+
+    test_num = atoi(atest);
+    sprintf(g_str_buffer, "atoi: %d", test_num);
+    TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 5*PX_BLOCK); 
+
+    if (test_num > 999) {
+         sprintf(g_str_buffer, "test num is greater");
+        TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 6*PX_BLOCK); 
+    }   
+    
+
    
     GPIOB_ODR |= 0xFF00; // PB6 PB7
     Delay_ms(10);
 
-    draw_ini_cell_xy(22,4,m_GRAY);
-    Delay_ms(100);
-    sprintf(g_str_buffer, "Enter high score: \x20\x20 ");
-    TFT_Write_Text(&g_str_buffer, 4*PX_BLOCK, 4*PX_BLOCK);
-        sprintf(g_str_buffer, "___: \x20 %d", g_game_score);
-    TFT_Write_Text(&g_str_buffer, 11*PX_BLOCK, 4*PX_BLOCK);
 
-
-
-
-
-
-    // Loop write single byte
-    for (i = 0; i < 0x16; i++) {
-        EE_write(i, (0x50 +i),1 );
-        GPIOB_ODR++;
-        Delay_ms(50);
-    }
-
-    // Write word
-    // for (tx_count=0; tx_count != '\0'; tx_count++) {
-    // for (i=0; i !='\0'; i++) {
-    // for (i=0; i !='\0'; i++) {
-        
-    //     EE_write(i, testing[i], 1 );
+    // // Loop write single byte
+    // for (i = 0; i < 0x16; i++) {
+    //     EE_write(i, (0x50 +i),1 );
     //     GPIOB_ODR++;
-    //     Delay_ms(100);
-    //     // sprintf(g_str_buffer, "I2C data: \x20 ");
-    //     // TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, tx_count*PX_BLOCK);
+    //     Delay_ms(50);
     // }
 
-    // write 0xFF to end of EEPROM
-    // EE_write(++tx_count, 0xFF,1);
-    
+    // EE_write(0, (0x0),7 );
+ 
 
     Delay_ms(10);
     GPIOB_ODR |= 0xFF00;
     Delay_ms(10);
 
-    for (i=0; i < 0x1; i++) {
-        // rx_buffer_[i] = EE_read(i,1);
-        EE_read(i,16);
-        Delay_ms(100);
-    } 
+    // for (i=0; i < 0x1; i++) {
+    //     // rx_buffer_[i] = EE_read(i,1);
+    //     EE_read(i,16);
+    //     Delay_ms(100);
+    // } 
+
+    // EE_read(0,71);
+
         Delay_ms(100);
        
-        // sprintf(g_str_buffer, "I2C data: \x20 %s", rx_buffer_);
-        TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 9*PX_BLOCK);
+    sprintf(g_str_buffer, "I2C data: \x20 %s", rx_buffer_);
+    TFT_Write_Text(&g_str_buffer, 0*PX_BLOCK, 9*PX_BLOCK);
     // for (i=0; i <10; i++) {
     //     rx_buffer_[i] = EE_read(i,1);
     //     EE_read(i,1);
@@ -798,8 +1070,12 @@ void game_high_score_scr() {
  
 
      
-
+    /// Wait here until use has finished entering highscore
     while (cur_screen_run_flag == TRUE) {}
+    // set_cur_screen_run_flag(TRUE);
+    // wipe the screen of eve
+    // set_game_phase(PHASE2_PLAYING); // change to restart game
+    set_game_phase(PHASE1_READY); // change to restart game
 
 }
 

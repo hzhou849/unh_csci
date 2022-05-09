@@ -3,18 +3,19 @@ diagnostics: 0	122	Compilation Started	stdint.h
 warning: 297	1508	Implicit conversion of int to ptr	cp_pix_render.h
 warning: 207	1505	Suspicious pointer conversion	cp_intro_screen_ctl.h
 warning: 228	1505	Suspicious pointer conversion	cp_intro_screen_ctl.h
-warning: 398	1506	Implicit conversion of pointer to int	cp_game_ctl.h
-warning: 398	1506	Implicit conversion of pointer to int	cp_game_ctl.h
-warning: 671	1508	Implicit conversion of int to ptr	cp_game_ctl.h
-diagnostics: 546	123	Compiled Successfully	P7_final_project_main.c
+warning: 434	1506	Implicit conversion of pointer to int	cp_game_ctl.h
+warning: 434	1506	Implicit conversion of pointer to int	cp_game_ctl.h
+warning: 841	1506	Implicit conversion of pointer to int	cp_game_ctl.h
+warning: 929	1508	Implicit conversion of int to ptr	cp_game_ctl.h
+diagnostics: 569	123	Compiled Successfully	P7_final_project_main.c
 diagnostics: 0	122	Compilation Started	p7_final_project_objects.h
 diagnostics: 26	123	Compiled Successfully	p7_final_project_objects.h
 diagnostics: 1	122	Compilation Started	p7_final_project_resources.h
 diagnostics: 212	123	Compiled Successfully	P7_final_project_driver.c
 diagnostics: 0	122	Compilation Started	P7_final_project_resources.c
 diagnostics: 0	123	Compiled Successfully	P7_final_project_resources.c
-diagnostics: 0	127	All files Compiled in 438 ms	 
+diagnostics: 0	127	All files Compiled in 485 ms	 
 diagnostics: 0	125	Project Linked Successfully	P7_final_project.mcpar
-diagnostics: 0	128	Linked in 359 ms	 
-diagnostics: 0	129	Project 'P7_final_project.mcpar' completed: 953 ms	 
-diagnostics: 0	103	Finished successfully: 07 May 2022, 19:49:30	P7_final_project.mcpar
+diagnostics: 0	128	Linked in 375 ms	 
+diagnostics: 0	129	Project 'P7_final_project.mcpar' completed: 1016 ms	 
+diagnostics: 0	103	Finished successfully: 09 May 2022, 00:55:34	P7_final_project.mcpar

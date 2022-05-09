@@ -24,7 +24,7 @@ static const int32_t MAX_COL_WIDTH      = 20;               // 320/16px = 20 blo
 static const int32_t MAX_ROW_LENGTH      = 15;               // 320/16px = 20 blocks
 static const int32_t MAX_BLOCK_COUNT    = 300;              // 20*15 = 300 blocks
 static const uint8_t PX_BLOCK           = 16;               // 16x16px pixel block size
-static const uint8_t INI_BLOCK           = 8;               // 16x16px pixel block size
+static const uint8_t INI_BLOCK           = 10;               // 16x16px pixel block size
 
 
 /* Game values */
@@ -41,11 +41,14 @@ static const uint8_t PHASE1_READY         = 1;
 static const uint8_t PHASE2_PLAYING       = 2; 
 static const uint8_t PHASE_QUIT           = 3; 
 static const uint8_t PHASE_HSCORE           = 4; 
-static const uint8_t PHASE_GAME_LOOP_OVER   = 5; 
+static const uint8_t PHASE_PRINT_TOP_TEN = 5; 
 
 static const uint8_t NORMAL_MODE         = 0;
 static const uint8_t WALL_COL_OFF        = 0x1;
 static const uint8_t DEV_MODE            = 0x3;
+
+static const uint8_t TOTAL_TIME            = 0x1A;
+static const uint8_t SESSION_TIME          = 0x1F;
 
 static const uint8_t MOVE_RIGHT    = 0x0;             
 static const uint8_t MOVE_LEFT     = 0x1;             
@@ -60,6 +63,8 @@ static const uint32_t SFX_WALL     = 10;
 /* Screen Constants */
 static const uint32_t SCREEN_X_MAX         = 320;
 static const uint32_t SCREEN_Y_MAX         = 240;
+static const uint32_t HS_CURSOR_START_X     = 16;
+static const uint32_t HS_CURSOR_START_Y     = 4;
 
 /* 8-bit custom colour codes */
 //* make sure you up date cp_pix_render to check for these
