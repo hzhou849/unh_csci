@@ -23,10 +23,10 @@ private: // -------------------------------------------------------------------
 public:  // -------------------------------------------------------------------
     State();            // Default Constructor
     State(char param);  // Overloaded Constructor
+    void mark(char ch);
 
     ~State();           // Destructor
 
-    void mark(char ch);
     ostream& print(ostream & os);
 
 

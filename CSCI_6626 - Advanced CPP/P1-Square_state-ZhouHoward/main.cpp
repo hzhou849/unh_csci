@@ -28,14 +28,26 @@
 #include "state.hpp"
 // #include "tools.hpp" included in state.hpp
 
-void unitTest1() {
-    State stateObj('-');
+void // -----------------------------------------------------------------------
+unitTest1() {
+    char charValue = 12;
 
-    std::cout << stateObj << std::endl;
+    // Unit test case 1:
+    cout << "\n--------------- Unit Test Case 1: ---------------------" << endl;
+    State stateObj( '-' );
+    stateObj.mark( charValue );
+    std::cout << stateObj << endl;
+
+    // Unit test case 2:
+    cout << "\n--------------- Unit Test Case 2: ---------------------" << endl;
+    State stateObj2('9');
+    stateObj2.mark( charValue );
+    std::cout << stateObj2 << endl;
 }
 
 
-int main (int argc, char* argv[]) {
+int // ------------------------------------------------------------------------
+main (int argc, char* argv[]) {
     banner();
     
     unitTest1();

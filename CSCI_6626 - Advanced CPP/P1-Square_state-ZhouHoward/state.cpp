@@ -22,10 +22,13 @@ State::State(char param): value(param)  {
         this->fixed = true;
     } 
     else if (value == '-') {
+        
         // This means all 9-digits are still possible for this square.
+        // *here are the 3 examples from the instructions
         this->possibilities = 0x03FE;
         // this->possibilities = 0x023E;
-        this->possibilities = 0x00F2;
+        // this->possibilities = 0x00F2;
+        
         this->fixed = false;
     }
     else {
@@ -33,21 +36,24 @@ State::State(char param): value(param)  {
     }
 }
 
-//-----------------------------------------------------------------------------
-// Destructor
+// Destructor -----------------------------------------------------------------
 State::~State() {};
 
-//-----------------------------------------------------------------------------
-// void
-// State::mark(char ch) {
 
-// };
+void State :: //---------------------------------------------------------------
+mark(char ch) {
+    if (this->fixed == true) {
+        cout << "Error from function: " << __func__ << "() State is fixed! "  << endl;
+    } 
+    else {
+        ch = this->value;
+    }
+}
 
 
 
-//-----------------------------------------------------------------------------
-ostream& 
-State::print( ostream &os ) {
+ostream& State :: //------------------------------------------------------------
+print( ostream &os ) {
 
     const short BIT_MASK = 0x0001;              // Mask used for extracting last bit
     const short ASCII_DASH = 0x2D;              // ASCII rep for '-'
@@ -60,9 +66,9 @@ State::print( ostream &os ) {
 
     // Reset the cout flags back to original (Decimal, no base)
     std::cout << std::resetiosflags (std::ios::basefield);
-    // Start by shifting RIGHT once to discard first bit.
       
 
+    // Start by shifting RIGHT once to discard first bit.
     // Convert to binary starting at position 1
     for ( int i=1; i < 10 ; i++ ) {
         // Perform this first so we disregard bit 0.
@@ -96,9 +102,6 @@ State::print( ostream &os ) {
     return os;
 }
 
-
-
-//-----------------------------------------------------------------------------
 
 
 
