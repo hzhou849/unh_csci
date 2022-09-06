@@ -11,17 +11,16 @@
 
 //-----------------------------------------------------------------------------
 // Default Constructor
-State::State() {}
+State::State () {}
 
 //-----------------------------------------------------------------------------
 // Overloaded Constructor
-State::State(char param): value(param)  {
-
-    if (std::isdigit(value)) {
+State::State ( char param ): value(param)  {
+    if ( isdigit(value) ) {
         this->possibilities = 0;
         this->fixed = true;
     } 
-    else if (value == '-') {
+    else if ( value == '-' ) {
         
         // This means all 9-digits are still possible for this square.
         // *here are the 3 examples from the instructions
@@ -29,43 +28,41 @@ State::State(char param): value(param)  {
         // this->possibilities = 0x023E;
         // this->possibilities = 0x00F2;
         
-        this->fixed = false;
+        fixed = false;
     }
     else {
-        fatal("Fatal error: undefined character entered!");
+        fatal ( "Fatal error: undefined character entered!" );
     }
 }
 
-// Destructor -----------------------------------------------------------------
-State::~State() {};
+//-----------------------------------------------------------------------------
+// Destructor 
+State::~State () {};
 
-
-void State :: //---------------------------------------------------------------
-mark(char ch) {
+//-----------------------------------------------------------------------------
+// mark() function - prints error message if fixed is TRUE
+void State :: 
+mark ( char ch ) {
     if (this->fixed == true) {
-        cout << "Error from function: " << __func__ << "() State is fixed! "  << endl;
+        cout << "Error in: " << __func__ << "() State is fixed! "  << endl;
     } 
     else {
-        ch = this->value;
+        ch = value;
     }
 }
 
-
-
-ostream& State :: //------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// print()  - allows us to print the object to a stream
+ostream& State ::
 print( ostream &os ) {
-
-    const short BIT_MASK = 0x0001;              // Mask used for extracting last bit
-    const short ASCII_DASH = 0x2D;              // ASCII rep for '-'
-
-    short tempValue = this->possibilities;
+    short tempValue = possibilities;
     short binaryArr[10];
 
-    os << "\nHex value: " << std::showbase << std::hex << this->possibilities << "\n";
+    os << "\nHex value: " << showbase << hex << possibilities << "\n";
     os << "\nBinary value: ";
 
     // Reset the cout flags back to original (Decimal, no base)
-    std::cout << std::resetiosflags (std::ios::basefield);
+    cout << resetiosflags (ios::basefield);
       
 
     // Start by shifting RIGHT once to discard first bit.
@@ -74,7 +71,6 @@ print( ostream &os ) {
         // Perform this first so we disregard bit 0.
         tempValue = tempValue >> 1;   
 
-        // if ( (i >0) && ( (tempValue & BIT_MASK) == 1) ) {
         if ( (tempValue & BIT_MASK) == 1 )  {
             os << "1 ";
             binaryArr[i] = i;
@@ -83,12 +79,11 @@ print( ostream &os ) {
             os << "0 ";
             binaryArr[i] = '-';
         }
-       
     }
 
     // Print the array holding the binary positions
     os <<"\nPosition:     ";
-    for (int i=1; i< 10; i++) {
+    for ( int i=1; i< 10; i++ ) {
         if (binaryArr[i] == ASCII_DASH) {
             os << '-' << " ";
         } 

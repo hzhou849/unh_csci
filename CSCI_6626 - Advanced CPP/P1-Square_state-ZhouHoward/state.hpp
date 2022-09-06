@@ -10,28 +10,26 @@
 #pragma once
 #include "tools.hpp"
 
+// Constants
+static const short BIT_MASK   = 0x0001;       // Mask used for extracting last bit
+static const short ASCII_DASH = 0x2D;         // ASCII rep for '-'
+
 class State  {
 private: // -------------------------------------------------------------------
     short possibilities;
     char  value;
     bool  fixed;
 
-
-
-
-
 public:  // -------------------------------------------------------------------
-    State();            // Default Constructor
-    State(char param);  // Overloaded Constructor
-    void mark(char ch);
+    State ();            // Default Constructor
+    State (char param);  // Overloaded Constructor
+    void mark (char ch);
 
     ~State();           // Destructor
 
-    ostream& print(ostream & os);
-
-
+    ostream& print (ostream & os);
 };
 
-inline std::ostream& operator<<(std::ostream& os, State& state) {
+inline ostream& operator<< ( ostream& os, State& state ) {
     return state.print(os);
 }
