@@ -39,7 +39,9 @@ unitTest1() {
 // Unit test 2 - Square
 void 
 unitTest2() {
-
+    State stateObj('-');
+    Square sqObj('1', 4, 0);
+    cout << sqObj << endl;
 }
 
 // ----------------------------------------------------------------------------

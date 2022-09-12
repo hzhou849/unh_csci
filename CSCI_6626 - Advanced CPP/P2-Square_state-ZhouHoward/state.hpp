@@ -19,17 +19,18 @@ static const short ASCII_DASH = 0x2D;         // ASCII rep for '-'
 // State Class
 class State  {
 private: 
-    short possibilities;
-    char  value;
+    short posList=0;
+    char  value=' ';
     bool  fixed = true;
 
 public:  
-    State ();            
+    State ()=default;            
     State (char charIn);  
+    ~State ()=default;           
     void mark (char ch);
-    ~State();           
     char getValue();
-    ostream& print (ostream & os);
+    ostream& printFull (ostream& os);
+    ostream& print (ostream& os);
 };
 
 inline ostream& operator<< ( ostream& os, State& state ) {
@@ -44,17 +45,18 @@ private:
     State stateObj;
     short sqRow;
     short sqCol;
-    std::vector<short> nbrSquare;
+    // std::vector<short> nbrSquare;  // as per instructions, used later
 
 public:
-    Square ();
+    Square ()=default;
     Square (char charIn, short row, short col);
     ~Square();
+    // char getStateVal();
 
-    ostream& print ();
+    ostream& print (ostream& os);
     void mark();
 };
 
 inline ostream& operator << (ostream& os, Square& sqr) {
-    return sqr.print();
+    return sqr.print(os);
 }

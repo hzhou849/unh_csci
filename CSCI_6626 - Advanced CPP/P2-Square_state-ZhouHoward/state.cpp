@@ -13,22 +13,19 @@
 // Square Class
 //=============================================================================
 
-//-----------------------------------------------------------------------------
-// Default Constructor
-State::State () {}
 
 //-----------------------------------------------------------------------------
-// Overloaded Constructor
+// Constructor
 State::State ( char param ): value(param)  {
     if ( isdigit(value) ) {
-        this->possibilities = 0;
-        this->fixed = true;
+        posList = 0;
+        fixed = true;
     } 
     else if ( value == ASCII_DASH ) {
         
         // This means all 9-digits are still possible for this square.
         // *here are the 3 examples from the instructions
-        this->possibilities = 0x03FE;
+        posList = 0x03FE;
         // this->possibilities = 0x023E;
         // this->possibilities = 0x00F2;
         
@@ -39,15 +36,12 @@ State::State ( char param ): value(param)  {
     }
 }
 
-//-----------------------------------------------------------------------------
-// Destructor 
-State::~State () {};
 
 //-----------------------------------------------------------------------------
 // mark - prints error message if fixed is TRUE
 void State :: 
 mark ( char ch ) {
-    if (this->fixed == true) {
+    if ( fixed ) {
         cout << "Error in: " << __func__ << "() State is fixed! "  << endl;
     } 
     else {
@@ -56,42 +50,92 @@ mark ( char ch ) {
 }
 
 //-----------------------------------------------------------------------------
-// print  - allows us to print the object to a stream
-ostream& State ::
-print( ostream &os ) {
-    short tempValue = possibilities;
+// getValue - Returns the current state value
+char State :: 
+getValue () {
+    return value;
+}
+
+// //-----------------------------------------------------------------------------
+// // print  - allows us to print the object to a stream
+// ostream& State ::
+// printFull( ostream &os ) {
+//     short tempValue = posList;
+//     short binaryArr[10];
+
+//     os << "\nHex value: " << showbase << hex << posList << "\n";
+//     os << "\nBinary value: ";
+
+//     // Reset the cout flags back to original (Decimal, no base)
+//     cout << resetiosflags (ios::basefield);
+      
+//     // Start by shifting RIGHT once to discard first bit.
+//     // Convert to binary starting at position 1
+//     for ( int i=1; i < 10 ; i++ ) {
+//         // Perform this first so we disregard bit 0.
+//         tempValue = tempValue >> 1;   
+
+//         if ( (tempValue & BIT_MASK) == 1 )  {
+//             os << "1 ";
+//             binaryArr[i] = i;
+//         } 
+//         else {
+//             os << "0 ";
+//             binaryArr[i] = '-';
+//         }
+//     }
+
+//     // Print the array holding the binary positions
+//     os <<"\nPosition:     ";
+//     for ( int i=1; i< 10; i++ ) {
+//         if (binaryArr[i] == '-') {
+//             os << '-' << " ";
+//         } 
+//         else {
+//             os << i << " ";
+//         }
+//     }
+//     // Finish and flush the stream
+//     os << endl;
+
+//     return os;
+// }
+
+//-----------------------------------------------------------------------------
+// Print
+ostream& State :: 
+print( ostream& os ) {
+    short tempValue = posList;
     short binaryArr[10];
 
-    os << "\nHex value: " << showbase << hex << possibilities << "\n";
-    os << "\nBinary value: ";
+    // os << "\nHex value: " << showbase << hex << posList << "\n";
+    // os << "\nBinary value: ";
 
     // Reset the cout flags back to original (Decimal, no base)
     cout << resetiosflags (ios::basefield);
       
-    // Start by shifting RIGHT once to discard first bit.
+    // // Start by shifting RIGHT once to discard first bit.
     // Convert to binary starting at position 1
     for ( int i=1; i < 10 ; i++ ) {
         // Perform this first so we disregard bit 0.
         tempValue = tempValue >> 1;   
 
         if ( (tempValue & BIT_MASK) == 1 )  {
-            os << "1 ";
             binaryArr[i] = i;
         } 
         else {
-            os << "0 ";
             binaryArr[i] = '-';
         }
     }
 
     // Print the array holding the binary positions
     os <<"\nPosition:     ";
-    for ( int i=1; i< 10; i++ ) {
-        if (binaryArr[i] == ASCII_DASH) {
+    for ( int count=1; count< 10; count++ ) {
+        if (binaryArr[count] == '-') {
             os << '-' << " ";
         } 
         else {
-            os << i << " ";
+            os << count << " ";
         }
     }
     // Finish and flush the stream
@@ -100,16 +144,14 @@ print( ostream &os ) {
     return os;
 }
 
+
 //=============================================================================
 // Square Class
 //=============================================================================
 
-//-----------------------------------------------------------------------------
-// Default constructor
-Square :: Square () {};
 
 //-----------------------------------------------------------------------------
-// Overloaded constructor
+// Square Constructor
 Square :: Square ( char charIn, short row, short col ) 
     : stateObj( charIn ), sqRow(row), sqCol(col) {
     cerr << "Square: " << sqRow << ", " << sqRow << "constructed." << endl;
@@ -125,11 +167,11 @@ Square :: ~Square () {
 // Mark - calls State class's mark() with new value for square
 void Square :: 
 mark() {
-    // print possibilities list before:
+    // print posList list before:
 
     // mark change state
 
-    // print possibilities list after
+    // print posList list after
 }
 
 //-----------------------------------------------------------------------------
@@ -137,6 +179,10 @@ mark() {
 ostream& Square :: 
 print(ostream& os) {
     // print all of Square's members
+
+    os << "Square: [" << sqCol  << ", " << sqRow <<  "] " 
+        << "Value: " << stateObj.getValue()
+        << " Possibilities: " << stateObj;
 
     //print the state using deligation state.print()
     // example: Square [4, 0] Value: - Possible: --765--21

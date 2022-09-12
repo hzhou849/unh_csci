@@ -12,20 +12,20 @@
 
 // Constants
 static const short BIT_MASK   = 0x0001;       // Mask used for extracting last bit
-static const short ASCII_DASH = 0x2D;         // ASCII rep for '-'
 
 class State  {
 private: // -------------------------------------------------------------------
-    short possibilities;
-    char  value;
-    bool  fixed;
+    short posList=0;
+    char  value='-';
+    bool  fixed = true;
+
 
 public:  // -------------------------------------------------------------------
-    State ();            // Default Constructor
-    State (char param);  // Overloaded Constructor
+    State ()=default;            
+    State (char param); 
     void mark (char ch);
 
-    ~State();           // Destructor
+    ~State ()=default;   
 
     ostream& print (ostream & os);
 };
