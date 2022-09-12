@@ -39,6 +39,9 @@ unitTest1() {
 // Unit test 2 - Square
 void 
 unitTest2() {
+
+    // Call State test first, then Square test.
+    // she wants testSquare() and testState()
     State stateObj('-');
     Square sqObj('1', 4, 0);
     cout << sqObj << endl;

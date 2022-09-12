@@ -13,7 +13,6 @@
 
 // Constants
 static const short BIT_MASK   = 0x0001;       // Mask used for extracting last bit
-static const short ASCII_DASH = 0x2D;         // ASCII rep for '-'
 
 //-----------------------------------------------------------------------------
 // State Class

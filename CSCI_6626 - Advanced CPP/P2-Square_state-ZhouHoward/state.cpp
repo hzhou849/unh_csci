@@ -21,7 +21,7 @@ State::State ( char param ): value(param)  {
         posList = 0;
         fixed = true;
     } 
-    else if ( value == ASCII_DASH ) {
+    else if ( value == '-') {
         
         // This means all 9-digits are still possible for this square.
         // *here are the 3 examples from the instructions
@@ -57,7 +57,7 @@ getValue () {
 }
 
 // //-----------------------------------------------------------------------------
-// // print  - allows us to print the object to a stream
+// // printDebug  - allows us to print the object to a stream
 // ostream& State ::
 // printFull( ostream &os ) {
 //     short tempValue = posList;
@@ -108,28 +108,26 @@ print( ostream& os ) {
     short tempValue = posList;
     short binaryArr[10];
 
-    // os << "\nHex value: " << showbase << hex << posList << "\n";
-    // os << "\nBinary value: ";
-
     // Reset the cout flags back to original (Decimal, no base)
     cout << resetiosflags (ios::basefield);
       
-    // // Start by shifting RIGHT once to discard first bit.
+    // Start by shifting RIGHT once to discard first bit.
     // Convert to binary starting at position 1
-    for ( int i=1; i < 10 ; i++ ) {
+    for ( int count=1; count < 10 ; count++ ) {
         // Perform this first so we disregard bit 0.
         tempValue = tempValue >> 1;   
 
         if ( (tempValue & BIT_MASK) == 1 )  {
-            binaryArr[i] = i;
+            binaryArr[count] = count;
         } 
         else {
-            binaryArr[i] = '-';
+            binaryArr[count] = '-';
         }
     }
 
+
     // Print the array holding the binary positions
-    os <<"\nPosition:     ";
+    os <<"Position: ";
     for ( int count=1; count< 10; count++ ) {
         if (binaryArr[count] == '-') {
             os << '-' << " ";
@@ -154,7 +152,7 @@ print( ostream& os ) {
 // Square Constructor
 Square :: Square ( char charIn, short row, short col ) 
     : stateObj( charIn ), sqRow(row), sqCol(col) {
-    cerr << "Square: " << sqRow << ", " << sqRow << "constructed." << endl;
+    cerr << "Square: Row:" << sqRow << ", Col:" << sqCol << " constructed." << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -168,7 +166,7 @@ Square :: ~Square () {
 void Square :: 
 mark() {
     // print posList list before:
-
+    
     // mark change state
 
     // print posList list after
@@ -180,12 +178,12 @@ ostream& Square ::
 print(ostream& os) {
     // print all of Square's members
 
-    os << "Square: [" << sqCol  << ", " << sqRow <<  "] " 
-        << "Value: " << stateObj.getValue()
-        << " Possibilities: " << stateObj;
-
     //print the state using deligation state.print()
     // example: Square [4, 0] Value: - Possible: --765--21
+
+    os << "Square: [" << sqRow  << ", " << sqCol <<  "] " 
+        << "Value: " << stateObj.getValue()
+        << " Possibilities: " << stateObj;
 
     return os;
 }
