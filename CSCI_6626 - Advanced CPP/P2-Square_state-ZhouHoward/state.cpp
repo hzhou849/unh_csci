@@ -13,11 +13,11 @@
 // Square Class
 //=============================================================================
 
-
 //-----------------------------------------------------------------------------
 // Constructor
-State::State ( char param ): value(param)  {
-    if ( isdigit(value) ) {
+/// @param initVal - initial state value
+State::State ( char initVal ): value(initVal)  {
+    if ( value >= '0' && value <= '9') {
         posList = 0;
         fixed = true;
     } 
@@ -34,18 +34,31 @@ State::State ( char param ): value(param)  {
     else {
         fatal ( "Fatal error: undefined character entered!" );
     }
+
+    cerr << "State Object constructed with value: '" << value << "' "<< endl;
 }
 
 
 //-----------------------------------------------------------------------------
 // mark - prints error message if fixed is TRUE
+// @param charIn
 void State :: 
-mark ( char ch ) {
+mark ( char charIn ) {
+
+
+    if ( (charIn < '0' || charIn > '9') && charIn != '-' ) {
+        fatal( "Invalid input character passed!");
+    }
+
     if ( fixed ) {
-        cout << "Error in: " << __func__ << "() State is fixed! "  << endl;
+        cerr << "Error in: " << __func__ << "() State is fixed! "  << endl;
     } 
     else {
-        ch = value;
+        value = charIn;
+        cout << "State is NOT fixed, value re-assigned: " << value << endl;
+
+        // Possibilites is now assigned to zero
+        posList = 0;
     }
 }
 
@@ -55,51 +68,6 @@ char State ::
 getValue () {
     return value;
 }
-
-// //-----------------------------------------------------------------------------
-// // printDebug  - allows us to print the object to a stream
-// ostream& State ::
-// printFull( ostream &os ) {
-//     short tempValue = posList;
-//     short binaryArr[10];
-
-//     os << "\nHex value: " << showbase << hex << posList << "\n";
-//     os << "\nBinary value: ";
-
-//     // Reset the cout flags back to original (Decimal, no base)
-//     cout << resetiosflags (ios::basefield);
-      
-//     // Start by shifting RIGHT once to discard first bit.
-//     // Convert to binary starting at position 1
-//     for ( int i=1; i < 10 ; i++ ) {
-//         // Perform this first so we disregard bit 0.
-//         tempValue = tempValue >> 1;   
-
-//         if ( (tempValue & BIT_MASK) == 1 )  {
-//             os << "1 ";
-//             binaryArr[i] = i;
-//         } 
-//         else {
-//             os << "0 ";
-//             binaryArr[i] = '-';
-//         }
-//     }
-
-//     // Print the array holding the binary positions
-//     os <<"\nPosition:     ";
-//     for ( int i=1; i< 10; i++ ) {
-//         if (binaryArr[i] == '-') {
-//             os << '-' << " ";
-//         } 
-//         else {
-//             os << i << " ";
-//         }
-//     }
-//     // Finish and flush the stream
-//     os << endl;
-
-//     return os;
-// }
 
 //-----------------------------------------------------------------------------
 // Print
@@ -125,9 +93,8 @@ print( ostream& os ) {
         }
     }
 
-
     // Print the array holding the binary positions
-    os <<"Position: ";
+    // os <<"Possibility list: ";
     for ( int count=1; count< 10; count++ ) {
         if (binaryArr[count] == '-') {
             os << '-' << " ";
@@ -147,7 +114,6 @@ print( ostream& os ) {
 // Square Class
 //=============================================================================
 
-
 //-----------------------------------------------------------------------------
 // Square Constructor
 Square :: Square ( char charIn, short row, short col ) 
@@ -164,12 +130,21 @@ Square :: ~Square () {
 //-----------------------------------------------------------------------------
 // Mark - calls State class's mark() with new value for square
 void Square :: 
-mark() {
-    // print posList list before:
-    
-    // mark change state
+mark(char newChar) {
+    if ( (newChar < '0' || newChar > '9') && newChar != '-' ) {
+        fatal( "Invalid input character passed!");
+    }
 
-    // print posList list after
+    char stateValue = stateObj.getValue();
+
+    if (stateValue == '-') {
+        cout << " [+] Possibilities BEFORE: " << stateObj << endl;
+        stateObj.mark(newChar);
+        cout << " [+] Possibilities AFTER: " << stateObj << endl;
+    } 
+    else {
+        cout << " [+] State is already marked. Nothing to do" << endl;
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -177,13 +152,9 @@ mark() {
 ostream& Square :: 
 print(ostream& os) {
     // print all of Square's members
-
-    //print the state using deligation state.print()
-    // example: Square [4, 0] Value: - Possible: --765--21
-
-    os << "Square: [" << sqRow  << ", " << sqCol <<  "] " 
-        << "Value: " << stateObj.getValue()
-        << " Possibilities: " << stateObj;
+    os << "Square: [" << sqRow  << ", " << sqCol <<  "]  " 
+        << "Value: '" << stateObj.getValue() << "'  "
+        << "Possibilities: " << stateObj;
 
     return os;
 }

@@ -53,7 +53,7 @@ public:
     // char getStateVal();
 
     ostream& print (ostream& os);
-    void mark();
+    void mark(char newChar);
 };
 
 inline ostream& operator << (ostream& os, Square& sqr) {

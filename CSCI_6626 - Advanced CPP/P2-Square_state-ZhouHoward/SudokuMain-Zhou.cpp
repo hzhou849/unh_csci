@@ -16,35 +16,59 @@
 #include <iostream>
 #include "state.hpp"
 
-// ----------------------------------------------------------------------------
-// Unit test 1 - Square State
+//-----------------------------------------------------------------------------
+// Unit test P1 - State test
 void 
-unitTest1() {
-    char charValue = 12;
+p1_testState() {
 
-    // Unit test case 1:
-    cout << "\n--------------- Unit Test Case 1: --------------------" << endl;
-    State stateObj( '-' );
-    stateObj.mark( charValue );
-    std::cout << stateObj << endl;
+    // State test 1
+    char markTestVal1 = '5';
+    cout << "\n-------- P1 -State - Running Unit Test (1 of 2) --------" << endl;
+    State stateObj('-');
+    cout << " Attemping to mark state with value: " << markTestVal1 << endl;
+    cout << " [+] Possibilities (BEFORE): " << stateObj << endl;
+    stateObj.mark( markTestVal1);
+    cout << " [+] Possibilities (AFTER): " << stateObj << endl;
 
-    // Unit test case 2:
-    cout << "\n--------------- Unit Test Case 2: --------------------" << endl;
-    State stateObj2('9');
-    stateObj2.mark( charValue );
-    std::cout << stateObj2 << endl;
+    // State test 2
+    cout << "\n-------- P1 -State - Running Unit Test (2 of 2) --------" << endl;
+    char markTestVal2 = '-';
+    State stateObj2('0');
+    cout << " Attemping to mark state with value: " << markTestVal2 << endl;
+    cout << " [+] Possibilities (BEFORE): " << stateObj2 << endl;
+    stateObj2.mark( markTestVal2 );
+    cout << " [+] Possibilities (AFTER): " << stateObj2 << endl;
+    cout << "**END OF P1 Unit Test - State--\n\n" << endl;
+
+
+
+
 }
 
-// ----------------------------------------------------------------------------
-// Unit test 2 - Square
+//-----------------------------------------------------------------------------
+// Unit test P2 - Square
 void 
-unitTest2() {
+p2_testSquare() {
 
-    // Call State test first, then Square test.
-    // she wants testSquare() and testState()
-    State stateObj('-');
-    Square sqObj('1', 4, 0);
-    cout << sqObj << endl;
+    // P2 Unit test 1
+    char markTestval1 = '1';
+    cout <<"----- P2 Running Unit Test - Square (1 of 2) ------" << endl;
+    Square sqObj1('-', 1, 4);
+    cout << " [+] " << sqObj1 << endl;
+    cout << "Attempting to mark state with new value: " << markTestval1 << endl;
+    sqObj1.mark(markTestval1);
+
+    // P2 unit test 2
+    char markTestval2 = '8';
+    cout <<"----- P2 Running Unit Test - Square (2 of 2) ------" << endl;
+    Square sqObj2('0', 5, 7);
+    cout << " [+] " << sqObj1 << endl;
+    cout << "Attempting to mark state with new value: " << markTestval2 << endl;
+    sqObj1.mark(markTestval2);
+    cout << "**END OF P2 Unit Test - State--\n\n" << endl;
+
+
+
 }
 
 // ----------------------------------------------------------------------------
@@ -52,8 +76,10 @@ unitTest2() {
 int 
 main (int argc, char* argv[]) {
     banner();
-    // unitTest1();
-    unitTest2();
+   
+    // Unit tests
+    p1_testState();
+    p2_testSquare();
+
     bye();
-    
 }
