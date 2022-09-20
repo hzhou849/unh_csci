@@ -52,7 +52,6 @@ public:
     Square ()=default;
     Square (char charIn, short row, short col);
     ~Square();
-    // char getStateVal();
 
     ostream& print (ostream& os);
     void mark(char newChar);

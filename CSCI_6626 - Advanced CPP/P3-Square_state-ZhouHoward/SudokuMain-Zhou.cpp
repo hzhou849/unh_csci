@@ -72,14 +72,50 @@ p2_testSquare() {
     cout << "**END OF P2 Unit Test - State--\n\n" << endl;
 }
 
+
+// ----------------------------------------------------------------------------
+/// @brief Unit Test 3 - Game class - File IO test
+/// @param [in] textFile - Name of text file to read from
+void
+p3_gameTest(int argCount, const char* argName) {
+    
+    cout << "argc: " << argCount  << endl;
+    // Check to make sure file name is passed as command-line arg
+    if (argCount < 2) {
+        fatal("[!] ERROR - Command-Line input file name required!"); 
+    }
+    
+    string fileName = argName;
+
+    Game gameObj(fileName);
+
+}
+
+
 // ----------------------------------------------------------------------------
 /// @brief Test File IO
 /// @param [in] textFile
 /// @return 0=success; 1=Failure
-int testFileIO(ifstream& textFile) {
+// int testFileIO(ifstream& textFile) {
+//      for (int count=0; count < argc; count++) {
+//         cout << "argv[" << count <<"]: " << argv[count] << endl;
+//     }
 
-    return 0;
-}
+//     std::string  fileString = argv[1];
+
+//     ofstream fileIn;
+//     fileIn.open(fileString);
+
+//     if (!fileIn) {
+//         cerr << "File not opened: " << fileString << "]"<<  endl;
+//     } else {
+//         cerr << "File open success" << endl;
+//     }
+
+//     fileIn.close();
+
+//     return 0;
+// }
 
 // ----------------------------------------------------------------------------
 // Main driver function
@@ -87,31 +123,20 @@ int
 main (int argc, char* argv[]) {
     banner();
    
-    cout << "argc: " << argc  << endl;
-
-    for (int count=0; count < argc; count++) {
-        cout << "argv[" << count <<"]: " << argv[count] << endl;
-    }
-
-    std::string  fileString = argv[1];
-
-    ofstream fileIn;
-    fileIn.open(fileString);
-
-    if (!fileIn) {
-        cerr << "File not opened: " << fileString << "]"<<  endl;
-    } else {
-        cerr << "File open success" << endl;
-    }
-
-    fileIn.close();
-
-    Game game("testRead.txt");
-    
-
     // Unit tests
     // p1_testState();
     // p2_testSquare();
+
+  
+    p3_gameTest(argc, argv[1]);
+
+   
+
+    
+
+    
+    
+
 
     bye();
 }

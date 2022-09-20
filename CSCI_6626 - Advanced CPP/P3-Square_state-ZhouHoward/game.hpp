@@ -22,32 +22,35 @@ static const char* MENU_LIST[6] = { "MenuItem1",
                                     "MenuItem6"
                                   };
 // Game codes
-static const char gCodeTrad = 't';
-static const char gCodeDiag = 'd';
-static const char gCodeSixy = 's';
+static const char GCODE_TRAD = 't';
+static const char GCODE_DIAG = 'd';
+static const char GCODE_SIXY = 's';
+static const string LEGAL_CODES = "TtDdSs";
 
 
-//-----------------------------------------------------------------------------
 /// @brief Class Board
+//-----------------------------------------------------------------------------
 class Board;
 
 class Game {
 private:
-        std::string firstItem = MENU_LIST[1];
 
-        Board* board_m;
-        int  gameSize_m;     // Only accepted values are 6 and 9;
-        
-        char gameType_m;    // Accepted values are: 
-                            // 't'traditional 
-                            // 'd'-diagonal
-                            // 's' sixy
+  // Member Variables
+  ifstream inputFile_m;
+  Board* board_m;
+  int  gameSize_m;    // Only accepted values are 6 and 9;
+  char gameType_m;    // Accepted values are: 
+                      // 't' - traditional 
+                      // 'd' - diagonal
+                      // 's' - sixy
 
-        ifstream inputFile_m;
+
+  // Member Functions
+  bool validate(const char& readChar);
+  void run();
 
 public:
-    Game(string fileName);
-    ~Game() =default;
-    int run();
+  Game(const string& fileName);
+  ~Game() =default;
 
 };

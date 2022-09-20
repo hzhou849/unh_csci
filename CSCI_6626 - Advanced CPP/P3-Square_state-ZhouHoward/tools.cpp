@@ -156,7 +156,7 @@ menu_c( const char* title, int n, const char* menu[] ){
 
 // ----------------------------------------------------------------------------
 // Display a menu then read and validate a numeric menu choice.                
-int menu( char* title, int n, const char* menu[] ){
+int menu( const char* title, int n, const char* menu[] ){
     int choice;
 
     cout << endl << title << endl << endl ;
