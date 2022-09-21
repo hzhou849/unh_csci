@@ -14,12 +14,12 @@
 #include "tools.hpp"
 
 // Menu Names
-static const char* MENU_LIST[6] = { "MenuItem1", 
-                                    "MenuItem2",
-                                    "MenuItem3",
-                                    "MenuItem4",
-                                    "MenuItem5",
-                                    "MenuItem6"
+static const char* MENU_LIST[6] = { "Mark", 
+                                    "Undo",
+                                    "Redo",
+                                    "Save Game",
+                                    "Restore Game",
+                                    "Quit"
                                   };
 // Game codes
 static const char GCODE_TRAD = 't';

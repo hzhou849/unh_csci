@@ -22,22 +22,8 @@ Game :: Game ( const string& fileName ) {
         fatal("Fatal Error! - Game() failed to open file.");
     }
 
-    cout << "file read successfully: " << endl;
-    // string text;
-    // char testChar;
+    cout << "File read successfully: " << endl;
 
-    // // Or are we using >> ? 
-    // inputFile_m >> std::ws; // skip all whitespaces for this ifstream object
-
-    // inputFile_m.get(testChar) ; 
-
-    // std::cout << "test read: " << testChar << endl;
-    // inputFile_m >> testChar;
-    // std::cout << "test read2: " << testChar << endl;
-
-
-    // // Check for eof()
-    // inputFile_m.close();
 
     gameType_m = inputFile_m.get();
    
@@ -52,42 +38,60 @@ Game :: Game ( const string& fileName ) {
     }
 
 
-
+    run();
 
     
     
 }
 
 
-/// @brief run - Print the menu
-// /// @return   exit success; exit failure
+/// @brief run - Print the menu and handle selection loop
 //-----------------------------------------------------------------------------
 void Game :: 
 run() {
+    char listValue;
     bool loopRun = true;
     
-    // while (loopRun) {
-    //     for (int iter=0; iter<6; iter++){
-            
-    //     }
+   
 
-    // }
+     
+    // *tools.hpp does not support this yet - waiting for Dr. Fischer to update file
+    // menu_c( "SUDOKU Game", 6, MENU_LIST2, "123456"); 
 
-     const char* MENU_LIST2[6] = { "MenuItem1", 
-                                    "MenuItem2",
-                                    "MenuItem3",
-                                    "MenuItem4",
-                                    "MenuItem5",
-                                    "MenuItem6"
-                                  };
+    while ( loopRun ) {
+        listValue = menu_c( "SUDOKU Game", 6, MENU_LIST );
+        cout << "\n\n";
+        switch( listValue ) {
+            case 'm':
+                cout << "[!] Option m-Mark selected" << endl;
+                break;
+                // Call Board::mark()
+            case 'u':
+                cout << "[!] Option u - Undo selected" << endl;
+                break;
+            case 'r':
+                cout << "[!] Option r - Redo selected" << endl;
+                break;
+            case 'e':
+                cout << "[!] Option e - Restore selected" << endl;
+                break;
+            case 'q':
+                cout << "[!] Option q - Quit selected" << endl;
+                loopRun = false;
+                break;
+            default :
+                cout << "[!] No valid option selected!" << endl;
+                break;
 
-    menu_c( "SUDOKU Game", 6, MENU_LIST2), "123456";
+        }
+
+    }
 
     // Write a function to display the menu 
-    for (int iter=0; iter < 6; iter++) {
-        cout << MENU_LIST[iter];
-    }
-    cout << endl;           // Flush and newline
+    // for (int iter=0; iter < 6; iter++) {
+    //     cout << MENU_LIST[iter];
+    // }
+    // cout << endl;           // Flush and newline
 
     // return 0;
 }
@@ -110,7 +114,7 @@ validate(const char& readChar) {
             itStr++ ) {
         charCompare = *itStr;
         if ( tempChar.compare(charCompare) == 0 ) {
-            cout  << "[+] Legal character found: " << endl;
+            cout  << "[+] Legal character found! " << endl;
             return true;
         } 
     }

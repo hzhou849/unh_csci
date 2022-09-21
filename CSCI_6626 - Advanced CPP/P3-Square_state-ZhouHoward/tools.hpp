@@ -67,4 +67,5 @@ char*  oclock( char* hour );
 // Menu handling.                           
 // --------------------------------------------------------------------------- 
 int    menu( char* title, int n, const char* menu[] );                                                      
-char   menu_c( char* title, int n, const char* menu[], char* valid );
+// char   menu_c( char* title, int n, const char* menu[], char* valid );
+char   menu_c( const char* title, int n, const char* menu[]);

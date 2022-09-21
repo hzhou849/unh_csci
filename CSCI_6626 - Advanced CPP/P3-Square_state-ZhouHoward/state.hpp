@@ -46,7 +46,7 @@ private:
     State stateObj;
     short sqRow;
     short sqCol;
-    // std::vector<short> nbrSquare;  // as per instructions, used later
+    // std::vector<Square*> nbrSquare;  // as per instructions, used later
 
 public:
     Square ()=default;

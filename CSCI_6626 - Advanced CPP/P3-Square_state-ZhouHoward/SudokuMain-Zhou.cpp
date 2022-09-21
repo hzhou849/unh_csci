@@ -129,6 +129,10 @@ main (int argc, char* argv[]) {
 
   
     p3_gameTest(argc, argv[1]);
+    
+    /* Debug only */
+    // p3_gameTest(2, "testRead.txt");
+
 
    
 
