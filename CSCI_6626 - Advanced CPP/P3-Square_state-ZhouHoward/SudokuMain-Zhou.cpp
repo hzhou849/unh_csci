@@ -17,8 +17,8 @@
 #include "state.hpp"
 #include "game.hpp"
 
-//-----------------------------------------------------------------------------
 // Unit test P1 - State test
+//-----------------------------------------------------------------------------
 void 
 p1_testState() {
 
@@ -46,8 +46,8 @@ p1_testState() {
 
 }
 
-//-----------------------------------------------------------------------------
 // Unit test P2 - Square
+//-----------------------------------------------------------------------------
 void 
 p2_testSquare() {
 
@@ -73,13 +73,12 @@ p2_testSquare() {
 }
 
 
-// ----------------------------------------------------------------------------
 /// @brief Unit Test 3 - Game class - File IO test
-/// @param [in] textFile - Name of text file to read from
+/// @param [in] argCount - number of args passed from cmd-line
+/// @param [in] argName - Name of text file to read from
+// ----------------------------------------------------------------------------
 void
 p3_gameTest(int argCount, const char* argName) {
-    
-    cout << "argc: " << argCount  << endl;
     // Check to make sure file name is passed as command-line arg
     if (argCount < 2) {
         fatal("[!] ERROR - Command-Line input file name required!"); 
@@ -88,34 +87,8 @@ p3_gameTest(int argCount, const char* argName) {
     string fileName = argName;
 
     Game gameObj(fileName);
-
 }
 
-
-// ----------------------------------------------------------------------------
-/// @brief Test File IO
-/// @param [in] textFile
-/// @return 0=success; 1=Failure
-// int testFileIO(ifstream& textFile) {
-//      for (int count=0; count < argc; count++) {
-//         cout << "argv[" << count <<"]: " << argv[count] << endl;
-//     }
-
-//     std::string  fileString = argv[1];
-
-//     ofstream fileIn;
-//     fileIn.open(fileString);
-
-//     if (!fileIn) {
-//         cerr << "File not opened: " << fileString << "]"<<  endl;
-//     } else {
-//         cerr << "File open success" << endl;
-//     }
-
-//     fileIn.close();
-
-//     return 0;
-// }
 
 // ----------------------------------------------------------------------------
 // Main driver function
@@ -123,24 +96,11 @@ int
 main (int argc, char* argv[]) {
     banner();
    
-    // Unit tests
+    /* Unit tests */
     // p1_testState();
     // p2_testSquare();
-
   
     p3_gameTest(argc, argv[1]);
     
-    /* Debug only */
-    // p3_gameTest(2, "testRead.txt");
-
-
-   
-
-    
-
-    
-    
-
-
     bye();
 }

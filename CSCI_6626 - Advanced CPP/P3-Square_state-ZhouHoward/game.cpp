@@ -22,28 +22,19 @@ Game :: Game ( const string& fileName ) {
         fatal("Fatal Error! - Game() failed to open file.");
     }
 
-    cout << "File read successfully: " << endl;
-
-
     gameType_m = inputFile_m.get();
    
     
     // Return type is bool so 
     if ( !validate( gameType_m ) ) {
-        fatal("Fatal Error! -  No Legal Character found in input file.");
-        fatal("[!] Fatal Error - Char from file is not a legal character!");
+        fatal("\n[!] Fatal Error - Char from file is not a legal character!");
     }
     else {
         cout << "[+] Game Type character assigned: " << gameType_m << endl; 
     }
 
-
     run();
-
-    
-    
 }
-
 
 /// @brief run - Print the menu and handle selection loop
 //-----------------------------------------------------------------------------
@@ -51,16 +42,13 @@ void Game ::
 run() {
     char listValue;
     bool loopRun = true;
-    
-   
-
      
     // *tools.hpp does not support this yet - waiting for Dr. Fischer to update file
-    // menu_c( "SUDOKU Game", 6, MENU_LIST2, "123456"); 
+    // in the meantime, modified option to create menu list
 
     while ( loopRun ) {
-        listValue = menu_c( "SUDOKU Game", 6, MENU_LIST );
-        cout << "\n\n";
+        listValue = menu_c( GAME_TITLE, 6, MENU_LIST, *MENU_OPTIONS );
+        cout << "\n";
         switch( listValue ) {
             case 'm':
                 cout << "[!] Option m-Mark selected" << endl;
@@ -85,29 +73,21 @@ run() {
 
         }
 
+        cout << "\n---------------------------------------------------------------" << endl;
     }
-
-    // Write a function to display the menu 
-    // for (int iter=0; iter < 6; iter++) {
-    //     cout << MENU_LIST[iter];
-    // }
-    // cout << endl;           // Flush and newline
-
-    // return 0;
 }
-
 
 /// @brief Checks the character read is legal
 /// @param [in] readChar - Character read from input file.
-/// @return  true = Success; false = Illegal character
+/// @return  true=Success; false=Illegal character
 //-----------------------------------------------------------------------------
 bool Game :: 
-validate(const char& readChar) { 
+validate (const char& readChar) { 
 
     const string tempChar {readChar};
     string charCompare;
 
-    cout << "Character read from file: " << gameType_m << std::endl;
+    cout << "Character read from file: " << gameType_m;
 
     for (string::const_iterator itStr = LEGAL_CODES.begin(); 
             itStr != LEGAL_CODES.end(); 
@@ -121,4 +101,3 @@ validate(const char& readChar) {
 
     return false;       // No match found
 }
-

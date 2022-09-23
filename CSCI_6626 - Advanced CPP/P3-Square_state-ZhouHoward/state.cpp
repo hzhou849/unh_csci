@@ -39,9 +39,9 @@ State::State ( char initVal ): value(initVal)  {
 }
 
 
+/// @brief - prints error message if fixed is TRUE
+/// @param [in] charIn new character to mark the state 
 //-----------------------------------------------------------------------------
-// mark - prints error message if fixed is TRUE
-// @param charIn
 void State :: 
 mark ( char charIn ) {
 
@@ -62,15 +62,18 @@ mark ( char charIn ) {
     }
 }
 
+/// @brief Retreive the current state's value
+/// @return value=Returns the current state value
 //-----------------------------------------------------------------------------
-// getValue - Returns the current state value
 char State :: 
 getValue () {
     return value;
 }
 
+/// @brief Print the state values and possibilities list
+/// @param [in] os - Ostream object for data to be appended to
+/// @return the os object with the data
 //-----------------------------------------------------------------------------
-// Print
 ostream& State :: 
 print( ostream& os ) {
     short tempValue = posList;
@@ -154,7 +157,7 @@ ostream& Square ::
 print(ostream& os) {
     // print all of Square's members
     os << "Square: [" << sqRow  << ", " << sqCol <<  "]  " 
-        << "Value: '" << stateObj.getValue() << "'  "
+        << "Value: '" << stateObj.getValue() << "'  "    // Modify to state::print() later
         << "Possibilities: " << stateObj;
 
     return os;

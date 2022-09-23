@@ -13,7 +13,11 @@
 #pragma once
 #include "tools.hpp"
 
-// Menu Names
+// Labels & Names
+static const char* GAME_TITLE = "Sudoku Game";
+static const char* MENU_OPTIONS[] = {"murseq"};
+
+
 static const char* MENU_LIST[6] = { "Mark", 
                                     "Undo",
                                     "Redo",

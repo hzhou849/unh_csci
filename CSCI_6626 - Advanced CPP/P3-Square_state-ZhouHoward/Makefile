@@ -22,7 +22,6 @@ $(BIN_NAME): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 #---------------------- Compilation Commands -----------------------------------
-# we can even go shorter and just do:
 # This tells make all object files are made with the corresponding .c and .h files with the same name
 # **DO NOT declare %.h here, unless you want pre-compiled headers and create .h.gch files
 %.o: %.cpp

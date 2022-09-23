@@ -142,13 +142,14 @@ oclock( char* hour) {
 // ----------------------------------------------------------------------------
 // Display a menu then read an alphabetic menu choice character.               
 char 
-menu_c( const char* title, int n, const char* menu[] ){
+menu_c( const char* title, int n, const char* menu[], const char* valid ){
     int k;
     char choice;
+
     
     cout << endl << title << endl << endl ;
     for( k=0; k<n; ++k ) 
-        cout << "\t " << menu[k] << endl;
+        cout << "\t " << valid[k] <<") " << menu[k] << endl;
     cout << endl <<" Enter code of desired item: ";
     cin >> choice;   
     return choice;
