@@ -15,14 +15,9 @@
 /// @brief Game - Constructor
 /// @param [in] fileName - file to be read
 //-----------------------------------------------------------------------------
-Game :: Game ( const string& fileName ) {
-    inputFile_m.open(fileName, ios_base::in);
-
-    if (!inputFile_m) {
-        fatal("Fatal Error! - Game() failed to open file.");
-    }
-
-    gameType_m = inputFile_m.get();
+Game :: Game ( ifstream& inputFile ) {
+ 
+    gameType_m = inputFile.get();
    
     
     // Return type is bool so 
@@ -33,7 +28,7 @@ Game :: Game ( const string& fileName ) {
         cout << "[+] Game Type character assigned: " << gameType_m << endl; 
     }
 
-    run();
+    
 }
 
 /// @brief run - Print the menu and handle selection loop
@@ -47,13 +42,13 @@ run() {
     // in the meantime, modified option to create menu list
 
     while ( loopRun ) {
-        listValue = menu_c( GAME_TITLE, 6, MENU_LIST, *MENU_OPTIONS );
+        listValue = menu_c( GAME_TITLE, 6, MENU_LIST, MENU_OPTIONS );
         cout << "\n";
         switch( listValue ) {
             case 'm':
                 cout << "[!] Option m-Mark selected" << endl;
+                // Call Board::mark() for later
                 break;
-                // Call Board::mark()
             case 'u':
                 cout << "[!] Option u - Undo selected" << endl;
                 break;

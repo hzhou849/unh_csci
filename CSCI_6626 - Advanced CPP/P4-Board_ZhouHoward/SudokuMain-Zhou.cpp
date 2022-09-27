@@ -1,10 +1,10 @@
 // ---------------------------------------------------------------------------- 
 // File:        main.cpp
 // 
-// Project:     P3 - Square
+// Project:     P4 - Board
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
-// Due Date:    09-20-2022
+// Due Date:    09-27-2022
 // Name:        Howard Zhou
 // 
 // 
@@ -16,6 +16,7 @@
 #include <iostream>
 #include "state.hpp"
 #include "game.hpp"
+#include "board.hpp"
 
 // Unit test P1 - State test
 //-----------------------------------------------------------------------------
@@ -80,13 +81,21 @@ p2_testSquare() {
 void
 p3_gameTest(int argCount, const char* argName) {
     // Check to make sure file name is passed as command-line arg
-    if (argCount < 2) {
-        fatal("[!] ERROR - Command-Line input file name required!"); 
-    }
+    if (argCount < 2) fatal("Usage:  main <input filename>\n"); 
     
-    string fileName = argName;
+    cout << "Attempting to open file: " << argName << endl;
+    ifstream inputFile( argName );
 
-    Game gameObj(fileName);
+    if ( !inputFile ) fatal("[!] ERROR - Unable to open file!]n");
+    
+    Game gameObj(inputFile);
+    gameObj.run();
+}
+
+void
+p4_boardTest(const char *fileName) {
+    ifstream inputFile( fileName );
+    Board boardObj(9,inputFile );
 }
 
 
@@ -99,8 +108,10 @@ main (int argc, char* argv[]) {
     /* Unit tests */
     // p1_testState();
     // p2_testSquare();
+    // p3_gameTest(argc, argv[1]);
+
+    p4_boardTest(argv[1]);
   
-    p3_gameTest(argc, argv[1]);
     
     bye();
 }

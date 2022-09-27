@@ -13,18 +13,17 @@
 #pragma once
 #include "tools.hpp"
 
-// Labels & Names
-static const char* GAME_TITLE = "Sudoku Game";
-static const char* MENU_OPTIONS[] = {"murseq"};
-
-
-static const char* MENU_LIST[6] = { "Mark", 
+// Labels & Names - revised tools.cpp changed from char* to string
+static const string GAME_TITLE = "Sudoku Game";
+static const string MENU_OPTIONS = "murseq";
+static const string MENU_LIST[6] = { "Mark", 
                                     "Undo",
                                     "Redo",
                                     "Save Game",
                                     "Restore Game",
                                     "Quit"
                                   };
+
 // Game codes
 static const char GCODE_TRAD = 't';
 static const char GCODE_DIAG = 'd';
@@ -32,15 +31,17 @@ static const char GCODE_SIXY = 's';
 static const string LEGAL_CODES = "TtDdSs";
 
 
-/// @brief Class Board
+/// @brief Class Board - Forware declaration for P3
 //-----------------------------------------------------------------------------
 class Board;
 
+
+/// @brief Class Game
+//-----------------------------------------------------------------------------
 class Game {
 private:
 
   // Member Variables
-  ifstream inputFile_m;
   Board* board_m;
   int  gameSize_m;    // Only accepted values are 6 and 9;
   char gameType_m;    // Accepted values are: 
@@ -51,10 +52,10 @@ private:
 
   // Member Functions
   bool validate(const char& readChar);
-  void run();
 
 public:
-  Game(const string& fileName);
+  Game(ifstream& inputFile);
   ~Game() =default;
+  void run();
 
 };
