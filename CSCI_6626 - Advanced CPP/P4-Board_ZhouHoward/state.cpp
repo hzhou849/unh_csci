@@ -127,7 +127,8 @@ Square :: Square ( char charIn, short row, short col )
 // Destructor
 //-----------------------------------------------------------------------------
 Square :: ~Square () {
-    cerr << "Deleting Square: " << sqRow << ", " << sqCol << endl;
+    delCounter++;
+    cerr << "Deleting Square: " << sqRow << ", " << sqCol << "; counter:" << delCounter <<endl;
 }
 
 /// @brief - calls State class's mark() with new value for square

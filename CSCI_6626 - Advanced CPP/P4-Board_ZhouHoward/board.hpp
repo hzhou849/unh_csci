@@ -25,13 +25,14 @@ private:
     
     // Member functions
     void getPuzzle();
-    Square& sub(int row, int col);
+    Square& sub( int row, int col );
+    // int subTest( int row, int col );
 
 
 public: 
-    Board(int nSize, ifstream& puzFile);
+    Board( int nSize, ifstream& puzFile );
     ~Board() { delete[] bd_m; cout << "Freeing board object" << endl; }
-    ostream& print(ostream& os);
+    ostream& print( ostream& os );
 
 };
 

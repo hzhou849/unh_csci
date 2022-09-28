@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------- 
 // File:        board.hpp
 // 
-// Brief:       A basic controller class for the applicaiton
+// Brief:       Generate the board of squares
 // 
 // Project:     P4 - Board
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
@@ -27,45 +27,96 @@ Board(int nSize, ifstream& puzFile) : nSize_m(nSize), inFile_m(puzFile) {
 // A data character is a dash or a digit between 1 and N. 
 // This function will read and process the N lines, and create N2 squares. 
 // See detailed description in the next section.
+
+/// @brief Generates the board array and assigns the squares
 void Board :: 
+//-----------------------------------------------------------------------------
 getPuzzle() {
-    int row = 0;
     char tempChar;
+    int counter;
     cout << "Constructing Board..." << endl;
 
-    for (int iter=0; iter <= 100; iter++) {
-        tempChar = inFile_m.get();
-            cout << "readstate: [" << inFile_m.rdstate() << "], "
-            << "good: [" << inFile_m.good() << "], "
-            << "eof: [" << inFile_m.eof() << "], "
-            << "bad: [" << inFile_m.bad() << "], ";
+    for (int rowIter=0; rowIter <= nSize_m; rowIter++) {
 
-        if ( inFile_m.good() ) {
-            if (tempChar == '\n')  {
-                ++row;
-                cout << "\n"  << "row: " << row;
+        for (int colIter=0; colIter <=nSize_m; colIter++) {
+            tempChar = inFile_m.get();
 
+            // cout << "readstate: [" << inFile_m.rdstate() << "], "
+            // << "good: [" << inFile_m.good() << "], "
+            // << "eof: [" << inFile_m.eof() << "], "
+            // << "bad: [" << inFile_m.bad() << "], ";
+
+            // Skip the first game type character
+            if (rowIter==0 && colIter == 0) {
+                break;
             }
-            else cout << "char: [" << tempChar << "]: " << "good!";
+
+            if ( inFile_m.good() ) {
+                if ( (tempChar >= '0' && tempChar <='9') || (tempChar == '-') ) {
+                    cout << " [" << tempChar << "]: " 
+                         << "row: " << rowIter << " col: " << colIter;
+                        //  << " 2D: " << subTest(rowIter, colIter);
+                    // insert here
+                     sub(rowIter, colIter);
+                    // sub(rowIter, colIter) = Square(tempChar, rowIter, colIter);
+                  
+                    
+
+                }
+                else if (tempChar == '\n')  {
+                    cout << "\n"  << "row: " << rowIter;
+                }
+                // else cout << tempChar;
+                else {
+                    cout << tempChar;
+                    fatal("[!] Error - invald character in file: " );
+                    
+                }
+            }
+            else if ( inFile_m.eof() ) {
+                cout << endl;
+                break;
+            }
+            else if ( inFile_m.fail() ) {
+                inFile_m.clear();            // Clear bad characters out of the stream
+                inFile_m.ignore(1);
+            }
+            else if ( inFile_m.bad() ) {     // Abort after an unrecoverable stream error
+                fatal ("[!] Low-level error while reading input stream.");
+            }
+            cout << endl;
+
+            
         }
-        else if ( inFile_m.eof() ) break;
-        else if ( inFile_m.fail() ) {
-            inFile_m.clear();            // Clear bad characters out of the stream
-            inFile_m.ignore(1);
-        }
-        else if ( inFile_m.bad() ) {     // Abort after an unrecoverable stream error
-            fatal ("[!] Low-level error while reading input stream.");
-        }
-        cout << endl;
+
     }
     
 }   
 
 /// @brief Calculates 2D array coordinates
-///
+/// @param [in] row postion in board
+/// @param [in] col position in board
 /// @return returns reference to Square object in the Board's array
+//-----------------------------------------------------------------------------
 Square& Board ::
 sub( int row, int col ) {
-    
+    return bd_m[ ( row -1 ) *9 + ( col-1 )];
 }
+
+
+/// @brief Print - display the values for this object
+/// @param [in] os stream object to store data
+/// @return stream output object
+//-----------------------------------------------------------------------------
+ostream& Board :: 
+print(ostream& os) {
+    for (int iter=0; iter < (nSize_m *nSize_m); iter++) {
+        os << bd_m[iter] << endl;
+    }
+}
+
+//**** DEBUG
+// int Board :: subTest(int row, int col) {
+//     return ( (row-1) * 9 + (col -1) );
+// }
 

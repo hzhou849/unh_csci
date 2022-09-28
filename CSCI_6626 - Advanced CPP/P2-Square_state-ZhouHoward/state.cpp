@@ -114,21 +114,25 @@ print( ostream& os ) {
 // Square Class
 //=============================================================================
 
+/// @brief Square Constructor
+/// @param [in] charIn - Character 0-9 or '-' for the square
+/// @param [in] row positon on the board
+/// @param [in] col column position on the board
 //-----------------------------------------------------------------------------
-// Square Constructor
 Square :: Square ( char charIn, short row, short col ) 
     : stateObj( charIn ), sqRow(row), sqCol(col) {
     cerr << "Square: Row:" << sqRow << ", Col:" << sqCol << " constructed." << endl;
 }
 
-//-----------------------------------------------------------------------------
 // Destructor
+//-----------------------------------------------------------------------------
 Square :: ~Square () {
     cerr << "Deleting Square: " << sqRow << ", " << sqCol << endl;
 }
 
+/// @brief calls State class's mark() with new value for square
+/// @param [in] newChar the new character to repalce current square with
 //-----------------------------------------------------------------------------
-// Mark - calls State class's mark() with new value for square
 void Square :: 
 mark(char newChar) {
     if ( (newChar < '0' || newChar > '9') && newChar != '-' ) {
@@ -147,8 +151,10 @@ mark(char newChar) {
     }
 }
 
+/// @brief Print -  calls State class's mark() with new value for square
+/// @param [in] os stream to store data values
+/// @return data stream for output
 //-----------------------------------------------------------------------------
-// Print- calls State class's mark() with new value for square
 ostream& Square :: 
 print(ostream& os) {
     // print all of Square's members

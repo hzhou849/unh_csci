@@ -14,6 +14,7 @@
 
 // Constants
 static const short BIT_MASK   = 0x0001;       // Mask used for extracting last bit
+static int delCounter=0;
 
 //-----------------------------------------------------------------------------
 // State Class
@@ -22,6 +23,7 @@ private:
     short posList=0;
     char  value=' ';
     bool  fixed = true;
+    
 
 public:  
     State ()=default;            

@@ -80,13 +80,12 @@ p2_testSquare() {
 // ----------------------------------------------------------------------------
 void
 p3_gameTest(int argCount, const char* argName) {
-    // Check to make sure file name is passed as command-line arg
     if (argCount < 2) fatal("Usage:  main <input filename>\n"); 
     
     cout << "Attempting to open file: " << argName << endl;
     ifstream inputFile( argName );
 
-    if ( !inputFile ) fatal("[!] ERROR - Unable to open file!]n");
+    if ( !inputFile.good() ) fatal("[!] ERROR - Unable to open file!" +string(argName) + "\n");
     
     Game gameObj(inputFile);
     gameObj.run();
@@ -94,8 +93,15 @@ p3_gameTest(int argCount, const char* argName) {
 
 void
 p4_boardTest(const char *fileName) {
-    ifstream inputFile( fileName );
+    // ifstream inputFile( fileName );
+    ifstream inputFile( "testInput.txt" ); //*** Debug only
+
+    if ( !inputFile.good() ) {
+        fatal("[!] ERROR - Unable to open file: " +string(fileName) + "\n" );
+    }
     Board boardObj(9,inputFile );
+    cout << "---------------------------------------------------------------------" << endl;
+    cout << boardObj << endl;
 }
 
 
