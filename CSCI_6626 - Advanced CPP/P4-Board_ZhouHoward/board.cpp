@@ -20,20 +20,11 @@ Board(int nSize, ifstream& puzFile) : nSize_m(nSize), inFile_m(puzFile) {
     getPuzzle();
 }
 
-
-// a private helper function called from the constructor. 
-// The ifstream will contain N lines of input. Each line consists of N data 
-// characters and a newline. 
-// A data character is a dash or a digit between 1 and N. 
-// This function will read and process the N lines, and create N2 squares. 
-// See detailed description in the next section.
-
 /// @brief Generates the board array and assigns the squares
 void Board :: 
 //-----------------------------------------------------------------------------
 getPuzzle() {
     char tempChar;
-    int counter;
     cout << "Constructing Board..." << endl;
 
     for (int rowIter=0; rowIter <= nSize_m; rowIter++) {
@@ -57,8 +48,9 @@ getPuzzle() {
                          << "row: " << rowIter << " col: " << colIter;
                         //  << " 2D: " << subTest(rowIter, colIter);
                     // insert here
-                     sub(rowIter, colIter);
-                    // sub(rowIter, colIter) = Square(tempChar, rowIter, colIter);
+               
+                    // Lvalue of Square& = (square)bd_m[row,col] = SquareObject
+                    sub(rowIter, colIter) = Square(tempChar,rowIter,colIter);
                   
                     
 
@@ -85,34 +77,43 @@ getPuzzle() {
                 fatal ("[!] Low-level error while reading input stream.");
             }
             cout << endl;
-
+            
+            
             
         }
 
     }
+
+    
     
 }   
 
 /// @brief Calculates 2D array coordinates
-/// @param [in] row postion in board
-/// @param [in] col position in board
-/// @return returns reference to Square object in the Board's array
+/// @param [in] row : postion in board
+/// @param [in] col : position in board
+/// @return &reference to Square object in the Board's array
 //-----------------------------------------------------------------------------
-Square& Board ::
+Square& Board::
 sub( int row, int col ) {
     return bd_m[ ( row -1 ) *9 + ( col-1 )];
 }
 
 
-/// @brief Print - display the values for this object
-/// @param [in] os stream object to store data
+/// @brief Print display the values for this object
+/// @param [in] os : stream object to store data
 /// @return stream output object
 //-----------------------------------------------------------------------------
 ostream& Board :: 
 print(ostream& os) {
-    for (int iter=0; iter < (nSize_m *nSize_m); iter++) {
-        os << bd_m[iter] << endl;
+    for (int iter=0; iter < (nSize_m * nSize_m); iter++) {
+        os << bd_m[iter];
+
+        if (iter % nSize_m == 8) {
+            os << "\n";
+        }
     }
+
+    return os;
 }
 
 //**** DEBUG

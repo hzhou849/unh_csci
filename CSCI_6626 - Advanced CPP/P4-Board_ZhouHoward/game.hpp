@@ -12,6 +12,7 @@
 
 #pragma once
 #include "tools.hpp"
+#include "board.hpp"
 
 // Labels & Names - revised tools.cpp changed from char* to string
 static const string GAME_TITLE = "Sudoku Game";
@@ -31,10 +32,11 @@ static const char GCODE_SIXY = 's';
 static const string LEGAL_CODES = "TtDdSs";
 
 
-/// @brief Class Board - Forware declaration for P3
-//-----------------------------------------------------------------------------
-class Board;
+// /// @brief Class Board - Forware declaration for P3
+// //-----------------------------------------------------------------------------
+// class Board;
 
+// game is going to 'new' the board 
 
 /// @brief Class Game
 //-----------------------------------------------------------------------------
@@ -42,7 +44,6 @@ class Game {
 private:
 
   // Member Variables
-  Board* board_m;
   int  gameSize_m;    // Only accepted values are 6 and 9;
   char gameType_m;    // Accepted values are: 
                       // 't' - traditional 
@@ -52,6 +53,7 @@ private:
 
   // Member Functions
   bool validate(const char& readChar);
+  Board* board_m; //
 
 public:
   Game(ifstream& inputFile);
