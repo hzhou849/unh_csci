@@ -27,7 +27,7 @@ getPuzzle() {
     char tempChar;
     cout << "Constructing Board..." << endl;
 
-    for (int rowIter=0; rowIter <= nSize_m; rowIter++) {
+    for (int rowIter=1; rowIter <= nSize_m; rowIter++) {
 
         for (int colIter=0; colIter <=nSize_m; colIter++) {
             tempChar = inFile_m.get();
@@ -38,9 +38,9 @@ getPuzzle() {
             // << "bad: [" << inFile_m.bad() << "], ";
 
             // Skip the first game type character
-            if (rowIter==0 && colIter == 0) {
-                break;
-            }
+            // if (rowIter==0 && colIter == 0) {
+            //     break;
+            // }
 
             if ( inFile_m.good() ) {
                 if ( (tempChar >= '0' && tempChar <='9') || (tempChar == '-') ) {
@@ -116,8 +116,4 @@ print(ostream& os) {
     return os;
 }
 
-//**** DEBUG
-// int Board :: subTest(int row, int col) {
-//     return ( (row-1) * 9 + (col -1) );
-// }
 

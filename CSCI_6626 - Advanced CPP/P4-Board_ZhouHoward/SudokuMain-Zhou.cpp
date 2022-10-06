@@ -85,7 +85,7 @@ p3_gameTest(int argCount, const char* argName) {
     cout << "Attempting to open file: " << argName << endl;
     ifstream inputFile( argName );
 
-    if ( !inputFile.good() ) fatal("[!] ERROR - Unable to open file!" +string(argName) + "\n");
+    if ( !inputFile.good() ) fatal("[!] ERROR - Unable to open file! " +string(argName) + "\n");
     
     Game gameObj(inputFile);
     gameObj.run();
@@ -114,9 +114,9 @@ main (int argc, char* argv[]) {
     /* Unit tests */
     // p1_testState();
     // p2_testSquare();
-    // p3_gameTest(argc, argv[1]);
+    p3_gameTest(argc, argv[1]);
 
-    p4_boardTest(argv[1]);
+    // p4_boardTest(argv[1]);
   
     
     bye();
