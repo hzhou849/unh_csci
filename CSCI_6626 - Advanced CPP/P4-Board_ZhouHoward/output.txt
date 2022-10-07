@@ -1,0 +1,19 @@
+
+----------------------------------------------------------------
+	Howard Zhou
+	CSCI 6626 - Advanced C++ - Design Principles/OOP
+	Thu Oct  6 2022	23:54:00
+----------------------------------------------------------------
+Attempting to open file: puzt.txt
+[+] Game Type character assigned: t
+
+Sudoku Helper
+
+	 m) Mark
+	 u) Undo
+	 r) Redo
+	 s) Save Game
+	 e) Restore Game
+	 q) Quit
+
+ Enter code of desired item: 

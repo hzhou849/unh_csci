@@ -12,29 +12,24 @@
 
 #pragma once
 #include "tools.hpp"
-#include "state.hpp" // Square is in here
-
+#include "state.hpp" // Square class is in here
 
 class Board {
 private:
     // Member variables
-    int nSize_m; 
-    Square* bd_m;
-    ifstream& inFile_m;
-    short int left_m;
+    int         nSize_m; 
+    short int   left_m;
+    Square*     bd_m;
+    ifstream&   inFile_m;
     
     // Member functions
     void getPuzzle();
     Square& sub( int row, int col );
 
 public: 
-    Board( int nSize, ifstream& puzFile );
-    ~Board() { delete[] bd_m; cout << "Freeing board object" << endl; }
-
-  
-
+    Board( char type, ifstream& puzFile );
+    ~Board() { delete[] bd_m; cout << "[*] Deallocating board object" << endl; }
     ostream& print( ostream& os );
-
 };
 
 inline ostream& operator<< (ostream& os, Board& boardObj) {

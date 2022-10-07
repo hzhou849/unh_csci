@@ -11,32 +11,32 @@
 //-----------------------------------------------------------------------------
 
 #include "game.hpp"
+#include "board.hpp"
+
 
 // Class constants
 const string Game :: legalCodes = "TtDdSs";
 const string Game :: menuList[6] = { "Mark", "Undo", "Redo","Save Game", 
-                                      "Restore Game","Quit"};
+                                      "Restore Game","Quit" };
 
 
 /// @brief Game - Constructor
 /// @param [in] inFile - file to be read
 //-----------------------------------------------------------------------------
 Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
-    // inFile >> gameType_m;
-    gameType_m = inFile.get();
-    cout << "wtf: " << gameType_m << endl;
+    inFile >> gameType_m;
     if ( !validate( gameType_m ) ) {
         fatal("\n[!] Fatal Error - Char from file is not a legal character!");
     }
-    else {
-        cout << "[+] Game Type character assigned: " << gameType_m << endl; 
-    }
+    
+    cout << "[+] Game Type character assigned: " << gameType_m << endl; 
+    board_m = new Board(gameType_m, inFile_m);
 }
 
 
 /// @brief Desctructor
 //-----------------------------------------------------------------------------
-Game :: ~Game () { inFile_m.close(); }
+Game :: ~Game () { inFile_m.close(); delete board_m; }
 
 
 /// @brief run - Print the menu and handle selection loop
@@ -45,6 +45,7 @@ void Game ::
 run() {
     char listValue;
     while ( listValue != 'q' ) {
+        cout << board_m << endl;
         listValue = menu_c( "Sudoku Helper", 6, menuList, "murseq" );
         cout << "\n";
         switch( listValue ) {
@@ -69,27 +70,15 @@ run() {
     }
 }
 
+
 /// @brief Checks the character read is legal
 /// @param [in] rChar - Character read from input file.
 /// @return  true=Success; false=Illegal character
 //-----------------------------------------------------------------------------
 bool Game :: 
-validate (char rChar) { 
-    const string tempChar {rChar};
+validate ( char rChar ) { 
     string charCompare;
 
-    cout << "Character read from file: " << gameType_m;
-
-    // for (string::const_iterator itStr = legalCodes.begin(); 
-    //         itStr != legalCodes.end(); 
-    //         itStr++ ) {
-    //     charCompare = *itStr;
-    //     if ( tempChar.compare(charCompare) == 0 ) {
-    //         cout  << "[+] Legal character found! " << endl;
-    //         return true;
-    //     } 
-    // }
-
-    if (legalCodes.find(rChar)  != string::npos ) return true; 
-    else return false;       // No match found
+    if ( legalCodes.find(rChar) != string::npos ) { return true; }  
+    else { return false; }       // No match found
 }

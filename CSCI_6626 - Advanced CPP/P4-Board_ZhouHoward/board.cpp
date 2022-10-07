@@ -15,9 +15,14 @@
 /// @brief Constructor
 //-----------------------------------------------------------------------------
 Board :: 
-Board(int nSize, ifstream& puzFile) : nSize_m(nSize), inFile_m(puzFile) {
+Board( char type, ifstream& puzFile ) : inFile_m(puzFile) {
+    if ( type == 't' || type == 'd' ) { nSize_m = 9; }
+    else if ( type == 's' ) { nSize_m = 6; }
+    else { fatal( "[!]ERROR - invalid type entered: " + string(1,type) ); }
+    
     bd_m = new Square[nSize_m * nSize_m]; 
     getPuzzle();
+    cout << "Board constructor is done." << endl;
 }
 
 /// @brief Generates the board array and assigns the squares
@@ -51,9 +56,6 @@ getPuzzle() {
                
                     // Lvalue of Square& = (square)bd_m[row,col] = SquareObject
                     sub(rowIter, colIter) = Square(tempChar,rowIter,colIter);
-                  
-                    
-
                 }
                 else if (tempChar == '\n')  {
                     cout << "\n"  << "row: " << rowIter;
@@ -62,7 +64,6 @@ getPuzzle() {
                 else {
                     cout << tempChar;
                     fatal("[!] Error - invald character in file: " );
-                    
                 }
             }
             else if ( inFile_m.eof() ) {

@@ -19,17 +19,16 @@
 
 #pragma once
 #include "tools.hpp"
-#include "board.hpp"
+
 
 // Labels & Names - revised tools.cpp changed from char* to string
 static const string GAME_TITLE = "Sudoku Game";
 static const string MENU_OPTIONS = "murseq";
 
-// /// @brief Class Board - Forware declaration for P3
-// //-----------------------------------------------------------------------------
-// class Board;
-
+// Forware declaration for P3
+class Board;
 // game is going to 'new' the board 
+
 
 /// @brief Class Game
 //-----------------------------------------------------------------------------
@@ -41,17 +40,11 @@ private:
   static const string legalCodes;
 
   ifstream& inFile_m;
-  int  gameSize_m;    // Only accepted values are 6 and 9; ** remove for p4
-  char gameType_m;    // Accepted values are: 
-                      // 't' - traditional 
-                      // 'd' - diagonal
-                      // 's' - sixy
-
-
+  char gameType_m;    // Accepted values: (t)raditional,(d)iagonal, (s)ixy
 
   // Member Functions
   bool validate(char readChar);
-  Board* board_m; //
+  Board* board_m;
 
 public:
   Game()=default;

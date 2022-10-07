@@ -119,16 +119,16 @@ print( ostream& os ) {
 
 // Square Constructor
 //-----------------------------------------------------------------------------
-Square :: Square ( char charIn, short row, short col ) 
+Square ::  Square ( char charIn, short row, short col ) 
     : stateObj( charIn ), sqRow(row), sqCol(col) {
-    cerr << "Square: Row:" << sqRow << ", Col:" << sqCol << " constructed." << endl;
+    cout << "Square: Row:" << sqRow << ", Col:" << sqCol << " constructed." << endl;
 }
 
 // Destructor
 //-----------------------------------------------------------------------------
 Square :: ~Square () {
     delCounter++;
-    cerr << "Deleting Square: " << sqRow << ", " << sqCol << "; counter:" << delCounter <<endl;
+    cout << "Deleting Square: " << sqRow << ", " << sqCol << "; counter:" << delCounter <<endl;
 }
 
 /// @brief - calls State class's mark() with new value for square

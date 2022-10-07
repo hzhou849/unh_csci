@@ -41,10 +41,6 @@ p1_testState() {
     stateObj2.mark( markTestVal2 );
     cout << " [+] Possibilities (AFTER): " << stateObj2 << endl;
     cout << "**END OF P1 Unit Test - State--\n\n" << endl;
-
-
-
-
 }
 
 // Unit test P2 - Square
@@ -74,22 +70,14 @@ p2_testSquare() {
 }
 
 
-/// @brief Unit Test 3 - Game class - File IO test
-/// @param [in] argCount - number of args passed from cmd-line
-/// @param [in] argName - Name of text file to read from
-// ----------------------------------------------------------------------------
-void
-p3_gameTest(int argCount, const char* argName) {
-    if (argCount < 2) fatal("Usage:  main <input filename>\n"); 
-    
-    cout << "Attempting to open file: " << argName << endl;
-    ifstream inputFile( argName );
-
-    if ( !inputFile.good() ) fatal("[!] ERROR - Unable to open file! " +string(argName) + "\n");
-    
-    Game gameObj(inputFile);
-    gameObj.run();
-}
+// /// @brief Unit Test 3 - Game class - File IO test
+// /// @param [in] argCount - number of args passed from cmd-line
+// /// @param [in] argv[1] - Name of text file to read from
+// // ----------------------------------------------------------------------------
+// void
+// p3_gameTest(int argCount, const char* argv[1]) {
+   
+// }
 
 void
 p4_boardTest(const char *fileName) {
@@ -100,8 +88,9 @@ p4_boardTest(const char *fileName) {
         fatal("[!] ERROR - Unable to open file: " +string(fileName) + "\n" );
     }
     Board boardObj(9,inputFile );
+    // Board boardObj('')
     cout << "---------------------------------------------------------------------" << endl;
-    cout << boardObj << endl;
+    // cout << boardObj << endl;
 }
 
 
@@ -114,7 +103,19 @@ main (int argc, char* argv[]) {
     /* Unit tests */
     // p1_testState();
     // p2_testSquare();
-    p3_gameTest(argc, argv[1]);
+
+    // p3 and p4 utilized main stuff
+    if (argc < 2) fatal("Usage:  main <input filename>\n"); 
+    
+    cout << "Attempting to open file: " << argv[1] << endl;
+    ifstream inputFile( argv[1] );
+
+
+    if ( !inputFile.good() ) fatal("[!] ERROR - Unable to open file! " +string(argv[1]) + "\n");
+    
+    // Debug
+    Game gameObj(inputFile);
+    gameObj.run();
 
     // p4_boardTest(argv[1]);
   
