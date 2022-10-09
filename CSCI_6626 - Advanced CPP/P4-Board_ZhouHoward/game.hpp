@@ -19,6 +19,7 @@
 
 #pragma once
 #include "tools.hpp"
+#include "board.hpp"
 
 
 // Labels & Names - revised tools.cpp changed from char* to string
@@ -26,7 +27,7 @@ static const string GAME_TITLE = "Sudoku Game";
 static const string MENU_OPTIONS = "murseq";
 
 // Forware declaration for P3
-class Board;
+// class Board;
 // game is going to 'new' the board 
 
 

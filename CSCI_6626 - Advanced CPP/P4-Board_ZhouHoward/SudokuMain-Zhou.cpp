@@ -117,7 +117,10 @@ main (int argc, char* argv[]) {
     Game gameObj(inputFile);
     gameObj.run();
 
-    // p4_boardTest(argv[1]);
+    // char type = 't';
+
+    // Board boardObj('t' ,inputFile );
+    // cout << boardObj << endl;
   
     
     bye();

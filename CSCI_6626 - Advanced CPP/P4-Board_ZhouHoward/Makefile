@@ -15,7 +15,7 @@ CC = g++
 # 'O'(Letter not zero) optimization level 1. For flow analysis and debug comments
 # g3 for maximum debug info
 # CFLAGS= -std=c++11 -g -Wall -O1
-CFLAGS= -std=c++11 -g -Wall -O1
+CFLAGS= -std=c++11 -g -Wall 
 
 # Header display for terminal
 $(info Running: [$(PROJECT_NAME)] - $(BIN_NAME) )
@@ -27,7 +27,7 @@ all: $(BIN_NAME)
 # this is the sequence to follow if debug, it has to be called this way.
 # notice the called to $(BIN_NAME), this also helps with VSC debugger launch.json
 debug: clean
-debug: CFLAGS+= -DDBUG -g3
+debug: CFLAGS+= -DDBUG -g
 # debug: $(BIN_NAME)
 debug: dbuild
 

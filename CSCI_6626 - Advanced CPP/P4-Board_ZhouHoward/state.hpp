@@ -56,6 +56,13 @@ public:
 
     ostream& print (ostream& os);
     void mark(char newChar);
+
+    // Square* operator=(const Square &sObj){ 
+    //         Square *tempSq = new Square();
+    //         *tempSq = sObj;
+
+    //         return tempSq;
+    //     }
 };
 
 inline ostream& operator << (ostream& os, Square& sqr) {

@@ -14,6 +14,7 @@
 #include "board.hpp"
 
 
+
 // Class constants
 const string Game :: legalCodes = "TtDdSs";
 const string Game :: menuList[6] = { "Mark", "Undo", "Redo","Save Game", 
@@ -31,12 +32,16 @@ Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
     
     cout << "[+] Game Type character assigned: " << gameType_m << endl; 
     board_m = new Board(gameType_m, inFile_m);
+    
+    // Print board
+    // cout << *board_m << endl;
+    
 }
 
 
 /// @brief Desctructor
 //-----------------------------------------------------------------------------
-Game :: ~Game () { inFile_m.close(); delete board_m; }
+Game :: ~Game () { inFile_m.close();  delete board_m;}
 
 
 /// @brief run - Print the menu and handle selection loop
@@ -45,7 +50,7 @@ void Game ::
 run() {
     char listValue;
     while ( listValue != 'q' ) {
-        cout << board_m << endl;
+        // cout << *board_m << endl;
         listValue = menu_c( "Sudoku Helper", 6, menuList, "murseq" );
         cout << "\n";
         switch( listValue ) {
@@ -64,10 +69,17 @@ run() {
                 break;
             case 'q':
                 cout << "[!] Option q - Quit selected" << endl;
+                cout << *board_m << endl;
+                break;
+            default:
+                cout << "pick something else" << endl;
                 break;
         }
         cout << "\n---------------------------------------------------------------\n";
+        // cout << *board_m << endl;
+    
     }
+
 }
 
 

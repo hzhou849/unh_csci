@@ -31,11 +31,13 @@ void Board ::
 getPuzzle() {
     char tempChar;
     cout << "Constructing Board..." << endl;
+    int count = 0;
 
     for (int rowIter=1; rowIter <= nSize_m; rowIter++) {
 
-        for (int colIter=0; colIter <=nSize_m; colIter++) {
-            tempChar = inFile_m.get();
+        for (int colIter=1; colIter <= nSize_m; colIter++) {
+            // tempChar = inFile_m.get();
+            inFile_m >> tempChar;
 
             // cout << "readstate: [" << inFile_m.rdstate() << "], "
             // << "good: [" << inFile_m.good() << "], "
@@ -44,8 +46,14 @@ getPuzzle() {
 
             // Skip the first game type character
             // if (rowIter==0 && colIter == 0) {
-            //     break;
+            //     continue;;
             // }
+
+            // catch game type char
+            if (tempChar == 't') {
+                colIter--;
+                continue;
+            }
 
             if ( inFile_m.good() ) {
                 if ( (tempChar >= '0' && tempChar <='9') || (tempChar == '-') ) {
@@ -56,14 +64,17 @@ getPuzzle() {
                
                     // Lvalue of Square& = (square)bd_m[row,col] = SquareObject
                     sub(rowIter, colIter) = Square(tempChar,rowIter,colIter);
+
+                    cout << "** JUST created: " << count <<") "<< bd_m[count] << endl;
+                    count++;
                 }
                 else if (tempChar == '\n')  {
                     cout << "\n"  << "row: " << rowIter;
                 }
-                // else cout << tempChar;
+                // ignore if first character is an t/d/s
                 else {
                     cout << tempChar;
-                    fatal("[!] Error - invald character in file: " );
+                    fatal("[!] ERROR - invald character in file: " );
                 }
             }
             else if ( inFile_m.eof() ) {
@@ -85,7 +96,7 @@ getPuzzle() {
 
     }
 
-    
+    cout << "====================================================" << endl;
     
 }   
 

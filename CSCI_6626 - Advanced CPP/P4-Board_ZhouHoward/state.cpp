@@ -129,6 +129,7 @@ Square ::  Square ( char charIn, short row, short col )
 Square :: ~Square () {
     delCounter++;
     cout << "Deleting Square: " << sqRow << ", " << sqCol << "; counter:" << delCounter <<endl;
+    // cout << "Deleting Square: " << sqRow << ", " << sqCol  <<endl;
 }
 
 /// @brief - calls State class's mark() with new value for square
