@@ -6,7 +6,6 @@
 // Project:     P4 - Board
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
-// Due Date:    09-27-2022
 // Name:        Howard Zhou
 //-----------------------------------------------------------------------------
 

@@ -6,29 +6,21 @@
 // Project:     P3 - Square
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
-// Due Date:    09-20-2022
 // Name:        Howard Zhou
 //-----------------------------------------------------------------------------
 
 /* 
 * Dr Fischer -  @tags is not Java. This is called DOXYGEN, its an industry standard 
 * and modern IDEs recognize this to tag class objects, parameters, objects and it is 
-* very helpful. Please feel free to ignore it but if it bothers you that much as
-* I can remove it on the submitted version so you can read easier.
+* and is handy for various features. Please ignore it.
 */ 
 
 #pragma once
 #include "tools.hpp"
 #include "board.hpp"
 
-
-// Labels & Names - revised tools.cpp changed from char* to string
-static const string GAME_TITLE = "Sudoku Game";
-static const string MENU_OPTIONS = "murseq";
-
 // Forware declaration for P3
 // class Board;
-// game is going to 'new' the board 
 
 
 /// @brief Class Game

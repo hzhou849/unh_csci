@@ -4,13 +4,7 @@
 // Project:     P4 - Board
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
-// Due Date:    09-27-2022
 // Name:        Howard Zhou
-// 
-// 
-// Description:
-//              - Sudoku Project
-// 
 // ----------------------------------------------------------------------------
 
 #include <iostream>
@@ -70,58 +64,21 @@ p2_testSquare() {
 }
 
 
-// /// @brief Unit Test 3 - Game class - File IO test
-// /// @param [in] argCount - number of args passed from cmd-line
-// /// @param [in] argv[1] - Name of text file to read from
-// // ----------------------------------------------------------------------------
-// void
-// p3_gameTest(int argCount, const char* argv[1]) {
-   
-// }
-
-void
-p4_boardTest(const char *fileName) {
-    // ifstream inputFile( fileName );
-    ifstream inputFile( "testInput.txt" ); //*** Debug only
-
-    if ( !inputFile.good() ) {
-        fatal("[!] ERROR - Unable to open file: " +string(fileName) + "\n" );
-    }
-    Board boardObj(9,inputFile );
-    // Board boardObj('')
-    cout << "---------------------------------------------------------------------" << endl;
-    // cout << boardObj << endl;
-}
-
-
 // ----------------------------------------------------------------------------
 // Main driver function
 int 
 main (int argc, char* argv[]) {
     banner();
    
-    /* Unit tests */
-    // p1_testState();
-    // p2_testSquare();
-
-    // p3 and p4 utilized main stuff
     if (argc < 2) fatal("Usage:  main <input filename>\n"); 
-    
     cout << "Attempting to open file: " << argv[1] << endl;
     ifstream inputFile( argv[1] );
-
-
+    
     if ( !inputFile.good() ) fatal("[!] ERROR - Unable to open file! " +string(argv[1]) + "\n");
     
-    // Debug
+    // Run game which will call Board inside the class
     Game gameObj(inputFile);
     gameObj.run();
-
-    // char type = 't';
-
-    // Board boardObj('t' ,inputFile );
-    // cout << boardObj << endl;
-  
     
     bye();
 }

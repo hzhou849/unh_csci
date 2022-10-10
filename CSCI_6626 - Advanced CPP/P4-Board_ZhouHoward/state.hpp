@@ -6,15 +6,14 @@
 // Project:     P4 - Board
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
-// Due Date:    09-27-2022
-// Name:        Howard Zhou-----------------------------------------------
+// Name:        Howard Zhou
+//-----------------------------------------------------------------------------
 
 #pragma once
 #include "tools.hpp"
 
 // Constants
 static const short BIT_MASK   = 0x0001;       // Mask used for extracting last bit
-static int delCounter=0;
 
 //-----------------------------------------------------------------------------
 // State Class
@@ -56,13 +55,6 @@ public:
 
     ostream& print (ostream& os);
     void mark(char newChar);
-
-    // Square* operator=(const Square &sObj){ 
-    //         Square *tempSq = new Square();
-    //         *tempSq = sObj;
-
-    //         return tempSq;
-    //     }
 };
 
 inline ostream& operator << (ostream& os, Square& sqr) {

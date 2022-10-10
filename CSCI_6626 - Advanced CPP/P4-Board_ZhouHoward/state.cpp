@@ -126,11 +126,8 @@ Square ::  Square ( char charIn, short row, short col )
 
 // Destructor
 //-----------------------------------------------------------------------------
-Square :: ~Square () {
-    delCounter++;
-    cout << "Deleting Square: " << sqRow << ", " << sqCol << "; counter:" << delCounter <<endl;
-    // cout << "Deleting Square: " << sqRow << ", " << sqCol  <<endl;
-}
+Square :: ~Square () { cout << "Deleting Square: " << sqRow << ", " << sqCol  <<endl; }
+
 
 /// @brief - calls State class's mark() with new value for square
 /// @param [in] newChar - new character to mark the state with
@@ -150,6 +147,7 @@ mark(char newChar) {
         cout << " [+] State is already marked. Nothing to do" << endl;
     }
 }
+
 
 /// @brief Print the Square object values to an output stream
 /// @param [in] os - output stream object of values to be printed

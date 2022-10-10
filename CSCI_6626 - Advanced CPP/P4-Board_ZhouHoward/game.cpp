@@ -3,10 +3,9 @@
 // 
 // Brief:       A basic controller class for the applicaiton
 // 
-// Project:     P3 - Square
+// Project:     P4 - Square
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
-// Due Date:    09-20-2022
 // Name:        Howard Zhou
 //-----------------------------------------------------------------------------
 
@@ -29,13 +28,8 @@ Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
     if ( !validate( gameType_m ) ) {
         fatal("\n[!] Fatal Error - Char from file is not a legal character!");
     }
-    
     cout << "[+] Game Type character assigned: " << gameType_m << endl; 
     board_m = new Board(gameType_m, inFile_m);
-    
-    // Print board
-    // cout << *board_m << endl;
-    
 }
 
 
@@ -50,13 +44,13 @@ void Game ::
 run() {
     char listValue;
     while ( listValue != 'q' ) {
-        // cout << *board_m << endl;
+        cout << *board_m << endl;
         listValue = menu_c( "Sudoku Helper", 6, menuList, "murseq" );
         cout << "\n";
         switch( listValue ) {
             case 'm':
                 cout << "[!] Option m-Mark selected" << endl;
-                // Call Board::mark() for later
+                // Call Board::mark() to be implemented later
                 break;
             case 'u':
                 cout << "[!] Option u - Undo selected" << endl;
@@ -69,17 +63,13 @@ run() {
                 break;
             case 'q':
                 cout << "[!] Option q - Quit selected" << endl;
-                cout << *board_m << endl;
                 break;
             default:
                 cout << "pick something else" << endl;
                 break;
         }
         cout << "\n---------------------------------------------------------------\n";
-        // cout << *board_m << endl;
-    
     }
-
 }
 
 
