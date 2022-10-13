@@ -18,13 +18,15 @@ Move::Move(const Move& source)
  * and just storing the actual dereference value in that pointer
  * NOT copying the pointer like shallow
  */
+
+# Deep copy
 Move::Move(const Move& source)
 	: Move(*source.data) - delegate to constructor
 {
- # this->data pointer =  *source.data pointer
+  this->data pointer =  *source.data pointer
 	this->data = new int;
 
-# new address = same value of source
+ new address = same value of source
 	*this->data = *source.data;
 	std::cout << "Copy Constructor - Deep copy for: " << *data << std::endl;
 }
