@@ -5,9 +5,9 @@
 Move::Move(const Move& source)
  :data(source.data) 
  {
-	// recall: int *data; is a pointer 
-	// this->data pointer = source.data pointer
-	// pointer = address of source.data
+	 recall: int *data; is a pointer 
+	 this->data pointer = source.data pointer
+	 pointer = address of source.data
 	this->data = source.data;
   std::cout << "Shallow copy called << std::endl;
 }
@@ -19,12 +19,12 @@ Move::Move(const Move& source)
  * NOT copying the pointer like shallow
  */
 Move::Move(const Move& source)
-	//: Move(*source.data) // delegate to constructor
+	: Move(*source.data) - delegate to constructor
 {
- // this->data pointer =  *source.data pointer
+ # this->data pointer =  *source.data pointer
 	this->data = new int;
 
-	// new address = same value of source
+# new address = same value of source
 	*this->data = *source.data;
 	std::cout << "Copy Constructor - Deep copy for: " << *data << std::endl;
 }
