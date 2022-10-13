@@ -2,15 +2,15 @@
  * ex source.data = address0x123{5}
  * this->data will = address 0x123{5} too
  */
-//Move::Move(const Move& source)
-//	//:data(source.data) 
-//{
-//	// recall: int *data; is a pointer 
-//	// this->data pointer = source.data pointer
-//	// pointer = address of source.data
-//	this->data = source.data;
-//  std::cout << "Shallow copy called << std::endl;
-//}
+Move::Move(const Move& source)
+ :data(source.data) 
+ {
+	// recall: int *data; is a pointer 
+	// this->data pointer = source.data pointer
+	// pointer = address of source.data
+	this->data = source.data;
+  std::cout << "Shallow copy called << std::endl;
+}
 
 
 /* DEEP Copy Constructor - delegate to constructor
