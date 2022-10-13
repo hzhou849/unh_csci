@@ -318,4 +318,4 @@ void cleaning_buffer(uint8_t color_8bit) {
 
 
 
-#endif // _CP_PIX_RENDER_H
+#endif // _CP_PIX_RENDER_H~

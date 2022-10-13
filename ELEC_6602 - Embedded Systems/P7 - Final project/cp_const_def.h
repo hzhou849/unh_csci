@@ -11,11 +11,6 @@ static const uint8_t ON            = 1;
 static const uint8_t OFF           = 0;
 static const uint8_t TAIL_ON       = 1;
 static const uint8_t TAIL_OFF      = 0;
-
-
-
-
-
 static const uint32_t GPIO_INPUT_MASK      = 0x44444444;
 
 /* Screen stats */
@@ -42,11 +37,9 @@ static const uint8_t PHASE2_PLAYING       = 2;
 static const uint8_t PHASE_QUIT           = 3; 
 static const uint8_t PHASE_HSCORE           = 4; 
 static const uint8_t PHASE_PRINT_TOP_TEN = 5; 
-
 static const uint8_t NORMAL_MODE         = 0;
 static const uint8_t WALL_COL_OFF        = 0x1;
 static const uint8_t DEV_MODE            = 0x3;
-
 static const uint8_t TOTAL_TIME            = 0x1A;
 static const uint8_t SESSION_TIME          = 0x1F;
 
@@ -90,22 +83,6 @@ void set_game_phase(uint8_t game_phase) {
 }
 
 
-// CL_AQUA Aqua color 
-// CL_BLACK Black color 
-// CL_BLUE Blue color 
-// CL_FUCHSIA Fuchsia color 
-// CL_GRAY Gray color 
-// CL_GREEN Green color 
-// CL_LIME Lime color 
-// CL_MAROON Maroon color 
-// CL_NAVY Navy color 
-// CL_OLIVE Olive color 
-// CL_PURPLE Purple color 
-// CL_RED Red color 
-// CL_SILVER Silver color 
-// CL_TEAL Teal color 
-// CL_WHITE White color 
-// CL_YELLOW Yellow color 
 
 
 void debug(uint32_t value) {
