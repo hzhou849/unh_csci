@@ -36,6 +36,7 @@ Browse.VC.db
 ipch
 .vs/
 Debug/
+out/
 
 # VS Code
 .vscode/
