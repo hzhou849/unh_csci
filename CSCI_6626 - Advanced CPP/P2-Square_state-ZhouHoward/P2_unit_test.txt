@@ -1,0 +1,51 @@
+----------------------------------------------------------------
+	Howard Zhou
+	CSCI 6626 - Advanced C++ - Design Principles/OOP
+	Tue Sep 13 2022	23:15:36
+----------------------------------------------------------------
+
+-------- P1 -State - Running Unit Test (1 of 2) --------
+State Object constructed with value: '-' 
+ Attemping to mark state with value: 5
+ [+] Possibilities (BEFORE): 1 2 3 4 5 6 7 8 9 
+
+State is NOT fixed, value re-assigned: 5
+ [+] Possibilities (AFTER): - - - - - - - - - 
+
+
+-------- P1 -State - Running Unit Test (2 of 2) --------
+State Object constructed with value: '0' 
+ Attemping to mark state with value: -
+ [+] Possibilities (BEFORE): - - - - - - - - - 
+
+Error in: mark() State is fixed! 
+ [+] Possibilities (AFTER): - - - - - - - - - 
+
+**END OF P1 Unit Test - State--
+
+
+----- P2 Running Unit Test - Square (1 of 2) ------
+State Object constructed with value: '-' 
+Square: Row:1, Col:4 constructed.
+ [+] Square: [1, 4]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
+
+Attempting to mark state with new value: 1
+ [+] Possibilities BEFORE: 1 2 3 4 5 6 7 8 9 
+
+State is NOT fixed, value re-assigned: 1
+ [+] Possibilities AFTER: - - - - - - - - - 
+
+----- P2 Running Unit Test - Square (2 of 2) ------
+State Object constructed with value: '0' 
+Square: Row:5, Col:7 constructed.
+ [+] Square: [1, 4]  Value: '1'  Possibilities: - - - - - - - - - 
+
+Attempting to mark state with new value: 8
+ [+] State is already marked. Nothing to do
+**END OF P2 Unit Test - State--
+
+
+Deleting Square: 5, 7
+Deleting Square: 1, 4
+
+Normal termination.

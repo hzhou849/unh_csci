@@ -1,0 +1,91 @@
+
+----------------------------------------------------------------
+        Howard Zhou
+        CSCI 6626 - Advanced C++ - Design Principles/OOP
+        Mon Sep 26 2022 15:31:58
+----------------------------------------------------------------
+Usage:  - main <input filename>
+
+Error exit
+
+----------------------------------------------------------------
+        Howard Zhou
+        CSCI 6626 - Advanced C++ - Design Principles/OOP
+        Mon Sep 26 2022 16:18:16
+----------------------------------------------------------------
+Attempting to open file: unknownFile.txt
+Character read from file: t[+] Legal character found! 
+[+] Game Type character assigned: t
+
+Sudoku Game
+
+         m) Mark
+         u) Undo
+         r) Redo
+         s) Save Game
+         e) Restore Game
+         q) Quit
+
+ Enter code of desired item: m
+
+[!] Option m-Mark selected
+
+---------------------------------------------------------------
+
+Sudoku Game
+
+         m) Mark
+         u) Undo
+         r) Redo
+         s) Save Game
+         e) Restore Game
+         q) Quit
+
+ Enter code of desired item: d
+
+ Illegal choice or input error; try again.
+         m) Mark
+         u) Undo
+         r) Redo
+         s) Save Game
+         e) Restore Game
+         q) Quit
+
+ Enter code of desired item: 
+
+Sudoku Game
+
+         m) Mark
+         u) Undo
+         r) Redo
+         s) Save Game
+         e) Restore Game
+         q) Quit
+
+ Enter code of desired item: q
+
+
+[!] Option q - Quit selected
+
+Normal termination.
+
+
+
+----------------------------------------------------------------
+        Howard Zhou
+        CSCI 6626 - Advanced C++ - Design Principles/OOP
+        Mon Sep 26 2022 16:22:07
+----------------------------------------------------------------
+Attempting to open file: unknownFile.txt
+Character read from file: x
+[!] Fatal Error - Char from file is not a legal character!
+Error exit
+
+----------------------------------------------------------------
+        Howard Zhou
+        CSCI 6626 - Advanced C++ - Design Principles/OOP
+        Mon Sep 26 2022 16:31:42
+----------------------------------------------------------------
+Attempting to open file: unknownFile.txt
+[!] ERROR - Unable to open file!]n
+Error exit
