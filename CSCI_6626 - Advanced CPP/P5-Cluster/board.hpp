@@ -11,7 +11,9 @@
 
 #pragma once
 #include "tools.hpp"
-#include "square.hpp" // Square class is in here
+#include "square.hpp"
+
+enum class ClusterT { };
 
 class Board {
 private:

@@ -64,10 +64,37 @@ p2_testSquare() {
 }
 
 
+void test_arr(int* argArr ) {
+    for (int i=0; i < 5; i++) {
+        cout << argArr[i] <<endl;
+    }
+
+   
+}
+
+
+// subscript the array. For example, the following two declarations work properly together:
+// enum class Color{ RED, BLUE, YELLOW };
+// static const string colorStrings[3];
+// The enum declaration belongs near the top of the .hpp file of the class that will use Colors. (Suppose
+// that class is named Palette.) The data declaration goes in the .hpp of the Palette class, with a
+// constexpr initializer.
+// static constexpr string colorStrings[3] = {"red", "blue", "yellow"}; cpp
+// Your job is to set up an analogous set of declarations for Box.
+enum class Color { RED, BLUE, GREEN};
+static const string colorStrings[3];
+
+class Palatte{
+
+public:
+};
+static constexpr char* colorString[3] = {"red", "blue", "yellow"};
+
+
+
 // ----------------------------------------------------------------------------
 // Main driver function
-int 
-main (int argc, char* argv[]) {
+int main (int argc, char* argv[]) {
     banner();
    
     if (argc < 2) fatal("Usage:  main <input filename>\n"); 
@@ -77,8 +104,19 @@ main (int argc, char* argv[]) {
     if ( !inputFile.good() ) fatal("[!] ERROR - Unable to open file! " +string(argv[1]) + "\n");
     
     // Run game which will call Board inside the class
-    Game gameObj(inputFile);
-    gameObj.run();
+    // Game gameObj(inputFile);
+    // gameObj.run();
     
+
+    int testArr[5] = {1,2,3,4,5};
+    int count = 0;
+
+    for (int i : testArr) {
+        std::cout << "i: " << i << endl;
+        i = count++;
+    }
+
+    test_arr(testArr);
+
     bye();
 }
