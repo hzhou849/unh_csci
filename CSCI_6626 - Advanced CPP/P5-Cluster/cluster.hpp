@@ -9,34 +9,64 @@
 // Name:        Howard Zhou
 //-----------------------------------------------------------------------------
 
+#pragma once
 #include "square.hpp"   // Cluster will contain an array of square pointers
+#include "board.hpp"
 
-
-    enum class ClusterT {ROW, COLUMN, BOX};
+enum class ClusterT {ROW, COLUMN, BOX};  // Will not be visible if placed in board.hpp
 
 class Cluster {
 private:
     // Member variables
     const char* cType_m;
-    Square*     arr_m[9];  // An array of 9 Square pointers
-// static constexpr string clusterStr[3] = {"Row", "Column", "Box"};
+    Square*     arrPt_m;  // An array of 9 Square pointers
+    // static const char* list_m[3];
+    // static const string list_m[3];
 
 public:
+    // static constexpr char* clist[3] = {"Row", "Column", "Box"};
 
     // Dr Fischer, is there a reason why you want it done this way?
-    static constexpr char* list[3] = {"Row", "Coloum", "Box"};
-    Cluster();
-    Cluster(ClusterT cType, Square* arrPtr );
+    Cluster()=default;
+    Cluster(ClusterT cType, Square* arrPtr[] );
+    Cluster(string cType, Square* arrPtr[] );
+    ~Cluster() { delete[] arrPt_m;}
 
-    ostream& print(ostream& os) const; // delegate to Square::print();
+    ostream& print(ostream& os) ; // delegate to Square::print();
 
 };
 
-inline ostream& operator<< (ostream& os, const Cluster cObj) {
+inline ostream& operator<< (ostream& os,  Cluster cObj) {
     return cObj.print(os);
 }
 
-// Implementation
+// // ****Implementation *****
+// Cluster::Cluster( ClusterT cType, Square* arrPtr[]) 
+//     : cType_m(clist[static_cast<int>(cType)]) {
+//     // As per instructions to take in ClusterT to char*
 
-Cluster::Cluster( ClusterT cType, Square* arrPtr) 
-    : cType_m(list[static_cast<int>(cType)]), arr_m(arrPtr){};
+        
+//         arrPt_m = new Square[9];
+
+//         for (int i=0; i < 9; i++) {
+//             cout << cType_m<<": "<< i << ") " << *arrPtr[i]  << endl;
+//         }
+
+
+// }
+
+
+
+// Cluster::Cluster( ClusterT cType, Square* arrPtr[]) 
+//     : cType_m(clist[static_cast<int>(cType)])           // As per instructions to take in ClusterT to char*
+//     {
+
+        
+//         arrPt_m = new Square[9];
+
+//         for (int i=0; i < 9; i++) {
+//             cout << cType_m<<": "<< i << ") " << *arrPtr[i]  << endl;
+//         }
+
+
+// }

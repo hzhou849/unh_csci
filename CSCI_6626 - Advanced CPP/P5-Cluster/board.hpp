@@ -12,8 +12,13 @@
 #pragma once
 #include "tools.hpp"
 #include "square.hpp"
+#include "cluster.hpp"
 
-enum class ClusterT { };
+
+
+// For extern use:
+static const char* clist[3] = {"Row", "column", "Box"};  // Not sure how you want us to share this with cluster??
+// static const char* clist[3] = {"Row", "column", "Box"};  // Not sure how you want us to share this with cluster??
 
 class Board {
 private:
@@ -22,10 +27,15 @@ private:
     short int   left_m;
     Square*     bd_m;
     ifstream&   inFile_m;
+    vector<Cluster*> clus_m;
     
     // Member functions
     void getPuzzle();
     Square& sub( int row, int col );
+    void mkCluster();
+    void crtRow(Square* tempArr[]);
+    void crtColumn();
+    void crtBox();
 
 public: 
     Board( char type, ifstream& puzFile );

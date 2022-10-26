@@ -2,6 +2,7 @@
 // Square Class
 //=============================================================================
 #include "square.hpp"
+#include "cluster.hpp"      // For forward declaration
 
 Square ::  Square ( char charIn, short row, short col ) 
     : stateObj( charIn ), sqRow(row), sqCol(col) {
@@ -14,6 +15,7 @@ Square :: ~Square () { cout << "Deleting Square: " << sqRow << ", " << sqCol  <<
 //-----------------------------------------------------------------------------
 /// @brief - calls State class's mark() with new value for square
 /// @param [in] newChar - new character to mark the state with
+//-----------------------------------------------------------------------------
 void Square :: 
 mark(char newChar) {
     // Input validation moved to State::mark()
@@ -34,6 +36,7 @@ mark(char newChar) {
 /// @brief Print the Square object values to an output stream
 /// @param [in] os - output stream object of values to be printed
 /// @return  the output stream object
+//-----------------------------------------------------------------------------
 ostream& Square :: 
 print(ostream& os) {
     // print all of Square's members

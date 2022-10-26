@@ -11,10 +11,10 @@
 
 #pragma once
 #include "tools.hpp"
-#include "board.hpp"
+// #include "board.hpp"
 
 // Forware declaration for P3
-// class Board;
+class Board;
 
 class Game {
 private:

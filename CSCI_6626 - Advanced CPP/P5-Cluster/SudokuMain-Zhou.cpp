@@ -12,6 +12,10 @@
 #include "game.hpp"
 #include "board.hpp"
 
+// Testing
+// #include "cluster.hpp"
+// class Square;
+// #include "square.hpp"
 // Unit test P1 - State test
 //-----------------------------------------------------------------------------
 void 
@@ -71,6 +75,14 @@ void test_arr(int* argArr ) {
 
    
 }
+void test_arr2(int* argArr[] ) {
+    cout << ":\n\nPrinting int pointers:" <<endl;
+    for (int i=0; i < 5; i++) {
+        cout << *argArr[i] <<endl;
+    }
+
+   
+}
 
 
 // subscript the array. For example, the following two declarations work properly together:
@@ -88,12 +100,12 @@ class Palatte{
 
 public:
 };
-static constexpr char* colorString[3] = {"red", "blue", "yellow"};
+// static constexpr char* colorString[3] = {"red", "blue", "yellow"};
 
 
 
-// ----------------------------------------------------------------------------
-// Main driver function
+// // ----------------------------------------------------------------------------
+// // Main driver function
 int main (int argc, char* argv[]) {
     banner();
    
@@ -104,19 +116,48 @@ int main (int argc, char* argv[]) {
     if ( !inputFile.good() ) fatal("[!] ERROR - Unable to open file! " +string(argv[1]) + "\n");
     
     // Run game which will call Board inside the class
-    // Game gameObj(inputFile);
-    // gameObj.run();
+    Game gameObj(inputFile);
+    gameObj.run();
     
 
-    int testArr[5] = {1,2,3,4,5};
-    int count = 0;
 
-    for (int i : testArr) {
-        std::cout << "i: " << i << endl;
-        i = count++;
-    }
 
-    test_arr(testArr);
+
+    /*** DEBUGING STUFF ***/
+    // int testArr[5] = {1,2,3,4,5};
+    // int count = 0;
+
+    // for (int i : testArr) {
+    //     std::cout << "i: " << i << endl;
+    //     i = count++;
+    // }
+
+    // test_arr(testArr);
+
+
+    // int* testArr2[5];
+    // int a1 = 1;
+    // int a2 = 2;
+    // int a3 = 3;
+    // int a4 = 4;
+    // int a5 = 5;
+
+    // testArr2[0] = &a1;
+    // testArr2[1] = &a1;
+    // testArr2[2] = &a1;
+    // testArr2[3] = &a1;
+    // testArr2[4] = &a1;
+    // // testArr2[0] = &a1;
+    // // testArr2[1] = &a2;
+    // // testArr2[2] = &a3;
+    // // testArr2[3] = &a4;
+    // // testArr2[4] = &a5;
+
+    // test_arr2(testArr2);
+
 
     bye();
+
+    
 }
+
