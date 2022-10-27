@@ -3,7 +3,7 @@
 // 
 // Brief:       A basic controller class for the applicaiton
 // 
-// Project:     P4 - Square
+// Project/ver: P5 - Cluster
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
 // Name:        Howard Zhou
@@ -42,7 +42,7 @@ void Game ::
 run() {
     char listValue;
     while ( listValue != 'q' ) {
-        cout << *board_m << endl;
+        cout <<"\n\n" << *board_m << endl;
         listValue = menu_c( "Sudoku Helper", 6, menuList, "murseq" );
         cout << "\n";
         switch( listValue ) {

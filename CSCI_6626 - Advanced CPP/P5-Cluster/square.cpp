@@ -9,7 +9,7 @@ Square ::  Square ( char charIn, short row, short col )
     cout << "Square: Row:" << sqRow << ", Col:" << sqCol << " constructed." << endl;
 }
 
-Square :: ~Square () { cout << "Deleting Square: " << sqRow << ", " << sqCol  <<endl; }
+Square :: ~Square () { /*cout << "Deleting Square: " <<sqRow<< ", "<<sqCol<<endl;*/ }
 
 
 //-----------------------------------------------------------------------------
@@ -33,6 +33,16 @@ mark(char newChar) {
 }
 
 //-----------------------------------------------------------------------------
+/// @brief      Turn off position N from the possibilities list
+/// @param[in] val - The number to disable from the list
+//-----------------------------------------------------------------------------
+void Square::turnOff( int val ) {
+    cout << "turning off: " << val << endl;
+}
+
+
+
+//-----------------------------------------------------------------------------
 /// @brief Print the Square object values to an output stream
 /// @param [in] os - output stream object of values to be printed
 /// @return  the output stream object
@@ -40,9 +50,22 @@ mark(char newChar) {
 ostream& Square :: 
 print(ostream& os) {
     // print all of Square's members
-    os << "Square: [" << sqRow  << ", " << sqCol <<  "]  " 
-        << "Value: '" << stateObj.getValue() << "'  "    // Modify to state::print() later
-        << "Possibilities: " << stateObj;
+    os << "[" << sqRow  << ", " << sqCol <<  "]"
+        // << "Value: " << stateObj
+        << flush;
 
     return os;
 }
+
+//-----------------------------------------------------------------------------
+/// @brief Full print of the Square::State objects values
+/// @return  the output stream object state value & possibilities
+//-----------------------------------------------------------------------------
+stringstream Square ::
+prState() {
+    stringstream ss;
+    ss << stateObj << flush;
+    return ss; 
+}
+
+

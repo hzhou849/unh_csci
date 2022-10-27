@@ -3,7 +3,7 @@
 // 
 // Brief:       A basic controller class for the applicaiton
 // 
-// Project:     P3 - Square
+// Project/ver: P5 - Cluster
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
 // Name:        Howard Zhou

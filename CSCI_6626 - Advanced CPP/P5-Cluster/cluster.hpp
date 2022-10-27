@@ -3,7 +3,7 @@
 // 
 // Brief:       Cluster is used by board. Each board contains 3 * N clusters
 // 
-// Project:     P5 - Cluster
+// Project/ver: P5 - Cluster
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
 // Name:        Howard Zhou
@@ -14,14 +14,16 @@
 #include "board.hpp"
 
 enum class ClusterT {ROW, COLUMN, BOX};  // Will not be visible if placed in board.hpp
-
+static const char* clist[3] = {"Row", "column", "Box"};
 class Cluster {
 private:
+    static const int nSize_m;           // to allow simple board size change in future
     // Member variables
     const char* cType_m;
     Square*     arrPt_m;  // An array of 9 Square pointers
     // static const char* list_m[3];
     // static const string list_m[3];
+    void shoop( char val );
 
 public:
     // static constexpr char* clist[3] = {"Row", "Column", "Box"};

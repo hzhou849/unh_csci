@@ -81,7 +81,7 @@ print( ostream& os ) {
 
     // Reset the cout flags back to original (Decimal, no base)
     cout << resetiosflags (ios::basefield);
-      
+    os << "'" << value <<"'" << "  ";  
     // Start by shifting RIGHT once to discard first bit.
     // Convert to binary starting at position 1
     for ( int count=1; count < 10 ; count++ ) {
