@@ -18,6 +18,13 @@ OL = outer loop
           1 * nsize = OL(6)+9 = 6 + 0,1,2
           2 * nsize = OL(6)+18 = 6 + 0,1,2
 
+     b4)  0 * nsize = OL(27)+0 = 9 + 0,1,2
+          1 * nsize = OL(27)+9 = 6 + 0,1,2
+          2 * nsize = OL(27)+18 = 6 + 0,1,2
+    
+
+   
+
         // Algorithm works but requires only 2 rows
         x0, 1, 4,5, 8, 9
      b0)   0 * 6 = OL(0)+ 0 + 0,1,2 - ok! 0, 1, 2

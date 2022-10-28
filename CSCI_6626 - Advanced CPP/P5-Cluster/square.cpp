@@ -9,7 +9,8 @@ Square ::  Square ( char charIn, short row, short col )
     cout << "Square: Row:" << sqRow << ", Col:" << sqCol << " constructed." << endl;
 }
 
-Square :: ~Square () { /*cout << "Deleting Square: " <<sqRow<< ", "<<sqCol<<endl;*/ }
+Square :: ~Square () { cout << "Deleting Square: " <<sqRow<< ", "<<sqCol<<endl; }
+// Square :: ~Square () { /*cout << "Deleting Square: " <<sqRow<< ", "<<sqCol<<endl; }
 
 
 //-----------------------------------------------------------------------------
@@ -30,6 +31,24 @@ mark(char newChar) {
     else {
         cout << " [+] State is already marked. Nothing to do" << endl;
     }
+
+    
+}
+
+//-----------------------------------------------------------------------------
+/// @brief  Called from Cluster class iterates this is sq's vec of Col/Row/Box
+///         kick starts the process of removing value from possibilities list
+//-----------------------------------------------------------------------------
+// perhaps kicked off from Mark()???
+// test case in cluster() to call a square's shoop()
+//each cluster calls Square::shoop() -> cluster::shoop(val) -> square*::turnOff(num)
+    //call from main
+void Square :: 
+shoop() {
+    for (Cluster* itc : clues_m) {
+        itc->shoop(stateObj.getValue());   // instead of getter, can I delegate base constructor values?
+        // cout << "value test: " << value <<"; " << stateObj.getValue()<< endl;
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -38,6 +57,8 @@ mark(char newChar) {
 //-----------------------------------------------------------------------------
 void Square::turnOff( int val ) {
     cout << "turning off: " << val << endl;
+
+    stateObj.adjPlist(val); // deligate to state class
 }
 
 
@@ -51,7 +72,7 @@ ostream& Square ::
 print(ostream& os) {
     // print all of Square's members
     os << "[" << sqRow  << ", " << sqCol <<  "]"
-        // << "Value: " << stateObj
+        << " Value: " << stateObj
         << flush;
 
     return os;

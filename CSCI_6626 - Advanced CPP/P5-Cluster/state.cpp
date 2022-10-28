@@ -20,6 +20,7 @@ State ( char initVal ): value(initVal)  {
     if ( value >= '0' && value <= '9') {
         posList = 0;
         fixed = true;
+        
     } 
     else if ( value == '-') {
         
@@ -62,9 +63,26 @@ mark ( char charIn ) {
     }
 }
 
+
+//-----------------------------------------------------------------------------
+/// @brief Adjust the possibilities list by removing value pos.list
+//-----------------------------------------------------------------------------
+void State::adjPlist(int val) {
+    cout << "AdjPlist() - posList: " << *this;
+    posList &= ~(1 << val);
+    cout << "after: " << *this << endl;
+
+    //0x03fe
+    //         98 7654 321 0
+    //  0000 0011 1111 111 0
+    //  0000 0000 0010 000 0
+    //  1111 1111 1101 111 1
+}
+
 //-----------------------------------------------------------------------------
 /// @brief Retreive the current state's value
 /// @return value=Returns the current state value
+//-----------------------------------------------------------------------------
 char State :: 
 getValue () {
     return value;
@@ -74,6 +92,7 @@ getValue () {
 /// @brief Print the state values and possibilities list
 /// @param [in] os - Ostream object for data to be appended to
 /// @return the os object with the data
+//-----------------------------------------------------------------------------
 ostream& State :: 
 print( ostream& os ) {
     short tempValue = posList;
@@ -107,7 +126,10 @@ print( ostream& os ) {
         }
     }
     // Finish and flush the stream
-    os << endl;
+    os << std::hex << std::showbase<<" poslist: "<<posList << endl;
+    cout << resetiosflags (ios::basefield);
+    // os << endl;
+    // os << flush; // to not have newline
 
     return os;
 }

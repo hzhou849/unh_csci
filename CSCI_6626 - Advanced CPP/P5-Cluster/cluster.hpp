@@ -14,18 +14,18 @@
 #include "board.hpp"
 
 enum class ClusterT {ROW, COLUMN, BOX};  // Will not be visible if placed in board.hpp
-static const char* clist[3] = {"Row", "column", "Box"};
 class Cluster {
 private:
+    static const char* clist[3];
     static const int nSize_m;           // to allow simple board size change in future
     // Member variables
     const char* cType_m;
     Square*     arrPt_m;  // An array of 9 Square pointers
     // static const char* list_m[3];
     // static const string list_m[3];
-    void shoop( char val );
 
 public:
+    void shoop( char val );
     // static constexpr char* clist[3] = {"Row", "Column", "Box"};
 
     // Dr Fischer, is there a reason why you want it done this way?

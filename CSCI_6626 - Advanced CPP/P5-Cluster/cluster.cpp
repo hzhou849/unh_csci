@@ -12,6 +12,7 @@
 
 /* Static constants */
 const int Cluster::nSize_m = 9;
+const char* Cluster::clist[3] = {"Row", "column", "Box"};
 
 //-----------------------------------------------------------------------------
 /// @brief Constructor Cluster- Creates cluster type and binds this to its Sqs.
@@ -33,17 +34,17 @@ Cluster ::Cluster(ClusterT cType, Square *argPtr[])
 }
 
 //-----------------------------------------------------------------------------
-/// @brief Eliminates values from the possibilities list
+/// @brief Cycle this cluster and eliminate values from each Sq's pos. list
 /// @param[in] val - character to remove from the list
 //-----------------------------------------------------------------------------
 void Cluster ::
 shoop(char val) {
     int num = (val - '0'); // Char subtraction to convert value
-    cout << "num: " << num;
-
+    cout << "\n\ncluster::shoop() num: " << num << endl;
     // - for each of the nine sq* in this cluster, to turn off the num bit
     for (int it=0; it < nSize_m; ++it)  arrPt_m[it].turnOff(num);
 
+// test case in cluster() to call a square's shoop()
 //each cluster calls Square::shoop() -> cluster::shoop(val) -> square*::turnOff(num)
     //call from main
 }
@@ -55,6 +56,6 @@ shoop(char val) {
 ostream &Cluster ::
 print(ostream &os) {
     os << "CType: " <<  cType_m << "\n";
-    for (int it = 0; it < nSize_m; ++it){ os << arrPt_m[it] << endl; }
+    for (int it = 0; it < nSize_m; ++it){ os << arrPt_m[it] <<flush; }
     return os;
 }

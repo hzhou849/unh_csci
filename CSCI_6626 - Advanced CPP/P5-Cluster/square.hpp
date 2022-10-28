@@ -16,9 +16,8 @@ private:
     std::vector<Cluster*> clues_m;
 
 
-    void shoop();
-
 public:
+    void shoop();
     Square ()=default;
     Square (char charIn, short row, short col);
     ~Square();

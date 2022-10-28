@@ -18,11 +18,11 @@ static const short BIT_MASK   = 0x0001;       // Mask used for extracting last b
 //-----------------------------------------------------------------------------
 // State Class
 class State  {
-private: 
+protected: 
     short posList=0;
     char  value=' ';
     bool  fixed = true;
-    
+
 
 public:  
     State ()=default;            
@@ -30,8 +30,10 @@ public:
     ~State ()=default;           
     void mark (char ch);
     char getValue();
+    void adjPlist(int val);
     ostream& printFull (ostream& os);
     ostream& print (ostream& os);
+
 };
 
 inline ostream& operator<< ( ostream& os, State& state ) {

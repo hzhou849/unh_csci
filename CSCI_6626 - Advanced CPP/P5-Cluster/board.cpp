@@ -13,6 +13,8 @@
 
 //-----------------------------------------------------------------------------
 /// @brief Constructor - Board handles creating 3* N clusters of N Sq* each
+/// @param[in] type    - Board type (t)raditional, (d)diag, (s)ixy
+/// @param[in] puzFile - input file containing board_type and sq values.
 //-----------------------------------------------------------------------------
 Board ::Board(char type, ifstream &puzFile) : inFile_m(puzFile) {
     if (type == 't' || type == 'd') { nSize_m = 9; }
@@ -21,6 +23,9 @@ Board ::Board(char type, ifstream &puzFile) : inFile_m(puzFile) {
     bd_m = new Square[nSize_m * nSize_m];
     getPuzzle();
     mkCluster();
+    
+    // bd_m[79].shoop();
+  
 }
 
 //-----------------------------------------------------------------------------
@@ -28,7 +33,6 @@ Board ::Board(char type, ifstream &puzFile) : inFile_m(puzFile) {
 //-----------------------------------------------------------------------------
 void Board ::
 mkCluster() {
-    cout << "\n *******makeCluster called! *****************\n" << endl;
     Square *tempArr[9]; // As per instructions re-use this local array for all 27 cluster
 
     /* Create Row/Column/Box clusters */
@@ -39,9 +43,14 @@ mkCluster() {
     for (int box = 0; box < nSize_m; ++box)
         crtBox(box, tempArr);
 
-    cout << "\nBoard() Printing cluster sets: \n";
-    for (Cluster *c : clus_m)
-        cout << *c << endl;
+    cout << "\n===============================================================\n"
+         << "\tBoard() printing full cluster set\n"
+         << "===============================================================\n";
+    for (Cluster *itc : clus_m) {
+        cout << *itc << endl;
+    }
+
+        
 }
 
 //-----------------------------------------------------------------------------
@@ -121,10 +130,9 @@ getPuzzle() {
                 if ((tempChar >= '0' && tempChar <= '9') || (tempChar == '-')) {
                     sub(rowIter, colIter) = Square(tempChar, rowIter, colIter);
                     // cout << " [" << tempChar << "]: "  << "row: " << rowIter    //**Un-comment for debug
-                    //      << " col: " << colIter;
                 }
                 else if (tempChar == '\n') {
-                    // cout << "\n"  << "row: " << rowIter;                        //**Un-comment for debug
+                    // cout << "\n"  << "row: " << rowIter;  //**Un-comment for debug
                 }
                 else {
                     cout << tempChar;
@@ -166,7 +174,8 @@ print(ostream &os) {
 
     /* The old print of printing the squares objects */
     for (int iter = 0; iter < (bSize); iter++) {
-        os << bd_m[iter] << " " << bd_m[iter].prState().str();
+        // os << bd_m[iter] << " " << bd_m[iter].prState().str(); // print full
+        os << bd_m[iter];
         if (iter % nSize_m == nLine)
             os << "\n";
     }
