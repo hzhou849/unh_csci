@@ -22,7 +22,7 @@ const int Cluster::nSize_m = 9;
 /// @param[in] argPtr - Array to hold this cluster's N #of values
 //-----------------------------------------------------------------------------
 Cluster ::Cluster(ClusterT cType, Square *argPtr[])
-    : cType_m(clist[static_cast<int>(cType)])       {               // As per instructions to take in ClusterT to char*
+    : cType_m(clist[static_cast<int>(cType)])       { // As per instructions to take in ClusterT to char*
     arrPt_m = new Square[nSize_m];
 
     for (int it = 0; it < nSize_m; it++) {
@@ -50,6 +50,7 @@ shoop(char val) {
 
 //-----------------------------------------------------------------------------
 /// @brief iterates through member array[N] squares for this cluster instance
+/// @param[out] os - Stream to return back for terminal pr
 //-----------------------------------------------------------------------------
 ostream &Cluster ::
 print(ostream &os) {
