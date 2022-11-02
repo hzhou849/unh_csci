@@ -2,344 +2,842 @@
 ----------------------------------------------------------------
 	Howard Zhou
 	CSCI 6626 - Advanced C++ - Design Principles/OOP
-	Sun Oct  9 2022	21:28:31
+	Wed Nov  2 2022	18:20:49
 ----------------------------------------------------------------
 Attempting to open file: puzt.txt
 [+] Game Type character assigned: t
 Constructing Board...
- [4]: row: 1 col: 1Square: Row:1, Col:1 constructed.
-Deleting Square: 1, 1
+State Object constructed with value: '4' 
+Square: Row:1, Col:1 constructed.
 
- [-]: row: 1 col: 2Square: Row:1, Col:2 constructed.
-Deleting Square: 1, 2
+State Object constructed with value: '-' 
+Square: Row:1, Col:2 constructed.
 
- [6]: row: 1 col: 3Square: Row:1, Col:3 constructed.
-Deleting Square: 1, 3
+State Object constructed with value: '6' 
+Square: Row:1, Col:3 constructed.
 
- [-]: row: 1 col: 4Square: Row:1, Col:4 constructed.
-Deleting Square: 1, 4
+State Object constructed with value: '-' 
+Square: Row:1, Col:4 constructed.
 
- [-]: row: 1 col: 5Square: Row:1, Col:5 constructed.
-Deleting Square: 1, 5
+State Object constructed with value: '-' 
+Square: Row:1, Col:5 constructed.
 
- [7]: row: 1 col: 6Square: Row:1, Col:6 constructed.
-Deleting Square: 1, 6
+State Object constructed with value: '7' 
+Square: Row:1, Col:6 constructed.
 
- [-]: row: 1 col: 7Square: Row:1, Col:7 constructed.
-Deleting Square: 1, 7
+State Object constructed with value: '-' 
+Square: Row:1, Col:7 constructed.
 
- [-]: row: 1 col: 8Square: Row:1, Col:8 constructed.
-Deleting Square: 1, 8
+State Object constructed with value: '-' 
+Square: Row:1, Col:8 constructed.
 
- [-]: row: 1 col: 9Square: Row:1, Col:9 constructed.
-Deleting Square: 1, 9
+State Object constructed with value: '-' 
+Square: Row:1, Col:9 constructed.
 
- [-]: row: 2 col: 1Square: Row:2, Col:1 constructed.
-Deleting Square: 2, 1
+State Object constructed with value: '-' 
+Square: Row:2, Col:1 constructed.
 
- [9]: row: 2 col: 2Square: Row:2, Col:2 constructed.
-Deleting Square: 2, 2
+State Object constructed with value: '9' 
+Square: Row:2, Col:2 constructed.
 
- [-]: row: 2 col: 3Square: Row:2, Col:3 constructed.
-Deleting Square: 2, 3
+State Object constructed with value: '-' 
+Square: Row:2, Col:3 constructed.
 
- [5]: row: 2 col: 4Square: Row:2, Col:4 constructed.
-Deleting Square: 2, 4
+State Object constructed with value: '5' 
+Square: Row:2, Col:4 constructed.
 
- [-]: row: 2 col: 5Square: Row:2, Col:5 constructed.
-Deleting Square: 2, 5
+State Object constructed with value: '-' 
+Square: Row:2, Col:5 constructed.
 
- [6]: row: 2 col: 6Square: Row:2, Col:6 constructed.
-Deleting Square: 2, 6
+State Object constructed with value: '6' 
+Square: Row:2, Col:6 constructed.
 
- [-]: row: 2 col: 7Square: Row:2, Col:7 constructed.
-Deleting Square: 2, 7
+State Object constructed with value: '-' 
+Square: Row:2, Col:7 constructed.
 
- [7]: row: 2 col: 8Square: Row:2, Col:8 constructed.
-Deleting Square: 2, 8
+State Object constructed with value: '7' 
+Square: Row:2, Col:8 constructed.
 
- [-]: row: 2 col: 9Square: Row:2, Col:9 constructed.
-Deleting Square: 2, 9
+State Object constructed with value: '-' 
+Square: Row:2, Col:9 constructed.
 
- [-]: row: 3 col: 1Square: Row:3, Col:1 constructed.
-Deleting Square: 3, 1
+State Object constructed with value: '-' 
+Square: Row:3, Col:1 constructed.
 
- [-]: row: 3 col: 2Square: Row:3, Col:2 constructed.
-Deleting Square: 3, 2
+State Object constructed with value: '-' 
+Square: Row:3, Col:2 constructed.
 
- [-]: row: 3 col: 3Square: Row:3, Col:3 constructed.
-Deleting Square: 3, 3
+State Object constructed with value: '-' 
+Square: Row:3, Col:3 constructed.
 
- [-]: row: 3 col: 4Square: Row:3, Col:4 constructed.
-Deleting Square: 3, 4
+State Object constructed with value: '-' 
+Square: Row:3, Col:4 constructed.
 
- [-]: row: 3 col: 5Square: Row:3, Col:5 constructed.
-Deleting Square: 3, 5
+State Object constructed with value: '-' 
+Square: Row:3, Col:5 constructed.
 
- [-]: row: 3 col: 6Square: Row:3, Col:6 constructed.
-Deleting Square: 3, 6
+State Object constructed with value: '-' 
+Square: Row:3, Col:6 constructed.
 
- [5]: row: 3 col: 7Square: Row:3, Col:7 constructed.
-Deleting Square: 3, 7
+State Object constructed with value: '5' 
+Square: Row:3, Col:7 constructed.
 
- [8]: row: 3 col: 8Square: Row:3, Col:8 constructed.
-Deleting Square: 3, 8
+State Object constructed with value: '8' 
+Square: Row:3, Col:8 constructed.
 
- [-]: row: 3 col: 9Square: Row:3, Col:9 constructed.
-Deleting Square: 3, 9
+State Object constructed with value: '-' 
+Square: Row:3, Col:9 constructed.
 
- [-]: row: 4 col: 1Square: Row:4, Col:1 constructed.
-Deleting Square: 4, 1
+State Object constructed with value: '-' 
+Square: Row:4, Col:1 constructed.
 
- [-]: row: 4 col: 2Square: Row:4, Col:2 constructed.
-Deleting Square: 4, 2
+State Object constructed with value: '-' 
+Square: Row:4, Col:2 constructed.
 
- [-]: row: 4 col: 3Square: Row:4, Col:3 constructed.
-Deleting Square: 4, 3
+State Object constructed with value: '-' 
+Square: Row:4, Col:3 constructed.
 
- [9]: row: 4 col: 4Square: Row:4, Col:4 constructed.
-Deleting Square: 4, 4
+State Object constructed with value: '9' 
+Square: Row:4, Col:4 constructed.
 
- [-]: row: 4 col: 5Square: Row:4, Col:5 constructed.
-Deleting Square: 4, 5
+State Object constructed with value: '-' 
+Square: Row:4, Col:5 constructed.
 
- [-]: row: 4 col: 6Square: Row:4, Col:6 constructed.
-Deleting Square: 4, 6
+State Object constructed with value: '-' 
+Square: Row:4, Col:6 constructed.
 
- [3]: row: 4 col: 7Square: Row:4, Col:7 constructed.
-Deleting Square: 4, 7
+State Object constructed with value: '3' 
+Square: Row:4, Col:7 constructed.
 
- [4]: row: 4 col: 8Square: Row:4, Col:8 constructed.
-Deleting Square: 4, 8
+State Object constructed with value: '4' 
+Square: Row:4, Col:8 constructed.
 
- [-]: row: 4 col: 9Square: Row:4, Col:9 constructed.
-Deleting Square: 4, 9
+State Object constructed with value: '-' 
+Square: Row:4, Col:9 constructed.
 
- [3]: row: 5 col: 1Square: Row:5, Col:1 constructed.
-Deleting Square: 5, 1
+State Object constructed with value: '3' 
+Square: Row:5, Col:1 constructed.
 
- [-]: row: 5 col: 2Square: Row:5, Col:2 constructed.
-Deleting Square: 5, 2
+State Object constructed with value: '-' 
+Square: Row:5, Col:2 constructed.
 
- [-]: row: 5 col: 3Square: Row:5, Col:3 constructed.
-Deleting Square: 5, 3
+State Object constructed with value: '-' 
+Square: Row:5, Col:3 constructed.
 
- [-]: row: 5 col: 4Square: Row:5, Col:4 constructed.
-Deleting Square: 5, 4
+State Object constructed with value: '-' 
+Square: Row:5, Col:4 constructed.
 
- [-]: row: 5 col: 5Square: Row:5, Col:5 constructed.
-Deleting Square: 5, 5
+State Object constructed with value: '-' 
+Square: Row:5, Col:5 constructed.
 
- [-]: row: 5 col: 6Square: Row:5, Col:6 constructed.
-Deleting Square: 5, 6
+State Object constructed with value: '-' 
+Square: Row:5, Col:6 constructed.
 
- [-]: row: 5 col: 7Square: Row:5, Col:7 constructed.
-Deleting Square: 5, 7
+State Object constructed with value: '-' 
+Square: Row:5, Col:7 constructed.
 
- [-]: row: 5 col: 8Square: Row:5, Col:8 constructed.
-Deleting Square: 5, 8
+State Object constructed with value: '-' 
+Square: Row:5, Col:8 constructed.
 
- [8]: row: 5 col: 9Square: Row:5, Col:9 constructed.
-Deleting Square: 5, 9
+State Object constructed with value: '8' 
+Square: Row:5, Col:9 constructed.
 
- [-]: row: 6 col: 1Square: Row:6, Col:1 constructed.
-Deleting Square: 6, 1
+State Object constructed with value: '-' 
+Square: Row:6, Col:1 constructed.
 
- [7]: row: 6 col: 2Square: Row:6, Col:2 constructed.
-Deleting Square: 6, 2
+State Object constructed with value: '7' 
+Square: Row:6, Col:2 constructed.
 
- [8]: row: 6 col: 3Square: Row:6, Col:3 constructed.
-Deleting Square: 6, 3
+State Object constructed with value: '8' 
+Square: Row:6, Col:3 constructed.
 
- [-]: row: 6 col: 4Square: Row:6, Col:4 constructed.
-Deleting Square: 6, 4
+State Object constructed with value: '-' 
+Square: Row:6, Col:4 constructed.
 
- [-]: row: 6 col: 5Square: Row:6, Col:5 constructed.
-Deleting Square: 6, 5
+State Object constructed with value: '-' 
+Square: Row:6, Col:5 constructed.
 
- [4]: row: 6 col: 6Square: Row:6, Col:6 constructed.
-Deleting Square: 6, 6
+State Object constructed with value: '4' 
+Square: Row:6, Col:6 constructed.
 
- [-]: row: 6 col: 7Square: Row:6, Col:7 constructed.
-Deleting Square: 6, 7
+State Object constructed with value: '-' 
+Square: Row:6, Col:7 constructed.
 
- [-]: row: 6 col: 8Square: Row:6, Col:8 constructed.
-Deleting Square: 6, 8
+State Object constructed with value: '-' 
+Square: Row:6, Col:8 constructed.
 
- [-]: row: 6 col: 9Square: Row:6, Col:9 constructed.
-Deleting Square: 6, 9
+State Object constructed with value: '-' 
+Square: Row:6, Col:9 constructed.
 
- [-]: row: 7 col: 1Square: Row:7, Col:1 constructed.
-Deleting Square: 7, 1
+State Object constructed with value: '-' 
+Square: Row:7, Col:1 constructed.
 
- [1]: row: 7 col: 2Square: Row:7, Col:2 constructed.
-Deleting Square: 7, 2
+State Object constructed with value: '1' 
+Square: Row:7, Col:2 constructed.
 
- [7]: row: 7 col: 3Square: Row:7, Col:3 constructed.
-Deleting Square: 7, 3
+State Object constructed with value: '7' 
+Square: Row:7, Col:3 constructed.
 
- [-]: row: 7 col: 4Square: Row:7, Col:4 constructed.
-Deleting Square: 7, 4
+State Object constructed with value: '-' 
+Square: Row:7, Col:4 constructed.
 
- [-]: row: 7 col: 5Square: Row:7, Col:5 constructed.
-Deleting Square: 7, 5
+State Object constructed with value: '-' 
+Square: Row:7, Col:5 constructed.
 
- [-]: row: 7 col: 6Square: Row:7, Col:6 constructed.
-Deleting Square: 7, 6
+State Object constructed with value: '-' 
+Square: Row:7, Col:6 constructed.
 
- [-]: row: 7 col: 7Square: Row:7, Col:7 constructed.
-Deleting Square: 7, 7
+State Object constructed with value: '-' 
+Square: Row:7, Col:7 constructed.
 
- [-]: row: 7 col: 8Square: Row:7, Col:8 constructed.
-Deleting Square: 7, 8
+State Object constructed with value: '-' 
+Square: Row:7, Col:8 constructed.
 
- [-]: row: 7 col: 9Square: Row:7, Col:9 constructed.
-Deleting Square: 7, 9
+State Object constructed with value: '-' 
+Square: Row:7, Col:9 constructed.
 
- [-]: row: 8 col: 1Square: Row:8, Col:1 constructed.
-Deleting Square: 8, 1
+State Object constructed with value: '-' 
+Square: Row:8, Col:1 constructed.
 
- [8]: row: 8 col: 2Square: Row:8, Col:2 constructed.
-Deleting Square: 8, 2
+State Object constructed with value: '8' 
+Square: Row:8, Col:2 constructed.
 
- [-]: row: 8 col: 3Square: Row:8, Col:3 constructed.
-Deleting Square: 8, 3
+State Object constructed with value: '-' 
+Square: Row:8, Col:3 constructed.
 
- [2]: row: 8 col: 4Square: Row:8, Col:4 constructed.
-Deleting Square: 8, 4
+State Object constructed with value: '2' 
+Square: Row:8, Col:4 constructed.
 
- [-]: row: 8 col: 5Square: Row:8, Col:5 constructed.
-Deleting Square: 8, 5
+State Object constructed with value: '-' 
+Square: Row:8, Col:5 constructed.
 
- [9]: row: 8 col: 6Square: Row:8, Col:6 constructed.
-Deleting Square: 8, 6
+State Object constructed with value: '9' 
+Square: Row:8, Col:6 constructed.
 
- [-]: row: 8 col: 7Square: Row:8, Col:7 constructed.
-Deleting Square: 8, 7
+State Object constructed with value: '-' 
+Square: Row:8, Col:7 constructed.
 
- [6]: row: 8 col: 8Square: Row:8, Col:8 constructed.
-Deleting Square: 8, 8
+State Object constructed with value: '6' 
+Square: Row:8, Col:8 constructed.
 
- [-]: row: 8 col: 9Square: Row:8, Col:9 constructed.
-Deleting Square: 8, 9
+State Object constructed with value: '-' 
+Square: Row:8, Col:9 constructed.
 
- [9]: row: 9 col: 1Square: Row:9, Col:1 constructed.
-Deleting Square: 9, 1
+State Object constructed with value: '9' 
+Square: Row:9, Col:1 constructed.
 
- [-]: row: 9 col: 2Square: Row:9, Col:2 constructed.
-Deleting Square: 9, 2
-
- [-]: row: 9 col: 3Square: Row:9, Col:3 constructed.
-Deleting Square: 9, 3
+State Object constructed with value: '-' 
+Square: Row:9, Col:2 constructed.
+
+State Object constructed with value: '-' 
+Square: Row:9, Col:3 constructed.
 
- [7]: row: 9 col: 4Square: Row:9, Col:4 constructed.
-Deleting Square: 9, 4
-
- [-]: row: 9 col: 5Square: Row:9, Col:5 constructed.
-Deleting Square: 9, 5
-
- [-]: row: 9 col: 6Square: Row:9, Col:6 constructed.
-Deleting Square: 9, 6
-
- [8]: row: 9 col: 7Square: Row:9, Col:7 constructed.
-Deleting Square: 9, 7
-
- [4]: row: 9 col: 8Square: Row:9, Col:8 constructed.
-Deleting Square: 9, 8
-
- [-]: row: 9 col: 9Square: Row:9, Col:9 constructed.
-Deleting Square: 9, 9
-
-Board constructor is done.
-Square: [1, 1]  Value: '4'  Possibilities: - - - - - - - - - 
-Square: [1, 2]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [1, 3]  Value: '6'  Possibilities: - - - - - - - - - 
-Square: [1, 4]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [1, 5]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [1, 6]  Value: '7'  Possibilities: - - - - - - - - - 
-Square: [1, 7]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [1, 8]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [1, 9]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-
-Square: [2, 1]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [2, 2]  Value: '9'  Possibilities: - - - - - - - - - 
-Square: [2, 3]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [2, 4]  Value: '5'  Possibilities: - - - - - - - - - 
-Square: [2, 5]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [2, 6]  Value: '6'  Possibilities: - - - - - - - - - 
-Square: [2, 7]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [2, 8]  Value: '7'  Possibilities: - - - - - - - - - 
-Square: [2, 9]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-
-Square: [3, 1]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [3, 2]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [3, 3]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [3, 4]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [3, 5]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [3, 6]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [3, 7]  Value: '5'  Possibilities: - - - - - - - - - 
-Square: [3, 8]  Value: '8'  Possibilities: - - - - - - - - - 
-Square: [3, 9]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-
-Square: [4, 1]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [4, 2]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [4, 3]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [4, 4]  Value: '9'  Possibilities: - - - - - - - - - 
-Square: [4, 5]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [4, 6]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [4, 7]  Value: '3'  Possibilities: - - - - - - - - - 
-Square: [4, 8]  Value: '4'  Possibilities: - - - - - - - - - 
-Square: [4, 9]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-
-Square: [5, 1]  Value: '3'  Possibilities: - - - - - - - - - 
-Square: [5, 2]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [5, 3]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [5, 4]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [5, 5]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [5, 6]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [5, 7]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [5, 8]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [5, 9]  Value: '8'  Possibilities: - - - - - - - - - 
-
-Square: [6, 1]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [6, 2]  Value: '7'  Possibilities: - - - - - - - - - 
-Square: [6, 3]  Value: '8'  Possibilities: - - - - - - - - - 
-Square: [6, 4]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [6, 5]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [6, 6]  Value: '4'  Possibilities: - - - - - - - - - 
-Square: [6, 7]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [6, 8]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [6, 9]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-
-Square: [7, 1]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [7, 2]  Value: '1'  Possibilities: - - - - - - - - - 
-Square: [7, 3]  Value: '7'  Possibilities: - - - - - - - - - 
-Square: [7, 4]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [7, 5]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [7, 6]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [7, 7]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [7, 8]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [7, 9]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-
-Square: [8, 1]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [8, 2]  Value: '8'  Possibilities: - - - - - - - - - 
-Square: [8, 3]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [8, 4]  Value: '2'  Possibilities: - - - - - - - - - 
-Square: [8, 5]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [8, 6]  Value: '9'  Possibilities: - - - - - - - - - 
-Square: [8, 7]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [8, 8]  Value: '6'  Possibilities: - - - - - - - - - 
-Square: [8, 9]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-
-Square: [9, 1]  Value: '9'  Possibilities: - - - - - - - - - 
-Square: [9, 2]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [9, 3]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [9, 4]  Value: '7'  Possibilities: - - - - - - - - - 
-Square: [9, 5]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [9, 6]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
-Square: [9, 7]  Value: '8'  Possibilities: - - - - - - - - - 
-Square: [9, 8]  Value: '4'  Possibilities: - - - - - - - - - 
-Square: [9, 9]  Value: '-'  Possibilities: 1 2 3 4 5 6 7 8 9 
+State Object constructed with value: '7' 
+Square: Row:9, Col:4 constructed.
+
+State Object constructed with value: '-' 
+Square: Row:9, Col:5 constructed.
+
+State Object constructed with value: '-' 
+Square: Row:9, Col:6 constructed.
+
+State Object constructed with value: '8' 
+Square: Row:9, Col:7 constructed.
+
+State Object constructed with value: '4' 
+Square: Row:9, Col:8 constructed.
+
+State Object constructed with value: '-' 
+Square: Row:9, Col:9 constructed.
+
+
+===============================================================
+	Board() printing full cluster set
+CType: Row
+0x55d3adc4ee78 [1, 1] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc4eea0 [1, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eec8 [1, 3] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc4eef0 [1, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ef18 [1, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ef40 [1, 6] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc4ef68 [1, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ef90 [1, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4efb8 [1, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Row
+0x55d3adc52b58 [2, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc52b80 [2, 2] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc52ba8 [2, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc52bd0 [2, 4] Value: '5'  - - - - - - - - -  poslist: 0
+0x55d3adc52bf8 [2, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc52c20 [2, 6] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc52c48 [2, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc52c70 [2, 8] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc52c98 [2, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Row
+0x55d3adc52f38 [3, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc52f60 [3, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc52f88 [3, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc52fb0 [3, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc52fd8 [3, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53000 [3, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53028 [3, 7] Value: '5'  - - - - - - - - -  poslist: 0
+0x55d3adc53050 [3, 8] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc53078 [3, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Row
+0x55d3adc53328 [4, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53350 [4, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53378 [4, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc533a0 [4, 4] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc533c8 [4, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc533f0 [4, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53418 [4, 7] Value: '3'  - - - - - - - - -  poslist: 0
+0x55d3adc53440 [4, 8] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc53468 [4, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Row
+0x55d3adc53708 [5, 1] Value: '3'  - - - - - - - - -  poslist: 0
+0x55d3adc53730 [5, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53758 [5, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53780 [5, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc537a8 [5, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc537d0 [5, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc537f8 [5, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53820 [5, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53848 [5, 9] Value: '8'  - - - - - - - - -  poslist: 0
+
+CType: Row
+0x55d3adc53b38 [6, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53b60 [6, 2] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc53b88 [6, 3] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc53bb0 [6, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53bd8 [6, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53c00 [6, 6] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc53c28 [6, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53c50 [6, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53c78 [6, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Row
+0x55d3adc53f18 [7, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53f40 [7, 2] Value: '1'  - - - - - - - - -  poslist: 0
+0x55d3adc53f68 [7, 3] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc53f90 [7, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53fb8 [7, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc53fe0 [7, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54008 [7, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54030 [7, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54058 [7, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Row
+0x55d3adc542f8 [8, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54320 [8, 2] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc54348 [8, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54370 [8, 4] Value: '2'  - - - - - - - - -  poslist: 0
+0x55d3adc54398 [8, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc543c0 [8, 6] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc543e8 [8, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54410 [8, 8] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc54438 [8, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Row
+0x55d3adc546d8 [9, 1] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc54700 [9, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54728 [9, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54750 [9, 4] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc54778 [9, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc547a0 [9, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc547c8 [9, 7] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc547f0 [9, 8] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc54818 [9, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: column
+0x55d3adc54b48 [1, 1] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc54b70 [2, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54b98 [3, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54bc0 [4, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54be8 [5, 1] Value: '3'  - - - - - - - - -  poslist: 0
+0x55d3adc54c10 [6, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54c38 [7, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54c60 [8, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54c88 [9, 1] Value: '9'  - - - - - - - - -  poslist: 0
+
+CType: column
+0x55d3adc54e08 [1, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54e30 [2, 2] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc54e58 [3, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54e80 [4, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54ea8 [5, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc54ed0 [6, 2] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc54ef8 [7, 2] Value: '1'  - - - - - - - - -  poslist: 0
+0x55d3adc54f20 [8, 2] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc54f48 [9, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: column
+0x55d3adc550c8 [1, 3] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc550f0 [2, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55118 [3, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55140 [4, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55168 [5, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55190 [6, 3] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc551b8 [7, 3] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc551e0 [8, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55208 [9, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: column
+0x55d3adc55388 [1, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc553b0 [2, 4] Value: '5'  - - - - - - - - -  poslist: 0
+0x55d3adc553d8 [3, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55400 [4, 4] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc55428 [5, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55450 [6, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55478 [7, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc554a0 [8, 4] Value: '2'  - - - - - - - - -  poslist: 0
+0x55d3adc554c8 [9, 4] Value: '7'  - - - - - - - - -  poslist: 0
+
+CType: column
+0x55d3adc55648 [1, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55670 [2, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55698 [3, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc556c0 [4, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc556e8 [5, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55710 [6, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55738 [7, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55760 [8, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55788 [9, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: column
+0x55d3adc55908 [1, 6] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc55930 [2, 6] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc55958 [3, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55980 [4, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc559a8 [5, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc559d0 [6, 6] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc559f8 [7, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55a20 [8, 6] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc55a48 [9, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: column
+0x55d3adc55bc8 [1, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55bf0 [2, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55c18 [3, 7] Value: '5'  - - - - - - - - -  poslist: 0
+0x55d3adc55c40 [4, 7] Value: '3'  - - - - - - - - -  poslist: 0
+0x55d3adc55c68 [5, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55c90 [6, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55cb8 [7, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55ce0 [8, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55d08 [9, 7] Value: '8'  - - - - - - - - -  poslist: 0
+
+CType: column
+0x55d3adc55e88 [1, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55eb0 [2, 8] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc55ed8 [3, 8] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc55f00 [4, 8] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc55f28 [5, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55f50 [6, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55f78 [7, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc55fa0 [8, 8] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc55fc8 [9, 8] Value: '4'  - - - - - - - - -  poslist: 0
+
+CType: column
+0x55d3adc56258 [1, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56280 [2, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc562a8 [3, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc562d0 [4, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc562f8 [5, 9] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc56320 [6, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56348 [7, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56370 [8, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56398 [9, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Box
+0x55d3adc56518 [1, 1] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc56540 [1, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56568 [1, 3] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc56590 [2, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc565b8 [2, 2] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc565e0 [2, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56608 [3, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56630 [3, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56658 [3, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Box
+0x55d3adc56838 [1, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56860 [1, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56888 [1, 6] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc568b0 [2, 4] Value: '5'  - - - - - - - - -  poslist: 0
+0x55d3adc568d8 [2, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56900 [2, 6] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc56928 [3, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56950 [3, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56978 [3, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Box
+0x55d3adc56b88 [1, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56bb0 [1, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56bd8 [1, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56c00 [2, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56c28 [2, 8] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc56c50 [2, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56c78 [3, 7] Value: '5'  - - - - - - - - -  poslist: 0
+0x55d3adc56ca0 [3, 8] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc56cc8 [3, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Box
+0x55d3adc56ed8 [4, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56f00 [4, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56f28 [4, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56f50 [5, 1] Value: '3'  - - - - - - - - -  poslist: 0
+0x55d3adc56f78 [5, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56fa0 [5, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56fc8 [6, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc56ff0 [6, 2] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc57018 [6, 3] Value: '8'  - - - - - - - - -  poslist: 0
+
+CType: Box
+0x55d3adc57228 [4, 4] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc57250 [4, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57278 [4, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc572a0 [5, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc572c8 [5, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc572f0 [5, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57318 [6, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57340 [6, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57368 [6, 6] Value: '4'  - - - - - - - - -  poslist: 0
+
+CType: Box
+0x55d3adc57578 [4, 7] Value: '3'  - - - - - - - - -  poslist: 0
+0x55d3adc575a0 [4, 8] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc575c8 [4, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc575f0 [5, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57618 [5, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57640 [5, 9] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc57668 [6, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57690 [6, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc576b8 [6, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Box
+0x55d3adc578c8 [7, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc578f0 [7, 2] Value: '1'  - - - - - - - - -  poslist: 0
+0x55d3adc57918 [7, 3] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc57940 [8, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57968 [8, 2] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc57990 [8, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc579b8 [9, 1] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc579e0 [9, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57a08 [9, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Box
+0x55d3adc57c18 [7, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57c40 [7, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57c68 [7, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57c90 [8, 4] Value: '2'  - - - - - - - - -  poslist: 0
+0x55d3adc57cb8 [8, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57ce0 [8, 6] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc57d08 [9, 4] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc57d30 [9, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57d58 [9, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+CType: Box
+0x55d3adc57f68 [7, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57f90 [7, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57fb8 [7, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc57fe0 [8, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc58008 [8, 8] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc58030 [8, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc58058 [9, 7] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc58080 [9, 8] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc580a8 [9, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+
+
+0x55d3adc4e198 [1, 1] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc4e1c0 [1, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e1e8 [1, 3] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc4e210 [1, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e238 [1, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e260 [1, 6] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc4e288 [1, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e2b0 [1, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e2d8 [1, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4e300 [2, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e328 [2, 2] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc4e350 [2, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e378 [2, 4] Value: '5'  - - - - - - - - -  poslist: 0
+0x55d3adc4e3a0 [2, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e3c8 [2, 6] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc4e3f0 [2, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e418 [2, 8] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc4e440 [2, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4e468 [3, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e490 [3, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e4b8 [3, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e4e0 [3, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e508 [3, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e530 [3, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e558 [3, 7] Value: '5'  - - - - - - - - -  poslist: 0
+0x55d3adc4e580 [3, 8] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc4e5a8 [3, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4e5d0 [4, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e5f8 [4, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e620 [4, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e648 [4, 4] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc4e670 [4, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e698 [4, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e6c0 [4, 7] Value: '3'  - - - - - - - - -  poslist: 0
+0x55d3adc4e6e8 [4, 8] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc4e710 [4, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4e738 [5, 1] Value: '3'  - - - - - - - - -  poslist: 0
+0x55d3adc4e760 [5, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e788 [5, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e7b0 [5, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e7d8 [5, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e800 [5, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e828 [5, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e850 [5, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e878 [5, 9] Value: '8'  - - - - - - - - -  poslist: 0
+
+0x55d3adc4e8a0 [6, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e8c8 [6, 2] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc4e8f0 [6, 3] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc4e918 [6, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e940 [6, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e968 [6, 6] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc4e990 [6, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e9b8 [6, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e9e0 [6, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4ea08 [7, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ea30 [7, 2] Value: '1'  - - - - - - - - -  poslist: 0
+0x55d3adc4ea58 [7, 3] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc4ea80 [7, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eaa8 [7, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ead0 [7, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eaf8 [7, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eb20 [7, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eb48 [7, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4eb70 [8, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eb98 [8, 2] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc4ebc0 [8, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ebe8 [8, 4] Value: '2'  - - - - - - - - -  poslist: 0
+0x55d3adc4ec10 [8, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ec38 [8, 6] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc4ec60 [8, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ec88 [8, 8] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc4ecb0 [8, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4ecd8 [9, 1] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc4ed00 [9, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ed28 [9, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ed50 [9, 4] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc4ed78 [9, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eda0 [9, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4edc8 [9, 7] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc4edf0 [9, 8] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc4ee18 [9, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+
+
+Sudoku Helper
+
+	 m) Mark
+	 u) Undo
+	 r) Redo
+	 s) Save Game
+	 e) Restore Game
+	 q) Quit
+
+ Enter code of desired item: 
+[!] Option m-Mark selected
+
+
+cluster::shoop() num: 4
+	before: '9'  - - - - - - - - -  poslist: 0
+	 after: '9'  - - - - - - - - -  poslist: 0
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '7'  - - - - - - - - -  poslist: 0
+	 after: '7'  - - - - - - - - -  poslist: 0
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '8'  - - - - - - - - -  poslist: 0
+	 after: '8'  - - - - - - - - -  poslist: 0
+
+	before: '4'  - - - - - - - - -  poslist: 0
+	 after: '4'  - - - - - - - - -  poslist: 0
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+
+
+cluster::shoop() num: 4
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '7'  - - - - - - - - -  poslist: 0
+	 after: '7'  - - - - - - - - -  poslist: 0
+
+	before: '8'  - - - - - - - - -  poslist: 0
+	 after: '8'  - - - - - - - - -  poslist: 0
+
+	before: '4'  - - - - - - - - -  poslist: 0
+	 after: '4'  - - - - - - - - -  poslist: 0
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '6'  - - - - - - - - -  poslist: 0
+	 after: '6'  - - - - - - - - -  poslist: 0
+
+	before: '4'  - - - - - - - - -  poslist: 0
+	 after: '4'  - - - - - - - - -  poslist: 0
+
+
+
+cluster::shoop() num: 4
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '6'  - - - - - - - - -  poslist: 0
+	 after: '6'  - - - - - - - - -  poslist: 0
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+	before: '8'  - - - - - - - - -  poslist: 0
+	 after: '8'  - - - - - - - - -  poslist: 0
+
+	before: '4'  - - - - - - - - -  poslist: 0
+	 after: '4'  - - - - - - - - -  poslist: 0
+
+	before: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+	 after: '-'  1 2 3 - 5 6 7 8 9  poslist: 0x3ee
+
+
+---------------------------------------------------------------
+
+
+0x55d3adc4e198 [1, 1] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc4e1c0 [1, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e1e8 [1, 3] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc4e210 [1, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e238 [1, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e260 [1, 6] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc4e288 [1, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e2b0 [1, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e2d8 [1, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4e300 [2, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e328 [2, 2] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc4e350 [2, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e378 [2, 4] Value: '5'  - - - - - - - - -  poslist: 0
+0x55d3adc4e3a0 [2, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e3c8 [2, 6] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc4e3f0 [2, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e418 [2, 8] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc4e440 [2, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4e468 [3, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e490 [3, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e4b8 [3, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e4e0 [3, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e508 [3, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e530 [3, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e558 [3, 7] Value: '5'  - - - - - - - - -  poslist: 0
+0x55d3adc4e580 [3, 8] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc4e5a8 [3, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4e5d0 [4, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e5f8 [4, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e620 [4, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e648 [4, 4] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc4e670 [4, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e698 [4, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e6c0 [4, 7] Value: '3'  - - - - - - - - -  poslist: 0
+0x55d3adc4e6e8 [4, 8] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc4e710 [4, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4e738 [5, 1] Value: '3'  - - - - - - - - -  poslist: 0
+0x55d3adc4e760 [5, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e788 [5, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e7b0 [5, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e7d8 [5, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e800 [5, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e828 [5, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e850 [5, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e878 [5, 9] Value: '8'  - - - - - - - - -  poslist: 0
+
+0x55d3adc4e8a0 [6, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e8c8 [6, 2] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc4e8f0 [6, 3] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc4e918 [6, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e940 [6, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e968 [6, 6] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc4e990 [6, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e9b8 [6, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4e9e0 [6, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4ea08 [7, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ea30 [7, 2] Value: '1'  - - - - - - - - -  poslist: 0
+0x55d3adc4ea58 [7, 3] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc4ea80 [7, 4] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eaa8 [7, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ead0 [7, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eaf8 [7, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eb20 [7, 8] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eb48 [7, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4eb70 [8, 1] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eb98 [8, 2] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc4ebc0 [8, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ebe8 [8, 4] Value: '2'  - - - - - - - - -  poslist: 0
+0x55d3adc4ec10 [8, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ec38 [8, 6] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc4ec60 [8, 7] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ec88 [8, 8] Value: '6'  - - - - - - - - -  poslist: 0
+0x55d3adc4ecb0 [8, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+
+0x55d3adc4ecd8 [9, 1] Value: '9'  - - - - - - - - -  poslist: 0
+0x55d3adc4ed00 [9, 2] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ed28 [9, 3] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4ed50 [9, 4] Value: '7'  - - - - - - - - -  poslist: 0
+0x55d3adc4ed78 [9, 5] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4eda0 [9, 6] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
+0x55d3adc4edc8 [9, 7] Value: '8'  - - - - - - - - -  poslist: 0
+0x55d3adc4edf0 [9, 8] Value: '4'  - - - - - - - - -  poslist: 0
+0x55d3adc4ee18 [9, 9] Value: '-'  1 2 3 4 5 6 7 8 9  poslist: 0x3fe
 
 
 
@@ -356,85 +854,5 @@ Sudoku Helper
 [!] Option q - Quit selected
 
 ---------------------------------------------------------------
-Deleting Square: 9, 9
-Deleting Square: 9, 8
-Deleting Square: 9, 7
-Deleting Square: 9, 6
-Deleting Square: 9, 5
-Deleting Square: 9, 4
-Deleting Square: 9, 3
-Deleting Square: 9, 2
-Deleting Square: 9, 1
-Deleting Square: 8, 9
-Deleting Square: 8, 8
-Deleting Square: 8, 7
-Deleting Square: 8, 6
-Deleting Square: 8, 5
-Deleting Square: 8, 4
-Deleting Square: 8, 3
-Deleting Square: 8, 2
-Deleting Square: 8, 1
-Deleting Square: 7, 9
-Deleting Square: 7, 8
-Deleting Square: 7, 7
-Deleting Square: 7, 6
-Deleting Square: 7, 5
-Deleting Square: 7, 4
-Deleting Square: 7, 3
-Deleting Square: 7, 2
-Deleting Square: 7, 1
-Deleting Square: 6, 9
-Deleting Square: 6, 8
-Deleting Square: 6, 7
-Deleting Square: 6, 6
-Deleting Square: 6, 5
-Deleting Square: 6, 4
-Deleting Square: 6, 3
-Deleting Square: 6, 2
-Deleting Square: 6, 1
-Deleting Square: 5, 9
-Deleting Square: 5, 8
-Deleting Square: 5, 7
-Deleting Square: 5, 6
-Deleting Square: 5, 5
-Deleting Square: 5, 4
-Deleting Square: 5, 3
-Deleting Square: 5, 2
-Deleting Square: 5, 1
-Deleting Square: 4, 9
-Deleting Square: 4, 8
-Deleting Square: 4, 7
-Deleting Square: 4, 6
-Deleting Square: 4, 5
-Deleting Square: 4, 4
-Deleting Square: 4, 3
-Deleting Square: 4, 2
-Deleting Square: 4, 1
-Deleting Square: 3, 9
-Deleting Square: 3, 8
-Deleting Square: 3, 7
-Deleting Square: 3, 6
-Deleting Square: 3, 5
-Deleting Square: 3, 4
-Deleting Square: 3, 3
-Deleting Square: 3, 2
-Deleting Square: 3, 1
-Deleting Square: 2, 9
-Deleting Square: 2, 8
-Deleting Square: 2, 7
-Deleting Square: 2, 6
-Deleting Square: 2, 5
-Deleting Square: 2, 4
-Deleting Square: 2, 3
-Deleting Square: 2, 2
-Deleting Square: 2, 1
-Deleting Square: 1, 9
-Deleting Square: 1, 8
-Deleting Square: 1, 7
-Deleting Square: 1, 6
-Deleting Square: 1, 5
-Deleting Square: 1, 4
-Deleting Square: 1, 3
-Deleting Square: 1, 2
-Deleting Square: 1, 1
 [*] Deallocating board object
+Normal termination.

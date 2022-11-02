@@ -14,61 +14,26 @@
 #include "board.hpp"
 
 enum class ClusterT {ROW, COLUMN, BOX};  // Will not be visible if placed in board.hpp
+
 class Cluster {
 private:
     static const char* clist[3];
-    static const int nSize_m;           // to allow simple board size change in future
-    // Member variables
+    static const int nSize_m;        
+
+    // Member variables 
     const char* cType_m;
     Square*     arrPt_m;  // An array of 9 Square pointers
-    // static const char* list_m[3];
-    // static const string list_m[3];
 
 public:
     void shoop( char val );
     // static constexpr char* clist[3] = {"Row", "Column", "Box"};
 
-    // Dr Fischer, is there a reason why you want it done this way?
     Cluster()=default;
     Cluster(ClusterT cType, Square* arrPtr[] );
-    Cluster(string cType, Square* arrPtr[] );
     ~Cluster() { delete[] arrPt_m;}
-
-    ostream& print(ostream& os) ; // delegate to Square::print();
-
+    ostream& print(ostream& os) ;
 };
 
-inline ostream& operator<< (ostream& os,  Cluster cObj) {
+inline ostream& operator<< (ostream& os,  Cluster& cObj) {
     return cObj.print(os);
 }
-
-// // ****Implementation *****
-// Cluster::Cluster( ClusterT cType, Square* arrPtr[]) 
-//     : cType_m(clist[static_cast<int>(cType)]) {
-//     // As per instructions to take in ClusterT to char*
-
-        
-//         arrPt_m = new Square[9];
-
-//         for (int i=0; i < 9; i++) {
-//             cout << cType_m<<": "<< i << ") " << *arrPtr[i]  << endl;
-//         }
-
-
-// }
-
-
-
-// Cluster::Cluster( ClusterT cType, Square* arrPtr[]) 
-//     : cType_m(clist[static_cast<int>(cType)])           // As per instructions to take in ClusterT to char*
-//     {
-
-        
-//         arrPt_m = new Square[9];
-
-//         for (int i=0; i < 9; i++) {
-//             cout << cType_m<<": "<< i << ") " << *arrPtr[i]  << endl;
-//         }
-
-
-// }

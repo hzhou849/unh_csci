@@ -23,8 +23,6 @@ Board ::Board(char type, ifstream &puzFile) : inFile_m(puzFile) {
     bd_m = new Square[nSize_m * nSize_m];
     getPuzzle();
     mkCluster();
-    
-    // bd_m[79].shoop();
   
 }
 
@@ -44,13 +42,17 @@ mkCluster() {
         crtBox(box, tempArr);
 
     cout << "\n===============================================================\n"
-         << "\tBoard() printing full cluster set\n"
-         << "===============================================================\n";
+         << "\tBoard() printing full cluster set\n";
+
     for (Cluster *itc : clus_m) {
         cout << *itc << endl;
     }
+}
 
-        
+//-----------------------------------------------------------------------------
+// ** DEBUGGING Test of shoop  cell 79 because it has a value '4' - function to be removed after
+void Board::testShoop() {
+    bd_m[79].shoop();   
 }
 
 //-----------------------------------------------------------------------------
@@ -64,6 +66,7 @@ crtRow(int curRow, Square *tempArr[]) {
     for (int it = 0; it < nSize_m; ++it) {
         sqCell = ((curRow * nSize_m) + it);
         tempArr[it] = &bd_m[sqCell];
+        // cout << "b72 -alloc check: temp: " << *tempArr[it] << "; bd: " << &(bd_m[sqCell]) << endl; 
     }
     clus_m.push_back(new Cluster(ClusterT::ROW, tempArr));
 }
@@ -97,8 +100,8 @@ crtBox(int curBox, Square *tempArr[]) {
     int rowPerBox = nSize_m / 3, numBoxRows = rowPerBox;   
     int sqBdRow;                   // Total number sq in a full board row. (9)27 or (6)12
     int boxColPos;                 // This Box's column position on board's current row
-                                   // for board size 9 (left, mid, right) = 3
-                                   // for board size 6 (left, right) = 2
+                                    // for board size 9 (left, mid, right) = 3
+                                    // for board size 6 (left, right) = 2
     if (nSize_m == 9) { sqBdRow = 27; boxColPos = curBox % 3; }
     else { sqBdRow = 12; boxColPos=curBox % 2; }
 
@@ -106,13 +109,13 @@ crtBox(int curBox, Square *tempArr[]) {
 
     // Cycle 3 times for 3 rows each square within a box
     for (int outItr = 0; outItr < rowPerBox; ++outItr) {
-        for (int iter = 0; iter < 3; ++iter) { 
+        for (int iter = 0; iter < 3; ++iter) {  
             sqCell = (outItr * nSize_m) + startSq + iter;
             tempArr[count++] = &bd_m[sqCell];
+            }
         }
-    }
     clus_m.push_back(new Cluster( ClusterT::BOX, tempArr ) );
-}
+    }
 
 //-----------------------------------------------------------------------------
 /// @brief Generates the board array and assigns the squares objects
@@ -174,10 +177,10 @@ print(ostream &os) {
 
     /* The old print of printing the squares objects */
     for (int iter = 0; iter < (bSize); iter++) {
-        // os << bd_m[iter] << " " << bd_m[iter].prState().str(); // print full
-        os << bd_m[iter];
-        if (iter % nSize_m == nLine)
-            os << "\n";
+        os << bd_m[iter] << "\n";
+        if (iter % nSize_m == nLine) os << "\n";
     }
+
+    
     return os;
 }

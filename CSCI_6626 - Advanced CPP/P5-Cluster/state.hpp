@@ -18,7 +18,7 @@ static const short BIT_MASK   = 0x0001;       // Mask used for extracting last b
 //-----------------------------------------------------------------------------
 // State Class
 class State  {
-protected: 
+private: 
     short posList=0;
     char  value=' ';
     bool  fixed = true;

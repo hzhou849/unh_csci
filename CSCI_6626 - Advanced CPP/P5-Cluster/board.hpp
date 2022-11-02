@@ -38,6 +38,7 @@ private:
 public: 
     Board( char type, ifstream& puzFile );
     ~Board() { delete []bd_m; cout << "[*] Deallocating board object" << endl; }
+    void testShoop();
     ostream& print( ostream& os );
 };
 

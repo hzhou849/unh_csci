@@ -22,15 +22,16 @@ const char* Cluster::clist[3] = {"Row", "column", "Box"};
 /// @param[in] cType  - an enum type used label this cluster
 /// @param[in] argPtr - Array to hold this cluster's N #of values
 //-----------------------------------------------------------------------------
-Cluster ::Cluster(ClusterT cType, Square *argPtr[])
-    : cType_m(clist[static_cast<int>(cType)])       { // As per instructions to take in ClusterT to char*
+Cluster :: Cluster(ClusterT cType, Square* argPtr[])
+    : cType_m( clist[static_cast<int>(cType)] ) { // As per instructions to take in ClusterT to char*
     arrPt_m = new Square[nSize_m];
 
     for (int it = 0; it < nSize_m; it++) {
+        argPtr[it]->addCluster(this);  // why doesn't this get called? if arrPt_m
         arrPt_m[it] = *argPtr[it];
-        argPtr[it]->addCluster(this);
-        // cout << cType_m<<": "<< i << ") " << *arrPtr[i]  << endl;
+        // cout <<  "clu32 arg: " << argPtr[it]  << ";  arrpt_m: " << *(&arrPt_m[it]) << endl;
     }
+
 }
 
 //-----------------------------------------------------------------------------
@@ -41,7 +42,6 @@ void Cluster ::
 shoop(char val) {
     int num = (val - '0'); // Char subtraction to convert value
     cout << "\n\ncluster::shoop() num: " << num << endl;
-    // - for each of the nine sq* in this cluster, to turn off the num bit
     for (int it=0; it < nSize_m; ++it)  arrPt_m[it].turnOff(num);
 
 // test case in cluster() to call a square's shoop()
@@ -56,6 +56,6 @@ shoop(char val) {
 ostream &Cluster ::
 print(ostream &os) {
     os << "CType: " <<  cType_m << "\n";
-    for (int it = 0; it < nSize_m; ++it){ os << arrPt_m[it] <<flush; }
+    for (int it = 0; it < nSize_m; ++it){ os << arrPt_m[it] <<endl; }
     return os;
 }

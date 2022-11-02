@@ -9,8 +9,8 @@ Square ::  Square ( char charIn, short row, short col )
     cout << "Square: Row:" << sqRow << ", Col:" << sqCol << " constructed." << endl;
 }
 
-Square :: ~Square () { cout << "Deleting Square: " <<sqRow<< ", "<<sqCol<<endl; }
-// Square :: ~Square () { /*cout << "Deleting Square: " <<sqRow<< ", "<<sqCol<<endl; }
+// Square :: ~Square () { cout << "Deleting Square: " <<sqRow<< ", "<<sqCol<<endl; }
+Square :: ~Square () { /*cout << "Deleting Square: " <<sqRow<< ", "<<sqCol<<endl;*/ } //**remove after debugging
 
 
 //-----------------------------------------------------------------------------
@@ -19,8 +19,6 @@ Square :: ~Square () { cout << "Deleting Square: " <<sqRow<< ", "<<sqCol<<endl; 
 //-----------------------------------------------------------------------------
 void Square :: 
 mark(char newChar) {
-    // Input validation moved to State::mark()
-
     char stateValue = stateObj.getValue();
 
     if (stateValue == '-') {
@@ -28,9 +26,7 @@ mark(char newChar) {
         stateObj.mark(newChar);
         cout << " [+] Possibilities AFTER: " << stateObj << endl;
     } 
-    else {
-        cout << " [+] State is already marked. Nothing to do" << endl;
-    }
+    else { cout << " [+] State is already marked. Nothing to do" << endl; }
 
     
 }
@@ -47,7 +43,7 @@ void Square ::
 shoop() {
     for (Cluster* itc : clues_m) {
         itc->shoop(stateObj.getValue());   // instead of getter, can I delegate base constructor values?
-        // cout << "value test: " << value <<"; " << stateObj.getValue()<< endl;
+        
     }
 }
 
@@ -56,12 +52,8 @@ shoop() {
 /// @param[in] val - The number to disable from the list
 //-----------------------------------------------------------------------------
 void Square::turnOff( int val ) {
-    cout << "turning off: " << val << endl;
-
-    stateObj.adjPlist(val); // deligate to state class
+    this->stateObj.adjPlist(val); // deligate to state class
 }
-
-
 
 //-----------------------------------------------------------------------------
 /// @brief Print the Square object values to an output stream
@@ -71,22 +63,11 @@ void Square::turnOff( int val ) {
 ostream& Square :: 
 print(ostream& os) {
     // print all of Square's members
-    os << "[" << sqRow  << ", " << sqCol <<  "]"
-        << " Value: " << stateObj
-        << flush;
+    os  << this<< " [" << sqRow  << ", " << sqCol <<  "]"
+    << " Value: " << stateObj;
 
     return os;
 }
 
-//-----------------------------------------------------------------------------
-/// @brief Full print of the Square::State objects values
-/// @return  the output stream object state value & possibilities
-//-----------------------------------------------------------------------------
-stringstream Square ::
-prState() {
-    stringstream ss;
-    ss << stateObj << flush;
-    return ss; 
-}
 
 

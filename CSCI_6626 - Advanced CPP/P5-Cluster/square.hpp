@@ -20,12 +20,13 @@ public:
     void shoop();
     Square ()=default;
     Square (char charIn, short row, short col);
+
     ~Square();
 
     inline void addCluster(Cluster* clus) { clues_m.push_back(clus); }
 
     ostream& print (ostream& os);
-    stringstream prState();
+    // stringstream prState();
     void mark(char newChar);
     void turnOff (int n);
 };

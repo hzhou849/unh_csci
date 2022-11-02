@@ -68,6 +68,7 @@ p2_testSquare() {
 }
 
 
+//*Debugging only
 void test_arr(int* argArr ) {
     for (int i=0; i < 5; i++) {
         cout << argArr[i] <<endl;
@@ -77,6 +78,8 @@ void test_arr(int* argArr ) {
 }
 void test_arr2(int* argArr[] ) {
     cout << ":\n\nPrinting int pointers:" <<endl;
+
+    
     for (int i=0; i < 5; i++) {
         cout << *argArr[i] <<endl;
     }
@@ -85,27 +88,9 @@ void test_arr2(int* argArr[] ) {
 }
 
 
-// subscript the array. For example, the following two declarations work properly together:
-// enum class Color{ RED, BLUE, YELLOW };
-// static const string colorStrings[3];
-// The enum declaration belongs near the top of the .hpp file of the class that will use Colors. (Suppose
-// that class is named Palette.) The data declaration goes in the .hpp of the Palette class, with a
-// constexpr initializer.
-// static constexpr string colorStrings[3] = {"red", "blue", "yellow"}; cpp
-// Your job is to set up an analogous set of declarations for Box.
-enum class Color { RED, BLUE, GREEN};
-static const string colorStrings[3];
 
-class Palatte{
-
-public:
-};
-// static constexpr char* colorString[3] = {"red", "blue", "yellow"};
-
-
-
-// // ----------------------------------------------------------------------------
-// // Main driver function
+// ----------------------------------------------------------------------------
+// Main driver function
 int main (int argc, char* argv[]) {
     banner();
    

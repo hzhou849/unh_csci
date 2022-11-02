@@ -20,23 +20,17 @@ State ( char initVal ): value(initVal)  {
     if ( value >= '0' && value <= '9') {
         posList = 0;
         fixed = true;
-        
     } 
     else if ( value == '-') {
         
         // This means all 9-digits are still possible for this square.
         // *here are the 3 examples from the instructions
         posList = 0x03FE;
-        // this->possibilities = 0x023E;
-        // this->possibilities = 0x00F2;
-        
         fixed = false;
     }
-    else {
-        fatal ( "Fatal error: undefined character entered!" );
-    }
+    else { fatal ( "Fatal error: undefined character entered!" ); }
 
-    cerr << "State Object constructed with value: '" << value << "' "<< endl;
+    cout << "State Object constructed with value: '" << value << "' "<< endl;
 }
 
 
@@ -68,15 +62,9 @@ mark ( char charIn ) {
 /// @brief Adjust the possibilities list by removing value pos.list
 //-----------------------------------------------------------------------------
 void State::adjPlist(int val) {
-    cout << "AdjPlist() - posList: " << *this;
-    posList &= ~(1 << val);
-    cout << "after: " << *this << endl;
-
-    //0x03fe
-    //         98 7654 321 0
-    //  0000 0011 1111 111 0
-    //  0000 0000 0010 000 0
-    //  1111 1111 1101 111 1
+    cout << "\tbefore: " << *this << endl;
+    posList &= ~(1 << val);         // mask out num @ postion val
+    cout << "\t after: " << *this <<"\n" << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -107,30 +95,20 @@ print( ostream& os ) {
         // Perform this first so we disregard bit 0.
         tempValue = tempValue >> 1;   
 
-        if ( (tempValue & BIT_MASK) == 1 )  {
-            binaryArr[count] = count;
-        } 
-        else {
-            binaryArr[count] = '-';
-        }
+        if ( (tempValue & BIT_MASK) == 1 )  { binaryArr[count] = count; } 
+        else { binaryArr[count] = '-'; }
     }
 
     // Print the array holding the binary positions
     // os <<"Possibility list: ";
     for ( int count=1; count< 10; count++ ) {
-        if (binaryArr[count] == '-') {
-            os << '-' << " ";
-        } 
-        else {
-            os << count << " ";
-        }
+        if (binaryArr[count] == '-') { os << '-' << " "; } 
+        else { os << count << " "; }
     }
-    // Finish and flush the stream
-    os << std::hex << std::showbase<<" poslist: "<<posList << endl;
+    // Finish and flush stream, and reset cout flags
+    os << std::hex << std::showbase<<" poslist: "<< posList << flush;
     cout << resetiosflags (ios::basefield);
-    // os << endl;
-    // os << flush; // to not have newline
-
+   
     return os;
 }
 

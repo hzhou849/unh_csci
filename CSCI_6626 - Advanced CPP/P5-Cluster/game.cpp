@@ -21,6 +21,7 @@ const string Game :: menuList[6] = { "Mark", "Undo", "Redo","Save Game",
 //-----------------------------------------------------------------------------
 /// @brief Game - Constructor
 /// @param [in] inFile - file to be read
+//-----------------------------------------------------------------------------
 Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
     inFile >> gameType_m;
     if ( !validate( gameType_m ) ) {
@@ -33,11 +34,13 @@ Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
 
 //-----------------------------------------------------------------------------
 /// @brief Destructor
+//-----------------------------------------------------------------------------
 Game :: ~Game () { inFile_m.close();  delete board_m;}
 
 
 //-----------------------------------------------------------------------------
 /// @brief run - Print the menu and handle selection loop
+//-----------------------------------------------------------------------------
 void Game :: 
 run() {
     char listValue;
@@ -49,6 +52,7 @@ run() {
             case 'm':
                 cout << "[!] Option m-Mark selected" << endl;
                 // Call Board::mark() to be implemented later
+                board_m->testShoop();  // Temporarily here for debugging purposes
                 break;
             case 'u':
                 cout << "[!] Option u - Undo selected" << endl;
@@ -70,11 +74,11 @@ run() {
     }
 }
 
-
 //-----------------------------------------------------------------------------
 /// @brief Checks the character read is legal
 /// @param [in] rChar - Character read from input file.
 /// @return  true=Success; false=Illegal character
+//-----------------------------------------------------------------------------
 bool Game :: 
 validate ( char rChar ) { 
     string charCompare;
