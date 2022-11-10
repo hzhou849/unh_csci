@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------- 
 // File:        main.cpp
 // 
-// Project:     P5 - Cluster
+// Project/ver:  P6 - Diagonal
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
 // Name:        Howard Zhou

@@ -6,7 +6,7 @@ BIN_NAME = main
 PROJECT_NAME = SudokuHelper
 
 # Add names of object files here
-OBJS = SudokuMain-Zhou.o state.o tools.o game.o board.o square.o cluster.o
+OBJS = SudokuMain-Zhou.o state.o tools.o game.o board.o square.o cluster.o diagBoard.o
 
 # Compiler:
 CC = g++

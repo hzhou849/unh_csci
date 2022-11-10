@@ -1,6 +1,11 @@
-//=============================================================================
-// Square Class - Derived from State
-//=============================================================================
+//----------------------------------------------------------------------------- 
+// File:         square.hpp (Inherit from state)
+// 
+// Project/ver:  P6 - Diagonal
+// Class:        CSCI 6626 - Advanced C++ Design Priciples/OOP
+// Professor:    Dr. Alice E. Fischer
+// Name:         Howard Zhou
+//-----------------------------------------------------------------------------
 #pragma once
 #include "state.hpp"
 
@@ -15,7 +20,7 @@ private:
     std::vector<Cluster*> clues_m;
 
 public:
-    void shoop();
+    void sqShoop();
     Square ()=default;
     Square (char charIn, short row, short col);
     ~Square();

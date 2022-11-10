@@ -3,7 +3,7 @@
 // 
 // Brief:       Cluster is used by board. Each board contains 3 * N clusters
 // 
-// Project/ver: P5 - Cluster
+// Project/ver:  P6 - Diagonal
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
 // Name:        Howard Zhou
@@ -13,11 +13,11 @@
 #include "square.hpp"   // Cluster will contain an array of square pointers
 #include "board.hpp"
 
-enum class ClusterT {ROW, COLUMN, BOX};  // Will not be visible if placed in board.hpp
+enum class ClusterT {ROW, COLUMN, BOX, DIAG};  // Will not be visible if placed in board.hpp
 
 class Cluster {
 private:
-    static const char* clist[3];
+    static const char* clist[4];
     static const int nSize_m;        
 
     // Member variables 
@@ -25,15 +25,13 @@ private:
     Square**    arrPt_m;               // An array of 9 Square pointers
 
 public:
-    void shoop( char val );
-    // static constexpr char* clist[3] = {"Row", "Column", "Box"};
-
+    void clShoop( char val );
     Cluster()=default;
     Cluster(ClusterT cType, Square* arrPtr[] );
     ~Cluster() { delete[] arrPt_m;}
-    ostream& print(ostream& os) ;
+    ostream& print(ostream& os) const ;
 };
 
-inline ostream& operator<< (ostream& os,  Cluster& cObj) {
+inline ostream& operator<< (ostream& os, const Cluster& cObj) {
     return cObj.print(os);
 }

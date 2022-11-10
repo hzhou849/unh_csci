@@ -3,7 +3,7 @@
 // 
 // Brief:       A basic controller class for the applicaiton
 // 
-// Project/ver: P5 - Cluster
+// Project/ver:  P6 - Diagonal
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
 // Name:        Howard Zhou
@@ -11,6 +11,7 @@
 
 #include "game.hpp"
 #include "board.hpp"
+#include "diagBoard.hpp"
 
 // Class constants
 const string Game :: legalCodes = "TtDdSs";
@@ -28,7 +29,17 @@ Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
         fatal("\n[!] Fatal Error - Char from file is not a legal character!");
     }
     cout << "[+] Game Type character assigned: " << gameType_m << endl; 
-    gameBoard_m = new Board(gameType_m, inFile_m);
+
+    if (gameType_m == 'd') {
+        gameBoard_m = new DiagBoard(gameType_m, inFile_m);
+    } else {
+        gameBoard_m = new Board(gameType_m, inFile_m);
+    }
+    cout << "\n-------------------------------------------------------------\n"
+         << "Executing inital shoop() on board\n" 
+         << "------------------------------------------------------------" << endl;
+
+    gameBoard_m->bdShoop(); 
 }
 
 
@@ -54,9 +65,7 @@ run() {
             case 'm':
                 cout << "[!] Option m-Mark selected" << endl;
                 // Call Board::mark() to be implemented later
-                
-                // Temporarily used here for debugging purposes
-                gameBoard_m->testShoop();  
+                // Get row, column and value and call Board::mark()  
                 break;
             case 'u':
                 cout << "[!] Option u - Undo selected" << endl;

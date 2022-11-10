@@ -3,7 +3,7 @@
 // 
 // Brief:       Manages the state of the square
 //
-// Project:    P5 - Cluster
+// Project/ver:  P6 - Diagonal
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
 // Name:        Howard Zhou
@@ -16,7 +16,7 @@
 static const short BIT_MASK   = 0x0001;       // Mask used for extracting last bit
 
 class State  {
-private: 
+protected: 
     short posList=0;
     char  value=' ';
     bool  fixed = true;

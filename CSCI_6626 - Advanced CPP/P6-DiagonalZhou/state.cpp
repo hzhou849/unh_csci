@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------- 
 // File:        state.cpp
 // 
-// Project:     P4 - Board
+// Project/ver:  P6 - Diagonal
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
 // Due Date:    09-27-2022
@@ -9,22 +9,15 @@
 //-----------------------------------------------------------------------------
 #include "state.hpp"
 
-//=============================================================================
-// Square Class
-//=============================================================================
-
 // Constructor
 /// @param initVal - initial state value
-State :: 
-State ( char initVal ): value(initVal)  {
+State :: State ( char initVal ): value(initVal)  {
     if ( value >= '0' && value <= '9') {
         posList = 0;
         fixed = true;
     } 
     else if ( value == '-') {
-        
         // This means all 9-digits are still possible for this square.
-        // *here are the 3 examples from the instructions
         posList = 0x03FE;
         fixed = false;
     }
@@ -37,16 +30,15 @@ State ( char initVal ): value(initVal)  {
 //-----------------------------------------------------------------------------
 /// @brief - prints error message if fixed is TRUE
 /// @param [in] charIn new character to mark the state 
+//-----------------------------------------------------------------------------
 void State :: 
 mark ( char charIn ) {
-
-
     if ( (charIn < '0' || charIn > '9') && charIn != '-' ) {
         fatal( "Invalid input character passed!");
     }
 
     if ( fixed ) {
-        cerr << "Error in: " << __func__ << "() State is fixed! "  << endl;
+        cout << "Error in: " << __func__ << "() State is fixed! "  << endl;
     } 
     else {
         value = charIn;
@@ -62,19 +54,19 @@ mark ( char charIn ) {
 /// @brief Adjust the possibilities list by removing value pos.list
 //-----------------------------------------------------------------------------
 void State :: adjPlist(int val) {
-    cout << "\tbefore: " << *this << endl;
+    cout << " before: " << *this << endl;
     posList &= ~(1 << val);         // mask out num @ postion val
-    cout << "\t after: " << *this <<"\n" << endl;
+    cout << "\t\t  after:  " << *this <<"\n" << endl;
 }
+
 
 //-----------------------------------------------------------------------------
 /// @brief Retreive the current state's value
 /// @return value=Returns the current state value
 //-----------------------------------------------------------------------------
 char State :: 
-getValue () {
-    return value;
-}
+getValue () { return value; }
+
 
 //-----------------------------------------------------------------------------
 /// @brief Print the state values and possibilities list
@@ -87,14 +79,11 @@ print( ostream& os ) {
     short binaryArr[10];
 
     // Reset the cout flags back to original (Decimal, no base)
-    cout << resetiosflags (ios::basefield);
-    os << "'" << value <<"'" << "   ";  
-    // Start by shifting RIGHT once to discard first bit.
-    // Convert to binary starting at position 1
-    for ( int count=1; count < 10 ; count++ ) {
-        // Perform this first so we disregard bit 0.
-        tempValue = tempValue >> 1;   
+    cout << resetiosflags (ios::basefield); os << "'" << value <<"'" << "   ";  
 
+    // Start by shifting RIGHT once to discard first bit.
+    for ( int count=1; count < 10 ; count++ ) {
+        tempValue = tempValue >> 1;             // Disregard bit 0.
         if ( (tempValue & BIT_MASK) == 1 )  { binaryArr[count] = count; } 
         else { binaryArr[count] = '-'; }
     }

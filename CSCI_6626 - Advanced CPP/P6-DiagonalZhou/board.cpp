@@ -3,7 +3,7 @@
 //
 // Brief:        Generate the board of squares
 //
-// Project/ver:  P5 - Cluster
+// Project/ver:  P6 - Diagonal
 // Class:        CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:    Dr. Alice E. Fischer
 // Name:         Howard Zhou
@@ -15,8 +15,9 @@
 /// @brief Constructor - Board handles creating 3* N clusters of N Sq* each
 /// @param[in] type    - Board type (t)raditional, (d)diag, (s)ixy
 /// @param[in] puzFile - input file containing board_type and sq values.
+/// @param[in] numClus - number of clusters default is 27 or 29 for diag
 //-----------------------------------------------------------------------------
-Board :: Board(char type, ifstream &puzFile) : inFile_m(puzFile) {
+Board :: Board(char type, ifstream &puzFile ) : inFile_m(puzFile) {
     if (type == 't' || type == 'd') { nSize_m = 9; }
     else { nSize_m = 6; }
 
@@ -42,15 +43,13 @@ mkCluster() {
     cout << "\n===============================================================\n"
          << "Board() printing full cluster set:\n" << endl;
 
-    for (Cluster *itc : clus_m) {
-        cout << *itc << endl;
-    }
+    for (Cluster *itc : clus_m) { cout << *itc << endl; }
 }
 
 //-----------------------------------------------------------------------------
 /// @brief Temporary function to test shoop features
 //-----------------------------------------------------------------------------
-void Board::testShoop() {
+void Board::bdShoop() {
     int bdSize = nSize_m * nSize_m;
 
     // ** DEBUGGING Test of shoop  cell 79 because it has a value '4'
@@ -58,7 +57,7 @@ void Board::testShoop() {
 
     for (int itr=0; itr <bdSize; ++itr) { 
             cout << "Performing Shoop() on square: " << arrSqs_m[itr] << endl;
-            arrSqs_m[itr].shoop(); 
+            arrSqs_m[itr].sqShoop(); 
     }
 }
 
@@ -68,7 +67,7 @@ void Board::testShoop() {
 /// @param[in] tempArr - Temparary array used to hold the row's N square*
 //-----------------------------------------------------------------------------
 void Board ::
-crtRow(int curRow, Square *tempArr[]) {
+crtRow (int curRow, Square *tempArr[]) {
     int sqCell;
     for (int it = 0; it < nSize_m; ++it) {
         sqCell = ((curRow * nSize_m) + it);
@@ -83,7 +82,7 @@ crtRow(int curRow, Square *tempArr[]) {
 /// @param[in] tempArr - Temparary array used to hold the col's N square*
 //-----------------------------------------------------------------------------
 void Board ::
-crtColumn(int curCol, Square *tempArr[]) {
+crtColumn (int curCol, Square *tempArr[]) {
     int sqCell;
     for (int it = 0; it < nSize_m; ++it) {
         sqCell = (it * nSize_m) + curCol;
@@ -129,7 +128,7 @@ crtBox(int curBox, Square *tempArr[]) {
 ///         in sub() or arrSqs_m[x](which is dynamic memory).
 //-----------------------------------------------------------------------------
 void Board ::
-getPuzzle() {
+getPuzzle () {
     char tempChar;
     cout << "Constructing Board..." << endl;
     for (int rowIter = 1; rowIter <= nSize_m; rowIter++) {
@@ -168,7 +167,7 @@ getPuzzle() {
 /// @return &reference to Square object on the Board's linear array
 //-----------------------------------------------------------------------------
 Square& Board ::
-sub(int row, int col) { 
+sub (int row, int col) { 
     return arrSqs_m[(row - 1) * nSize_m + (col - 1)]; }
 
 
@@ -178,7 +177,7 @@ sub(int row, int col) {
 /// @return stream output object reference
 //-----------------------------------------------------------------------------
 ostream& Board ::
-print(ostream &os) {
+print (ostream &os) const{
     int bSize = (nSize_m * nSize_m);
     int nLine = (nSize_m - 1);
 

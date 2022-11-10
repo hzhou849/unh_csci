@@ -3,7 +3,7 @@
 // 
 // Brief:       A basic controller class for the applicaiton
 // 
-// Project/ver: P5 - Cluster
+// Project/ver:  P6 - Diagonal
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
 // Name:        Howard Zhou
@@ -21,7 +21,6 @@ private:
   // Member Variables
   static const string menuList[6];
   static const string legalCodes;
-
   ifstream& inFile_m;
   char gameType_m;        // Accepted values: (t)raditional,(d)iagonal, (s)ixy
 
@@ -33,5 +32,4 @@ public:
   Game(ifstream& inputFile);
   ~Game();
   void run();
-
 };

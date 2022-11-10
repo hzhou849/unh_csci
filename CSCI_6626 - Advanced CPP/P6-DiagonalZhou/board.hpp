@@ -3,7 +3,7 @@
 // 
 // Brief:        A basic controller class for the applicaiton
 // 
-// Project/ver:  P5 - Cluster
+// Project/ver:  P6 - Diagonal
 // Class:        CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:    Dr. Alice E. Fischer
 // Name:         Howard Zhou
@@ -14,12 +14,8 @@
 #include "square.hpp"
 #include "cluster.hpp"
 
-// For extern use:
- // Not sure how you want us to share this with cluster??
-// static const char* clist[3] = {"Row", "column", "Box"};  // Not sure how you want us to share this with cluster??
-
 class Board {
-private:
+protected:
     // Member variables
     int         nSize_m;
     short int   left_m;
@@ -37,11 +33,13 @@ private:
 
 public: 
     Board( char type, ifstream& puzFile );
-    ~Board() { delete []arrSqs_m; cout << "[*] Deallocating board object" << endl; }
-    void testShoop();
-    ostream& print( ostream& os );
+    virtual ~Board() { delete []arrSqs_m; cout << "[*] Deallocating board object" << endl; }
+    void bdShoop();
+    ostream& print( ostream& os ) const;
+    virtual void printDiag() {}
 };
 
-inline ostream& operator<< (ostream& os, Board& boardObj) {
+
+inline ostream& operator<< (ostream& os, const Board& boardObj) {
     return boardObj.print(os);
 }

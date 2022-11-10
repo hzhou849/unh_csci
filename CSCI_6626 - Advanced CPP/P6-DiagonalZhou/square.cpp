@@ -1,6 +1,11 @@
-//=============================================================================
-// Square Class
-//=============================================================================
+//----------------------------------------------------------------------------- 
+// File:         square.cpp
+// 
+// Project/ver:  P6 - Diagonal
+// Class:        CSCI 6626 - Advanced C++ Design Priciples/OOP
+// Professor:    Dr. Alice E. Fischer
+// Name:         Howard Zhou
+//-----------------------------------------------------------------------------
 #include "square.hpp"
 #include "cluster.hpp"      // For forward declaration
 
@@ -33,11 +38,9 @@ mark(char newChar) {
 ///         kick starts the process of removing value from possibilities list
 //-----------------------------------------------------------------------------
 void Square :: 
-shoop() {
+sqShoop() {
     if (stateObj.getValue() > '0') {
-        for (Cluster* itc : clues_m) {
-            itc->shoop(stateObj.getValue());                     // instead of getter, can I delegate base constructor values?
-        }
+        for (Cluster* itc : clues_m) { itc->clShoop(stateObj.getValue()); }
     } else { cout << "\t[+] This square has no value - skipping.\n" << endl; }
 }
 
@@ -46,8 +49,9 @@ shoop() {
 /// @param[in] val - The number to disable from the list
 //-----------------------------------------------------------------------------
 void Square::turnOff( int val ) {
-    cout << "   Square: " << sqRow << ", " << sqCol << " " << endl;
-    this->stateObj.adjPlist(val);
+    // cout << "   Square: " << sqRow << ", " << sqCol << " " << endl;
+    cout << "   Square: " << sqRow << ", " << sqCol << ": ";
+    stateObj.adjPlist(val);
 }
 
 //-----------------------------------------------------------------------------
@@ -58,7 +62,7 @@ void Square::turnOff( int val ) {
 ostream& Square :: 
 print(ostream& os) {
     // print all of Square's members
-    os  << " [ " << sqRow  << ", " << sqCol <<  " ]"
+    os  << " [ " << sqRow  << ", " << sqCol <<  " ]" 
         << " Value: " << stateObj;
     return os;
 }
