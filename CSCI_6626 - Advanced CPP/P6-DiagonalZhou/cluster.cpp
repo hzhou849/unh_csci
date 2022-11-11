@@ -49,7 +49,7 @@ clShoop(char val) {
 
 //-----------------------------------------------------------------------------
 /// @brief iterates through member array[N] squares for this cluster instance
-/// @param[out] os - Stream to return back for terminal pr
+/// @param[out] os - Stream to return back for terminal output
 //-----------------------------------------------------------------------------
 ostream& Cluster ::
 print(ostream &os) const {

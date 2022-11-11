@@ -28,7 +28,7 @@ protected:
     Square& sub( int row, int col );
     void mkCluster();
     void crtColumn(int curCol, Square* tempArr[]);
-    void crtBox(int curBox, Square *tempArr[]);
+    void crtBox(int curBox, Square* tempArr[]);
     void crtRow(int curRow, Square* tempArr[]);
 
 public: 
@@ -36,7 +36,8 @@ public:
     virtual ~Board() { delete []arrSqs_m; cout << "[*] Deallocating board object" << endl; }
     void bdShoop();
     ostream& print( ostream& os ) const;
-    virtual void printDiag() {}
+    virtual void extPrint() {}
+    void mark(char row, char col, char value);
 };
 
 

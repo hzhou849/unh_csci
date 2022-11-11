@@ -51,10 +51,6 @@ mkCluster() {
 //-----------------------------------------------------------------------------
 void Board::bdShoop() {
     int bdSize = nSize_m * nSize_m;
-
-    // ** DEBUGGING Test of shoop  cell 79 because it has a value '4'
-    // arrSqs_m[79].shoop();        // Test individual square
-
     for (int itr=0; itr <bdSize; ++itr) { 
             cout << "Performing Shoop() on square: " << arrSqs_m[itr] << endl;
             arrSqs_m[itr].sqShoop(); 
@@ -62,7 +58,8 @@ void Board::bdShoop() {
 }
 
 //-----------------------------------------------------------------------------
-/// @brief Calculate all the N ROWS sqs and pushes row clusters into vector clus_m
+/// @brief Calculate all the N ROWS sqs, pushes row clusters 
+///        into vector clus_m
 /// @param[in] curRow - Current Row counter offset (0-indexed)
 /// @param[in] tempArr - Temparary array used to hold the row's N square*
 //-----------------------------------------------------------------------------
@@ -77,7 +74,8 @@ crtRow (int curRow, Square *tempArr[]) {
 }
 
 //-----------------------------------------------------------------------------
-/// @brief Calculate all the N COLUMNS sqs and push col clusters into vector clus_m
+/// @brief Calculate all the N COLUMNS sqs, pushes col clusters 
+///        into vector clus_m
 /// @param[in] curCol - Current column counter offset (0-indexed)
 /// @param[in] tempArr - Temparary array used to hold the col's N square*
 //-----------------------------------------------------------------------------
@@ -121,6 +119,7 @@ crtBox(int curBox, Square *tempArr[]) {
         }
     clus_m.push_back(new Cluster( ClusterT::BOX, tempArr ) );
     }
+
 
 //-----------------------------------------------------------------------------
 /// @brief Generates the board array and assigns the squares objects
@@ -169,6 +168,35 @@ getPuzzle () {
 Square& Board ::
 sub (int row, int col) { 
     return arrSqs_m[(row - 1) * nSize_m + (col - 1)]; }
+
+
+//-----------------------------------------------------------------------------
+/// @brief mark the assigned sq and perform shoop()
+///        validation for row/col input is performed here
+/// @param[in] row   Square row  (1 to nSize_m)
+/// @param[in] col   Square's column (1 to nSize_m)
+/// @param[in] value Square value; this is validated in state class
+/// @return  true=succes false=failure
+//-----------------------------------------------------------------------------
+void Board :: 
+mark (char row, char col, char value) {
+    int rowNum, colNum, sqCell;
+    int maxSq = (nSize_m * nSize_m) - 1;  // array of sq is 0-indexed
+
+    rowNum = row - '0';
+    colNum = col - '0';
+    sqCell = ( (rowNum-1) * nSize_m ) + (colNum -1); // minus 1 for 0-indexed arrays
+
+    cout << "\nMarking Square: " << rowNum << "; " << colNum  << "; sq: " <<sqCell << endl;
+
+    if (sqCell < 0 || sqCell > (maxSq) ) {
+        cout << "Invalid row/column data entered. Aborting Mark..." << endl;
+        return;
+    }
+
+    arrSqs_m[sqCell].mark(value);
+    arrSqs_m[sqCell].sqShoop();
+}
 
 
 //-----------------------------------------------------------------------------

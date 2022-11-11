@@ -49,7 +49,6 @@ sqShoop() {
 /// @param[in] val - The number to disable from the list
 //-----------------------------------------------------------------------------
 void Square::turnOff( int val ) {
-    // cout << "   Square: " << sqRow << ", " << sqCol << " " << endl;
     cout << "   Square: " << sqRow << ", " << sqCol << ": ";
     stateObj.adjPlist(val);
 }

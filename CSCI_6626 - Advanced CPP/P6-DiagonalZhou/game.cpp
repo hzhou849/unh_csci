@@ -53,7 +53,7 @@ Game :: ~Game () { inFile_m.close();  delete gameBoard_m;}
 /// @brief run - Print the menu and handle selection loop
 //-----------------------------------------------------------------------------
 void Game :: 
-run() {
+run () {
     char listValue;
     while ( listValue != 'q' ) {
         cout << "------------------------------------------------------------\n"
@@ -64,8 +64,7 @@ run() {
         switch( listValue ) {
             case 'm':
                 cout << "[!] Option m-Mark selected" << endl;
-                // Call Board::mark() to be implemented later
-                // Get row, column and value and call Board::mark()  
+                markInput();
                 break;
             case 'u':
                 cout << "[!] Option u - Undo selected" << endl;
@@ -85,14 +84,29 @@ run() {
 }
 
 //-----------------------------------------------------------------------------
+/// @brief helper function to handle prompt for mark() user input.
+///        Prompt user for row, col and value of square to mark
+//-----------------------------------------------------------------------------
+void Game :: 
+markInput() {
+    char choice[3];     // Store user input [row, col, value to mark]
+    
+    cout << "\nPlease enter the Row, Column and Value (Space delimited): " << flush;
+    cin >> choice[0];
+    cin >> choice[1];
+    cin >> choice[2];
+
+    gameBoard_m->mark(choice[0], choice[1], choice[2]);
+}
+
+
+//-----------------------------------------------------------------------------
 /// @brief Checks the character read is legal
 /// @param [in] rChar - Character read from input file.
 /// @return  true=Success; false=Illegal character
 //-----------------------------------------------------------------------------
 bool Game :: 
 validate ( char rChar ) { 
-    string charCompare;
-
     if ( legalCodes.find(rChar) != string::npos ) { return true; }  
     else { return false; }       // No match found
 }

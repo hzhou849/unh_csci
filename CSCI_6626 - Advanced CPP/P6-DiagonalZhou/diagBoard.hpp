@@ -17,12 +17,11 @@ class DiagBoard : public Board {
 private:
     void crtUpLeftDiag(Square* tempArr[]);
     void crtUpRightDiag(Square* tempArr[]);
-    
 
 public:
     DiagBoard( char type, ifstream& puzFile);
     virtual ~DiagBoard() {};
-    virtual void printDiag();   // Debug testing function
+    virtual void extPrint() override;   // Debug testing function
 
 };
 

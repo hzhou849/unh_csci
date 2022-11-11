@@ -27,6 +27,7 @@ private:
   // Member Functions
   bool validate(char readChar);
   Board* gameBoard_m;
+  void markInput();
 
 public:
   Game(ifstream& inputFile);

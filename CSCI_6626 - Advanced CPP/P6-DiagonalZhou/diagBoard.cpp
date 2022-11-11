@@ -60,7 +60,7 @@ crtUpRightDiag ( Square* tempArr[] ) {
 }
 
 //*** For debugging, will remove later
-void DiagBoard :: printDiag()  {
+void DiagBoard :: extPrint()  {
     cout << "Testing Diagonal cluster print" << endl;
     for (size_t itr=27; itr<Board::clus_m.size(); ++itr) {
         cout << *Board::clus_m.at(itr) <<"\n";
