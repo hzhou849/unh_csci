@@ -26,7 +26,7 @@ public:
     ~Square();
     inline void addCluster(Cluster* clus) { clues_m.push_back(clus); }
     ostream& print (ostream& os);
-    void mark(char newChar);
+    bool mark(char newChar);
     void turnOff (int n);
 };
 

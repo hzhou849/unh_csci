@@ -13,6 +13,7 @@
 #include "board.hpp"
 #include "diagBoard.hpp"
 
+
 // Class constants
 const string Game :: legalCodes = "TtDdSs";
 const string Game :: menuList[6] = { "Mark", "Undo", "Redo","Save Game", 
@@ -26,7 +27,8 @@ const string Game :: menuList[6] = { "Mark", "Undo", "Redo","Save Game",
 Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
     inFile >> gameType_m;
     if ( !validate( gameType_m ) ) {
-        fatal("\n[!] Fatal Error - Char from file is not a legal character!");
+        // fatal("\n[!] Fatal Error - Char from file is not a legal character!");  
+        throw GmBadGameType ( string(1,gameType_m) );  
     }
     cout << "[+] Game Type character assigned: " << gameType_m << endl; 
 
@@ -64,7 +66,12 @@ run () {
         switch( listValue ) {
             case 'm':
                 cout << "[!] Option m-Mark selected" << endl;
-                markInput();
+                try {
+                    markInput();
+                } catch (GmError& ge) { 
+                    cout << "***72gm.cpp caught" << endl;
+                    ge.print(); 
+                }
                 break;
             case 'u':
                 cout << "[!] Option u - Undo selected" << endl;
@@ -97,6 +104,11 @@ markInput() {
     cin >> choice[2];
 
     gameBoard_m->mark(choice[0], choice[1], choice[2]);
+    // try {
+    //     gameBoard_m->mark(choice[0], choice[1], choice[2]);
+    // } catch (GmError& ex) {
+    //     ex.print();
+    // }
 }
 
 

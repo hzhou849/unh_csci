@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------
 #include "state.hpp"
 
+
 // Constructor
 /// @param initVal - initial state value
 State :: State ( char initVal ): value(initVal)  {
@@ -21,8 +22,6 @@ State :: State ( char initVal ): value(initVal)  {
         posList = 0x03FE;
         fixed = false;
     }
-    else { fatal ( "Fatal error: undefined character entered!" ); }
-
     cout << "State Object constructed with value: '" << value << "' "<< endl;
 }
 
@@ -34,11 +33,11 @@ State :: State ( char initVal ): value(initVal)  {
 void State :: 
 mark ( char charIn ) {
     if ( (charIn < '0' || charIn > '9') && charIn != '-' ) {
-        fatal( "Invalid input character passed!");
+        throw GmBadInputChar ( string(1, charIn) );
     }
 
     if ( fixed ) {
-        cout << "Error in: " << __func__ << "() State is fixed! "  << endl;
+        cout << "Error State is fixed! "  << endl; //** Game error
     } 
     else {
         value = charIn;

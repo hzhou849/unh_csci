@@ -11,6 +11,7 @@
 
 #include "board.hpp"
 
+
 //-----------------------------------------------------------------------------
 /// @brief Constructor - Board handles creating 3* N clusters of N Sq* each
 /// @param[in] type    - Board type (t)raditional, (d)diag, (s)ixy
@@ -89,6 +90,7 @@ crtColumn (int curCol, Square *tempArr[]) {
     clus_m.push_back(new Cluster(ClusterT::COLUMN, tempArr));
 }
 
+
 //-----------------------------------------------------------------------------
 /// @brief Calculate all the N BOX sq and push box clusters into vector clus_m
 /// @param[in] curBox - Current Box counter offset (0-indexed)
@@ -101,10 +103,10 @@ crtBox(int curBox, Square *tempArr[]) {
     int startSq; int sqCell;
     // #rows of each sq per line in a box & columns of Boxes on board (9)=3; (6)=2 
     int rowPerBox = nSize_m / 3, numBoxRows = rowPerBox;   
-    int sqBdRow;                   // Total number sq in a full board row. (9)27 or (6)12
-    int boxColPos;                 // This Box's column position on board's current row
-                                    // for board size 9 (left, mid, right) = 3
-                                    // for board size 6 (left, right) = 2
+    int sqBdRow;            // Total number sq in a full board row. (9)27 or (6)12
+    int boxColPos;          // This Box's column position on board's current row
+                            // for board size 9 (left, mid, right) = 3
+                            // for board size 6 (left, right) = 2
     if (nSize_m == 9) { sqBdRow = 27; boxColPos = curBox % 3; }
     else { sqBdRow = 12; boxColPos=curBox % 2; }
 
@@ -113,12 +115,12 @@ crtBox(int curBox, Square *tempArr[]) {
     // Cycle 3 times for 3 rows each square within a box
     for (int outItr = 0; outItr < rowPerBox; ++outItr) {
         for (int iter = 0; iter < 3; ++iter) {  
-            sqCell = (outItr * nSize_m) + startSq + iter;
-            tempArr[count++] = &arrSqs_m[sqCell];
+                sqCell = (outItr * nSize_m) + startSq + iter;
+                tempArr[count++] = &arrSqs_m[sqCell];
             }
         }
     clus_m.push_back(new Cluster( ClusterT::BOX, tempArr ) );
-    }
+}
 
 
 //-----------------------------------------------------------------------------
@@ -136,14 +138,13 @@ getPuzzle () {
             if (inFile_m.good()) {
                 if ((tempChar >= '0' && tempChar <= '9') || (tempChar == '-')) {
                     sub(rowIter, colIter) = Square(tempChar, rowIter, colIter);
-                    // cout << " [" << tempChar << "]: "  << "row: " << rowIter    //**Un-comment for debug
                 }
                 else if (tempChar == '\n') {
                     // cout << "\n"  << "row: " << rowIter;  //**Un-comment for debug
                 }
                 else {
-                    cout << tempChar;
-                    fatal("[!] ERROR - invald character in file: ");
+                    throw GmFatal("Invald character in file found: '" 
+                            +  string(1, tempChar) + "'" );
                 }
             }
             else if (inFile_m.eof()) {
@@ -151,7 +152,7 @@ getPuzzle () {
                 break;
             }
             else if (inFile_m.bad()) {
-                fatal("[!] Low-level error while reading input stream.");
+                throw StreamFatal("Low-level error while reading input stream.");
             }
             cout << '\n';
         }
@@ -167,12 +168,13 @@ getPuzzle () {
 //-----------------------------------------------------------------------------
 Square& Board ::
 sub (int row, int col) { 
-    return arrSqs_m[(row - 1) * nSize_m + (col - 1)]; }
+    return arrSqs_m[(row - 1) * nSize_m + (col - 1)]; 
+}
 
 
 //-----------------------------------------------------------------------------
 /// @brief mark the assigned sq and perform shoop()
-///        validation for row/col input is performed here
+///       validation for row/col input is performed here
 /// @param[in] row   Square row  (1 to nSize_m)
 /// @param[in] col   Square's column (1 to nSize_m)
 /// @param[in] value Square value; this is validated in state class
@@ -189,13 +191,15 @@ mark (char row, char col, char value) {
 
     cout << "\nMarking Square: " << rowNum << "; " << colNum  << "; sq: " <<sqCell << endl;
 
+
     if (sqCell < 0 || sqCell > (maxSq) ) {
+        // string err = "Bad row:" + to_string(rowNum)  +", col: "+ to_string(colNum);
+        // throw BadCell( "fuck");
         cout << "Invalid row/column data entered. Aborting Mark..." << endl;
         return;
     }
 
-    arrSqs_m[sqCell].mark(value);
-    arrSqs_m[sqCell].sqShoop();
+    if (arrSqs_m[sqCell].mark(value) ) {arrSqs_m[sqCell].sqShoop(); }
 }
 
 

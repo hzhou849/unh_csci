@@ -11,7 +11,7 @@
 #include "state.hpp"
 #include "game.hpp"
 #include "board.hpp"
-#include "bad.hpp"
+#include "myExcept.hpp"
 
 // Testing
 // #include "cluster.hpp"
@@ -75,20 +75,17 @@ p2_testSquare() {
 // Main driver function
 int main (int argc, char* argv[]) {
     banner();
-   
     try{
 
         if (argc < 2) {
-            // fatal("Usage:  main <input filename>\n"); 
-            throw BadDerS("Usage:  main <input filename>\n");
+            throw StreamFatal("Usage:  " + string(argv[0]) + " <input filename>\n"); 
         }
+
         cout << "Attempting to open file: " << argv[1] << endl;
         ifstream inputFile( argv[1] );
         
-        if ( !inputFile.good() )  {
-            // Need to catch argv[1] or char* type
-            fatal("[!] ERROR - Unable to open file! " +string(argv[1]) + "\n");
-            throw BadDerS(argv[1]);
+        if ( !inputFile.good())  {
+            throw StreamFatal(" Unable to open file! " +string(argv[1]) + "\n"); ///*** error
 
         }
         
@@ -97,13 +94,12 @@ int main (int argc, char* argv[]) {
         gameObj.run();
     
     }
-    catch (Bad& bx) {           // Catch all 3 types of Bad errors.
-        bx.print();
-    } 
-    catch (...) {
-        cout << "Last-ditch effor to catch exceptions." << endl;
-    }
+    // Catch all 3 types of Bad errors.
+    catch (GmError& bx) { bx.print(); }
+    catch (StreamErr& se) { se.print(); }
+    catch (...) { cout << "Last-ditch effor to catch exceptions." << endl; }
 
     bye();
 }
+
 

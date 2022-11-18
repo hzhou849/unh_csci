@@ -21,16 +21,21 @@ Square :: ~Square () { /*cout << "Deleting Square: " <<sqRow<< ", "<<sqCol<<endl
 //-----------------------------------------------------------------------------
 /// @brief - calls State class's mark() with new value for square
 /// @param [in] newChar - new character to mark the state with
+/// @return true=mark is required; false=square is already marked.
 //-----------------------------------------------------------------------------
-void Square :: 
+bool Square :: 
 mark(char newChar) {
     char stateValue = stateObj.getValue();
     if (stateValue == '-') {
         cout << " [+] Possibilities BEFORE: " << stateObj << endl;
         stateObj.mark(newChar);
         cout << " [+] Possibilities AFTER: " << stateObj << endl;
+        return true;
     } 
-    else { cout << " [+] State is already marked. Nothing to do" << endl; }
+    else { 
+        cout << " [+] State is already marked. Nothing to do" << endl;
+        return false;
+    }
 }
 
 //-----------------------------------------------------------------------------

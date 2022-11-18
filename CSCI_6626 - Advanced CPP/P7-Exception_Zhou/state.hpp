@@ -11,6 +11,7 @@
 
 #pragma once
 #include "tools.hpp"
+#include "myExcept.hpp"
 
 // Constants
 static const short BIT_MASK   = 0x0001;       // Mask used for extracting last bit

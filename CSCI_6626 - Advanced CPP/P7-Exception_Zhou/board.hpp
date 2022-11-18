@@ -13,6 +13,7 @@
 #include "tools.hpp"
 #include "square.hpp"
 #include "cluster.hpp"
+#include "myExcept.hpp"
 
 class Board {
 protected:
