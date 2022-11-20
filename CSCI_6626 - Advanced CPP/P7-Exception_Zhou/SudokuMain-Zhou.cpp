@@ -76,7 +76,6 @@ p2_testSquare() {
 int main (int argc, char* argv[]) {
     banner();
     try{
-
         if (argc < 2) {
             throw StreamFatal("Usage:  " + string(argv[0]) + " <input filename>\n"); 
         }
@@ -86,7 +85,6 @@ int main (int argc, char* argv[]) {
         
         if ( !inputFile.good())  {
             throw StreamFatal(" Unable to open file! " +string(argv[1]) + "\n"); ///*** error
-
         }
         
         // Run game which will call Board inside the class

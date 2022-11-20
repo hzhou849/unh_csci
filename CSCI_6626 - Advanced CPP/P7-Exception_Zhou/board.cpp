@@ -27,6 +27,7 @@ Board :: Board(char type, ifstream &puzFile ) : inFile_m(puzFile) {
     mkCluster();
 }
 
+
 //-----------------------------------------------------------------------------
 /// @brief Helper function to kickoff creating all row,column and box clusters
 //-----------------------------------------------------------------------------
@@ -73,6 +74,7 @@ crtRow (int curRow, Square *tempArr[]) {
     }
     clus_m.push_back(new Cluster(ClusterT::ROW, tempArr));
 }
+
 
 //-----------------------------------------------------------------------------
 /// @brief Calculate all the N COLUMNS sqs, pushes col clusters 
@@ -191,11 +193,8 @@ mark (char row, char col, char value) {
 
     cout << "\nMarking Square: " << rowNum << "; " << colNum  << "; sq: " <<sqCell << endl;
 
-
     if (sqCell < 0 || sqCell > (maxSq) ) {
-        // string err = "Bad row:" + to_string(rowNum)  +", col: "+ to_string(colNum);
-        // throw BadCell( "fuck");
-        cout << "Invalid row/column data entered. Aborting Mark..." << endl;
+        throw GmBadInputCell(to_string(rowNum) + ", "+to_string(colNum));
         return;
     }
 

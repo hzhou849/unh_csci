@@ -1,5 +1,6 @@
 
-/*** Case 1 - bad input file stream - SudokuMain-Zhou.cpp:82: ***/ 
+//=============================================================================
+// Case 1 - bad input file stream - SudokuMain-Zhou.cpp:82: 
 ----------------------------------------------------------------
 	Howard Zhou
 	CSCI 6626 - Advanced C++ - Design Principles/OOP
@@ -11,8 +12,8 @@ Error message:
    Unable to open file! puzt.txt
 
 
-
-/*** Case 2 - no input file from commnad-line  - SudokuMain-Zhou.cpp:78:***/ 
+//=============================================================================
+// Case 2 - no input file from commnad-line  - SudokuMain-Zhou.cpp:78:
 mdttest@ubuntu:~/Documents/unh_csci/CSCI_6626 - Advanced CPP/P7-Exception_Zhou(feature/CSCI_6626)$ ./main
 
 ----------------------------------------------------------------
@@ -27,7 +28,8 @@ Error message:
 
 
 
-/*** Case 3 - bad char in input file - board.cpp:146: ***/ 
+//=============================================================================
+// Case 3 - Bad char '=' square value in input file - board.cpp:146:
 ----------------------------------------------------------------
 	Howard Zhou
 	CSCI 6626 - Advanced C++ - Design Principles/OOP
@@ -43,7 +45,8 @@ mdttest@ubuntu:~/Documents/unh_csci/CSCI_6626 - Advanced CPP/P7-Exception_Zhou(f
 
 
 
-/*** Case 4 - Bad game type char in input file - game.cpp:29: ***/ 
+//=============================================================================
+// Case 4 - Bad game type char in input file - game.cpp:29: 
 ----------------------------------------------------------------
 	Howard Zhou
 	CSCI 6626 - Advanced C++ - Design Principles/OOP
@@ -56,11 +59,11 @@ Attempting to open file: puzt.txt
 Normal termination.
 
 
-
-/*** Case 5 - Mark with invalid character (non 1-9) - state.cpp:36:***/
-// Tried marking a square 9,9 with 'i' this caused error thrown 
-// error will be caught and allow the user to continue 
-// with the game and try again.
+//=============================================================================
+// Case 5 - Mark with invalid character (non 1-9) - state.cpp:36:
+// Tried marking a square 9,9 with invalid char 'i' this 
+// caused error thrown error will be caught and allow the user 
+// to continue with the game and try marking again.
 
 Sudoku Helper
 
@@ -75,7 +78,7 @@ Sudoku Helper
 
 [!] Option m-Mark selected
 
-Please enter the Row, Column and Value (Space delimited): 99i
+Please enter the Row, Column and Value: 99i
 
 Marking Square: 9; 9; sq: 80
  [+] Possibilities BEFORE: '-'   1 2 3 - 5 - - - - 

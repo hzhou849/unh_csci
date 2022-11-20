@@ -27,7 +27,6 @@ const string Game :: menuList[6] = { "Mark", "Undo", "Redo","Save Game",
 Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
     inFile >> gameType_m;
     if ( !validate( gameType_m ) ) {
-        // fatal("\n[!] Fatal Error - Char from file is not a legal character!");  
         throw GmBadGameType ( string(1,gameType_m) );  
     }
     cout << "[+] Game Type character assigned: " << gameType_m << endl; 
@@ -66,12 +65,10 @@ run () {
         switch( listValue ) {
             case 'm':
                 cout << "[!] Option m-Mark selected" << endl;
-                try {
-                    markInput();
-                } catch (GmError& ge) { 
-                    cout << "***72gm.cpp caught" << endl;
-                    ge.print(); 
-                }
+                // MOve this to markInput()
+                // try { markInput(); } 
+                // catch (GmError& ge) { ge.print(); }
+                markInput();
                 break;
             case 'u':
                 cout << "[!] Option u - Undo selected" << endl;
@@ -98,17 +95,13 @@ void Game ::
 markInput() {
     char choice[3];     // Store user input [row, col, value to mark]
     
-    cout << "\nPlease enter the Row, Column and Value (Space delimited): " << flush;
+    cout << "\nPlease enter the Row, Column and Value (ex 121): " << flush;
     cin >> choice[0];
     cin >> choice[1];
     cin >> choice[2];
 
-    gameBoard_m->mark(choice[0], choice[1], choice[2]);
-    // try {
-    //     gameBoard_m->mark(choice[0], choice[1], choice[2]);
-    // } catch (GmError& ex) {
-    //     ex.print();
-    // }
+    try { gameBoard_m->mark(choice[0], choice[1], choice[2]); }
+    catch ( GmError& ge ) { ge.print(); }
 }
 
 
