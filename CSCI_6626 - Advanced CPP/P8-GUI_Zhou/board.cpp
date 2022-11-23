@@ -73,9 +73,8 @@ string Board::getPossibilityString(int row, int col) const {
     string posList = ss.str().substr(23,9);
     string emptyList = "---------";
 
-    if ( posList.compare(emptyList) == 0 ) { 
-        return "         "; 
-    } else { return posList; }
+    if ( posList.compare(emptyList) == 0 ) {  return "         "; } 
+    else { return posList; }
 }
 
 //-----------------------------------------------------------------------------

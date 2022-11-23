@@ -28,11 +28,7 @@ private:
   // Member Functions
   bool validate(char readChar);
   Board* gameBoard_m;
-  // Board* diagBoard_m;
   Viewer* viewObj_m;
-  
-
-
   void markInput();
 
 public:
