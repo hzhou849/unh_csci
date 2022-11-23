@@ -3,7 +3,7 @@
 // 
 // Brief:       A basic controller class for the applicaiton
 // 
-// Project/ver:  P7 - Exception
+// Project/ver:  P8 - GUI
 // Class:       CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:   Dr. Alice E. Fischer
 // Name:        Howard Zhou
@@ -25,12 +25,14 @@ const string Game :: menuList[6] = { "Mark", "Undo", "Redo","Save Game",
 /// @param [in] inFile - file to be read
 //-----------------------------------------------------------------------------
 Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
+    int gameSize = 9; 
     inFile >> gameType_m;
     if ( !validate( gameType_m ) ) {
         throw GmBadGameType ( string(1,gameType_m) );  
     }
     cout << "[+] Game Type character assigned: " << gameType_m << endl; 
 
+    if (gameType_m == 's') { gameSize = 6; }
     if (gameType_m == 'd') {
         gameBoard_m = new DiagBoard(gameType_m, inFile_m);
     } else {
@@ -41,13 +43,15 @@ Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
          << "------------------------------------------------------------" << endl;
 
     gameBoard_m->bdShoop(); 
+    viewObj_m = new Viewer(gameSize, gameSize, *gameBoard_m);
+    
 }
 
 
 //-----------------------------------------------------------------------------
 /// @brief Destructor
 //-----------------------------------------------------------------------------
-Game :: ~Game () { inFile_m.close();  delete gameBoard_m;}
+Game :: ~Game () { inFile_m.close();  delete gameBoard_m; delete viewObj_m; }
 
 
 //-----------------------------------------------------------------------------
@@ -58,8 +62,9 @@ run () {
     char listValue;
     while ( listValue != 'q' ) {
         cout << "------------------------------------------------------------\n"
-            << "Board:\n"
-            <<"\n" << *gameBoard_m << endl;
+            << "Board:\n" << endl;
+            // <<"\n" << *gameBoard_m << endl;
+        viewObj_m->show(cout);
         listValue = menu_c( "Sudoku Helper", 6, menuList, "murseq" );
         cout << "\n";
         switch( listValue ) {
