@@ -230,14 +230,7 @@ mark (char row, char col, char value) {
 
     if (arrSqs_m[sqCell].mark(value) ) {arrSqs_m[sqCell].sqShoop(); }
 
-    //==== Backup state frames =====//
    
-    // Create frame->arrayState[0] = 
-    vFrames.push_back(new Frame(nSize_m));
-
-    vFrames.at(0)->arrState[0] = arrSqs_m[0].stateObj;
-    cout << "fObj: " << vFrames.at(0)->arrState[0].value << endl;
-    cout << "fObj pos: " << vFrames.at(0)->arrState[0].posList<< endl;
     backup();
     
 }
@@ -249,12 +242,24 @@ mark (char row, char col, char value) {
 void Board ::
 backup() {
     int bSize = nSize_m * nSize_m;
+    stack_m.push(new Frame(nSize_m));
     for (int itr = 0; itr < bSize; ++itr) {
-        vFrames.push_back( new Frame(nSize_m) );
+        stack_m.push( new Frame(nSize_m) );
 
-        vFrames.back()->arrState[itr] = arrSqs_m[itr].stateObj;
-
+        stack_m.top()->arrState[itr] = arrSqs_m[itr].stateObj;
+        cout << "Frame print: " << stack_m.top()->arrState[itr] << endl;
     }
+
+    // foreach(item : ) iterate the vector of frames in stack
+
+     //***************************==== Backup state frames =====**********************//
+    // assign and restore
+        // arrSqs_m[itr].stateObj = stack_m.top()->arrState[itr];
+    // Create frame->arrayState[0] = 
+
+    // stack_m.at(0)->arrState[0] = arrSqs_m[0].stateObj;
+    // cout << "fObj: " << stack_m.at(0)->arrState[0].value << endl;
+    // cout << "fObj pos: " << stack_m.at(0)->arrState[0].posList<< endl;
 }
 
 //-----------------------------------------------------------------------------

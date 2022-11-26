@@ -15,7 +15,8 @@
 #include "cluster.hpp"
 #include "myExcept.hpp"
 #include "CanView/CanView.hpp"
-#include "frame.hpp"
+// #include "frame.hpp"
+#include "stack.hpp"
 
 class Board : public CanView {
 protected:
@@ -26,7 +27,8 @@ protected:
     ifstream&   inFile_m;
     vector <Cluster*> clus_m;
 
-     vector <Frame*> vFrames;
+    // vector <Frame*> vFrames;
+    Stack<Frame*> stack_m;
 
     // Member functions
     void getPuzzle();
@@ -46,7 +48,7 @@ public:
     virtual ~Board() { 
         delete[] arrSqs_m; 
           // Foreach 
-        delete vFrames.at(0);
+        // delete vFrames.at(0);
         cout << "[*] Deallocating board object" << endl; 
     }
     void bdShoop();
