@@ -26,6 +26,7 @@ Board :: Board(char type, ifstream &puzFile ) : inFile_m(puzFile) {
     arrSqs_m = new Square[nSize_m * nSize_m];
     getPuzzle();
     mkCluster();
+    bkState();
 }
 
 
@@ -228,39 +229,70 @@ mark (char row, char col, char value) {
         return;
     }
 
+    bkState();  // Backup state BEFORE the next move
     if (arrSqs_m[sqCell].mark(value) ) {arrSqs_m[sqCell].sqShoop(); }
-
-   
-    backup();
-    
 }
 
 //-----------------------------------------------------------------------------
 /// @brief backup the current board's state
-///
 //-----------------------------------------------------------------------------
 void Board ::
-backup() {
-    int bSize = nSize_m * nSize_m;
-    stack_m.push(new Frame(nSize_m));
-    for (int itr = 0; itr < bSize; ++itr) {
-        stack_m.push( new Frame(nSize_m) );
+bkState() {
+    cout << "stack size: " << stackUndo_m.size() << endl;
+    int bSize = (nSize_m * nSize_m);
+    stackUndo_m.push(new Frame(nSize_m));
 
-        stack_m.top()->arrState[itr] = arrSqs_m[itr].stateObj;
-        cout << "Frame print: " << stack_m.top()->arrState[itr] << endl;
+    for (int itr = 0; itr < bSize; ++itr) {
+        stackUndo_m.top()->arrState[itr] = arrSqs_m[itr].getState();
+        cout << "Frame print: "<< itr << ") " << stackUndo_m.top()->arrState[itr] << endl;
     }
 
-    // foreach(item : ) iterate the vector of frames in stack
-
-     //***************************==== Backup state frames =====**********************//
-    // assign and restore
-        // arrSqs_m[itr].stateObj = stack_m.top()->arrState[itr];
-    // Create frame->arrayState[0] = 
-
-    // stack_m.at(0)->arrState[0] = arrSqs_m[0].stateObj;
-    // cout << "fObj: " << stack_m.at(0)->arrState[0].value << endl;
-    // cout << "fObj pos: " << stack_m.at(0)->arrState[0].posList<< endl;
+    // Print the undo stack 
+    for (int itr=0; itr < stackUndo_m.size(); ++itr) {
+        cout << "-------------------------Stack [" << itr << "] ---------" << endl;
+        cout << *stackUndo_m.at(itr) << endl;
+    }
+    
 }
+
+//-----------------------------------------------------------------------------
+/// @brief undo the last move by retrieving undo stack
+//-----------------------------------------------------------------------------
+void Board :: 
+undo() {
+    
+    // If undo stack is less than 2 there is nothing to undo
+    if (stackUndo_m.size() < 2) {
+        cout << "Nothing to undo" << endl;
+        return;
+    }
+
+    int bSize = (nSize_m * nSize_m);
+
+    // Retreive undo stack top stack()
+    cout << *stackUndo_m.top() << endl; 
+    
+
+
+    for (int itr=0; itr<bSize; ++itr) {         // Write previous state to board sqs
+        arrSqs_m[itr].setState(stackUndo_m.top()->arrState[itr]);
+    }
+
+    stackRedo_m.push(stackUndo_m.top());        // Put top undo state in redo stack
+    stackUndo_m.pop();                          // Clear it from undo stack
+
+
+    cout << "******************new undo state******************" <<endl;
+      // Print the undo stack 
+    for (int itr=0; itr < stackUndo_m.size(); ++itr) {
+        cout << "-------------------------Stack [" << itr << "] ---------" << endl;
+        cout << *stackUndo_m.at(itr) << endl;
+    }
+    cout << "******************redo state******************" << endl;
+    cout << *stackRedo_m.top() << endl; 
+
+}
+
 
 //-----------------------------------------------------------------------------
 /// @brief Print display the values for all the Square*s stored in board

@@ -13,7 +13,6 @@
 class Cluster;
 
 class Square : public State {
-friend class  Board;
 protected: 
     State stateObj;
     short sqRow;
@@ -29,6 +28,8 @@ public:
     ostream& print (ostream& os);
     bool mark(char newChar);
     void turnOff (int n);
+    State getState() { return this->stateObj;}
+    void setState(State st) {this->stateObj = st;}
 };
 
 inline ostream& operator << (ostream& os, Square& sqr) {

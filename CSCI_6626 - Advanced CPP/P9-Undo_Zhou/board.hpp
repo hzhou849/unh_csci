@@ -28,7 +28,10 @@ protected:
     vector <Cluster*> clus_m;
 
     // vector <Frame*> vFrames;
-    Stack<Frame*> stack_m;
+    Stack<Frame*> stackUndo_m;
+    
+    Stack<Frame*> stackRedo_m;
+
 
     // Member functions
     void getPuzzle();
@@ -37,8 +40,8 @@ protected:
     void crtColumn(int curCol, Square* tempArr[]);
     void crtBox(int curBox, Square* tempArr[]);
     void crtRow(int curRow, Square* tempArr[]);
+    void bkState();
 
-    void backup();
 
 public: 
     virtual char getMarkChar(int row, int col) const;
@@ -47,14 +50,14 @@ public:
     Board( char type, ifstream& puzFile );
     virtual ~Board() { 
         delete[] arrSqs_m; 
-          // Foreach 
-        // delete vFrames.at(0);
+        stackUndo_m.zap();
         cout << "[*] Deallocating board object" << endl; 
     }
     void bdShoop();
     ostream& print( ostream& os ) const;
     virtual void extPrint() {}
     void mark(char row, char col, char value);
+    void undo();
 };
 
 

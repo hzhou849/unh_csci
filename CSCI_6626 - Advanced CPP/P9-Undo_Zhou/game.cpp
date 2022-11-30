@@ -70,12 +70,10 @@ run () {
             case 'm':
                 cout << "[!] Option m-Mark selected" << endl;
                 markInput();
-
-                               
-
                 break;
             case 'u':
                 cout << "[!] Option u - Undo selected" << endl;
+                gameBoard_m->undo();
                 break;
             case 'r':
                 cout << "[!] Option r - Redo selected" << endl;
@@ -87,7 +85,7 @@ run () {
                 cout << "[!] Option q - Quit selected" << endl;
                 break;
         }
-        cout << "\n---------------------------------------------------------------\n";
+        // cout << "\n---------------------------------------------------------------\n";
     }
 }
 

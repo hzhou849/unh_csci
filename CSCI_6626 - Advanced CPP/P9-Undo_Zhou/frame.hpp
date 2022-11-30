@@ -12,7 +12,7 @@
 #include "tools.hpp"
 #include "state.hpp"
 
-class Frame : State{
+class Frame {
 private:
     int nSize;
 
@@ -25,5 +25,25 @@ public:
       
 
         cout << "[*] Deallocating Frame object" << endl; }
+
+    ostream& print (ostream& os) { 
+        int bSize = nSize * nSize;
+        for (int itr=0; itr < bSize; ++itr) {
+            if (itr % nSize == 0) {
+                os << "\n";
+            }
+            
+            if (itr <= 9 ) { os << " (" << itr<<")"; }
+            else  os <<"("<<itr<<")";
+            os << arrState[itr] << " ";
+            
+
+        }
+        os << "\n" << endl;
+        return os;
+    }
 };
 
+inline ostream& operator << (ostream& os, Frame& fObj) { 
+    return fObj.print(os);
+}
