@@ -28,8 +28,8 @@ public:
     ostream& print (ostream& os);
     bool mark(char newChar);
     void turnOff (int n);
-    State getState() { return this->stateObj;}
-    void setState(State st) {this->stateObj = st;}
+    State getState() { return stateObj;}
+    void setState(State st) {stateObj = st;}
 };
 
 inline ostream& operator << (ostream& os, Square& sqr) {

@@ -38,11 +38,6 @@ Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
     } else {
         gameBoard_m = new Board(gameType_m, inFile_m);
     }
-    cout << "\n-------------------------------------------------------------\n"
-         << "Executing inital shoop() on board\n" 
-         << "------------------------------------------------------------" << endl;
-
-    gameBoard_m->bdShoop(); 
     viewObj_m = new Viewer(gameSize_m, gameSize_m, *gameBoard_m);
 }
 
@@ -60,12 +55,12 @@ void Game ::
 run () {
     char listValue;
     while ( listValue != 'q' ) {
-        cout << "------------------------------------------------------------\n"
-            << "Board:\n" << endl;
-            // <<"\n" << *gameBoard_m << endl;
+        cout << "\n------------------------------------------------------------\n"
+             << "Board:\n" << endl;
         viewObj_m->show(cout);
         listValue = menu_c( "Sudoku Helper", 6, menuList, "murseq" );
         cout << "\n";
+
         switch( listValue ) {
             case 'm':
                 cout << "[!] Option m-Mark selected" << endl;
@@ -77,6 +72,7 @@ run () {
                 break;
             case 'r':
                 cout << "[!] Option r - Redo selected" << endl;
+                gameBoard_m->redo();
                 break;
             case 'e':
                 cout << "[!] Option e - Restore selected" << endl;
@@ -89,10 +85,6 @@ run () {
     }
 }
 
-
-// //-----------------------------------------------------------------------------
-// /// @brief backup state
-// void Game :: backupState(){}
 
 //-----------------------------------------------------------------------------
 /// @brief helper function to handle prompt for mark() user input.

@@ -29,7 +29,7 @@ mark(char newChar) {
     if (stateValue == '-') {
         cout << " [+] Possibilities BEFORE: " << stateObj << endl;
         stateObj.mark(newChar);
-        cout << " [+] Possibilities                 after: " << stateObj << endl;
+        cout << " [+] Possibilities AFTER: " << stateObj << endl;
         return true;
     } 
     else { 

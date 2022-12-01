@@ -31,19 +31,10 @@ State :: State ( char initVal ): value(initVal)  {
 void State :: 
 mark ( char charIn ) {
     if ( (charIn < '0' || charIn > '9') && charIn != '-' ) {
-        throw GmBadInputChar ( string(1, charIn) );
-    }
+        throw GmBadInputChar ( string(1, charIn) ); }
 
-    if ( fixed ) {
-        cout << "Error State is fixed! "  << endl; //** Game error
-    } 
-    else {
-        value = charIn;
-        cout << "State is NOT fixed, value re-assigned: " << value << endl;
-
-        // Possibilites is now assigned to zero
-        posList = 0;
-    }
+    if ( fixed ) { cout << "Error State is fixed! "  << endl; } 
+    else { value = charIn; posList = 0; fixed = true;}
 }
 
 

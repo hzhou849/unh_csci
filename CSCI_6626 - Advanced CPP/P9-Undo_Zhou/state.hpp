@@ -28,11 +28,10 @@ public:
     ~State ()=default;           
     void mark (char ch);
     char getValue();
+    bool getFixed() {return fixed; }
     void adjPlist(int val);
     ostream& printFull (ostream& os);
     ostream& print (ostream& os);
-
-    // State getState() {return *this; }
 };
 
 inline ostream& operator<< ( ostream& os, State& state ) {

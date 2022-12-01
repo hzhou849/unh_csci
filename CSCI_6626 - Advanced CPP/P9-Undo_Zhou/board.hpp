@@ -26,12 +26,8 @@ protected:
     Square*     arrSqs_m;
     ifstream&   inFile_m;
     vector <Cluster*> clus_m;
-
-    // vector <Frame*> vFrames;
     Stack<Frame*> stackUndo_m;
-    
     Stack<Frame*> stackRedo_m;
-
 
     // Member functions
     void getPuzzle();
@@ -40,24 +36,23 @@ protected:
     void crtColumn(int curCol, Square* tempArr[]);
     void crtBox(int curBox, Square* tempArr[]);
     void crtRow(int curRow, Square* tempArr[]);
+    void printStack();
     void bkState();
-
 
 public: 
     virtual char getMarkChar(int row, int col) const;
     virtual string getPossibilityString(int row, int col) const;
     
     Board( char type, ifstream& puzFile );
-    virtual ~Board() { 
-        delete[] arrSqs_m; 
-        stackUndo_m.zap();
-        cout << "[*] Deallocating board object" << endl; 
-    }
+    virtual ~Board();
     void bdShoop();
     ostream& print( ostream& os ) const;
     virtual void extPrint() {}
     void mark(char row, char col, char value);
     void undo();
+    void redo();
+    void restoreState( Frame* );
+
 };
 
 
