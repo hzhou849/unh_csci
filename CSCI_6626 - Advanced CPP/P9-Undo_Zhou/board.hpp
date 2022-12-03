@@ -52,7 +52,6 @@ public:
     void undo();
     void redo();
     void restoreState( Frame* );
-
 };
 
 

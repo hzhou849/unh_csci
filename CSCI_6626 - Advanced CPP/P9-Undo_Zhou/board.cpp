@@ -293,10 +293,12 @@ undo() {
     stackRedo_m.push(stackUndo_m.top());    // Put top undo state in redo stack
     stackUndo_m.pop();                      // Clear it from undo stack
 
-    int bSize = (nSize_m * nSize_m);
-    for (int itr=0; itr<bSize; ++itr) {    // Write previous state to board sqs
-        arrSqs_m[itr].setState(stackUndo_m.top()->arrState[itr]);
-    }
+    // int bSize = (nSize_m * nSize_m);
+    // for (int itr=0; itr<bSize; ++itr) {    // Write previous state to board sqs
+    //     arrSqs_m[itr].setState(stackUndo_m.top()->arrState[itr]);
+    // }
+
+    restoreState(stackUndo_m.top());
 
     cout << "--------------------- New stack state --------------------" <<endl;
     printStack();
@@ -310,14 +312,28 @@ redo() {
     if (stackRedo_m.size() < 1) { cout << "Nothing to redo " << endl; return; }
     stackUndo_m.push(stackRedo_m.top());   
 
-    int bSize = (nSize_m * nSize_m);
-    for (int itr=0; itr<bSize; ++itr) {     
-        arrSqs_m[itr].setState(stackRedo_m.top()->arrState[itr]);
-    }
-    stackRedo_m.pop(); 
 
+    restoreState(stackRedo_m.top());
+    // for (int itr=0; itr<bSize; ++itr) {     
+    //     arrSqs_m[itr].setState(stackRedo_m.top()->arrState[itr]);
+    // }
+
+    stackRedo_m.pop(); 
     cout << "--------------------- New stack state --------------------" <<endl;
     printStack();
+}
+
+//-----------------------------------------------------------------------------
+/// @brief restore all the squares to the selected Frame
+/// @param[in] fr - The frame from stack to restore on to the board
+//-----------------------------------------------------------------------------
+void Board :: 
+restoreState( Frame* fr) {
+    int bSize = (nSize_m * nSize_m);
+     for (int itr=0; itr<bSize; ++itr) {     
+        arrSqs_m[itr].setState(fr->arrState[itr]);
+    }
+
 }
 
 //-----------------------------------------------------------------------------

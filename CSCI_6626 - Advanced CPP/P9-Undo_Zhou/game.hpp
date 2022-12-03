@@ -18,7 +18,6 @@ class Board;
 
 class Game {
 private:
-
   // Member Variables
   static const string menuList[6];
   static const string legalCodes;

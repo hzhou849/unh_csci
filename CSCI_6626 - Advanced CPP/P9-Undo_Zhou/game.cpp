@@ -60,8 +60,7 @@ run () {
         viewObj_m->show(cout);
         listValue = menu_c( "Sudoku Helper", 6, menuList, "murseq" );
         cout << "\n";
-
-        switch( listValue ) {
+        switch( listValue ) {   
             case 'm':
                 cout << "[!] Option m-Mark selected" << endl;
                 markInput();

@@ -25,7 +25,7 @@ int main (int argc, char* argv[]) {
         ifstream inputFile( argv[1] );
         
         if ( !inputFile.good())  {
-            throw StreamFatal(" Unable to open file! " +string(argv[1]) + "\n"); ///*** error
+            throw StreamFatal(" Unable to open file! " +string(argv[1]) + "\n");
         }
         
         // Run game which will call Board inside the class
