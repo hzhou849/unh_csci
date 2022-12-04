@@ -8,9 +8,20 @@
 /// @param [in] gameOut - the stream/file to write the current game state to.
 //-----------------------------------------------------------------------------
 void Frame::serialize(ofstream& gameOut) {
-    gameOut << "testing saving stuff " << endl;
-    gameOUt << arrState[1].
-    gameOut << *this << endl;
+    gameOut.write( (char*) &arrState[78], sizeof(arrState[0])) ;
+    gameOut.write( (char*) &arrState[79], sizeof(arrState[0])) ;
+    gameOut.write( (char*) &arrState[80], sizeof(arrState[0])) ;
+    // gameOut.write( (char*) &arrState[2], sizeof(arrState[2])) ;
+    // gameOut << *this << endl;
+
+
+
+
+
+}
+
+void Frame::realize(ifstream& gameIn) {
+
 }
 
 ostream& Frame::print (ostream& os) { 

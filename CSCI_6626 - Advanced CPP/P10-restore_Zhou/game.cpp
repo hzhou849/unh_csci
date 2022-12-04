@@ -80,6 +80,8 @@ run () {
                 break;
             case 'e':
                 cout << "[!] Option e - Restore selected" << endl;
+                try { gameBoard_m->restoreBd(); }
+                catch (StreamErr& sErr) {sErr.print(); }
                 break;
             case 'q':
                 cout << "[!] Option q - Quit selected" << endl;
@@ -106,7 +108,6 @@ markInput() {
     try { gameBoard_m->mark(choice[0], choice[1], choice[2]); }
     catch ( GmError& ge ) { ge.print(); }
 }
-
 
 //-----------------------------------------------------------------------------
 /// @brief Checks the character read is legal

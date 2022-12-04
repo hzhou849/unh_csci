@@ -24,7 +24,7 @@ public:
     }
     
     void serialize(ofstream& gameOut);
-    void realize();
+    void realize(ifstream& gameIn);
     ostream& print (ostream& os);
 };
 

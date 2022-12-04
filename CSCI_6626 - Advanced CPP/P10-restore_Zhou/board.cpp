@@ -330,7 +330,8 @@ redo() {
 void Board :: 
 restoreState( Frame* fr) {
     int bSize = (nSize_m * nSize_m);
-     for (int itr=0; itr<bSize; ++itr) {     
+    
+    for (int itr=0; itr<bSize; ++itr) {     
         arrSqs_m[itr].setState(fr->arrState[itr]);
     }
 
@@ -355,8 +356,7 @@ print (ostream &os) const{
 }
 
 //-----------------------------------------------------------------------------
-/// @brief Delegate save board function to Frame::serialize()
-/// @param [in] os : reference stream object to store data
+/// @brief Save board function -  delegates to Frame::serialize()
 //-----------------------------------------------------------------------------
 void Board::saveBd() {
     // ofstream saveFile;
@@ -364,10 +364,11 @@ void Board::saveBd() {
 
     cout << "Enter the name for save file: "; cin >> fileName;
 
-    ofstream saveFile(fileName.c_str());
+    ofstream saveFile(fileName.c_str(),  ofstream::binary );
 
-    if ( !saveFile.good() ) {
-        throw StreamErr("Unable to open ofstream for: " + fileName); 
+    // if ( !saveFile.good() ) {
+    if ( !saveFile ) {
+        throw StreamErr("Unable to open ofstream for: " + fileName ); 
     }
     
     
@@ -375,4 +376,28 @@ void Board::saveBd() {
 
     saveFile.close();
 
+}
+
+
+//-----------------------------------------------------------------------------
+/// @brief Restore board from save file - delegates to Frame::realize()
+//-----------------------------------------------------------------------------
+void Board::restoreBd() {
+    ifstream ifd;
+    ifd.open("savetest.txt", ifstream::binary);
+
+    State tempSt;
+    Frame* frBuffer = new Frame(9);
+    int counter=78;
+
+
+    if (!ifd.good()) { fatal(" IFD ERROR!!"); }
+
+    while (ifd.good()) { // this always reads 1 after
+        ifd.read( (char*) &tempSt, sizeof(tempSt) );
+
+        if (ifd.eof()){ break; }
+        frBuffer->arrState[counter] = tempSt;
+        cout <<  "From file: " << frBuffer->arrState[counter++] <<endl;
+    }
 }
