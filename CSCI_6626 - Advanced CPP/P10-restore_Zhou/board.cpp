@@ -40,6 +40,14 @@ Board :: ~Board() {
         cout << "[*] Undo stack clear." << endl;
         stackRedo_m.zap();
         cout << "[*] Redo stack clear." << endl;
+
+        while (!clus_m.empty()) {
+            delete clus_m.back();
+            clus_m.pop_back();
+        }
+
+
+
     }
 
 //-----------------------------------------------------------------------------
@@ -364,7 +372,8 @@ void Board::saveBd() {
 
     cout << "Enter the name for save file: "; cin >> fileName;
 
-    ofstream saveFile(fileName.c_str(),  ofstream::binary );
+    // ofstream saveFile(fileName.c_str(),  ofstream::binary );
+    ofstream saveFile("savetest.txt",  ofstream::binary );
 
     // if ( !saveFile.good() ) {
     if ( !saveFile ) {
@@ -386,18 +395,36 @@ void Board::restoreBd() {
     ifstream ifd;
     ifd.open("savetest.txt", ifstream::binary);
 
-    State tempSt;
-    Frame* frBuffer = new Frame(9);
-    int counter=78;
+    // stackUndo_m.push()
+
+    // State tempSt;
+    // //move this buffer to header to prevent mem leak and del in destructor
+    Frame* frBuffer = new Frame(nSize_m);
+    // int counter=0;
 
 
-    if (!ifd.good()) { fatal(" IFD ERROR!!"); }
+    // string fileName = "savetest.txt";
+    // if (!ifd.good()) { throw StreamErr(" IFD ERROR!!" + fileName); }
 
-    while (ifd.good()) { // this always reads 1 after
-        ifd.read( (char*) &tempSt, sizeof(tempSt) );
+    // while (ifd.good() ) { // this always reads 1 after
+    //     ifd.read( (char*) &tempSt, sizeof(tempSt) );
 
-        if (ifd.eof()){ break; }
-        frBuffer->arrState[counter] = tempSt;
-        cout <<  "From file: " << frBuffer->arrState[counter++] <<endl;
+    //     if (counter > 80) {cout << "counter: " << counter; break;}
+    //     else if (ifd.eof()){ cout << "eof detected" << endl; break; } 
+    //     else {
+    //         frBuffer->arrState[counter] = tempSt;
+    //         cout << counter << ") " <<  "From file: " << frBuffer->arrState[counter] <<endl;
+    //         counter++;
+
+    //     }
+    // }
+
+    frBuffer->realize(ifd);
+
+    for (int i=0; i< 81 ; i++) {
+        cout << "board print " << i << "): " << frBuffer->arrState[i] << endl;
     }
+
+    ifd.close();
+
 }

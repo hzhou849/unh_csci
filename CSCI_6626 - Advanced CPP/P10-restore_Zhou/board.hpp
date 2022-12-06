@@ -22,6 +22,7 @@ class Board : public CanView {
 protected:
     // Member variables
     int         nSize_m;
+    int         bdSize_m = nSize_m*nSize_m;
     short int   left_m;
     Square*     arrSqs_m;
     ifstream&   inFile_m;

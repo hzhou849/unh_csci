@@ -15,8 +15,10 @@ public:
     void pop() { vStack_m.pop_back(); }
     void push( Frame* inFrm ) { vStack_m.push_back(inFrm); }
     int size() { return vStack_m.vector<T>::size(); }
-    void zap() { for ( int itr = vStack_m.vector<T>::size(); itr-- >0; ) 
-                    { cout << "Popping: " << itr << endl;vStack_m.pop_back(); }   }
+    void zap() { for ( int itr = vStack_m.vector<T>::size(); itr-- >0; ) { 
+                        cout << "Popping: " << itr << endl; 
+                        delete vStack_m.back();
+                        vStack_m.pop_back(); }   }
     Frame* at (int index) {return vStack_m.vector<T>::at(index); }
 };
 
