@@ -7,6 +7,7 @@
 // Class:        CSCI 6626 - Advanced C++ Design Priciples/OOP
 // Professor:    Dr. Alice E. Fischer
 // Name:         Howard Zhou
+// valgrind --leak-check=full ./main puzt.txt 
 //-----------------------------------------------------------------------------
 
 #pragma once
@@ -15,7 +16,6 @@
 #include "cluster.hpp"
 #include "myExcept.hpp"
 #include "CanView/CanView.hpp"
-// #include "frame.hpp"
 #include "stack.hpp"
 
 class Board : public CanView {
@@ -41,11 +41,11 @@ protected:
     void bkState();
 
 public: 
-    virtual char getMarkChar(int row, int col) const;
-    virtual string getPossibilityString(int row, int col) const;
-    
     Board( char type, ifstream& puzFile );
     virtual ~Board();
+
+    virtual char getMarkChar(int row, int col) const;
+    virtual string getPossibilityString(int row, int col) const;
     void bdShoop();
     ostream& print( ostream& os ) const;
     virtual void extPrint() {}

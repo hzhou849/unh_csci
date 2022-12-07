@@ -9,7 +9,7 @@ private:
 
 public:
      Stack() {};
-     ~Stack() {};
+     ~Stack() { if (vStack_m.size() > 0) zap(); };
 
     Frame* top() { return vStack_m.back();}
     void pop() { vStack_m.pop_back(); }
@@ -19,7 +19,7 @@ public:
                         cout << "Popping: " << itr << endl; 
                         delete vStack_m.back();
                         vStack_m.pop_back(); }   }
-    Frame* at (int index) {return vStack_m.vector<T>::at(index); }
+    Frame* at ( int index ) { return vStack_m.vector<T>::at(index); }
 };
 
 

@@ -45,9 +45,6 @@ Board :: ~Board() {
             delete clus_m.back();
             clus_m.pop_back();
         }
-
-
-
     }
 
 //-----------------------------------------------------------------------------
@@ -277,13 +274,15 @@ bkState() {
 void Board ::
 printStack() {
     Frame* tempF;
-     cout << "\n[+] Undo stack size: " << stackUndo_m.size() << endl;
+    cout << "--- UNDO stack contents: \n";
+    cout << "\n[+] Undo stack size: " << stackUndo_m.size() << endl;
     for (int itr=0; itr < stackUndo_m.size(); ++itr ){
         tempF = stackUndo_m.at(itr);
         cout << "Undo Stack [" << itr << "] @:" << tempF << endl;
         cout << *tempF << endl;
     }
 
+    cout << "--- REDO stack contents: \n";
     cout << "\n [+] Redo stack size: " << stackRedo_m.size() << endl;
     for (int itr=stackRedo_m.size(); itr-- > 0; ) {
         tempF = stackRedo_m.at(itr);
@@ -300,15 +299,8 @@ undo() {
     if (stackUndo_m.size() < 2) { cout << "Nothing to undo" << endl; return; }
     stackRedo_m.push(stackUndo_m.top());    // Put top undo state in redo stack
     stackUndo_m.pop();                      // Clear it from undo stack
-
-    // int bSize = (nSize_m * nSize_m);
-    // for (int itr=0; itr<bSize; ++itr) {    // Write previous state to board sqs
-    //     arrSqs_m[itr].setState(stackUndo_m.top()->arrState[itr]);
-    // }
-
     restoreState(stackUndo_m.top());
-
-    cout << "--------------------- New stack state --------------------" <<endl;
+    cout << "\n--------------------- New stack state --------------------" <<endl;
     printStack();
 }
 
@@ -319,13 +311,7 @@ void Board ::
 redo() {
     if (stackRedo_m.size() < 1) { cout << "Nothing to redo " << endl; return; }
     stackUndo_m.push(stackRedo_m.top());   
-
-
     restoreState(stackRedo_m.top());
-    // for (int itr=0; itr<bSize; ++itr) {     
-    //     arrSqs_m[itr].setState(stackRedo_m.top()->arrState[itr]);
-    // }
-
     stackRedo_m.pop(); 
     cout << "--------------------- New stack state --------------------" <<endl;
     printStack();
@@ -367,24 +353,14 @@ print (ostream &os) const{
 /// @brief Save board function -  delegates to Frame::serialize()
 //-----------------------------------------------------------------------------
 void Board::saveBd() {
-    // ofstream saveFile;
-    string fileName;
-
-    cout << "Enter the name for save file: "; cin >> fileName;
-
-    // ofstream saveFile(fileName.c_str(),  ofstream::binary );
-    ofstream saveFile("savetest.txt",  ofstream::binary );
-
-    // if ( !saveFile.good() ) {
+    string fileNm;
+    cout << "Enter the name for save file: "; cin >> fileNm;
+    ofstream saveFile(fileNm.c_str(),  ofstream::binary );
     if ( !saveFile ) {
-        throw StreamErr("Unable to open ofstream for: " + fileName ); 
-    }
-    
-    
+        throw StreamErr("Unable to open ofstream for: " + fileNm ); }
+
     stackUndo_m.top()->serialize(saveFile);
-
     saveFile.close();
-
 }
 
 
@@ -392,39 +368,18 @@ void Board::saveBd() {
 /// @brief Restore board from save file - delegates to Frame::realize()
 //-----------------------------------------------------------------------------
 void Board::restoreBd() {
-    ifstream ifd;
-    ifd.open("savetest.txt", ifstream::binary);
+    string fileNm;
+    ifstream rstFile(fileNm.c_str(),  ifstream::binary);
+    if ( !rstFile ) {
+        throw StreamErr("Unable to open ofstream for: " + fileNm ); }
 
-    // stackUndo_m.push()
-
-    // State tempSt;
     // //move this buffer to header to prevent mem leak and del in destructor
     Frame* frBuffer = new Frame(nSize_m);
-    // int counter=0;
-
-
-    // string fileName = "savetest.txt";
-    // if (!ifd.good()) { throw StreamErr(" IFD ERROR!!" + fileName); }
-
-    // while (ifd.good() ) { // this always reads 1 after
-    //     ifd.read( (char*) &tempSt, sizeof(tempSt) );
-
-    //     if (counter > 80) {cout << "counter: " << counter; break;}
-    //     else if (ifd.eof()){ cout << "eof detected" << endl; break; } 
-    //     else {
-    //         frBuffer->arrState[counter] = tempSt;
-    //         cout << counter << ") " <<  "From file: " << frBuffer->arrState[counter] <<endl;
-    //         counter++;
-
-    //     }
-    // }
-
-    frBuffer->realize(ifd);
-
-    for (int i=0; i< 81 ; i++) {
-        cout << "board print " << i << "): " << frBuffer->arrState[i] << endl;
-    }
-
-    ifd.close();
-
+    frBuffer->realize(rstFile);
+    printStack();
+    stackRedo_m.zap();
+    stackUndo_m.zap();
+    stackUndo_m.push(frBuffer);
+    restoreState( stackUndo_m.top() );
+    rstFile.close();
 }

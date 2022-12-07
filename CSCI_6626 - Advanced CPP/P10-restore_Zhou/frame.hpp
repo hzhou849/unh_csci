@@ -20,8 +20,7 @@ public:
     State *arrState;
     Frame(int size): nSize(size) { arrState = new State[nSize*nSize]; }
     virtual ~Frame() { 
-        delete[] arrState; cout << "[*] Deallocating Frame object" << endl; 
-    }
+        delete[] arrState; cout << "[*] Deallocating Frame object" << endl; }
     
     void serialize(ofstream& gameOut);
     void realize(ifstream& gameIn);
