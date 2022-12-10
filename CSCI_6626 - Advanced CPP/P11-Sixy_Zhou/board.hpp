@@ -35,7 +35,7 @@ protected:
     Square& sub( int row, int col );
     void mkCluster();
     void crtColumn(int curCol, Square* tempArr[]);
-    void crtBox(int curBox, Square* tempArr[]);
+    // void crtBox(int curBox, Square* tempArr[]);
     void crtRow(int curRow, Square* tempArr[]);
     void printStack();
     void bkState();

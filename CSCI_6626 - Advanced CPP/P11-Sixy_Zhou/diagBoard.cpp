@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------- 
 // File:         diagBoard.hpp
 // 
-// Brief:        A basic controller class for the applicaiton implementation
+// Brief:        Derived from board, extra functions to create diag clusters
 // 
 // Project/ver:  P11 - Sixy
 // Class:        CSCI 6626 - Advanced C++ Design Priciples/OOP
@@ -43,6 +43,7 @@ crtUpLeftDiag ( Square* tempArr[] ) {
     }
     clus_m.push_back(new Cluster (ClusterT::DIAG, tempArr));
 }
+
 
 //-----------------------------------------------------------------------------
 /// @brief Create diagonal cluster form UPPER-RIGHT to LOWER-LEFT corners

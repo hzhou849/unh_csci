@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------- 
-// File:         sixyBoard.hpp
+// File:         tradBoard.hpp
 // 
-// Brief:        sixy Board class derived from Board implementation
+// Brief:        Derived from board, extra fuction for creating box clusters
 // 
 // Project/ver:  P11 - Sixy
 // Class:        CSCI 6626 - Advanced C++ Design Priciples/OOP
@@ -9,38 +9,50 @@
 // Name:         Howard Zhou
 //-----------------------------------------------------------------------------
 
-#include "sixyBoard.hpp"
+#include "tradBoard.hpp"
 
 //-----------------------------------------------------------------------------
-/// @brief Constructor derived from Board() to hold extra staggered cluster
-/// @param[in] type - Board type (s)ixy
+/// @brief Constructor - Delegates base class for base features 
+/// @param[in] type    - Board type (d)diag, 
 /// @param[in] puzFile - input file containing board_type and sq values.
 //-----------------------------------------------------------------------------
-SixyBoard::SixyBoard( char type, ifstream& puzFile ) : Board(type, puzFile) {
-    Square *tempArr[6];
+TradBoard :: TradBoard (char type, ifstream& puzFile) : Board(type, puzFile) {
+   cout << "***TradBoard this->nSize_m: " << nSize_m << endl;
+    Square* tempArr[nSize_m];
+    for (int box = 0; box < nSize_m; ++box) crtBox(box, tempArr);
+    // crtBox(tempArr);
+    
 
-    for (int box = 0; box < nSize_m; ++box) { crtHbox(box, tempArr); }
-//     for (int box = 0; box < nSize_m; ++box) { crtVbox(tempArr) };
+    // for (Cluster* a : Board::clus_m) {
+    //     cout << *a << endl;
+    // }
+    // for (Cluster* a : clus_m) {
+    //     cout << "auto print " << *a << endl;
+    // }
+    // for (size_t itr=0; itr<clus_m.size(); ++itr ) {
+    //     cout << "TRAD" <<  endl;
+    //     cout << *clus_m.at(itr) << endl;
+    // }
+    // bdShoop();
+    // bkState();
 
-//     // Base class will prints first 3 constraint clusters, we will add 4th
-    cout << "EXTENDED - SixyBoard() constructor w/Staggered cluster:" << endl;
-//     for ( size_t itr=27; itr<clus_m.size(); ++itr ) {
-//         cout << *clus_m.at(itr) << endl;
-//     }
-       cout << "sb78 =   =============================================================" << endl;
+     cout << "tb78 =   =============================================================" << endl;
     for (Cluster* a : clus_m) {
         cout << *a << endl;
     }
 }
 
 
-// Modify this to do vertical boxes same function but change parameters
 //-----------------------------------------------------------------------------
-/// @brief create cluster of horiozntal boxes [3x2] 
-/// @param[in] tempArr - buffer comprised of sq addresses for this cluster
+/// @brief Calculate all the N BOX sq and push box clusters into vector clus_m
+///        For sixy, this function calculates the Horizontal boxes
+/// @param[in] curBox - Current Box counter offset (0-indexed)
+/// @param[in] tempArr - Temparary array used to hold the col's N square*
 //-----------------------------------------------------------------------------
-void SixyBoard::crtHbox( int curBox, Square* tempArr[] ){
-     int count=0;
+void TradBoard ::
+crtBox(int curBox, Square* tempArr[]) {
+
+    int count=0;
     int startSq; int sqCell;
     // #rows of each sq per line in a box & columns of Boxes on board (9)=3; (6)=2 
     int rowPerBox = nSize_m / 3, numBoxRows = rowPerBox;   
@@ -66,4 +78,7 @@ void SixyBoard::crtHbox( int curBox, Square* tempArr[] ){
         }
         clus_m.push_back(new Cluster( ClusterT::BOX, tempArr ) );
     
-} 
+
+   
+
+}

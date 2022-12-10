@@ -11,7 +11,7 @@
 #include "cluster.hpp"
 
 /* Static constants */
-const char* Cluster::clist[4] = {"Row", "column", "Box", "Diag", "Sixy"};
+const char* Cluster::clist[5] = {"Row", "column", "Box", "Diag", "Sixy"};
 
 //-----------------------------------------------------------------------------
 /// @brief Constructor Cluster- Creates cluster type and binds this to its Sqs.
@@ -25,7 +25,9 @@ Cluster :: Cluster(ClusterT cType, Square* argPtr[])
     // As per instructions to take in ClusterT to char*
     : cType_m( clist[static_cast<int>(cType)] ) {   
 
-    if (cType)
+    // Cluster needs a way to know if 6 or 9
+    nSize_m = 6;
+    
     arrPt_m = new Square*[nSize_m];
 
     for (int it = 0; it < nSize_m; it++) {

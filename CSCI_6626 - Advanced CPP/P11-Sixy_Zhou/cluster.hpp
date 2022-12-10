@@ -17,8 +17,8 @@ enum class ClusterT {ROW, COLUMN, BOX, DIAG, SIXY};  // Will not be visible if p
 
 class Cluster {
 private:
-    static const char* clist[4];
-    static const int nSize_m;        
+    static const char* clist[5];
+    int nSize_m;        
 
     // Member variables 
     const char* cType_m;

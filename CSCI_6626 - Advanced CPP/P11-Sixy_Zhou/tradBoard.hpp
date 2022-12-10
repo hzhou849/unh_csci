@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------- 
-// File:         sixyBoard.hpp
+// File:         tradBoard.hpp
 // 
-// Brief:        Sixy Board class derived from Board header
+// Brief:        Traditional Board class derived from Board 
 // 
 // Project/ver:  P11 - Sixy
 // Class:        CSCI 6626 - Advanced C++ Design Priciples/OOP
@@ -11,13 +11,11 @@
 #pragma once
 #include "board.hpp"
 
-class SixyBoard : public Board {
+class TradBoard : public Board {
 private:
-    void crtHbox(int curBox, Square* tempArr[] );
-    // void crtVbox(int curBox, Square* tempArr[] );
-
+    virtual void crtBox(int box, Square* tempArr[]) ;
 public:
-    SixyBoard ( char type, ifstream& puzFile );
-    virtual ~SixyBoard() {};
-    // virtual void extPrint() override;
+    TradBoard (char type, ifstream& puzFile);
+    virtual ~TradBoard() {};
+    // virtual void extPrint() override;   // Debug testing function
 };

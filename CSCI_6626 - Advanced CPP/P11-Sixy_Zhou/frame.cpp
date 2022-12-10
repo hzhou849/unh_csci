@@ -30,8 +30,7 @@ void Frame::serialize(ofstream& gameOut) {
 void Frame::realize(ifstream& gameIn) {
     int counter=0;
     State tempSt;
-    string fileName = "savetest.txt";
-    if (!gameIn.good()) { throw StreamErr("ERROR! Cannot open: " + fileName); }
+    if (!gameIn.good()) { throw StreamErr("ERROR! Cannot open: " ); }
 
     while (gameIn.good() ) { // this always reads 1 after
         gameIn.read( (char*) &tempSt, sizeof(tempSt) );
@@ -39,6 +38,10 @@ void Frame::realize(ifstream& gameIn) {
         if (counter > 80) { break;}
         else if ( gameIn.bad() ) { throw StreamErr("ERROR - read failed!"); }
         else if ( gameIn.eof() ){ cout << "eof detected" << endl; break; } 
+
+
+        cout << tempSt << endl;
+        arrState[counter++] = tempSt;
     }
 }
 

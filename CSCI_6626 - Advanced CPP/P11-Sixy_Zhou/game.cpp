@@ -11,7 +11,11 @@
 
 #include "game.hpp"
 #include "board.hpp"
+
+/* Forward declaration of board, derived classes are here:*/
 #include "diagBoard.hpp"
+#include "sixyBoard.hpp"
+#include "tradBoard.hpp"
 
 
 // Class constants
@@ -21,7 +25,7 @@ const string Game :: menuList[6] = { "Mark", "Undo", "Redo","Save Game",
 
 
 //-----------------------------------------------------------------------------
-/// @brief Game - Constructor
+/// @brief Game constructor
 /// @param [in] inFile - file to be read
 //-----------------------------------------------------------------------------
 Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
@@ -32,11 +36,14 @@ Game :: Game ( ifstream& inFile ): inFile_m(inFile) {
     }
     cout << "[+] Game Type character assigned: " << gameType_m << endl; 
 
-    if (gameType_m == 's') { gameSize_m = 6; }
-    if (gameType_m == 'd') {
+    if (gameType_m == 's') { 
+        gameSize_m = 6; 
+        gameBoard_m = new SixyBoard(gameType_m, inFile_m);
+    }
+    else if (gameType_m == 'd') {
         gameBoard_m = new DiagBoard(gameType_m, inFile_m);
     } else {
-        gameBoard_m = new Board(gameType_m, inFile_m);
+        gameBoard_m = new TradBoard(gameType_m, inFile_m);
     }
     viewObj_m = new Viewer(gameSize_m, gameSize_m, *gameBoard_m);
 }

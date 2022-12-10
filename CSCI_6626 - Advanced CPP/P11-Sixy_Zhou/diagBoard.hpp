@@ -2,6 +2,7 @@
 // File:         diagBoard.hpp
 // 
 // Brief:        Diagonal Board class derived from Board header
+//               with extra diagonal cluster fucntions
 // 
 // Project/ver:  P11 - Sixy
 // Class:        CSCI 6626 - Advanced C++ Design Priciples/OOP
@@ -21,6 +22,5 @@ public:
     DiagBoard( char type, ifstream& puzFile);
     virtual ~DiagBoard() {};
     virtual void extPrint() override;   // Debug testing function
-
 };
 
