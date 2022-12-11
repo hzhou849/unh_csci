@@ -11,7 +11,7 @@
 #include "cluster.hpp"
 
 /* Static constants */
-const char* Cluster::clist[5] = {"Row", "column", "Box", "Diag", "Sixy"};
+const char* Cluster::clist[5] = {"Row", "column", "Box", "Diag", "VBox"};
 
 //-----------------------------------------------------------------------------
 /// @brief Constructor Cluster- Creates cluster type and binds this to its Sqs.
@@ -21,16 +21,15 @@ const char* Cluster::clist[5] = {"Row", "column", "Box", "Diag", "Sixy"};
 /// @param[in] cType  - an enum type used label this cluster
 /// @param[in] argPtr - Array to hold this cluster's N #of values
 //-----------------------------------------------------------------------------
-Cluster :: Cluster(ClusterT cType, Square* argPtr[])
+Cluster :: Cluster(int cSize, ClusterT cType, Square* argPtr[])
     // As per instructions to take in ClusterT to char*
-    : cType_m( clist[static_cast<int>(cType)] ) {   
+    : cSize_m(cSize), cType_m( clist[static_cast<int>(cType)] ) {   
 
-    // Cluster needs a way to know if 6 or 9
-    nSize_m = 6;
+ 
     
-    arrPt_m = new Square*[nSize_m];
+    arrPt_m = new Square*[cSize_m];
 
-    for (int it = 0; it < nSize_m; it++) {
+    for (int it = 0; it < cSize_m; it++) {
         argPtr[it]->addCluster(this);
         arrPt_m[it] = argPtr[it];
     }
@@ -46,7 +45,7 @@ clShoop(char val) {
     if (num > 0 ) {                         // Skip the squares with '-'
         cout << "\nRemoving num: [ " << num << " ] from Cluster Type: [ "
              << cType_m << " ]"<< endl;
-        for (int it=0; it < nSize_m; ++it)  arrPt_m[it]->turnOff(num);
+        for (int it=0; it < cSize_m; ++it)  arrPt_m[it]->turnOff(num);
     } 
 }
 
@@ -57,6 +56,6 @@ clShoop(char val) {
 ostream& Cluster ::
 print(ostream &os) const {
     os << "CType: " <<  cType_m << "\n";
-    for (int it = 0; it < nSize_m; ++it) { os << *arrPt_m[it] <<endl; }
+    for (int it = 0; it < cSize_m; ++it) { os << *arrPt_m[it] <<endl; }
     return os;
 }

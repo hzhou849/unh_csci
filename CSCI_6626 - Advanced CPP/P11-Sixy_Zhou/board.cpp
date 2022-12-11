@@ -93,7 +93,6 @@ string Board::getPossibilityString(int row, int col) const {
     int sqCell = ( (row-1) * nSize_m ) + (col -1);
     
     stringstream ss; ss << arrSqs_m[sqCell];
-    cout << "b90 - ss: " << ss.str() << endl;
     string posList = ss.str().substr(23,9);    // *** change
     string emptyList = "---------";
 
@@ -128,7 +127,7 @@ crtRow (int curRow, Square *tempArr[]) {
         tempArr[it] = &arrSqs_m[sqCell];
     }
         
-    clus_m.push_back(new Cluster(ClusterT::ROW, tempArr));
+    clus_m.push_back(new Cluster(nSize_m, ClusterT::ROW, tempArr));
 
 
 }
@@ -147,9 +146,10 @@ crtColumn (int curCol, Square *tempArr[]) {
         sqCell = (it * nSize_m) + curCol;
         tempArr[it] = &arrSqs_m[sqCell];
     }
-    clus_m.push_back(new Cluster(ClusterT::COLUMN, tempArr));
+    clus_m.push_back(new Cluster(nSize_m, ClusterT::COLUMN, tempArr));
 }
 
+/* MOved to derived classes=================================================*/
 //-----------------------------------------------------------------------------
 /// @brief Calculate all the N BOX sq and push box clusters into vector clus_m
 ///        For sixy, this function calculates the Horizontal boxes

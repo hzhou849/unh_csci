@@ -20,23 +20,9 @@ TradBoard :: TradBoard (char type, ifstream& puzFile) : Board(type, puzFile) {
    cout << "***TradBoard this->nSize_m: " << nSize_m << endl;
     Square* tempArr[nSize_m];
     for (int box = 0; box < nSize_m; ++box) crtBox(box, tempArr);
-    // crtBox(tempArr);
-    
+   
 
-    // for (Cluster* a : Board::clus_m) {
-    //     cout << *a << endl;
-    // }
-    // for (Cluster* a : clus_m) {
-    //     cout << "auto print " << *a << endl;
-    // }
-    // for (size_t itr=0; itr<clus_m.size(); ++itr ) {
-    //     cout << "TRAD" <<  endl;
-    //     cout << *clus_m.at(itr) << endl;
-    // }
-    // bdShoop();
-    // bkState();
-
-     cout << "tb78 =   =============================================================" << endl;
+    cout << "======= Traditional Clusters: ========" << endl;
     for (Cluster* a : clus_m) {
         cout << *a << endl;
     }
@@ -55,8 +41,8 @@ crtBox(int curBox, Square* tempArr[]) {
     int count=0;
     int startSq; int sqCell;
     // #rows of each sq per line in a box & columns of Boxes on board (9)=3; (6)=2 
-    int rowPerBox = nSize_m / 3, numBoxRows = rowPerBox;   
-    int sqBdRow;            // Total number sq in a full board row. (9)27 or (6)12
+    int rowPerBox = nSize_m / 3, boxCol = rowPerBox;   
+    int sqBdRow;            // Total number sq in a full box row. (9)27 or (6)12
     int boxColPos;          // This Box's column position on board's current row
                             // for board size 9 (left, mid, right) = 3
                             // for board size 6 (left, right) = 2
@@ -65,20 +51,15 @@ crtBox(int curBox, Square* tempArr[]) {
         if (nSize_m == 9) { sqBdRow = 27; boxColPos = curBox % 3; }
         else { sqBdRow = 12; boxColPos=curBox % 2; }
 
-        startSq = (floor(curBox / numBoxRows) * sqBdRow) + (boxColPos * 3);
+        startSq = (floor(curBox / boxCol) * sqBdRow) + (boxColPos * 3);
 
         // Cycle 3 times for 3 rows each square within a box
         for (int outItr = 0; outItr < rowPerBox; ++outItr) {
             for (int iter = 0; iter < 3; ++iter) {  
                 sqCell = (outItr * nSize_m) + startSq + iter;
                 tempArr[count++] = &arrSqs_m[sqCell];
-
-                cout << "tboad65 :" << arrSqs_m[sqCell] << endl;;
             }
         }
-        clus_m.push_back(new Cluster( ClusterT::BOX, tempArr ) );
-    
-
-   
+        clus_m.push_back(new Cluster( nSize_m, ClusterT::BOX, tempArr ) );
 
 }

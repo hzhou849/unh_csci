@@ -13,12 +13,12 @@
 #include "square.hpp"   // Cluster will contain an array of square pointers
 #include "board.hpp"
 
-enum class ClusterT {ROW, COLUMN, BOX, DIAG, SIXY};  // Will not be visible if placed in board.hpp
+enum class ClusterT {ROW, COLUMN, BOX, DIAG, VBOX};  // Will not be visible if placed in board.hpp
 
 class Cluster {
 private:
     static const char* clist[5];
-    int nSize_m;        
+    int cSize_m;        
 
     // Member variables 
     const char* cType_m;
@@ -27,9 +27,9 @@ private:
 public:
     void clShoop( char val );
     Cluster()=default;
-    Cluster(ClusterT cType, Square* arrPtr[] );
+    Cluster(int cSize, ClusterT cType, Square* arrPtr[] );
     ~Cluster() { delete[] arrPt_m;}
-    ostream& print(ostream& os) const ;
+    ostream& print(ostream& os) const;
 };
 
 inline ostream& operator<< (ostream& os, const Cluster& cObj) {

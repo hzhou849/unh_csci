@@ -13,8 +13,8 @@
 
 class SixyBoard : public Board {
 private:
-    void crtHbox(int curBox, Square* tempArr[] );
-    // void crtVbox(int curBox, Square* tempArr[] );
+    void crtHbox( int curBox, Square* tempArr[] );
+    void crtVbox( int curBox, Square* tempArr[] );
 
 public:
     SixyBoard ( char type, ifstream& puzFile );

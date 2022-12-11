@@ -11,9 +11,9 @@
 //-----------------------------------------------------------------------------
 
 #pragma once
-#include "board.hpp"
+#include "tradBoard.hpp"
 
-class DiagBoard : public Board {
+class DiagBoard : public TradBoard {
 private:
     void crtUpLeftDiag( Square* tempArr[] );
     void crtUpRightDiag( Square* tempArr[] );

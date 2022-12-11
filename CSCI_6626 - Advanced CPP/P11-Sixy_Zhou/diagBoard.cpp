@@ -17,17 +17,14 @@
 /// @param[in] type    - Board type (d)diag, 
 /// @param[in] puzFile - input file containing board_type and sq values.
 //-----------------------------------------------------------------------------
-DiagBoard::DiagBoard( char type, ifstream& puzFile) : Board(type, puzFile) {
+DiagBoard::DiagBoard( char type, ifstream& puzFile) : TradBoard(type, puzFile) {
     Square *tempArr[9]; 
     crtUpLeftDiag(tempArr);
     crtUpRightDiag(tempArr);
 
-    // Since base class already prints the original clusters, we just want
-    // to add the print from the diagonal cluster only
-    cout << "EXTENDED - DiagBoard() constructor w/diagonal cluster:" << endl;
-    for (size_t itr=27; itr<clus_m.size(); ++itr) {
-        cout << *clus_m.at(itr) << endl;
-    }
+    // Print out all clusters here
+    cout << "======= diagBoard Clusters: ========" << endl;
+    for (Cluster* a : clus_m) { cout << *a << endl; }
 }
 
 //-----------------------------------------------------------------------------
@@ -41,7 +38,7 @@ crtUpLeftDiag ( Square* tempArr[] ) {
         sqCell = ( (itr * nSize_m) + itr );
         tempArr[itr] = &arrSqs_m[sqCell];
     }
-    clus_m.push_back(new Cluster (ClusterT::DIAG, tempArr));
+    clus_m.push_back(new Cluster (nSize_m, ClusterT::DIAG, tempArr));
 }
 
 
@@ -56,7 +53,7 @@ crtUpRightDiag ( Square* tempArr[] ) {
         sqCell = ( (itr+1) * (nSize_m-1 ) );
         tempArr[itr] = &arrSqs_m[sqCell];
     }
-    clus_m.push_back(new Cluster (ClusterT::DIAG, tempArr));
+    clus_m.push_back(new Cluster (nSize_m, ClusterT::DIAG, tempArr));
 }
 
 //*** For debugging, will remove later
