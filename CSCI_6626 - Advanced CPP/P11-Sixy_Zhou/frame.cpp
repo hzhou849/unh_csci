@@ -18,7 +18,8 @@
 //-----------------------------------------------------------------------------
 void Frame::serialize(ofstream& gameOut) {
     int bdSize = nSize * nSize;
-    for (int itr=0; itr < (bdSize +1); ++itr) {
+    // for (int itr=0; itr < (bdSize+1); ++itr)  BEFORE causing a memory issue
+    for (int itr=0; itr < bdSize; ++itr) {  //   AFTER now fixed
         gameOut.write( (char*) &arrState[itr], sizeof(State)); } 
 }
 
@@ -29,18 +30,16 @@ void Frame::serialize(ofstream& gameOut) {
 //-----------------------------------------------------------------------------
 void Frame::realize(ifstream& gameIn) {
     int counter=0;
+    int bSize = nSize * nSize;
     State tempSt;
     if (!gameIn.good()) { throw StreamErr("ERROR! Cannot open: " ); }
 
-    while (gameIn.good() ) { // this always reads 1 after
+    while (gameIn.good() && counter < bSize) { // AFTER fix - added counter here
         gameIn.read( (char*) &tempSt, sizeof(tempSt) );
 
-        if (counter > 80) { break;}
-        else if ( gameIn.bad() ) { throw StreamErr("ERROR - read failed!"); }
+        // if (counter < 80) - BEFORE did not account for Sixy size board
+        if ( gameIn.bad() ) { throw StreamErr("ERROR - read failed!"); }
         else if ( gameIn.eof() ){ cout << "eof detected" << endl; break; } 
-
-
-        cout << tempSt << endl;
         arrState[counter++] = tempSt;
     }
 }

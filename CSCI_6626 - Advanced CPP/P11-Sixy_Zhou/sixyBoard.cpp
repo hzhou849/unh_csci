@@ -18,7 +18,6 @@
 //-----------------------------------------------------------------------------
 SixyBoard::SixyBoard( char type, ifstream& puzFile ) : Board(type, puzFile) {
     Square *tempArr[6];
-    cout << "EXTENDED - SixyBoard() constructor w/Staggered cluster:" << nSize_m << endl;
 
     for (int boxNm = 0; boxNm < nSize_m; ++boxNm) { crtHbox(boxNm, tempArr); }
     for (int boxNm = 0; boxNm < nSize_m; ++boxNm) { crtVbox(boxNm, tempArr); }

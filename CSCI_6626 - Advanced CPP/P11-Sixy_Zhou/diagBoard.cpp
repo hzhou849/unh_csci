@@ -27,6 +27,7 @@ DiagBoard::DiagBoard( char type, ifstream& puzFile) : TradBoard(type, puzFile) {
     for (Cluster* a : clus_m) { cout << *a << endl; }
 }
 
+
 //-----------------------------------------------------------------------------
 /// @brief Create diagonal cluster form UPPER-LEFT to LOWER-RIGHT corners
 /// @param tempArr - buffer to store square addr for this cluster

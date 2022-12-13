@@ -26,15 +26,10 @@ Board :: Board(char type, ifstream &puzFile ) : inFile_m(puzFile) {
     arrSqs_m = new Square[nSize_m * nSize_m];
     getPuzzle();
     mkCluster();
-
-    for (Cluster* vc : clus_m) {
-        cout << "********************Clusters*********************" << *vc << endl;
-    }
-
     bdShoop();      
     bkState();      // Backup the initial state
-    
 }
+
 
 //-----------------------------------------------------------------------------
 /// @brief Destructor
@@ -53,6 +48,7 @@ Board :: ~Board() {
         }
     }
 
+
 //-----------------------------------------------------------------------------
 /// @brief Helper function to kickoff creating all row,column and box clusters
 //-----------------------------------------------------------------------------
@@ -64,9 +60,6 @@ mkCluster() {
     /* Create Row/Column/Box clusters */
     for (int row = 0; row < nSize_m; ++row) crtRow(row, tempArr);
     for (int col = 0; col < nSize_m; ++col) crtColumn(col, tempArr);
-    // for (int box = 0; box < nSize_m; ++box) crtBox(box, tempArr);
-
-    
 }
 
 
@@ -126,10 +119,7 @@ crtRow (int curRow, Square *tempArr[]) {
         sqCell = ((curRow * nSize_m) + it);
         tempArr[it] = &arrSqs_m[sqCell];
     }
-        
     clus_m.push_back(new Cluster(nSize_m, ClusterT::ROW, tempArr));
-
-
 }
 
 
@@ -149,39 +139,6 @@ crtColumn (int curCol, Square *tempArr[]) {
     clus_m.push_back(new Cluster(nSize_m, ClusterT::COLUMN, tempArr));
 }
 
-/* MOved to derived classes=================================================*/
-//-----------------------------------------------------------------------------
-/// @brief Calculate all the N BOX sq and push box clusters into vector clus_m
-///        For sixy, this function calculates the Horizontal boxes
-/// @param[in] curBox - Current Box counter offset (0-indexed)
-/// @param[in] tempArr - Temparary array used to hold the col's N square*
-// //-----------------------------------------------------------------------------
-// void Board ::
-// crtBox(int curBox, Square *tempArr[]) {
-
-//     int count=0;
-//     int startSq; int sqCell;
-//     // #rows of each sq per line in a box & columns of Boxes on board (9)=3; (6)=2 
-//     int rowPerBox = nSize_m / 3, numBoxRows = rowPerBox;   
-//     int sqBdRow;            // Total number sq in a full board row. (9)27 or (6)12
-//     int boxColPos;          // This Box's column position on board's current row
-//                             // for board size 9 (left, mid, right) = 3
-//                             // for board size 6 (left, right) = 2
-//     if (nSize_m == 9) { sqBdRow = 27; boxColPos = curBox % 3; }
-//     else { sqBdRow = 12; boxColPos=curBox % 2; }
-
-//     startSq = (floor(curBox / numBoxRows) * sqBdRow) + (boxColPos * 3);
-
-//     // Cycle 3 times for 3 rows each square within a box
-//     for (int outItr = 0; outItr < rowPerBox; ++outItr) {
-//         for (int iter = 0; iter < 3; ++iter) {  
-//                 sqCell = (outItr * nSize_m) + startSq + iter;
-//                 tempArr[count++] = &arrSqs_m[sqCell];
-//             }
-//         }
-//     clus_m.push_back(new Cluster( ClusterT::BOX, tempArr ) );
-// }
-
 
 //-----------------------------------------------------------------------------
 /// @brief Generates the board array and assigns the squares objects
@@ -197,11 +154,11 @@ getPuzzle () {
             inFile_m >> tempChar;
             if (inFile_m.good()) {
                 if ((tempChar >= '0' && tempChar <= '9') || (tempChar == '-')) {
-                    cout <<  tempChar << " ";
+                    // cout <<  tempChar << " ";
                     sub(rowIter, colIter) = Square(tempChar, rowIter, colIter);
                 }
                 else if (tempChar == '\n') {
-                    cout << "\n"  << "row: " << rowIter;  //**Un-comment for debug
+                    // cout << "\n"  << "row: " << rowIter;  //**Un-comment for debug
                 }
                 else {
                     throw GmFatal("Invald character in file found: '" 
@@ -213,11 +170,7 @@ getPuzzle () {
                 throw StreamFatal("Low-level error while reading input stream.");
             }
         }
-    }
-
-for (int i =0; i < 36 ; ++i) {
-    cout << "\n" << arrSqs_m[i] << endl;
-}
+    }   
 }
 
 
@@ -330,6 +283,7 @@ redo() {
     printStack();
 }
 
+
 //-----------------------------------------------------------------------------
 /// @brief restore all the squares to the selected Frame
 /// @param[in] fr - The frame from stack to restore on to the board
@@ -338,11 +292,11 @@ void Board ::
 restoreState( Frame* fr) {
     int bSize = (nSize_m * nSize_m);
     
-    for (int itr=0; itr<bSize; ++itr) {     
+    for (int itr=0; itr<bSize; ++itr) {
         arrSqs_m[itr].setState(fr->arrState[itr]);
     }
-
 }
+
 
 //-----------------------------------------------------------------------------
 /// @brief Print display the values for all the Square*s stored in board
@@ -395,7 +349,6 @@ void Board::restoreBd() {
     stackRedo_m.zap();
     stackUndo_m.zap();
     stackUndo_m.push(frBuffer);
-    cout << "b397 ----------------stackundo: " << *frBuffer << endl;
     restoreState( stackUndo_m.top() );
     rstFile.close();
 }

@@ -60,7 +60,7 @@ Game :: ~Game () { inFile_m.close();  delete gameBoard_m; delete viewObj_m; }
 //-----------------------------------------------------------------------------
 void Game :: 
 run () {
-    char listValue;
+    char listValue = ' ';
     while ( listValue != 'q' ) {
         cout << "\n------------------------------------------------------------\n"
              << "Board:\n" << endl;
