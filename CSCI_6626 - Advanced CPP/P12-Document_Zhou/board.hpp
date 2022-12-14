@@ -35,7 +35,6 @@ protected:
     Square& sub( int row, int col );
     void mkCluster();
     void crtColumn(int curCol, Square* tempArr[]);
-    // void crtBox(int curBox, Square* tempArr[]);
     void crtRow(int curRow, Square* tempArr[]);
     void printStack();
     void bkState();
@@ -43,7 +42,6 @@ protected:
 public: 
     Board( char type, ifstream& puzFile );
     virtual ~Board();
-
     virtual char getMarkChar(int row, int col) const;
     virtual string getPossibilityString(int row, int col) const;
     void bdShoop();

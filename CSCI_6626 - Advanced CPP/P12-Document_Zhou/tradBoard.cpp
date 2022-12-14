@@ -20,12 +20,9 @@ TradBoard :: TradBoard (char type, ifstream& puzFile) : Board(type, puzFile) {
    cout << "***TradBoard this->nSize_m: " << nSize_m << endl;
     Square* tempArr[nSize_m];
     for (int box = 0; box < nSize_m; ++box) crtBox(box, tempArr);
-   
 
     cout << "======= Traditional Clusters: ========" << endl;
-    for (Cluster* a : clus_m) {
-        cout << *a << endl;
-    }
+    for (Cluster* a : clus_m) { cout << *a << endl; }
 }
 
 
@@ -48,18 +45,18 @@ crtBox(int curBox, Square* tempArr[]) {
                             // for board size 6 (left, right) = 2
     // Create 9 boxes
 
-        if (nSize_m == 9) { sqBdRow = 27; boxColPos = curBox % 3; }
-        else { sqBdRow = 12; boxColPos=curBox % 2; }
+    if (nSize_m == 9) { sqBdRow = 27; boxColPos = curBox % 3; }
+    else { sqBdRow = 12; boxColPos=curBox % 2; }
 
-        startSq = (floor(curBox / boxCol) * sqBdRow) + (boxColPos * 3);
+    startSq = (floor(curBox / boxCol) * sqBdRow) + (boxColPos * 3);
 
-        // Cycle 3 times for 3 rows each square within a box
-        for (int outItr = 0; outItr < rowPerBox; ++outItr) {
-            for (int iter = 0; iter < 3; ++iter) {  
-                sqCell = (outItr * nSize_m) + startSq + iter;
-                tempArr[count++] = &arrSqs_m[sqCell];
-            }
+    // Cycle 3 times for 3 rows each square within a box
+    for (int outItr = 0; outItr < rowPerBox; ++outItr) {
+        for (int iter = 0; iter < 3; ++iter) {  
+            sqCell = (outItr * nSize_m) + startSq + iter;
+            tempArr[count++] = &arrSqs_m[sqCell];
         }
-        clus_m.push_back(new Cluster( nSize_m, ClusterT::BOX, tempArr ) );
+    }
+    clus_m.push_back(new Cluster( nSize_m, ClusterT::BOX, tempArr ) );
 
 }

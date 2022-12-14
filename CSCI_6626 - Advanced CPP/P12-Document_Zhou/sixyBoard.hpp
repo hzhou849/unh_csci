@@ -19,5 +19,4 @@ private:
 public:
     SixyBoard ( char type, ifstream& puzFile );
     virtual ~SixyBoard() {};
-    // virtual void extPrint() override;
 };

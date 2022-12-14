@@ -11,7 +11,6 @@
 
 Square :: Square ( char charIn, short row, short col ) 
     : stateObj( charIn ), sqRow(row), sqCol(col) {
-    // cout << "Square: Row:" << sqRow << ", Col:" << sqCol << " constructed." << endl;
 }
 
 // Commented out for debugging

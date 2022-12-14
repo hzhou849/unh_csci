@@ -57,6 +57,7 @@ void SixyBoard::crtHbox( int curBox, Square* tempArr[] ){
     clus_m.push_back(new Cluster( nSize_m, ClusterT::BOX, tempArr ) );
 } 
 
+
 //-----------------------------------------------------------------------------
 /// @brief create cluster of VERTICAL boxes [2x3] 
 /// @param[in] curBox - the box# (0 to nSize) to draw
