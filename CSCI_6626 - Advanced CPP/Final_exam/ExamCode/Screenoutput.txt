@@ -1,0 +1,31 @@
+/* Output
+ Ready to read the input file.
+
+ There are 4 exams.
+ -UG-G-G-UG-G-UG------------------------------
+ 83    45    64    50    Total:   242  Average: 60.5   Johnny  Johnson
+ 50    75    89    76    Total:   290  Average: 72.5   Ricardo  Ramos
+ 60    95    68    89    Total:   312  Average: 78.0   Francoise  LaCroix
+ 68    70    88    90    Total:   316  Average: 79.0   Elena  Ivanovska
+ 84    62    94    63    Total:   303  Average: 75.8   Hashima  Patel
+ 73    58    99    54    Total:   284  Average: 71.0   ChiFu  Hsieu
+ ------------------------------
+ 69.7  67.5  83.7  70.3 : Class average for each exam
+ ------------------------------
+ ------------------------------
+ Beginning to sort
+ ------------------------------
+ 68    70    88    90    Total:   316  Average: 79.0   Elena  Ivanovska
+ 60    95    68    89    Total:   312  Average: 78.0   Francoise  LaCroix
+ 84    62    94    63    Total:   303  Average: 75.8   Hashima  Patel
+ 50    75    89    76    Total:   290  Average: 72.5   Ricardo  Ramos
+ 73    58    99    54    Total:   284  Average: 71.0   ChiFu  Hsieu
+ 83    45    64    50    Total:   242  Average: 60.5   Johnny  Johnson
+ ------------------------------
+ 69.7  67.5  83.7  70.3 : Class average for each exam
+ ------------------------------
+
+ Normal termination.
+ Grade summary is in exams.out
+
+*/
