@@ -17,5 +17,4 @@ private:
 public:
     TradBoard (char type, ifstream& puzFile);
     virtual ~TradBoard() {};
-    // virtual void extPrint() override;   // Debug testing function
 };
