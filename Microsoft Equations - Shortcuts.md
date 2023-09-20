@@ -1,4 +1,10 @@
 ## Microsoft equations shortcuts
+
+### Start Equations
+* To start the equations open a word doc and press:
+```
+ALT + =
+```
 ```
 ↑   ALT+24  Upwards arrow
 ↓   ALT+25  Downwards arrow
