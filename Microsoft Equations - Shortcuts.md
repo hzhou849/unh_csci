@@ -5,6 +5,11 @@
 ```
 ALT + =
 ```
+### Subscript and exponents
+```
+x_1 = subscript
+x^2 = exponent
+
 ```
 ↑   ALT+24  Upwards arrow
 ↓   ALT+25  Downwards arrow
