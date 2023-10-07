@@ -11,8 +11,8 @@ ALT + =
 n\/2  = division will prevent 2 lines autoformatting of fractions
 x_1 = subscript
 x^2 = exponent
-
-
+```
+```ps
 ↑   ALT+24  Upwards arrow
 ↓   ALT+25  Downwards arrow
 →   ALT+26  Rightwards arrow
