@@ -9,7 +9,9 @@ ALT + =
 ### Subscript and exponents
 ```
 n\/2  = division will prevent 2 lines autoformatting of fractions
-\lfloor lower floor bracket
+\lfloor ⌊ lower floor bracket
+\rfloor ⌋ right floor
+\<lr>ceil for ceiling
 x_1 = subscript
 x^2 = exponent
 ```
