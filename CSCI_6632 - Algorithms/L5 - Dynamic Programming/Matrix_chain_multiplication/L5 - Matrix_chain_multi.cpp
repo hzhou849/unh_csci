@@ -92,7 +92,6 @@ void printTable(optData (&table)[5][5] )
             else
             {
                 std::cout <<i<<","<< j<< "=[" <<std::setw(3)<< table[i][j].cost << ", " << table[i][j].k << "]  ";
-                //std::cout <<i<<","<< j<< ") [" <<std::setw(3)<< table[i][j]->cost << ", " << table[i][j].k << "]  ";
             }
           
         }
