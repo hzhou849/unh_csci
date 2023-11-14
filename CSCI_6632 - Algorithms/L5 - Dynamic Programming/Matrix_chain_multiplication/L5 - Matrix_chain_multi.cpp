@@ -1,17 +1,12 @@
 // L5 - Matrix_chain_multi.cpp : This file contains the 'main' function. Program execution begins and ends there.
-
-//         1            2            3               4
-// 1,1=[  0, 0]  1,2=[ 24, 1]  1,3=[ 28, 1]  1,4=[ 58, 3]
-// 2,1=[      ]  2,2=[  0, 0]  2,3=[ 16, 2]  2,4=[ 36, 3]
-// 3,1=[      ]  3,2=[      ]  3,3=[  0, 0]  3,4=[ 40, 3]
-// 4,1=[      ]  4,2=[      ]  4,3=[      ]  4,4=[  0, 0]
-
+//
 
 #include <iostream>
 #include <iomanip>
 #include <memory>
 #include "pass2dArr.h"
 
+static const int TABLE_SIZE = 6;
 
 typedef struct mTable
 {
@@ -23,6 +18,8 @@ typedef struct mTable
 };
 // Global variables to help track values easier in debugger
 
+
+/* This example TABLE_SIZE = 5 */
     /* Create the tables from lecture */
    /* mTable A1 = {1, 3, 5 };
     mTable A2 = {2, 5, 2 };
@@ -38,26 +35,51 @@ typedef struct mTable
  *  d0    d1      d2       d3   d4
  */
 
+//// Default test set
+//mTable A1 ={ 1, 3, 2 };
+//mTable A2 ={ 2, 2, 4 };
+//mTable A3 ={ 3, 4, 2 };
+//mTable A4 ={ 4, 2, 5 };
+//
+//static const int d0 = A1.row;
+//static const int d1 = A2.row;
+//static const int d2 = A3.row;
+//static const int d3 = A4.row;
+//static const int d4 = A4.column; // right number is column
+//
+//int dTable[TABLE_SIZE] ={ d0, d1, d2, d3, d4 };
 
-mTable A1 ={ 1, 3, 2 };
-mTable A2 ={ 2, 2, 4 };
-mTable A3 ={ 3, 4, 2 };
-mTable A4 ={ 4, 2, 5 };
+
+
+/* Calculation 2 
+ *
+ *    A1      A2         A3      A4      A5
+ * [3   4]  [4  10]   [10  6]  [6  8]  [8  7]
+ *  |   |____|   |_____|   |____|  |____|  |
+ * d0     d1        d2       d3      d4    d5
+ *
+ */
+// Table num, row, column
+mTable A1 ={ 1, 3, 4 };
+mTable A2 ={ 2, 4, 10 };
+mTable A3 ={ 3, 10, 6 };
+mTable A4 ={ 4, 6, 8 };
+mTable A5 ={ 5, 8, 7 };
 
 static const int d0 = A1.row;
 static const int d1 = A2.row;
 static const int d2 = A3.row;
 static const int d3 = A4.row;
-static const int d4 = A4.column;
+static const int d4 = A5.row;
+static const int d5 = A5.column;
 
-int dTable[5] ={ d0, d1, d2, d3, d4 };
-
+int dTable[TABLE_SIZE] ={ d0, d1, d2, d3, d4, d5 };
 
 /* 2 Dimenstional array table for results */
 // 0-4 created 1 extra dimension so we can use 1-index for storing results
 // Row [0] will not be used for simplicity
 //optData (*tPtr)[5] = new optData[5][5];
-optData result_table[5][5] ={ {} };
+optData result_table[TABLE_SIZE][TABLE_SIZE] ={ {} };
 
 
 //typedef struct optData
@@ -68,21 +90,21 @@ optData result_table[5][5] ={ {} };
 
 
 
-void printTable(optData (&table)[5][5] )
+void printTable(optData (&table)[TABLE_SIZE][TABLE_SIZE] )
 {
     int tempK;
 
     std::cout << "testing2: "<<table[1][1].cost << "; " << table[1][1].k << std::endl;
     std::string fill = " ";
-    for (int i=1; i<=4; i++)
+    for (int i=1; i<=(TABLE_SIZE-1); i++)
     {
         if (i==1)
         {
-            std::cout << " " << i << " " << i+1 <<" " << i+2 << " " << i+3 << std::endl;
+            std::cout << " " << i << " " << i+1 <<" " << i+2 << " " << i+3  << "" << i+4 << std::endl;
         }
 
 
-        for (int j=1; j<=4; j++)
+        for (int j=1; j<=(TABLE_SIZE -1); j++)
         {
             if (j < i) // print blank cells
             {
@@ -100,14 +122,14 @@ void printTable(optData (&table)[5][5] )
 }
 
 
-void matrix_chain(optData (&table)[5][5] )
+void matrix_chain(optData (&table)[TABLE_SIZE][TABLE_SIZE] )
 {
     int j;
  
-    for (int l=2; l<5; l++)
+    for (int l=2; l<TABLE_SIZE; l++)
     {
         // for i <- 1 to (n-l+1)
-        for (int i=1; i<= ( (5-l) +1); i++)
+        for (int i=1; i<= ( (TABLE_SIZE-l) +1); i++)
         {
             j = (i + l -1);
             table[i][j].cost = 999999; // a large number for the first round
@@ -116,7 +138,7 @@ void matrix_chain(optData (&table)[5][5] )
                 if (table[i][k].cost + table[k+1][j].cost + (dTable[i-1]*dTable[k]*dTable[j]) < table[i][j].cost)
                 {
                     // Do this to protect writting out of array bounds
-                    if (j < 5)
+                    if (j < TABLE_SIZE)
                     {
                         table[i][j].cost = table[i][k].cost + table[k+1][j].cost + (dTable[i-1]*dTable[k]*dTable[j]);
                         table[i][j].k = k;
@@ -148,7 +170,7 @@ int main()
     std::cout << "testing: "<< result_table[1][1].cost << "; " << result_table[1][1].k << std::endl;
 
     // insert the known [i,i] = 0 values in the table
-    for (int i=1; i<=4; i++)
+    for (int i=1; i<=(TABLE_SIZE -1 ); i++)
     {
         result_table[i][i].cost = 0;
         result_table[i][i].k = 0;
