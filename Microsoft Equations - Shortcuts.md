@@ -26,8 +26,8 @@ x^2 = exponent
 ►   ALT+16  Rightwards filled arrow
 ◄   ALT+17  Leftwards filled arrow
 Alt + 8709	∅	Empty Set
-Alt + 61	=	Equal	Equals
-Alt + 236 = ∞ infinity
+Alt + 61		Equal	Equals
+Alt + 236      ∞ infinity
 Alt + 247	÷	Division	Division
 Alt + 215	×	Multiplication Sign	Multiplication
 Alt + 177	±	Plus Or Minus
