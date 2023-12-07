@@ -43,3 +43,4 @@ int main() {
 
     Lcs lcsObj(textFile1,fileSize1, textFile2, fileSize2);
     textFile1.close();
+    textFile2.close();
