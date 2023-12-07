@@ -2,11 +2,6 @@
 // CSCI 6632 - Algorithms
 // Howard Zhou
 //
-// Special symbols, Null 0xC1, h_line = 0xC4, \ = 0x5C
-// '|' = 0x7C
-//  Row = Source file
-// Col = Destination file
-
 
 #include <iostream>
 #include <iomanip>
