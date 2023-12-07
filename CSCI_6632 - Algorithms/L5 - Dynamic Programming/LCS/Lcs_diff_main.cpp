@@ -22,10 +22,8 @@ void resetHexFlag() {
 size_t getFileBufferSize(std::string file) {
     char buf[256];
     std::ifstream ifs(file);
-    
     ifs.read(buf, 256);
     size_t extracted = ifs.gcount();
-
     std::cout << "Bytes read: "<<std::dec << extracted << " last: " << std::hex << std::showbase << static_cast<uint16_t>(buf[24] & 0x00FF) << std::endl;
     ifs.close();
 
