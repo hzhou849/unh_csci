@@ -54,7 +54,7 @@ Lcs::Lcs(std::ifstream & txtSrc, size_t sSize, std::ifstream& txtDes, size_t dSi
 	: m_fileSrc(txtSrc), m_sizeAs(sSize), m_fileDes(txtDes), m_sizeBd(dSize),
 	m_TABLE_ROW(sSize+1), m_TABLE_COL(dSize+1) 
 {
-	m_tableSize = (m_TABLE_ROW * m_TABLE_COL)+1; // extra cell needed for table math +1
+	m_tableSize = (m_TABLE_ROW * m_TABLE_COL)+1; // extra cell needed for 0-indexed array counting
 	std::cout << "\n LCS CLass: " << std::endl;
 	opt = (optNode*)malloc ((m_tableSize) * sizeof(optNode));
 	initTable(opt);
