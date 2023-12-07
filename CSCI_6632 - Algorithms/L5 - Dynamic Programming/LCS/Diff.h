@@ -1,3 +1,6 @@
+// CSCI 6632 - Algorithms
+// Howard Zhou
+//
 /// LCS Class with textfile diffing, working!
 // Special symbols, Null 0xC1, h_line = 0xC4, \ = 0x5C
 // '|' = 0x7C
@@ -47,10 +50,9 @@ private:
 };
 
 
-
 Lcs::Lcs(std::ifstream & txtSrc, size_t sSize, std::ifstream& txtDes, size_t dSize)
 	: m_fileSrc(txtSrc), m_sizeAs(sSize), m_fileDes(txtDes), m_sizeBd(dSize),
-	m_TABLE_ROW(sSize+1), m_TABLE_COL(dSize+1)
+	m_TABLE_ROW(sSize+1), m_TABLE_COL(dSize+1) 
 {
 	m_tableSize = (m_TABLE_ROW * m_TABLE_COL)+1; // extra cell needed for table math +1
 	std::cout << "\n LCS CLass: " << std::endl;
@@ -59,34 +61,21 @@ Lcs::Lcs(std::ifstream & txtSrc, size_t sSize, std::ifstream& txtDes, size_t dSi
 	lcsDiff(opt);
 }
 
-Lcs::~Lcs()
-{
-	delete[] opt;
-}
+Lcs::~Lcs() { delete[] opt; }
 
-size_t Lcs::cell(int row, int col)
-{
+size_t Lcs::cell(int row, int col) {
 	return (row*(m_TABLE_ROW-1) + (col));
 }
 
-void Lcs::initTable(optNode* table)
-{
-	for (int i=0; i< m_tableSize; i++)
-	{
-		/*if (i % 10 == 0)
-			std::cout << std::endl;*/
-
+void Lcs::initTable(optNode* table) {
+	for (int i=0; i< m_tableSize; i++) {
 		opt[i].ch = ' ';
 		opt[i].val = 0;
-		//std::cout<<std::setw(4) << i << ") " << opt[i].ch <<"; " <<opt[i].val << ", ";
-
 	}
-	//std::cout<<"\r"<< std::endl;
 }
 
 
-void Lcs::retrieveLCS(optNode *table)
-{
+void Lcs::retrieveLCS(optNode *table) {
 	char dList[256]={'\x0'};
 	char aList[256]={'\x0'};
 	char S[256] ={ ' ' };
@@ -95,13 +84,10 @@ void Lcs::retrieveLCS(optNode *table)
 	int j = m_TABLE_COL -1; // B m 
 	int strSize = m_TABLE_COL + m_TABLE_ROW;
 
-	while (i>=0 && j>=0)
-	{
-		//std::cout << "current i: " << i << "; j: " << j << "- " <<std::hex<<std::showbase<< static_cast<uint32_t>(table[cell(i, j)].ch);
+	while (i>=0 && j>=0) {
 		tempChar = table[cell(i, j)].ch;
 		if (j==0 && static_cast<std::uint32_t>(table[cell(i,j)].ch) <= '\x20' || 
 			j==0 && static_cast<std::uint32_t>(table[cell(i, j)].ch) >= '\x7E') {
-			//std::cout << "null found! " << std::endl;
 			dList[i] = m_A[i-1];
 			--j;
 		}
@@ -206,12 +192,10 @@ void Lcs::printTable(optNode* table)
 					tempChar = m_A[i-1];
 					if (tempChar == '\n')
 						std::cout <<std::setw(1)<<"\\" << " "<<std::setw(2)<< i << " [" <<std::setw(3) <<table[cell(i,j)].val <<", " <<std::setw(1)<<table[cell(i,j)].ch <<  "] ";
-					else if (i==0)
-					{
+					else if (i==0) {
 						tempChar ='~';
 						std::cout <<std::setw(1)<<tempChar<< " "<<std::setw(2)<< i << " [" <<std::setw(3) <<table[cell(i,j)].val <<", " <<std::setw(1)<<table[cell(i,j)].ch <<  "] ";
 					}
-
 					else 
 						std::cout <<std::setw(1)<<tempChar<< " "<<std::setw(2)<< i << " [" <<std::setw(3) <<table[cell(i,j)].val <<", " <<std::setw(1)<<table[cell(i,j)].ch <<  "] ";
 				}
@@ -220,7 +204,6 @@ void Lcs::printTable(optNode* table)
 				std::cout <<  "[" <<std::setw(2) <<table[cell(i,j)].val <<", " <<std::setw(1)<<table[cell(i,j)].ch <<  "] ";
 			}
 		}
-
 		std::cout << std::endl;
 	}
 	std::cout <<"\n" << std::endl;
@@ -230,9 +213,7 @@ void Lcs::printTable(optNode* table)
 
 
 // Text Diff one line at a time
-void Lcs::lcsDiff(optNode* opt)
-{
-	
+void Lcs::lcsDiff(optNode* opt) {
 	m_fileSrc.read(m_A, m_TABLE_ROW);
 	m_fileDes.read(m_B, m_TABLE_COL);
 
@@ -261,27 +242,14 @@ void Lcs::lcsDiff(optNode* opt)
 				opt[cell(i,j)].val = opt[cell(i,j-1)].val;            // value of previous colum
 				opt[cell(i,j)].ch = opt[cell(i,j)].ch = leftArr;
 			}
-			else
-			{
+			else {
 				opt[cell(i,j)].val = opt[cell(i-1,j)].val;     // val from one row up
 				opt[cell(i,j)].ch = '|';
 			}
 		}
 	}
-
-
 	printTable(opt);
 	retrieveLCS(opt);
-
-
 }
 
-//for (int i=0; i<8; i++)
-//{
-//	for (int j=0; j<7; j++)
-//	{
-//		tmpTable[i][j].val = opt[cell(i, j)].val;
-//		tmpTable[i][j].ch = opt[cell(i, j)].ch;
-//		std::cout <<"cell["<<i<<"]["<<j<<"]: " <<opt[cell(i, j)].ch << std::endl;
-//	}
-//}
+
