@@ -41,6 +41,10 @@ out/
 # VS Code
 .vscode/
 
+#pyCharm
+.idea/
+__pycache__/
+
 # MikroIDE
 *.dbg
 *.dct
