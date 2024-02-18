@@ -43,6 +43,7 @@ out/
 
 #pyCharm
 .idea/
+.venv/
 __pycache__/
 
 # MikroIDE
