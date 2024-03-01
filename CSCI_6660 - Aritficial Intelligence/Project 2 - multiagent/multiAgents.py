@@ -72,34 +72,28 @@ class ReflexAgent(Agent):
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
         "*** YOUR CODE HERE ***"
         import sys
 
         GHOST_LIMIT_DIST=2
 
+        ''' Metrics we want for our reflex agent'''
         newGhostPos = newGhostStates[0].getPosition()
+
         # Current postions specs:
         currPos = currentGameState.getPacmanPosition()
         currGhostState = currentGameState.getGhostStates()
         currFood = currentGameState.getFood().asList()
         numFood = currentGameState.getNumFood()
+
         # Get the ghost position
         currGhostPos = currGhostState[0].getPosition()
 
-
-        # currGhostPos = [ ghost.getPosition() for ghost in currGhostState]
-
         gDist = util.manhattanDistance(newPos, currGhostPos)
         ssrScore = successorGameState.getScore()
-
-        # print("----------------------------------------------------------------------------------------\n")
-        # print("""Current specs:\n POS: {}, ghostPOS: {}, currFood: {}, NumFood: {}\n
-        # Successor Specs:\n POS{}, ghostPOS: {}, newFood:{},
-        #       """.format(currPos, currGhostPos, currFood, numFood, newPos, newGhostPos,
-        #                  newFood ))
-
         reflexPoints = 0
-        ''' Metrics we want for our reflex agent'''
+
         # 1) if next move is win, do it at all cost
         if newPos == successorGameState.isWin():
             ssrScore = sys.maxsize
@@ -112,7 +106,6 @@ class ReflexAgent(Agent):
             mX, mY = currPos
             nX, nY = newPos
             gX, gY = currGhostPos
-            # print("X: {}; y{}".format( mX, mY))
 
             # Check on x-axis change
             if action == 'West' or action == 'East':
@@ -122,36 +115,45 @@ class ReflexAgent(Agent):
                 axisDistOld = abs(mY - gY)
                 axisDistNew = abs(nY - gY)
 
+            # If the new distance puts you away from the ghost, give it higher priority
             if axisDistNew > axisDistOld:
                 reflexPoints += 10
             else:
                 reflexPoints = 0
 
+        else:  # 2) Find the closest food remaining
+            minDist = sys.maxsize
+            minIndex = 0
+            minFoodXy = []
+            for index, fLocation in enumerate(currFood):
+                gDist = util.manhattanDistance(currPos, fLocation)
+                if gDist < minDist:
+                    minDist = gDist
+                    minIndex = index
+                    minFoodXy = fLocation
+            print("CurrentPOS: {}; GhostPOS: {}; minFoodXy {}; minDist {}; minIndex{}".format(currPos, currGhostPos, minFoodXy, minDist, minIndex) )
 
+            mX, mY = currPos
+            tX, tY = minFoodXy
 
+            # Get the difference to see which axis dominates
+            xDiff = tX - mX
+            yDiff = tY - mY
 
+            # Check which axis dominates and then get the direction from there
+            if abs(xDiff) > abs(yDiff):  # x-axis dominates
+                getDir = lambda axisDiff: 'East' if axisDiff>0 else 'West'
+                fDir = getDir(xDiff)
+            else:  # y-axis dominates
+                getDir = lambda axisDiff: 'North' if axisDiff>0 else 'South'
+                fDir = getDir(yDiff)
 
-        # 2) Find the closest food remaining
-        minDist = sys.maxsize
-        minIndex = 0
-        minFoodXy = []
-        for index, fLocation in enumerate(currFood):
-            gDist = util.manhattanDistance(currPos, fLocation)
-            if gDist < minDist:
-                minDist = gDist
-                minIndex = index
-                minFoodXy = fLocation
-            # print("FoodLoc: {};  gDist: {}".format(fLocation, gDist))
-        print("CurrentPOS: {}; GhostPOS: {}; minFoodXy {}; minDist {}; minIndex{}".format(currPos, currGhostPos, minFoodXy, minDist, minIndex) )
-
-        # Ie currPOS =
-        # If new position puts you closer to minFoodXy, give higher metric!
-        if action == 'East':
-            # score += (gDist+10)
-            gDist += 10
+            # If this instance action matches the food direction, give priority
+            if action == fDir:
+                reflexPoints += 10
+                print("[+] Desired action is " + str(action))
 
         return reflexPoints
-        # return successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -212,7 +214,28 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
+        pLegaMoves = gameState.getLegalActions(0)
+        ghostLegalMoves = gameState.getLegalActions(1)
+
+        for move in pLegaMoves:
+            nextGameState = gameState.generateSuccessor(0, move)
+            score = self.evaluationFunction(nextGameState)
+            print("Evaluation for move:{} is score:{}".format(move, score) )
+
+        ''' Helper function'''
+        def minMax(gameState, depth, agentIndex):
+        """ Recursively find the best minMax value """
+
+        
+            return maxValue, optimalDir
+
+
+
+
+
+        numAgents = gameState.getNumAgents()
+        return minMax(gameState, 0, 0)[0] # return only the best_move[0] not val[1]
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
