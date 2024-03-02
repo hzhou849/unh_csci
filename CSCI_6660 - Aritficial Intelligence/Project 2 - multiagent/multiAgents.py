@@ -213,29 +213,98 @@ class MinimaxAgent(MultiAgentSearchAgent):
         gameState.isLose():
         Returns whether or not the game state is a losing state
         """
-        "*** YOUR CODE HERE ***"
-        # util.raiseNotDefined()
-        pLegaMoves = gameState.getLegalActions(0)
-        ghostLegalMoves = gameState.getLegalActions(1)
 
-        for move in pLegaMoves:
-            nextGameState = gameState.generateSuccessor(0, move)
-            score = self.evaluationFunction(nextGameState)
-            print("Evaluation for move:{} is score:{}".format(move, score) )
+
+        "*** YOUR CODE HERE ***"
+        import sys
+
+        ''' Local variables '''
+        AGENT_PACMAN = 0
+        # # util.raiseNotDefined()
+        # pLegaMoves = gameState.getLegalActions(AGENT_PACMAN)
+        # ghostLegalMoves = gameState.getLegalActions(1)
+        numAgents = gameState.getNumAgents()
+        #
+        #
+        # for move in pLegaMoves:
+        #     nextGameState = gameState.generateSuccessor(0, move)
+        #     score = self.evaluationFunction(nextGameState)
+        #     print("Evaluation for move:{} is score:{}".format(move, score) )
+
+
 
         ''' Helper function'''
         def minMax(gameState, depth, agentIndex):
-        """ Recursively find the best minMax value """
+            """
+            Recursively find the best minMax value; Iterates through all agents and tests
+            gameState.generateSuccessor(agent, move):
+                    returns next game state based on agent and direction
+            self.evaluationFunction(gameState):
+                    returns the optimal value for that agent's state passed-in
+                    PACMAN will want MAX of this; GhostAgents will want MIN of this
+            Question 2 visualization [ python pacman.py -p MinimaxAgent -l minimaxClassic -a depth=1 -k1 ]
+                                            (P) optMax=(9, west)
+                                     W /   S |    E\
+                                    (G)     (G)    (G)
+                                 E /  N\   E/ N\   E/ N\
+                                 9    9    -1 -1   -1 -1
 
-        
-            return maxValue, optimalDir
 
+            """
+            # Debug values
+            # gameStateWin = gameState.isWin()
+            # gameStateLose = gameState.isLose()
+            triggerExit = False
 
+            # If the next move is victorious, failure or we have reached our max depth
+            # and the agentIndex has looped around from % over depth - end recursion
+            if gameState.isWin() or gameState.isLose():
+                triggerExit = True
+            if depth == self.depth and agentIndex == 0:
+                triggerExit = True
 
+            if triggerExit == True:
+                scoreVal = self.evaluationFunction(gameState)
 
+                return None, scoreVal
 
-        numAgents = gameState.getNumAgents()
-        return minMax(gameState, 0, 0)[0] # return only the best_move[0] not val[1]
+            # Initialize variables here for recursion
+            if agentIndex == 0:
+                print("Agent: PACMAN", end=" ")
+                optValue = -sys.maxsize
+            else:
+                print("Agent: GHOST: "+str(agentIndex))
+                optValue = sys.maxsize
+            optMove = ''
+
+            # Do not increment depth until finished searching all agents for this depth
+            nextDepth = depth + 1 if agentIndex == (numAgents -1) else depth
+
+            for move in gameState.getLegalActions(agentIndex):
+                print("Current move:{}".format( move))
+                nextSuccessorState = gameState.generateSuccessor(agentIndex, move)
+                # allows us to recursively interate the adversary agents only n, n-1..n-n
+                # Setting nextIndex to 0 will also trigger the next recursion to return the result.
+                nextIndex = (agentIndex + 1) % numAgents
+                _, newVal = minMax(nextSuccessorState, nextDepth, nextIndex)
+
+                # If this is a pacman agent[0]
+                if agentIndex == AGENT_PACMAN:
+                    if optValue < newVal:
+                        optValue = newVal
+                        optMove = move
+                        print("[!] - NEW PacagentIndex: {}; scoreVal:{}".format(agentIndex, optValue))
+                # Ghost agents > 0
+                if agentIndex > AGENT_PACMAN:
+                    if optValue > newVal:
+                        optValue = newVal
+                        optMove = move
+                        print("[!] - NEW agentIndex: {}; scoreVal:{}".format(agentIndex, optValue))
+            return optMove, optValue  # Return as pair item
+
+        minMaxResult = minMax(gameState, 0, 0)
+        return minMaxResult[0] # return only the best_move[0] not val[1]
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
