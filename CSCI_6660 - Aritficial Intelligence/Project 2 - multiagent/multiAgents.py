@@ -10,7 +10,7 @@
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
-
+import sys
 
 from util import manhattanDistance
 from game import Directions
@@ -248,12 +248,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
                                     (G)     (G)    (G)
                                  E /  N\   E/ N\   E/ N\
                                  9    9    -1 -1   -1 -1
-
+            Test command:
+                 python pacman.py -p MinimaxAgent -l minimaxClassic -a depth=4
 
             """
-            # Debug values
-            # gameStateWin = gameState.isWin()
-            # gameStateLose = gameState.isLose()
             triggerExit = False
 
             # If the next move is victorious, failure or we have reached our max depth
@@ -266,41 +264,46 @@ class MinimaxAgent(MultiAgentSearchAgent):
             if triggerExit == True:
                 scoreVal = self.evaluationFunction(gameState)
 
-                return None, scoreVal
+                return None, scoreVal  # Returns values from ghost agents
 
             # Initialize variables here for recursion
             if agentIndex == 0:
-                print("Agent: PACMAN", end=" ")
                 optValue = -sys.maxsize
             else:
-                print("Agent: GHOST: "+str(agentIndex))
                 optValue = sys.maxsize
             optMove = ''
 
             # Do not increment depth until finished searching all agents for this depth
-            nextDepth = depth + 1 if agentIndex == (numAgents -1) else depth
+            # agentIndex is 0-indexed, numAgents total count of agents
+            # When depth equals agentIndex, that means use the next iteration to unfold the recursion
+            nextDepth = depth + 1 if agentIndex+1 == numAgents else depth
 
             for move in gameState.getLegalActions(agentIndex):
-                print("Current move:{}".format( move))
+                if agentIndex > 0:
+                    for i in range(agentIndex):
+                        print("\t", end="")
+                print ("AGENT: {}, move:{}".format(agentIndex, move))
                 nextSuccessorState = gameState.generateSuccessor(agentIndex, move)
+
                 # allows us to recursively interate the adversary agents only n, n-1..n-n
                 # Setting nextIndex to 0 will also trigger the next recursion to return the result.
                 nextIndex = (agentIndex + 1) % numAgents
                 _, newVal = minMax(nextSuccessorState, nextDepth, nextIndex)
+
 
                 # If this is a pacman agent[0]
                 if agentIndex == AGENT_PACMAN:
                     if optValue < newVal:
                         optValue = newVal
                         optMove = move
-                        print("[!] - NEW PacagentIndex: {}; scoreVal:{}".format(agentIndex, optValue))
+                        print("[!] - NEW PacagentIndex: {}; move:{};  scoreVal:{}".format(agentIndex, move,  optValue))
                 # Ghost agents > 0
-                if agentIndex > AGENT_PACMAN:
+                elif agentIndex > AGENT_PACMAN:
                     if optValue > newVal:
                         optValue = newVal
                         optMove = move
-                        print("[!] - NEW agentIndex: {}; scoreVal:{}".format(agentIndex, optValue))
-            return optMove, optValue  # Return as pair item
+                        print("\t[!] - NEW agentIndex: {}; move: {}; scoreVal:{}".format(agentIndex, move, optValue))
+            return optMove, optValue  # Return as pair item to pacman agent
 
         minMaxResult = minMax(gameState, 0, 0)
         return minMaxResult[0] # return only the best_move[0] not val[1]
@@ -316,7 +319,58 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Helper print function for debugging
+        def debugTierPrint(agentIndex, move, depth):
+            for i in range(agentIndex+depth):
+                print("\t", end ="")
+            print("AGENT: {}; move: {}".format(agentIndex, move) )
+
+
+        # Constants
+        NUM_AGENTS   = gameState.getNumAgents()
+        TIER_COUNTER = 0
+
+        def alphaBeta(gameState, depth, agentIndex, alpha, beta):
+
+            # Reached end depth iteration, unfold recursion here
+            if gameState.isWin() or gameState.isLose() or (depth == self.depth and agentIndex ==0):
+                scoreEval = self.evaluationFunction(gameState)
+                return None, scoreEval
+
+            # Initialize variables for recursion here for either min/max agent
+            optValue = -sys.maxsize if agentIndex == 0 else sys.maxsize
+            optMove = ''
+            # When depth equals agentIndex, we have completed a depth-cycle
+            nextDepth = depth + 1 if (agentIndex+1) == NUM_AGENTS else depth
+
+            for move in gameState.getLegalActions(agentIndex):
+                debugTierPrint(agentIndex, move, depth)  # debugging print
+                nextSsrState = gameState.generateSuccessor(agentIndex, move)
+                nextIndex = (agentIndex+1) % NUM_AGENTS     # Properly increment the AgentIndex counter
+                _, newVal = alphaBeta(nextSsrState, nextDepth, nextIndex, alpha, beta)
+
+                # Update the new min/max values accordingly by agent
+                if agentIndex == 0:      # Pacman
+                    if optValue < newVal:
+                        optValue = newVal
+                        optMove = move
+                    alpha = max(alpha, optValue)
+
+                    if alpha > beta:
+                        return optMove, optValue
+                elif agentIndex > 0:         # Ghost
+                    if optValue > newVal:
+                        optValue = newVal
+                        optMove = move
+                    beta = min(beta, optValue)
+                    if beta < alpha:
+                        return optMove, optValue
+            return optMove, optValue
+
+        alphaBetaResult = alphaBeta(gameState, 0, 0, -sys.maxsize, sys.maxsize)
+
+        return alphaBetaResult[0]
+        # util.raiseNotDefined()
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
