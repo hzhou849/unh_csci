@@ -26,6 +26,12 @@ class ReflexAgent(Agent):
     The code below is provided as a guide.  You are welcome to change
     it in any way you see fit, so long as you don't touch our method
     headers.
+
+    # Test commands:
+            python pacman.py --frameTime 0 -p ReflexAgent -k 2
+
+            * Best visual is
+            python autograder.py -q q1
     """
 
 
@@ -65,6 +71,9 @@ class ReflexAgent(Agent):
 
         Print out these variables to see what you're getting, then combine them
         to create a masterful evaluation function.
+
+
+
         """
         # Useful information you can extract from a GameState (pacman.py)
         successorGameState = currentGameState.generatePacmanSuccessor(action)
@@ -188,6 +197,10 @@ class MultiAgentSearchAgent(Agent):
 class MinimaxAgent(MultiAgentSearchAgent):
     """
     Your minimax agent (question 2)
+
+    # Test Commands:
+    python pacman.py -p MinimaxAgent -l minimaxClassic -a depth=4
+    python pacman.py -p MinimaxAgent -l trappedClassic -a depth=3
     """
 
     def getAction(self, gameState):
@@ -220,18 +233,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         ''' Local variables '''
         AGENT_PACMAN = 0
-        # # util.raiseNotDefined()
-        # pLegaMoves = gameState.getLegalActions(AGENT_PACMAN)
-        # ghostLegalMoves = gameState.getLegalActions(1)
         numAgents = gameState.getNumAgents()
-        #
-        #
-        # for move in pLegaMoves:
-        #     nextGameState = gameState.generateSuccessor(0, move)
-        #     score = self.evaluationFunction(nextGameState)
-        #     print("Evaluation for move:{} is score:{}".format(move, score) )
-
-
 
         ''' Helper function'''
         def minMax(gameState, depth, agentIndex):
@@ -317,10 +319,17 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     def getAction(self, gameState):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
+
+        # Test commands:
+        python pacman.py -p MinimaxAgent -l minimaxClassic -a depth=4
+        python pacman.py -p MinimaxAgent -l trappedClassic -a depth=3
         """
         "*** YOUR CODE HERE ***"
         # Helper print function for debugging
         def debugTierPrint(agentIndex, move, depth):
+            """
+            Debug printer to help visualize recursion depth whilst display node info.
+            """
             for i in range(agentIndex+depth):
                 print("\t", end ="")
             print("AGENT: {}; move: {}".format(agentIndex, move) )
@@ -328,7 +337,6 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         # Constants
         NUM_AGENTS   = gameState.getNumAgents()
-        TIER_COUNTER = 0
 
         def alphaBeta(gameState, depth, agentIndex, alpha, beta):
 
@@ -344,9 +352,9 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             nextDepth = depth + 1 if (agentIndex+1) == NUM_AGENTS else depth
 
             for move in gameState.getLegalActions(agentIndex):
-                debugTierPrint(agentIndex, move, depth)  # debugging print
+                debugTierPrint(agentIndex, move, depth)            # Debug print, comment out if not needed
                 nextSsrState = gameState.generateSuccessor(agentIndex, move)
-                nextIndex = (agentIndex+1) % NUM_AGENTS     # Properly increment the AgentIndex counter
+                nextIndex = (agentIndex+1) % NUM_AGENTS            # Properly increment the AgentIndex counter
                 _, newVal = alphaBeta(nextSsrState, nextDepth, nextIndex, alpha, beta)
 
                 # Update the new min/max values accordingly by agent
@@ -369,7 +377,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         alphaBetaResult = alphaBeta(gameState, 0, 0, -sys.maxsize, sys.maxsize)
 
-        return alphaBetaResult[0]
+        return alphaBetaResult[0]  # return [0] move only
         # util.raiseNotDefined()
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
@@ -383,9 +391,65 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
         All ghosts should be modeled as choosing uniformly at random from their
         legal moves.
+
+        # Test commands:
+        python autograder.py -q q4 --no-graphics
+        python pacman.py -p ExpectimaxAgent -l minimaxClassic -a depth=3
+        python pacman.py -p AlphaBetaAgent -l trappedClassic -a depth=3 -q -n 10
+        python pacman.py -p ExpectimaxAgent -l trappedClassic -a depth=3 -q -n 10
+        python pacman.py -p ExpectimaxAgent -l trappedClassic -a depth=3 # Watch graphics
+
         """
+
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        def debugTierPrint(agentIndex, move, depth):
+            """
+            Debug printer to help visualize recursion depth whilst display node info.
+            """
+            for i in range(agentIndex + depth):
+                print("\t", end="")
+            print("AGENT: {}; move: {}".format(agentIndex, move))
+
+
+        # Constants
+        NUM_AGENTS = gameState.getNumAgents()
+
+        def expectiMaxAlgorithm( gameState, depth, agentIndex):
+            if gameState.isWin() or gameState.isLose() or (depth == self.depth and agentIndex == 0):
+                scoreEval = self.evaluationFunction(gameState)
+                return None, scoreEval
+
+            # Iniitialize variables for Pacman and adversary agents
+            optValue = -sys.maxsize if agentIndex == 0 else 0
+            optMove = ''
+
+            # When depth equals agentIndex, we have completed a depth-cycle
+            nextDepth = depth + 1 if (agentIndex+1) == NUM_AGENTS else depth
+
+            # Iterate through the "game-tree" recursively
+            for move in gameState.getLegalActions(agentIndex):
+                # Print debug moves list
+                # debugTierPrint(agentIndex, move, depth)   # Debug print, comment out if not needed
+                nextSsrState = gameState.generateSuccessor(agentIndex, move)
+                nextIndex = (agentIndex+1) % NUM_AGENTS # Properly  increment the agentIndex counter
+                _, newVal = expectiMaxAlgorithm(nextSsrState, nextDepth, nextIndex)
+
+                # update the new expectiMax value repsective to agents
+                if agentIndex == 0 and optValue <= newVal:  # Pacman
+                    optValue = newVal
+                    optMove = move
+                elif agentIndex > 0:
+                    # For the adversary we are calculating the value but its uniform chance of available moves
+                    numMoves = len(gameState.getLegalActions(agentIndex))
+                    optValue += (1.0/ numMoves) * newVal
+
+            return optMove, optValue
+
+        expectiMaxResult = expectiMaxAlgorithm(gameState, 0, 0)
+        return expectiMaxResult[0] # return move only
+
+
+        # util.raiseNotDefined()
 
 def betterEvaluationFunction(currentGameState):
     """
@@ -393,9 +457,48 @@ def betterEvaluationFunction(currentGameState):
     evaluation function (question 5).
 
     DESCRIPTION: <write something here so we know what you did>
+
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    import sys
+    # Local Variables
+    foodAvg = 0
+    foodAvg2 = 0
+    ghostAvg = 0
+
+    # Current game state metrics
+    score = currentGameState.getScore()
+    ghostPos = [ghost.getPosition() for ghost in currentGameState.getGhostStates()]
+    foodPos = currentGameState.getFood().asList()
+    capPos = currentGameState.getCapsules()
+    currPos = currentGameState.getPacmanPosition()
+
+    # Calculate food distances
+    for food in foodPos:
+
+        foodAvg2+= util.manhattanDistance(currPos, food)
+        if foodAvg2 > 0:
+            foodAvg += 1.0/foodAvg2
+            foodAvg = (foodAvg/len(foodPos) )* 10
+
+    # Find the closest food pellet.
+
+    # calculate ghost distances
+    for gh in ghostPos:
+        ghostAvg = util.manhattanDistance(currPos, gh)
+    ghostAvg = ghostAvg/len(ghostPos)
+
+    minGhostDist = [util.manhattanDistance(currPos, gPos) for gPos in ghostPos]
+    minGhostDist = min(minGhostDist)
+
+    # print ("FoodAvg: {}; {}; len:{} | Ghost Avg:{}; score: {}".format(foodAvg, foodAvg2, len(foodPos), ghostAvg, score ), end='\r')
+
+    if minGhostDist < 4:
+        score = -sys.maxsize
+
+    return  score + foodAvg + minGhostDist *0.5
+
+
 
 # Abbreviation
 better = betterEvaluationFunction
