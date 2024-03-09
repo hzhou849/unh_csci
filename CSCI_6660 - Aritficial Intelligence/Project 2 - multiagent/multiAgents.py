@@ -457,6 +457,9 @@ def betterEvaluationFunction(currentGameState):
     evaluation function (question 5).
 
     DESCRIPTION: <write something here so we know what you did>
+    Calculated the average distance of food in relation to pacman and
+    the distance of the nearest ghost. Giving priority to survival first,
+    then if safe, go after food.
 
     """
     "*** YOUR CODE HERE ***"
@@ -475,8 +478,7 @@ def betterEvaluationFunction(currentGameState):
 
     # Calculate food distances
     for food in foodPos:
-
-        foodAvg2+= util.manhattanDistance(currPos, food)
+        foodAvg2 += util.manhattanDistance(currPos, food)
         if foodAvg2 > 0:
             foodAvg += 1.0/foodAvg2
             foodAvg = (foodAvg/len(foodPos) )* 10
@@ -487,12 +489,12 @@ def betterEvaluationFunction(currentGameState):
     for gh in ghostPos:
         ghostAvg = util.manhattanDistance(currPos, gh)
     ghostAvg = ghostAvg/len(ghostPos)
-
     minGhostDist = [util.manhattanDistance(currPos, gPos) for gPos in ghostPos]
     minGhostDist = min(minGhostDist)
 
     # print ("FoodAvg: {}; {}; len:{} | Ghost Avg:{}; score: {}".format(foodAvg, foodAvg2, len(foodPos), ghostAvg, score ), end='\r')
 
+    # Prioritize survival, ghost is too close
     if minGhostDist < 4:
         score = -sys.maxsize
 
