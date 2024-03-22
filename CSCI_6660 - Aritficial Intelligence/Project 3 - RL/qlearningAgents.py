@@ -81,9 +81,13 @@ class QLearningAgent(ReinforcementAgent):
         "*** YOUR CODE HERE ***"
         availActions = self.getLegalActions(state)
         optAction = None
-        max_val = -sys.maxsize # or float('-inf')
+        maxVal = -sys.maxsize # or float('-inf')
         for action in availActions:
             qValue = self.qValues[(state, action)]
+            if maxVal < qValue:
+                maxVal = qValue
+                optAction = action
+        return optAction
 
 
     def getAction(self, state):
@@ -122,17 +126,18 @@ class QLearningAgent(ReinforcementAgent):
         # Q(s,a) <- (1 -alpha) * prev_Q(s,a) + alpha * sample
         prev_Qsa = self.getQValue(state, action)
         # Sample = R(s,a,s') + lambda_MAX_a'_Q(s', a')
-        sample = reward + ( self.discount * prev_Qsa) # might not be right
-        print("sample: {}, reward: {}".format(sample, reward))
-        curr_Qsa = ( (1-self.alpha) * prev_Qsa )+ ( self.alpha * reward)  #Q(s,a)
+        # sample = reward + ( self.discount * prev_Qsa) # might not be
+        prevPart = ( 1 - self.alpha) * prev_Qsa
+        # print("sample: {}, reward: {}".format(sample, reward))
+        curr_Qsa =  self.alpha * reward  #Q(s,a)
 
         if not nextState:
-            self.qValues[(state, action)] = curr_Qsa
+            self.qValues[(state, action)] = prevPart +  curr_Qsa
         else:
             nextState_part = self.alpha * self.discount * self.getValue(nextState)
-            self.q_values[(state, action)]
+            self.qValues[(state, action)] = prevPart + curr_Qsa + nextState_part
 
-        # old
+
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
@@ -195,14 +200,23 @@ class ApproximateQAgent(PacmanQAgent):
           where * is the dotProduct operator
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        features = self.featExtractor.getFeatures(state, action)
+        total = 0
+        for itr in features:
+            total += features[itr] * self.weights[itr]
+        return total
 
     def update(self, state, action, nextState, reward):
         """
            Should update your weights based on transition
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
+        #difference = (r + lambda * max_a'Q(s',a') - Q(s,a)
+        difference = (reward + self.discount * self.getValue(nextState))  - self.getQValue(state, action)
+        features = self.featExtractor.getFeatures(state, action)
+        for itr in features:
+            self.weights[itr] = self.weights[itr] + self.alpha * difference * features[itr]
 
     def final(self, state):
         "Called at the end of each game."
@@ -213,4 +227,12 @@ class ApproximateQAgent(PacmanQAgent):
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
+            print("Approximate Q-learning results: ")
+            print("Alpha - Learning Rate: {}".format(self.alpha))
+            print("Gamma - Discount Rate: {}".format(self.gamma))
+            print("Epsilon - Exploration rate: {}".format(self.epsilon))
+            print("Training eps: {}".format(self.numTraining))
+            print("Weights: ")
+            for itr in features:
+                print("{} : {}".format(itr, self.weights[itr]))
             pass
