@@ -29,7 +29,7 @@ class Viterbi:
         self.maze =[ [float(0) for i in range(4)] for j in range(3) ]
         self.timeStep = []
         self.init_specs()
-        self.evidenceObserved = ["ESW", "N", "NE", "ESW", "NE", "N"]
+        self.evidenceObserved = ["ESW", "N", "NE", "ESW", "NE", "N", "NW","ESW"]
         # self.evidenceObserved = ["ESW", "N", "NE"]
 
         self.evidence_dict = {}  # Must be declared in constructor
@@ -95,6 +95,8 @@ class Viterbi:
                     self.timeStep[0].updateCell(cellNum, probE1_X0)
                     self.timeStep[0].getNode(cellNum)
                     self.timeStep[0].updateBestPath(cellNum,cellNum )
+                    print("t{}; vVal: {:0.8f}".format(cellNum , probE1_X0))
+
             else:
                 key = self.evidenceObserved[tIndex]
                 print("Calculating time step:{}\n".format(tIndex))
