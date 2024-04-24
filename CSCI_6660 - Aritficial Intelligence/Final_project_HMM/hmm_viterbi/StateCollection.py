@@ -56,9 +56,6 @@ class StateCollection:
                 if index == statePos:
                    return element
 
-
-
-
         if state == 1:
             xPos, yPos = 0, 2
         elif state == 2:
@@ -118,8 +115,8 @@ class StateCollection:
 
     def getNgbrList(self, stateCell):
         return self.collection[stateCell - 1].ngbrList
-    def getBestPath(self, stateCell):
 
+    def getBestPath(self, stateCell):
         return self.collection[stateCell-1].bestPathList
 
     def updateCell(self, cellNum, vVal):
@@ -128,8 +125,11 @@ class StateCollection:
         self.collection[cellNum - 1].vVal = vVal
 
     def updateBestPath(self,stateCell, bestNum):
-
-        self.collection[stateCell-1].bestPathList.append(bestNum)
+        # for itr in self.collection[stateCell-1].bestPathList:
+        if self.collection[stateCell-1].bestPathList[-1:] == bestNum:
+            return
+        else:
+            self.collection[stateCell-1].bestPathList.append(bestNum)
 
     def clearExistingPath(self, stateCell):
         self.collection[stateCell-1].bestPathList.clear()
@@ -144,24 +144,18 @@ class StateCollection:
         maxValue = 0
         maxState = 0
         for index ,el in enumerate(self.collection):
-            print("s : {}; val: {:0.8f}".format(el.stateNum, el.vVal))
+            print("s({}); val: {:0.8f}".format(el.stateNum, el.vVal))
             if el.vVal > maxValue:
                 maxValue = el.vVal
                 maxState = el.stateNum
-        print("Max state found is : {}; val: {}".format(maxState, maxValue))
+        # print("Max state found is : {}; val: {}".format(maxState, maxValue))
         return maxState
-
-
-
 
     def printCollection(self):
         for index, el in enumerate(self.collection):
             print("s{})ngbr:  {};\tvVal:{:0.8f}; \tbestPath:{}\n"
                   .format(el.stateNum, el.ngbrList, el.vVal, el.bestPathList))
-
-
             # tempNode = el.bestPathNext
             # while tempNode != None:
             #     print("node val: {}".format(tempNode.vVal))
             #     tempNode = tempNode.bestPathNext
-
