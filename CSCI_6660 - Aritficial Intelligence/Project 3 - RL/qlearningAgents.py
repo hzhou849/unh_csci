@@ -227,12 +227,12 @@ class ApproximateQAgent(PacmanQAgent):
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
-            print("Approximate Q-learning results: ")
-            print("Alpha - Learning Rate: {}".format(self.alpha))
-            print("Gamma - Discount Rate: {}".format(self.gamma))
-            print("Epsilon - Exploration rate: {}".format(self.epsilon))
-            print("Training eps: {}".format(self.numTraining))
-            print("Weights: ")
-            for itr in features:
-                print("{} : {}".format(itr, self.weights[itr]))
+            # print("Approximate Q-learning results: ")
+            # print("Alpha - Learning Rate: {}".format(self.alpha))
+            # # print("Gamma - Discount Rate: {}".format(self.gamma))
+            # print("Epsilon - Exploration rate: {}".format(self.epsilon))
+            # print("Training eps: {}".format(self.numTraining))
+            # print("Weights: ")
+            # for itr in features:
+            #     print("{} : {}".format(itr, self.weights[itr]))
             pass
