@@ -1,5 +1,11 @@
 # MYSQL Examples
 
+| Month    | Savings |
+| -------- | ------- |
+| January  | $250    |
+| February | $80     |
+| March    | $420    |
+
 ## Create Tables
 ```mysql
 -- Example  CREATE TABLE statement here:
