@@ -20,3 +20,18 @@ INSERT INTO Product (ID, Name, ProductType, OriginDate, Weight) VALUES
 SELECT *
 FROM Product;
 ```
+
+## ALTER TABLE
+* Alter table statement adds, deletes for modifies columns on an existing table.
+```sql
+-- Add a new Colmun in existing table
+ALTER TABLE TableName
+ADD <ColumnName> <DataType>;
+
+-- Change the exisitng column name
+ALTER TABLE TableName
+CHANGE <CurrColumnName> <NewColName> <NewCol_DataType>;
+
+-- Delete a column from table
+ALTER TABLE TableName
+Drop <ColumnName>;
