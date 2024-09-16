@@ -36,6 +36,31 @@
 | VARCHAR(N) |	Length of characters + 1 bytes | Variable-length string with maximum N characters; 0 ≤ N ≤ 65,535 |
 | TEXT	| Length of characters + 2 bytes | Variable-length string with maximum 65,535 characters |
 
+## NULL Rules
+* Comparison operators return NULL when either operand is NULL, comparison operators cannot be used to select NULL values.
+```Ex: SELECT * FROM Employee WHERE Salary = NULL; never returns any rows, because the WHERE clause is always NULL.```
+* Instead, the IS NULL and IS NOT NULL operators must be used to select NULL values. Value IS NULL returns TRUE when the value is NULL. Value IS NOT NULL returns TRUE when the value is not NULL.
+```sql
+Ex: SELECT * FROM Employee WHERE Salary IS NULL
+Ex: SELECT * FROM Employee WHERE Salary IS NOT NULL
+```
+### NULL Logic
+TRUE AND TRUE is TRUE.
+TRUE AND FALSE is FALSE.
+TRUE AND NULL is NULL.
+| x | Y | AND | OR |
+| - | - | --- | -- |
+| True | NULL | NULL | TRUE | 
+| NULL | TRUE | NULL | TRUE |
+| FALSE | NULL | FALSE | NULL | 
+| NULL | FALSE | FALSE | NULL |
+| NULL | NULL | NULL | NULL |
+
+| x | NOTx |
+| - | ---- |
+| NULL | NULL |
+
+
 
 ## Create Tables
 ```mysql
