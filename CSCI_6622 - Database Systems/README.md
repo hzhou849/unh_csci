@@ -66,6 +66,7 @@ TRUE AND NULL is NULL.
 ```mysql
 
 -- Create column with auto-increment
+-- In MySQL, AUTO_INCREMENT may be applied only to primary key columns.
 CREATE TABLE Employee (
    ID        SMALLINT UNSIGNED AUTO_INCREMENT,
    Name      VARCHAR(60),
