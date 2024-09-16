@@ -1,6 +1,19 @@
 # MYSQL Examples
 
 ## Data_types
+
+### BIT
+| Symbol | Size | Notes: |
+| ------ | ---- | ------ |
+| BIT(N) | N | A bit-value type. M indicates the number of bits per value, from 1 to 64. The default is 1 if M is omitted.|
+| BINARY(M) | Fixed M | similar to CHAR[(M)] respectively, but store bytes instead of characters. |
+| VARBINARY(M) | Variable | Similar to VARCHAR[(m)]; Stores bytes instead of characters.  |
+
+### Booleans
+| Symbol | Size | Notes: |
+| ------ | ---- | ------ |
+| BOOL, BOOLEAN | N/A | A boolean value FALSE= 0, TRUE≠ 0 |
+
 ### Integers
 ```
 - usage: Code INT UNSIGNED NOT NULL
@@ -159,14 +172,16 @@ WHERE condition;
 ```
 
 ## Delete
+* Slower will track records, but is expensive
 ```sql
 DELETE FROM TableName 
 WHERE condition;
 ```
 
 ## Truncate 
+* Faster than delete because it doesn't log the deletion *CANNOT ROLLBACK!
 * The TRUNCATE statement deletes all rows from a table. TRUNCATE is nearly identical to a DELETE statement with no WHERE clause except for minor differences that depend on the database system.
-```sql 
+```mysql 
 TRUNCATE TABLE TableName;
 ```
 
@@ -214,11 +229,25 @@ FALSE
 7. The expression evaluates to FALSE for the row.
 ```
 
+## Primary Keys / COmposite keys
+* Primary key should be unique within the table
+* if the primary key alone cannont be enough of a unique identifier (as foreign key) you may required a second key to make the records unique. 
+
+
 ## Foreign Keys
 * A foreign key is a column, or group of columns, that refer to a primary key. The data types of the foreign and primary keys must be the same, but the names may be different. Unlike primary keys, foreign key values may be NULL and are not necessarily unique. However, a foreign key value that is not NULL must match some value of the referenced primary key.
 * So Foreign key is when you re-use the primary key from table A in another table B
 
 * FOreign Key constraint
+```sql
+CREATE TABLE Employee (
+   ID             INT,
+   Name           VARCHAR(20) NOT NULL,
+   DepartmentCode INT DEFAULT 999,
+   PRIMARY KEY (ID),
+   FOREIGN KEY (DepartmentCode) REFERENCES Department (Code)
+);
+```
 ```sql
 CREATE TABLE TableName (
   . . .
@@ -298,12 +327,41 @@ CREATE TABLE Department (
    Code TINYINT UNSIGNED,
    Name VARCHAR(20),
    ManagerID SMALLINT,
-   
-CONSTRAINT UniqueNameMgr  UNIQUE (Name,  ManagerID)
-,
+   CONSTRAINT UniqueNameMgr  UNIQUE (Name,  ManagerID),
    PRIMARY KEY (Code)
 );
 
+-- Example 2
 CONSTRAINT CheckPopulation CHECK (PopDensity < Population)
 DROP CHECK CheckPopulation
+```
+
+## Add / Drop Constraints
+* Use in conjuction with ```ALTER TABLE```
+* Adding a constraint fails when the table contains data that violates the constraint.
+
+| Command | 
+| ------- |
+| ADD [CONSTRAINT ConstraintName] PRIMARY KEY (Column1, Column2 ...) |
+| ADD [CONSTRAINT ConstraintName] FOREIGN KEY (Column1, Column2 ...) REFERENCES TableName (Column) |
+| ADD [CONSTRAINT ConstraintName] UNIQUE (Column1, Column2 ...) |
+| ADD [CONSTRAINT ConstraintName] CHECK (expression) |
+
+* Example: Adds a constraint called MgrIDCheck to the existing table to ensure ManagerID is 2000 or greater
+```sql
+ALTER TABLE <my_table>
+ADD CONSTRAINT MgrIDCheck CHECK (ManagerID >= 2000);
+```
+* Dropping a table fails when a foreign key constraint refers to the table's primary key. Before dropping the table, either the foreign key constraint or the foreign key table must be dropped.
+DROP PRIMARY KEY
+DROP FOREIGN KEY ConstraintName
+DROP INDEX ConstraintName (drops UNIQUE constraints)
+DROP CHECK ConstraintName
+DROP CONSTRAINT ConstraintName (drops any named constraint)
+* Example Drop: Drop the UNIQUE constraint called UniqueNameMgr from existing table
+  ```sql
+ALTER TABLE <my_table>
+DROP INDEX <constraint_name>
+--or 
+DROP CONSTRAINT <constraint_name>
 ```
