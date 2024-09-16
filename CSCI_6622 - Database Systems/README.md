@@ -119,6 +119,13 @@ UPDATE TableName
 SET Column1 = Value1, Column2 = Value2, ...
 WHERE condition;
 ```
+
+## Delete
+```sql
+DELETE FROM TableName 
+WHERE condition;
+```
+
 ## Select statement
 * This will return the sum of each rows of results
 ```sql
