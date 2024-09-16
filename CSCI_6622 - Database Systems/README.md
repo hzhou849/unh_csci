@@ -189,3 +189,8 @@ FALSE
 6. > has higher precedence than AND, and is evaluated next.
 7. The expression evaluates to FALSE for the row.
 ```
+
+## Foreign Keys
+* A foreign key is a column, or group of columns, that refer to a primary key. The data types of the foreign and primary keys must be the same, but the names may be different. Unlike primary keys, foreign key values may be NULL and are not necessarily unique. However, a foreign key value that is not NULL must match some value of the referenced primary key.
+* So Foreign key is when you re-use the primary key from table A in another table B
+
