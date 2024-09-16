@@ -1,5 +1,6 @@
 # MYSQL Examples
 
+## Data_types
 ### Integers
 | Symbol | Size | Notes: |
 | ------ | ---- | ------ |
