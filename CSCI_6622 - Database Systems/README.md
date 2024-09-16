@@ -235,10 +235,26 @@ CREATE TABLE Department (
 ```sql
 CREATE TABLE Department (
    Code        TINYINT UNSIGNED,
+
+--*** Unique can be placed here too
    Name        VARCHAR(20) UNIQUE,
+
    ManagerID   SMALLINT,
    Appointment DATE,
    PRIMARY KEY (Code),
    UNIQUE (ManagerID, Appointment)
+);
+```
+
+## CHECK Constraint
+```sql
+CREATE TABLE Department (
+   Code          TINYINT UNSIGNED,
+   Name          VARCHAR(20),
+   ManagerID     SMALLINT,
+   AdminAssistID SMALLINT,
+   Size          VARCHAR(6) CHECK (Size IN ('small', 'medium', 'large')),
+   PRIMARY KEY (Code),
+   CHECK (ManagerID >= 1000 AND ManagerID <> AdminAssistID) 
 );
 ```
