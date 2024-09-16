@@ -201,4 +201,32 @@ CREATE TABLE TableName (
   FOREIGN KEY (ColumnName) REFERENCES TableName (ColumnName),
   . . . 
 );
-'''
+```
+
+## Referential integrity actions
+* These auto update references when modifying a table with reference links
+* For foreign key inserts and updates, MySQL supports only RESTRICT. Foreign key inserts and updates that violate referential integrity are automatically rejected.
+* MySQL has several limitations on primary key updates and deletes:
+
+RESTRICT is applied when the ON UPDATE or ON DELETE clause is omitted.
+SET NULL cannot be used when a foreign key is not allowed NULL values.
+SET DEFAULT is not supported in some MySQL configurations.
+
+| Keyword | Usage |
+| ------- | ----- |
+| RESTRICT | rejects an insert, update, or delete that violates referential integrity. |
+| SET NULL | sets invalid foreign keys to NULL. |
+| SET DEFAULT | sets invalid foreign keys to the foreign key default value. |
+| CASCADE | propagates primary key changes to foreign keys. |
+
+```sql
+CREATE TABLE Department (
+   Code TINYINT UNSIGNED,
+   Name VARCHAR(20),
+   ManagerID SMALLINT UNSIGNED,
+   PRIMARY KEY (Code),
+   FOREIGN KEY (ManagerID) REFERENCES Employee(ID)
+      ON DELETE SET NULL
+      ON UPDATE CASCADE
+);
+```
