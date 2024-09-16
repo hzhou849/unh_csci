@@ -230,3 +230,15 @@ CREATE TABLE Department (
       ON UPDATE CASCADE
 );
 ```
+
+## Unique Constraint
+```sql
+CREATE TABLE Department (
+   Code        TINYINT UNSIGNED,
+   Name        VARCHAR(20) UNIQUE,
+   ManagerID   SMALLINT,
+   Appointment DATE,
+   PRIMARY KEY (Code),
+   UNIQUE (ManagerID, Appointment)
+);
+```
