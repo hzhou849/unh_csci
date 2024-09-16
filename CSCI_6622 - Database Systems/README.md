@@ -113,7 +113,12 @@ CHANGE <CurrColumnName> <NewColName> <NewCol_DataType>;
 ALTER TABLE TableName
 Drop <ColumnName>;
 ```
-
+## Update Table
+```sql
+UPDATE TableName
+SET Column1 = Value1, Column2 = Value2, ...
+WHERE condition;
+```
 ## Select statement
 * This will return the sum of each rows of results
 ```sql
