@@ -86,6 +86,14 @@ INSERT INTO Product (ID, Name, ProductType, OriginDate, Weight) VALUES
   (200, 'Food replicator', 'FOD', '2020-09-21', 54.2),
   (300, 'Cloaking device', 'CD', '2019-02-04', 177.9);
 
+-- You can skip the INTO keyword 
+INSERT <TABLE_NAME>
+VALUES (val_col1, val_col2...val_col(n));
+
+-- You can reorder the column inserts as long as you match declaration
+INSERT INTO <TABLE_NAME> (col_C, col_A, Col_B)
+VALUES (val_C, val_A, val_B)
+
 SELECT *
 FROM Product;
 ```
