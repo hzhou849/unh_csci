@@ -75,6 +75,9 @@ CREATE TABLE Employee (
    PRIMARY KEY (ID)
 );
 
+SHOW TABLES;
+SHOW COLUMNS FROM <my_table>;
+
 -- Multiple/Composite Primary keys
 PRIMARY KEY (ISOCode2, ISOCode3)
 
