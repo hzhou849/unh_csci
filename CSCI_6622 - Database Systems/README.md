@@ -258,3 +258,28 @@ CREATE TABLE Department (
    CHECK (ManagerID >= 1000 AND ManagerID <> AdminAssistID) 
 );
 ```
+
+## MySQL Constraint names
+* The MySQL statement SHOW CREATE TABLE TableName returns the CREATE TABLE statement for TableName. The statement shows all CONSTRAINT ConstraintName clauses but does not show default constraint names.
+
+The following query displays all names of constraints on TableName, including default names:
+Key_Column_Usage is a table from the Information_Schema system database. Other Key_Column_Usage columns contain additional constraint details. Ex: Referenced_Table_Name and Referenced_Column_Name provide information about foreign key constraints.
+
+```sql
+SELECT Column_Name, Constraint_Name
+FROM Information_Schema.Key_Column_Usage
+WHERE Table_Name = 'TableName';
+
+CREATE TABLE Department (
+   Code TINYINT UNSIGNED,
+   Name VARCHAR(20),
+   ManagerID SMALLINT,
+   
+CONSTRAINT UniqueNameMgr  UNIQUE (Name,  ManagerID)
+,
+   PRIMARY KEY (Code)
+);
+
+CONSTRAINT CheckPopulation CHECK (PopDensity < Population)
+DROP CHECK CheckPopulation
+```
