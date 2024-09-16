@@ -69,3 +69,17 @@ CHANGE <CurrColumnName> <NewColName> <NewCol_DataType>;
 -- Delete a column from table
 ALTER TABLE TableName
 Drop <ColumnName>;
+```
+
+## Arithmetic Operators
+ -(unary) ex. -(-2); used for reversing a neg sign
+| Precedence |	Operators |
+| ---------- | --------- |
+| 1 |	- (unary) |
+| 2 | ^ |
+| 3 |	* / % |
+| 4 |	+ - (binary) |
+| 5 |	= !=     <     >     <=     >= |
+| 6 | NOT |
+| 7 |	AND |
+|8  |	OR |
