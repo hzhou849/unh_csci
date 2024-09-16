@@ -64,6 +64,16 @@ TRUE AND NULL is NULL.
 
 ## Create Tables
 ```mysql
+
+-- Create column with auto-increment
+CREATE TABLE Employee (
+   ID        SMALLINT UNSIGNED AUTO_INCREMENT,
+   Name      VARCHAR(60),
+   BirthDate DATE,
+   Salary    DECIMAL(7,2),
+   PRIMARY KEY (ID)
+);
+
 -- Example  CREATE TABLE statement here:
 CREATE TABLE Product(
    ID INT,
@@ -124,6 +134,12 @@ WHERE condition;
 ```sql
 DELETE FROM TableName 
 WHERE condition;
+```
+
+## Truncate 
+* The TRUNCATE statement deletes all rows from a table. TRUNCATE is nearly identical to a DELETE statement with no WHERE clause except for minor differences that depend on the database system.
+```sql 
+TRUNCATE TABLE TableName;
 ```
 
 ## Select statement
