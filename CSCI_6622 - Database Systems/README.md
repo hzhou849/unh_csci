@@ -71,6 +71,18 @@ ALTER TABLE TableName
 Drop <ColumnName>;
 ```
 
+## Select statement
+* This will return the sum of each rows of results
+```sql
+SELECT <col1> + <col2>
+FROM MyTable
+
+-- Limit the result rows returned
+SELECT 2 * (col1 - col2)
+FROM MyTable
+LIMIT 100; 
+```
+
 ## Arithmetic Operators
  -(unary) ex. -(-2); used for reversing a neg sign
 | Precedence |	Operators |
