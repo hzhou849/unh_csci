@@ -75,6 +75,9 @@ CREATE TABLE Employee (
    PRIMARY KEY (ID)
 );
 
+-- Multiple/Composite Primary keys
+PRIMARY KEY (ISOCode2, ISOCode3)
+
 -- Example  CREATE TABLE statement here:
 CREATE TABLE Product(
    ID INT,
