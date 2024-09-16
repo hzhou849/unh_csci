@@ -45,6 +45,13 @@ CREATE TABLE Product(
    Weight DECIMAL(6,1)
 );
 
+-- NOT NULL - prevents null entries in specified column
+CREATE TABLE Department (
+   Code      TINYINT UNSIGNED NOT NULL,
+   Name      VARCHAR(20),
+   ManagerID SMALLINT
+);
+
 -- INSERT data into new table
 INSERT INTO Product (ID, Name, ProductType, OriginDate, Weight) VALUES 
   (100, 'Tricorder', 'TC', '2020-08-11', 2.4),
