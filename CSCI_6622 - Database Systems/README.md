@@ -60,7 +60,22 @@ TRUE AND NULL is NULL.
 | - | ---- |
 | NULL | NULL |
 
+## Print debug statements to terminal 
+```sql
+-- Method 1
+SELECT 'Hello World!';
 
+-- Method 2
+SET @my_var = 'My message';
+SELECT @my_var;
+
+-- Method 3
+DECLARE counter INT DEFAULT 1;
+WHILE counter <=5 DO
+   SELECT CONCAT('Counter is at: ', counter);
+   SET COUNTER = counter + 1;
+END WHILE;
+```
 
 ## Create Tables
 ```mysql
@@ -113,6 +128,12 @@ VALUES (val_C, val_A, val_B)
 
 SELECT *
 FROM Product;
+```
+## SHOW TABLE/COLUMNS
+* Print the table to terminal
+```mysql
+SHOW TABLES;
+SHOW COLUMNS FROM <my_table>;
 ```
 
 ## ALTER TABLE
