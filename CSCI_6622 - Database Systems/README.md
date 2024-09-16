@@ -25,7 +25,7 @@
 | DATETIME | 5 bytes | Format: YYYY-MM-DD hh:mm:ss. Range: '1000-01-01 00:00:00' to '9999-12-31 23:59:59'. |
 
 
-# Char & String
+### Char & String
 | Symbol | Size | Notes: |
 | ------ | ---- | ------ |
 | CHAR(N) | N bytes | Fixed-length string of length N; 0 ≤ N ≤ 255 |
