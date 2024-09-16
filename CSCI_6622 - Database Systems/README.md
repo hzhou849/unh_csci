@@ -270,7 +270,7 @@ SET DEFAULT is not supported in some MySQL configurations.
 | RESTRICT | rejects an insert, update, or delete that violates referential integrity. |
 | SET NULL | sets invalid foreign keys to NULL. |
 | SET DEFAULT | sets invalid foreign keys to the foreign key default value. |
-| CASCADE | propagates primary key changes to foreign keys. |
+| CASCADE | Propagates primary key changes to foreign keys. If primary key is DELETED, rows containing matching foreign keys are deleted; UPDATE - matching foreign keys are updated to the same value |
 
 ```sql
 CREATE TABLE Department (
@@ -279,8 +279,8 @@ CREATE TABLE Department (
    ManagerID SMALLINT UNSIGNED,
    PRIMARY KEY (Code),
    FOREIGN KEY (ManagerID) REFERENCES Employee(ID)
-      ON DELETE SET NULL
-      ON UPDATE CASCADE
+      ON DELETE SET NULL -- On delete, foreign keys will default to NULL
+      ON UPDATE CASCADE -- on update, foreign keyss will update to new value
 );
 ```
 
@@ -359,7 +359,8 @@ DROP INDEX ConstraintName (drops UNIQUE constraints)
 DROP CHECK ConstraintName
 DROP CONSTRAINT ConstraintName (drops any named constraint)
 * Example Drop: Drop the UNIQUE constraint called UniqueNameMgr from existing table
-  ```sql
+
+```sql
 ALTER TABLE <my_table>
 DROP INDEX <constraint_name>
 --or 
