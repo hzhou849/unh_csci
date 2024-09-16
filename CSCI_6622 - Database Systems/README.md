@@ -2,6 +2,9 @@
 
 ## Data_types
 ### Integers
+```
+- usage: Code INT UNSIGNED NOT NULL
+```
 | Symbol | Size | Notes: |
 | ------ | ---- | ------ |
 | TINYINT |	1 byte | Signed range: -128 to 127 Unsigned range: 0 to 255 | 
