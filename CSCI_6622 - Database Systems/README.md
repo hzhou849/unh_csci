@@ -83,3 +83,22 @@ Drop <ColumnName>;
 | 6 | NOT |
 | 7 |	AND |
 |8  |	OR |
+
+```sql
+--Example:
+The expression evaluates to FALSE for the row.
+Status = 'Platinum' AND (Quantity * UnitPrice + ShippingPrice) > 100.00
+'Platinum' = 'Platinum' AND                  (4 * 15.00 + 7.50)                > 100.00
+'Platinum' = 'Platinum' AND                  (   60.00    + 7.50)                > 100.00
+'Platinum' = 'Platinum' AND                             67.50                        > 100.00
+TRUE             AND                             67.50                        > 100.00
+TRUE             AND                                             FALSE
+FALSE
+1. The expression includes column names Status, Quantity, UnitPrice, and ShippingPrice.
+2. The expression is evaluated for a specific row. Column names are replaced with column values for the row.
+3. Operators within parentheses have the highest precedence. * has higher precedence than + and is evaluated first.
+4. + is the only remaining operator inside the parentheses, and is evaluated next.
+5. = has higher precedence than AND. = has the same precedence as > but appears to the left. So = is evaluated next.
+6. > has higher precedence than AND, and is evaluated next.
+7. The expression evaluates to FALSE for the row.
+```
