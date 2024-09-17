@@ -7,6 +7,17 @@
   WHERE <Condition> 
 ```
 
+```sql
+SELECT 'BEFORE: ' AS '';
+SELECT * FROM Horse;
+UPDATE Horse
+SET Height = 15.6
+WHERE ID =2;
+
+SELECT 'AFTER' AS '';
+SELECT * FROM Horse;
+```
+
 ## Data_types
 
 ### BIT
