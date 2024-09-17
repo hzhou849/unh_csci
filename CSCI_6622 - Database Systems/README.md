@@ -1,5 +1,12 @@
 # MYSQL Examples
 
+## SELECT
+```sql
+  SELECT <col1>, <col2>.... <col_n>
+  FROM <myTable>
+  WHERE <Condition> 
+```
+
 ## Data_types
 
 ### BIT
@@ -74,9 +81,11 @@ TRUE AND NULL is NULL.
 | NULL | NULL |
 
 ## Print debug statements to terminal 
+* If printout repeats use ```AS ''```
+* 
 ```sql
 -- Method 1
-SELECT 'Hello World!';
+SELECT 'Hello World!' AS '';
 
 -- Method 2
 SET @my_var = 'My message';
