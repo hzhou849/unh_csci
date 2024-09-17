@@ -267,7 +267,7 @@ SET DEFAULT is not supported in some MySQL configurations.
 
 | Keyword | Usage |
 | ------- | ----- |
-| RESTRICT | rejects an insert, update, or delete that violates referential integrity. |
+| RESTRICT | ex. ON DELETE RESTRICT; rejects an insert, update, or delete that violates referential integrity. |
 | SET NULL | sets invalid foreign keys to NULL. |
 | SET DEFAULT | sets invalid foreign keys to the foreign key default value. |
 | CASCADE | Propagates primary key changes to foreign keys. If primary key is DELETED, rows containing matching foreign keys are deleted; UPDATE - matching foreign keys are updated to the same value |
@@ -283,8 +283,10 @@ CREATE TABLE Department (
       ON UPDATE CASCADE -- on update, foreign keyss will update to new value
 );
 ```
-
-## Unique Constraint
+## CONSTRAINTS
+### Unique Constraint
+```UNIQUE (ManagerID, Appointment)```
+* Means this combination of ManagerID and Appointment must be unique
 ```sql
 CREATE TABLE Department (
    Code        TINYINT UNSIGNED,
@@ -299,7 +301,7 @@ CREATE TABLE Department (
 );
 ```
 
-## CHECK Constraint
+### CHECK Constraint
 ```sql
 CREATE TABLE Department (
    Code          TINYINT UNSIGNED,
@@ -312,7 +314,7 @@ CREATE TABLE Department (
 );
 ```
 
-## MySQL Constraint names
+### MySQL Constraint names
 * The MySQL statement SHOW CREATE TABLE TableName returns the CREATE TABLE statement for TableName. The statement shows all CONSTRAINT ConstraintName clauses but does not show default constraint names.
 
 The following query displays all names of constraints on TableName, including default names:
@@ -336,7 +338,7 @@ CONSTRAINT CheckPopulation CHECK (PopDensity < Population)
 DROP CHECK CheckPopulation
 ```
 
-## Add / Drop Constraints
+### Add / Drop Constraints
 * Use in conjuction with ```ALTER TABLE```
 * Adding a constraint fails when the table contains data that violates the constraint.
 
