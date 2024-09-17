@@ -302,6 +302,7 @@ CREATE TABLE Department (
 ```
 
 ### CHECK Constraint
+* Used when creating tables
 ```sql
 CREATE TABLE Department (
    Code          TINYINT UNSIGNED,
