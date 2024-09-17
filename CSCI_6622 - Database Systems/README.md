@@ -6,6 +6,10 @@
   FROM <myTable>
   WHERE <Condition> 
 ```
+* To display your columns from table created:
+```sql
+SELECT * FROM <schema>.<new_table>;
+```
 
 ```sql
 SELECT 'BEFORE: ' AS '';
