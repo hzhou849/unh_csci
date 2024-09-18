@@ -149,43 +149,10 @@ GAB   Mbete   F    13.8
 | Function |	Description |	Example |
 | -------- | ----------- | ------- |
 | CURDATE() CURTIME() NOW() |	Returns the current date, time, or date and time in <br>'YYYY-MM-DD', 'HH:MM:SS', or 'YYYY-MM-DD HH:MM:SS' format | <br> SELECT CURDATE(); returns '2019-01-25' <br> SELECT CURTIME(); returns '21:05:44' <br> SELECT NOW(); returns '2019-01-25 21:05:44' |
-
-DATE(expr)
-TIME(expr)	Extracts the date or time from a date or datetime
-expression expr	
-SELECT DATE('2013-03-25 22:11:45');
-
-returns '2013-03-25'
-SELECT TIME('2013-03-25 22:11:45');
-
-returns '22:11:45'
-DAY(d)
-MONTH(d)
-YEAR(d)	Returns the day, month, or year from date d	
-SELECT DAY('2016-10-25');
-returns 25
-SELECT MONTH('2016-10-25');
-returns 10
-SELECT YEAR('2016-10-25');
-returns 2016
-HOUR(t)
-MINUTE(t)
-SECOND(t)	Returns the hour, minute, or second from time t	
-SELECT HOUR('22:11:45');
-returns 22
-SELECT MINUTE('22:11:45');
-returns 11
-SELECT SECOND('22:11:45');
-returns 45
-DATEDIFF(expr1, expr2)
-TIMEDIFF(expr1, expr2)	Returns expr1 - expr2 in number of days or time
-values, given expr1 and expr2 are date, time, or datetime values	
-SELECT DATEDIFF('2013-03-10', '2013-03-04');
-
-returns 6
-SELECT TIMEDIFF('10:00:00', '09:45:30');
-
-returns 00:14:30
+| DATE(expr) <br> TIME(expr) |	Extracts the date or time from a date or datetime expression expr	| SELECT DATE('2013-03-25 22:11:45'); returns '2013-03-25' <br>SELECT TIME('2013-03-25 22:11:45'); returns '22:11:45' |
+| DAY(d) <br> MONTH(d) <br> YEAR(d) 	Returns the day, month, or year from date d	| SELECT DAY('2016-10-25'); returns 25 <br>SELECT MONTH('2016-10-25'); returns 10 <br> SELECT YEAR('2016-10-25'); returns 2016 |
+| HOUR(t) <br> MINUTE(t) <br> SECOND(t)	| Returns the hour, minute, or second from time t	| SELECT HOUR('22:11:45'); returns 22 <br> SELECT MINUTE('22:11:45'); returns 11 <br> SELECT SECOND('22:11:45'); returns 45 |
+| DATEDIFF(expr1, expr2) <br>TIMEDIFF(expr1, expr2)	| Returns expr1 - expr2 in number of days or time values, given expr1 and expr2 are date, time, or datetime values	| SELECT DATEDIFF('2013-03-10', '2013-03-04'); returns 6 <br>SELECT TIMEDIFF('10:00:00', '09:45:30'); returns 00:14:30 |
 
 
 
