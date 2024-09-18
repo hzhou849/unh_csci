@@ -1,10 +1,15 @@
 ## Lecture 3 - Special Operators and Clauses
+#### 3.1
 * 3.1 - IN
-* 3.2 BETWEEN
+* 3.1.2 BETWEEN
 * LIKE
 * DISTINCT Clause
 * ORDERY BY Clause
 
+#### 3.2
+* Numeric functions (Math)
+
+## 3.1
 ### 3.1 IN operator
 * The IN operator is used in a WHERE clause to determine if a value matches one of several values. The SELECT statement in the figure below uses the IN operator to select only rows where the Language column has a Dutch, Kongo, or Albanian value
 * Select category Language IN ('myOption', 'myOption2', ...)
@@ -116,6 +121,19 @@ FSM   Yap     F    5.8
 GAB   Fang    F    35.8
 GAB   Mbete   F    13.8
 ```
+
+
+## 3.2 
+
+### Arithmetic functions
+| Function |	Description |	Example |
+| -------- | ----------- | ------- |
+| ABS(n)	| Returns the absolute value of n	| ```sql SELECT ABS(-5);``` <br>returns 5 |
+| LOG(n) |	Returns the natural logarithm of n	| ```SELECT LOG(10);``` <br>returns 2.302585092994046 |
+| POW(x, y)	| Returns x to the power of y |	```SELECT POW(2, 3); ``` <br> returns 8 |
+| RAND() |	Returns a random number between 0 (inclusive) and 1 (exclusive) |	```SELECT RAND();``` <br>returns 0.11831825703225868 |
+| ROUND(n, d)	| Returns n rounded to d decimal places	 | ```SELECT ROUND(16.25, 1);``` <br>returns 16.3 |
+| SQRT(n) |	Returns the square root of n	| ```SELECT SQRT(25);``` <br>returns 5 |
 
 
 
