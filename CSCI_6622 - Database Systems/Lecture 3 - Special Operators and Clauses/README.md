@@ -125,7 +125,7 @@ GAB   Mbete   F    13.8
 
 ## 3.2 
 
-### Arithmetic functions
+### 3.2.1  Arithmetic functions
 | Function |	Description |	Example |
 | -------- | ----------- | ------- |
 | ABS(n)	| Returns the absolute value of n	| ```sql SELECT ABS(-5);``` <br>returns 5 |
@@ -135,6 +135,15 @@ GAB   Mbete   F    13.8
 | ROUND(n, d)	| Returns n rounded to d decimal places	 | ```SELECT ROUND(16.25, 1);``` <br>returns 16.3 |
 | SQRT(n) |	Returns the square root of n	| ```SELECT SQRT(25);``` <br>returns 5 |
 
+### 3.2.2 String Functions
+| Function |	Description |	Example |
+| -------- | ----------- | ------- |
+| CONCAT(s1, s2, ...)	|Returns the string that results from concatenating the string arguments	| SELECT CONCAT('Dis', 'en', 'gage'); <br> returns 'Disengage' |
+|LOWER(s)	| Returns the lowercase s	| SELECT LOWER('MySQL'); <br>returns 'mysql' |
+| REPLACE(s, from, to)	| Returns the string s with all occurrences of from replaced with to	| SELECT REPLACE('This and that', 'and', 'or'); <br>returns 'This or that' |
+| SUBSTRING(s, pos, len)	| Returns the substring from s that starts at position pos and has length len	| SELECT SUBSTRING('Boomerang', 1, 4);<br>returns 'Boom' |
+| TRIM(s)	| Returns the string s without leading and trailing spaces	| SELECT TRIM('   test   '); <br>returns 'test' |
+| UPPER(s)	| Returns the uppercase s	| SELECT UPPER('mysql'); <br>returns 'MYSQL' |
 
 
 
