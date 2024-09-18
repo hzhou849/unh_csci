@@ -154,6 +154,12 @@ GAB   Mbete   F    13.8
 | HOUR(t) <br> MINUTE(t) <br> SECOND(t)	| Returns the hour, minute, or second from time t	| SELECT HOUR('22:11:45'); returns 22 <br> SELECT MINUTE('22:11:45'); returns 11 <br> SELECT SECOND('22:11:45'); returns 45 |
 | DATEDIFF(expr1, expr2) <br>TIMEDIFF(expr1, expr2)	| Returns expr1 - expr2 in number of days or time values, given expr1 and expr2 are date, time, or datetime values	| SELECT DATEDIFF('2013-03-10', '2013-03-04'); returns 6 <br>SELECT TIMEDIFF('10:00:00', '09:45:30'); returns 00:14:30 |
 
+* Example: Select movies with release date after 2017 OR in November
+```sql
+SELECT *
+FROM Movie
+WHERE YEAR(ReleaseDate) > 2017 OR  MONTH(ReleaseDate) = 11;
+```
 
 
 
