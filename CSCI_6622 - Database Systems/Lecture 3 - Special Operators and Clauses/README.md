@@ -82,6 +82,41 @@ WHERE IsOfficial = 'F';
 * Returns by default in alphabetical ASCENDING.
 * Use ```DESC``` keyword to order by descending order
 
+``` ORDER BY \<column_name> DESC, \<column_name2>```
+
+```sql
+-- Order by Language (ascending) 
+SELECT * 
+FROM CountryLanguage 
+ORDER BY Language;
+ 
+GAB   Fang    F   35.8
+GAB   Mbete   F   13.8
+FSM   Woleai  F    3.7
+FSM   Yap     F    5.8
+
+-- Order by Language (descending)
+SELECT * 
+FROM CountryLanguage 
+ORDER BY Language DESC;
+ 
+FSM   Yap     F    5.8
+FSM   Woleai  F    3.7
+GAB   Mbete   F   13.8
+GAB   Fang    F   35.8
+
+-- Order by CountryCode, then    
+-- Language (ascending)
+SELECT * 
+FROM CountryLanguage 
+ORDER BY CountryCode, Language;
+ 
+FSM   Woleai  F    3.7
+FSM   Yap     F    5.8
+GAB   Fang    F    35.8
+GAB   Mbete   F    13.8
+```
+
 
 
 
