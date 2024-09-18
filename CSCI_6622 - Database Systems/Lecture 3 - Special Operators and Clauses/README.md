@@ -7,7 +7,15 @@
 * ORDERY BY Clause
 
 #### 3.2
-* Numeric functions (Math)
+* 3.2.1 Numeric functions (Math)
+* 3.2.2 String Functions
+* 3.2.3 Date time functions
+
+#### 3.3 Aggregate Functions
+* 3.3.1 Aggregate functions
+* 3.3.3 GROUP BY
+* 3.3.5 HAVING clause
+* 3.3.8 Aggregate NULL values
 
 ## 3.1
 ### 3.1 IN operator
@@ -174,5 +182,69 @@ FROM Movie
 WHERE YEAR(ReleaseDate) > 2017 OR  MONTH(ReleaseDate) = 11;
 ```
 
+## 3.3 Aggregate Functions
+### 3.3.1 Aggregate Functions COUNT() MIN() MAX() SUM() AVG()
+An aggregate function processes values from a set of rows and returns a summary value. Common aggregate functions are:
+* COUNT() counts the number of rows in the set.
+* MIN() finds the minimum value in the set.
+* MAX() finds the maximum value in the set.
+* SUM() sums all the values in the set.
+* AVG() computes the arithmetic mean of all the values in the set.
 
+Example:
+```sql
+-- Return count of number of rows with <column> > 5
+SELECT COUNT(*)
+FROM <table>
+WHERE <column> > 5;
 
+--- Return row with the MIN value
+SELECT MIN(Salary)
+FROM <table>;
+
+-- Return total AVG of all columns
+SELECT AVG(Salary)
+FROM <table>
+```
+### 3.3.3 GROUP BY clause
+* If you have duplicate column values ie country code, you can group results together
+```sql
+-- returns group CountryCode column with the sum off all populations for that code
+SELECT CountryCode, SUM(Population)
+FROM <table>
+GROUP BY CountryCode;
+
+-- Counts  how many rows exist in each group (with duplicate countrycode and districts exist)
+SELECT CountryCode, District, COUNT(*)
+FROM <table>
+GROUP BY CountryCode, District;
+```
+### 3.3.5 HAVING Clause
+* Used with GROUP BY clause to filter group results
+```sql
+SELECT CountryCode, SUM(Population)
+FROM <table>
+GROUP BY CountryCode
+HAVING SUM(Population) > 23000000;
+
+-- HAVING selects only groups that have a row count >=2
+SELECT CountryCode, District, COUNT(*)
+FROM <table>
+GROUP BY CountryCode, District
+HAVING COUNT(*) >= 2;
+
+-- Returns the MAX releaseYear organized by  genre with count > 1
+SELECT Genre, COUNT(*), MAX(ReleaseYear)
+FROM Song
+GROUP BY Genre
+HAVING COUNT(*) >1;
+```
+
+### 3.3.8 Aggregate NULL Values
+* Be careful NULL may result in unexpected results
+* May ignore NULL values in calculations
+* x + NULL = NULL so will be ignored in calculations
+Aggregate functions ignore NULL values. Ex: SUM(Salary) adds all non-NULL salaries and ignores rows containing a NULL salary.
+
+Aggregate functions and arithmetic operators handle NULL differently. Arithmetic operators return NULL when either operand is NULL. As a result, aggregate functions may generate surprising results when NULL is present. Ex: In the animations below, 
+```SUM(Salary) + SUM(Bonus)``` is not equal to ```SUM(Salary + Bonus)```.
