@@ -135,6 +135,19 @@ GAB   Mbete   F    13.8
 | ROUND(n, d)	| Returns n rounded to d decimal places	 | ```SELECT ROUND(16.25, 1);``` <br>returns 16.3 |
 | SQRT(n) |	Returns the square root of n	| ```SELECT SQRT(25);``` <br>returns 5 |
 
+* EXample: Compute Column X plus a random number rounded to 3 decimal places for all rows
+```sql
+ROUND(X + RAND(), 3)
+```
+* EXample: 
+```sql
+SELECT ABS(X) * SQRT(Y);
+```
+* Example2:
+```sql
+SELECT X + RAND();
+```
+
 ### 3.2.2 String Functions
 | Function |	Description |	Example |
 | -------- | ----------- | ------- |
