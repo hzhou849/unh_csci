@@ -17,6 +17,8 @@
 * 3.3.5 HAVING clause
 * 3.3.8 Aggregate NULL values
 
+#### 3.4 Join
+
 ## 3.1
 ### 3.1 IN operator
 * The IN operator is used in a WHERE clause to determine if a value matches one of several values. The SELECT statement in the figure below uses the IN operator to select only rows where the Language column has a Dutch, Kongo, or Albanian value
@@ -248,3 +250,82 @@ Aggregate functions ignore NULL values. Ex: SUM(Salary) adds all non-NULL salari
 
 Aggregate functions and arithmetic operators handle NULL differently. Arithmetic operators return NULL when either operand is NULL. As a result, aggregate functions may generate surprising results when NULL is present. Ex: In the animations below, 
 ```SUM(Salary) + SUM(Bonus)``` is not equal to ```SUM(Salary + Bonus)```.
+
+
+## 3.4 Join
+
+* Join lets you join data from two tables to one result row
+
+```sql
+SELECT DepartmentName, EmployeeName
+FROM <table1>, <table2>
+WHERE Manager=ID;
+```
+* If there is a naming contention, use ```table1.name or table2.name```
+* You can also use the ```AS``` keyword to reassign the alias
+```sql
+SELECT Department.Name AS dept_name,
+       Employee.Name AS supervisor
+FROM Department, Employee_table
+WHERE Manager=ID;
+```
+
+### INNER and FULL Joins
+* INNER JOIN selects only matching left and right table rows.
+* FULL JOIN selects all left and right table rows, regardless of match
+* In a FULL JOIN result table, unmatched left table rows appear with NULL values in right table columns, and vice versa.
+
+The join clause appears between a FROM clause and an ON clause:
+
+The FROM clause specifies the left table.
+The INNER JOIN or FULL JOIN clause specifies the right table.
+The ON clause specifies the join columns.
+An optional WHERE clause follows the ON clause.
+
+Join clauses are standard SQL syntax and supported by most relational databases. MySQL supports INNER JOIN but not FULL JOIN. For details of MySQL join syntax, see the link in 'Exploring further' below.
+
+* INNER JOIN, no unmatched rows will show
+```sql
+SELECT Department.Name AS Team,
+       Employee.Name AS Supervisor
+FROM table1
+INNER JOIN table2
+ON Manager=ID;
+```
+
+* FULLJOIN, all unmatched rows will also show as NULL pairings if no match
+```sql
+SELECT Department.Name AS Team,
+       Employee.Name AS Supervisor
+FROM table1
+FULL JOIN table2
+ON Manager=ID;
+```
+
+#### LEFT and RIGHT Joins
+In some cases, the database user wants to see unmatched rows from either the left or right table, but not both. To enable these cases, relational databases support left and right joins:
+
+LEFT JOIN selects all left table rows, but only matching right table rows.
+RIGHT JOIN selects all right table rows, but only matching left table rows.
+An outer join is any join that selects unmatched rows, including left, right, and full joins.
+
+* EXample LEft join:
+* Result is LEFT_FIELD | NULL
+```sql
+SELECT Department.Name AS Team,
+       Employee.Name AS Supervisor
+FROM table1
+LEFT JOIN table2
+ON Manager=ID;
+```
+* EXample Rightjoin:
+* Result is NULL | RIGHT_FIELD
+```sql
+SELECT Department.Name AS Team,
+       Employee.Name AS Supervisor
+FROM table1
+RIGHT JOIN table2
+ON Manager=ID;
+```
+
+
