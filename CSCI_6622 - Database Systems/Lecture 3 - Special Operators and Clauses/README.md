@@ -328,4 +328,91 @@ RIGHT JOIN table2
 ON Manager=ID;
 ```
 
+#### Alternative joins UNION
+Inner joins can be written without the JOIN keyword. Outer joins can be written with a UNION keyword instead of a JOIN keyword. UNION combines the results of two SELECT clauses into one result table:
 
+For a left join, one SELECT returns matching rows and another returns unmatched left table rows (null results).
+
+For a right join, one SELECT returns matching rows and another returns unmatched right table rows (NUll results.
+
+For a full join, three SELECT clauses are necessary. One SELECT returns matching rows, another returns unmatched left table rows, and a third returns unmatched right table rows. The three results are merged with two UNION keywords.
+
+Use of the JOIN keyword is good practice.Join queries written with UNION are complex and difficult to understand. LEFT JOIN, RIGHT JOIN, and FULL JOIN clarify join behavior and simplify queries.
+
+```sql
+SELECT Department.Name AS Team,
+       Employee.Name AS Supervisor
+FROM table1
+LEFT JOIN table2
+ON Manager=ID;
+```
+is the same as
+```sql
+SELECT Department.Name ,
+       Employee.Name 
+FROM table1, table2
+WHERE Manager=ID;
+UNION
+SELECT DEpartment.name, NULL
+FROM table 1
+WHERE Manager IS NULL
+  OR Manager NOT IN 
+     (SELECT ID
+       FROM Employee
+       WHERE ID IS NOT NULL);
+```
+
+ ### INNER JOIN 
+ * The query only returns rows for which faculty and department codes match. The inner join is written without a UNION keyword.
+Correct
+
+```sql
+SELECT FacultyName, DepartmentName 
+FROM Faculty, Department
+WHERE Faculty.Code = Department.Code;
+```
+
+### Left Join
+* The left table is Faculty. The first SELECT clause returns matching rows. The second SELECT clause returns unmatched Faculty rows. The UNION keyword merges matched and unmatched rows into one result table. Since Faculty.Code is a foreign key, OR Faculty.Code NOT IN
+   (SELECT Code FROM Department WHERE CODE IS NOT NULL)
+is unnecessary in the second WHERE clause.
+```sql
+SELECT FacultyName, DepartmentName 
+FROM Faculty, Department
+WHERE Faculty.Code = Department.Code
+UNION
+SELECT FacultyName, NULL
+FROM Faculty
+WHERE Faculty.Code IS NULL;
+```
+
+#### RIGHT JOIN
+* The right table is Department. The first SELECT clause returns matching rows. The second SELECT clause returns unmatched Department rows. The UNION keyword merges matched and unmatched rows into one result table. Since Code is the primary key of Department, OR Department.Code IS NULL is unnecessary in the second WHERE clause.
+```sql
+SELECT FacultyName, DepartmentName 
+FROM Faculty, Department
+WHERE Faculty.Code = Department.Code
+UNION
+SELECT NULL, DepartmentName
+FROM Department
+WHERE Department.Code NOT IN
+   (SELECT Code FROM Faculty WHERE Code IS NOT NULL);
+```
+
+#### FULL JOIN
+* The first SELECT clause returns matching rows, the second returns unmatched Faculty rows, and the third returns unmatched Department rows. The UNION keyword merges matched and unmatched rows into one result table. Since Department.Code is a primary key and Faculty.Code is a foreign key, the second and third WHERE clauses are simplified.
+  
+```sql
+SELECT FacultyName, DepartmentName 
+FROM Faculty, Department
+WHERE Faculty.Code = Department.Code
+UNION
+SELECT FacultyName, NULL
+FROM Faculty
+WHERE  Faculty.Code IS NULL
+UNION
+SELECT NULL, DepartmentName
+FROM Department
+WHERE Department.Code NOT IN 
+   (SELECT Code FROM Faculty WHERE CODE IS NOT NULL);
+```
