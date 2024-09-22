@@ -141,6 +141,7 @@ CREATE TABLE Horse (
     Breed VARCHAR(20) CHECK (Breed IN('Egyptian Arab', 'Holsteiner', 'Quarter Horse', 'Paint', 'Saddlebred')),
     Height DECIMAL(3,1) CHECK (Height >=10.0 AND Height <=20.0),
     BirthDate DATE CHECK (BirthDate >= '2015-01-01'),
+    Email VARCHAR(20) UNIQUE, 
     PRIMARY KEY (ID)
 );
 
