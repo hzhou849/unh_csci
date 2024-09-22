@@ -424,6 +424,8 @@ WHERE Department.Code NOT IN
 * A subquery, sometimes called a nested query or inner query, is a query within another SQL query. The subquery is typically used in a SELECT statement's WHERE clause to return data to the outer query and restrict the selected results. The subquery is placed inside parentheses ().
 *  The out SELECT statement uses a subquery to determine which language are used by a larger percentage of a country's population than Aruba's official language
 *  Inner subquery is executed fist to get back the result to compare to the outer query ie. 5.3%
+*  The subquery selects returns multiple values, but the outer query can only compare Percentage with a single value. Subqueries that produce more than one value or row are typically used with the IN operator in an outer query.
+  
 ```sql
 SELECT  Language, Percentage
 FROM T1_CountryLanguage
@@ -462,4 +464,123 @@ WHERE ReleaseYear >
    WHERE ID = 800
    )
 ORDER BY ReleaseYear;
+```
+
+#### 3.6.4 Correlated subqueries
+* A subquery is correlated when the subquery's WHERE clause references a column from the outer query
+* The rows selected depend on what row is currently being examined by the outer query.
+
+* Outer  query selecs rows from the City table. As each city row is selected, the subquery finds the average population based on the grouped countryCode and returns it for comparison with the outside query
+```sql
+SELECT Name, CountryCode, Population
+FROM CITY C_Alias
+WHERE Population >
+    (SELECT AVG(Population)
+     FROM City
+     WHERE CountryCode = C_Alias.CountryCode);
+```
+
+#### 3.6.7 Exists operator
+* Correlated subqueries commonly use the EXISTS operator, which returns TRUE if a subquery selects at least one row and FALSE if no rows are selected.
+*  The NOT EXISTS operator returns TRUE if a subquery selects no rows and FALSE if at least one row is selected.
+*  This means the EXIST clause is ```TRUE``` in the outer query so any country code from the inner query that matches will be returned
+  
+```sql
+SELECT Name, CountryCode
+FROM City C_alias
+WHERE EXIST
+    (SELECT *
+    FROM CountryLanguage
+    WHERE CountryCode = c_alias.CountryCode AND Percentage > 97);
+```
+
+### Example subquery with EXISTS
+* The given SQL creates an Album and Song tables and inserts some albums and songs. Each song is associated with an album.
+
+* The SELECT statement selects all albums with three or more songs. Run the query and verify the result table shows just the albums Saturday Night Fever and 21.
+
+* Modify the GROUP BY clause to select albums with three or more songs by the same artist. Run the query and verify the result table shows just the album 21.
+```sql
+CREATE TABLE Album (
+  ID INT,
+  Title VARCHAR(60),
+  ReleaseYear INT,
+  PRIMARY KEY (ID)
+);
+
+INSERT INTO Album VALUES
+  (1, 'Saturday Night Fever', 1977),
+  (2, 'Born in the U.S.A.', 1984),
+  (3, 'Supernatural', 1999),
+  (4, '21', 2011);
+
+CREATE TABLE Song (
+  ID INT,
+  Title VARCHAR(60),
+  Artist VARCHAR(60),
+  AlbumID INT,
+  PRIMARY KEY (ID),
+  FOREIGN KEY (AlbumID) REFERENCES Album(ID)
+);
+
+INSERT INTO Song VALUES
+  (100, 'Stayin\' Alive', 'Bee Gees', 1),
+  (101, 'More Than a Woman', 'Bee Gees', 1),
+  (102, 'If I Can\'t Have You', 'Yvonne Elliman', 1),
+  (200, 'Dancing in the Dark', 'Bruce Springsteen', 2),
+  (201, 'Glory Days', 'Bruce Springsteen', 2),
+  (300, 'Smooth', 'Santana', 3),
+  (400, 'Rolling in the Deep', 'Adele', 4),
+  (401, 'Someone Like You', 'Adele', 4),
+  (402, 'Set Fire to the Rain', 'Adele', 4),
+  (403, 'Rumor Has It', 'Adele', 4);
+
+SELECT *
+FROM Album
+WHERE EXISTS 
+  (SELECT COUNT(*)
+   FROM Song
+   WHERE AlbumID = Album.ID 
+   GROUP BY AlbumID
+   HAVING COUNT(*) >=3);
+```
+
+##### 3.6.9 Flattening Subqueries
+* Many subqueries can be rewritten as a join. Most databases optimize a subquery and outer query separately, whereas joins are optimized in one pass. So joins are usually faster and preferred when performance is a concern.
+
+* Replacing a subquery with an equivalent join is called flattening a query. The criteria for flattening subqueries are complex and depend on the SQL implementation in each database system. Most subqueries that follow IN or EXISTS, or return a single value, can be flattened. Most subqueries that follow NOT EXISTS or contain a GROUP BY clause cannot be flattened.
+
+The following steps are a first pass at flattening a query:
+
+1. Retain the outer query SELECT, FROM, GROUP BY, HAVING, and ORDER BY clauses.
+
+2. Add INNER JOIN clauses for each subquery table.
+
+3. Move comparisons between subquery and outer query columns to ON clauses.
+
+4. Add a WHERE clause with the remaining expressions in the subquery and outer query WHERE clauses.
+
+5. If necessary, remove duplicate rows with SELECT DISTINCT.
+
+After this first pass, test the flattened query and adjust to achieve the correct result. Verify that the original and flattened queries are equivalent against a variety of data.
+
+* Example this is written with Subqueries method
+
+```sql
+SELECT Name
+FROM Country
+WHERE Code IN
+    (SELECT CountryCode
+    FROM City
+    WHERE Population > 1000000
+    );
+```
+
+* Example of using INNER JOIN to flatten the query. THis will yeild the same results
+*  Need to use the ```DISTINCT``` operator to eliminate duplicate rows
+```sql
+SELECT DISTINCT Name
+FROM Country
+INNER JOIN City ON Code = CountryCode
+WHERE Population > 1000000;
 ```
