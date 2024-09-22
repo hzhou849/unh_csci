@@ -293,7 +293,12 @@ FALSE
 
 ## Primary Keys / COmposite keys
 * Primary key should be unique within the table
-* if the primary key alone cannont be enough of a unique identifier (as foreign key) you may required a second key to make the records unique. 
+* if the primary key alone cannont be enough of a unique identifier (as foreign key) you may required a second key to make the records unique.
+```sql
+ID INT, 
+Email VARCHAR(20) UNIQUE, 
+PRIMARY KEY (ID, email)
+```
 
 
 ## Foreign Keys
