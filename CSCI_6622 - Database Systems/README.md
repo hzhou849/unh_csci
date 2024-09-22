@@ -1,5 +1,17 @@
 # MYSQL Examples
 
+## Section 2
+* SELECT
+* Data types
+* Create tables
+* Show table
+* DELETE
+* TRUNCATE
+* UPDATE
+* SELECT STATEMENTS
+* Referential integrity actions
+* Constraints
+
 ## SELECT
 ```sql
   SELECT <col1>, <col2>.... <col_n>
