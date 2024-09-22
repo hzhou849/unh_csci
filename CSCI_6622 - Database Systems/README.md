@@ -133,6 +133,7 @@ END WHILE;
 * Breed - variable-length string with max 20 characters, must be one of the following: Egyptian Arab, Holsteiner, Quarter Horse, Paint, Saddlebred
 * Height - number with 3 significant digits and 1 decimal place, must be ≥ 10.0 and ≤ 20.0
 * BirthDate - date, must be ≥ Jan 1, 2015
+* Example of ```compound PRIMARY KEY''' where you have ID + email as the key 
 ```sql
 
 CREATE TABLE Horse (
@@ -142,7 +143,7 @@ CREATE TABLE Horse (
     Height DECIMAL(3,1) CHECK (Height >=10.0 AND Height <=20.0),
     BirthDate DATE CHECK (BirthDate >= '2015-01-01'),
     Email VARCHAR(20) UNIQUE, 
-    PRIMARY KEY (ID)
+    PRIMARY KEY (ID, email)
 );
 
 SHOW COLUMNS FROM Horse;
