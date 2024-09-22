@@ -430,3 +430,20 @@ DROP INDEX <constraint_name>
 --or 
 DROP CONSTRAINT <constraint_name>
 ```
+
+#### DEFAULT
+```sql
+CREATE TABLE Student(
+    ID SMALLINT UNSIGNED AUTO_INCREMENT,
+    State CHAR(2) NOT NULL DEFAULT 'TX',
+    Email VARCHAR(30 ) UNIQUE,
+
+    PRIMARY KEY (ID)
+);
+```
+
+* ALTER TABLE with new default values
+```sql
+ALTER TABLE Persons
+ALTER City SET DEFAULT 'Sandnes';
+```
