@@ -18,6 +18,9 @@
 * 3.3.8 Aggregate NULL values
 
 #### 3.4 Join
+#### 3.5 Equijoin, self-joins and cross-joins
+#### 3.6 Subqueries
+
 
 ## 3.1
 ### 3.1 IN operator
@@ -415,4 +418,48 @@ SELECT NULL, DepartmentName
 FROM Department
 WHERE Department.Code NOT IN 
    (SELECT Code FROM Faculty WHERE CODE IS NOT NULL);
+```
+
+## 3.6 Subqueries
+* A subquery, sometimes called a nested query or inner query, is a query within another SQL query. The subquery is typically used in a SELECT statement's WHERE clause to return data to the outer query and restrict the selected results. The subquery is placed inside parentheses ().
+*  The out SELECT statement uses a subquery to determine which language are used by a larger percentage of a country's population than Aruba's official language
+*  Inner subquery is executed fist to get back the result to compare to the outer query ie. 5.3%
+```sql
+SELECT  Language, Percentage
+FROM T1_CountryLanguage
+WHERE Percentage >
+    ( SELECT Percentage
+    FROM CountryLanguage
+    WHERE CountryCode = 'ABW' AND IsOfficial = 'T'
+    );
+```
+
+### Subquery broken down
+* In this search we want to find songs released after 1992
+  
+#### Query 1
+```sql
+SELECT *
+FROM Song
+WHERE ReleaseYear > 1992
+ORDER BY ReleaseYear;
+```
+* Query 2
+```sql
+-- returns ReleaseYear=1992
+SELECT ReleaseYear
+FROM Song 
+WHERE ID = 800;
+```
+
+* This combines Query1 + Query2 as a subquery
+```sql
+SELECT * 
+FROM SONG
+WHERE ReleaseYear > 
+   (SELECT ReleaseYear
+   FROM Song
+   WHERE ID = 800
+   )
+ORDER BY ReleaseYear;
 ```
