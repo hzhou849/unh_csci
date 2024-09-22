@@ -213,6 +213,11 @@ WHERE condition;
 DELETE FROM TableName 
 WHERE condition;
 ```
+EXAMPLE:
+```sql
+DELETE FROM <table>
+WHERE CustomerName='This_person';
+```
 
 ## Truncate 
 * Faster than delete because it doesn't log the deletion *CANNOT ROLLBACK!
