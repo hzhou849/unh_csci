@@ -127,7 +127,7 @@ END WHILE;
 ```
 
 ## Create Tables
-* EXample: Create table with constraint checks
+* EXample Full table1: Create table with constraint checks
 * --ID - integer with range 0 to 65535, auto increment, primary key
 * RegisteredName - variable-length string with max 15 characters, NULL not allowed
 * Breed - variable-length string with max 20 characters, must be one of the following: Egyptian Arab, Holsteiner, Quarter Horse, Paint, Saddlebred
@@ -148,6 +148,39 @@ CREATE TABLE Horse (
 
 SHOW COLUMNS FROM Horse;
 ```
+### Example2 table with foreign key and delete referencial integrity
+The database contains a Horse table, with columns:
+* ID - integer, primary key
+* RegisteredName - variable-length string
+
+The database contains a Student table, with columns:
+* ID - integer, primary key
+* FirstName - variable-length string
+* LastName - variable-length string
+
+Create a LessonSchedule table, with columns:
+* HorseID - integer with range 0 to 65535, not NULL
+* StudentID - integer with range 0 to 65535
+* LessonDateTime - date/time, not NULL
+* (HorseID, LessonDateTime) is the primary key
+
+Create the following foreign key constraints on LessonSchedule columns:
+* HorseID references Horse. When an ID is deleted from Horse, matching LessonSchedule rows are deleted.* StudentID references Student. When an ID is deleted from Student, matching StudentID's are set to NULL.
+```sql
+CREATE TABLE LessonSchedule (
+    HorseID SMALLINT UNSIGNED NOT NULL,
+    StudentID SMALLINT UNSIGNED,
+    LessonDateTime DATETIME NOT NULL,
+    PRIMARY KEY(HorseID, LessonDateTime),
+    FOREIGN KEY (HorseID) REFERENCES Horse (ID)
+        ON DELETE CASCADE,
+    FOREIGN KEY (StudentID) REFERENCES Student(ID)
+        ON DELETE SET NULL
+);
+
+SHOW COLUMNS FROM LessonSchedule;
+```
+
 * Example1: Simple table
 ```mysql
 -- Create column with auto-increment
