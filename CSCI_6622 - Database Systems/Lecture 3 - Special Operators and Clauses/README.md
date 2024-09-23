@@ -20,6 +20,7 @@
 #### 3.4 Join
 #### 3.5 Equijoin, self-joins and cross-joins
 #### 3.6 Subqueries
+#### 3.7 Complex Query example
 
 
 ## 3.1
@@ -584,3 +585,15 @@ FROM Country
 INNER JOIN City ON Code = CountryCode
 WHERE Population > 1000000;
 ```
+
+#### 3.7 Complex queries
+Writing a complex query
+Database users frequently create complex SQL queries that join data from multiple tables to answer business questions. Ex: A bookstore might ask, "Which books are selling best in summer?" and "What types of books do customers from the West Coast purchase?"
+
+To create a complex query, a database user can employ the following strategy:
+
+1. Examine a table diagram or other database summary to understand the tables and relationships.
+2. Identify the tables containing the necessary data to answer the question.
+3. Determine which columns should appear in the result table.
+4. Write a query that joins the tables using the table's primary and foreign keys.
+5. Break the problem into simple queries, writing one part of the query at a time.
