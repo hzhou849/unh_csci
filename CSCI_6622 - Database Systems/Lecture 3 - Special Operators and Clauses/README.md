@@ -586,7 +586,7 @@ INNER JOIN City ON Code = CountryCode
 WHERE Population > 1000000;
 ```
 
-#### 3.7 Complex queries
+#### 3.7 Complex queries - see 3.7.2 .sql example source file
 Writing a complex query
 Database users frequently create complex SQL queries that join data from multiple tables to answer business questions. Ex: A bookstore might ask, "Which books are selling best in summer?" and "What types of books do customers from the West Coast purchase?"
 
@@ -597,3 +597,22 @@ To create a complex query, a database user can employ the following strategy:
 3. Determine which columns should appear in the result table.
 4. Write a query that joins the tables using the table's primary and foreign keys.
 5. Break the problem into simple queries, writing one part of the query at a time.
+
+* Joining tables 
+```sql
+SELECT S.CustID, C.State, S.BookID, B.Title, S.Quantity, S.UnitPrice * S.Quantity 
+FROM Sale S
+INNER JOIN Customer C ON C.ID = S.CustID
+INNER JOIN Book AS B ON B.ID = S.BookID;
+```
+
+* Grouping by state and book
+```sql
+SELECT C.State, S.BookID, B.Title, SUM(S.Quantity) AS Quantity, SUM(S.UnitPrice * S.Quantity) AS TotalSales
+FROM Sale S
+INNER JOIN Customer C ON C.ID = S.CustID
+INNER JOIN Book AS B ON B.ID = S.BookID 
+GROUP BY C.State, S.BookID
+```
+
+
