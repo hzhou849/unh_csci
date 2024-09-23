@@ -22,6 +22,8 @@
 #### 3.6 Subqueries
 #### 3.7 Complex Query example
 #### 3.8 View Tables
+* 3.8.1 CREATE VIEW
+* 3.8.3 Querying Views
 
 
 ## 3.1
@@ -617,7 +619,7 @@ GROUP BY C.State, S.BookID
 ```
 
 ## 3.8 View Tables
-
+#### 3.8.1 CREATE VIEW
  Views restructure table columns and data types without changes to the underlying database design.
 
 A view table is a table name associated with a SELECT statement, called the view query. The CREATE VIEW statement creates a view table and specifies the view name, query, and, optionally, column names. If column names are not specified, column names are the same as in the view query result table.
@@ -661,4 +663,59 @@ AS SELECT FacutlyName AS Professor, DepartmentName AS Assignment
    FROM Faculty, Department
    WHERE Faculty.Code = Department.Code AND Department.Code = 'MATH';
 ```
+
+#### 3.8.3 Querying Views
+* Basically, when creating a view (like above step) you can query that table name directly
+  but behind the scenes is actually using a merged query
+
+Department / Employee table
+| Code | DepartmentName | ManagerID | - | EmployeeID | EmployeeName | Salary |
+| ---- | -------------- | --------- | - | ---------- | ------------ | ------ |
+| 44 | Engineering | 2538 | | 2538 | Lisa Ellison | 45000 | 
+| 82 | Sales | 2538 | | 5384 | Sam Snead | 32000 |
+| 12 | Marketing | 6381 | | 6381 | Maria Rodriguez | 95000 | 
+| 99 | Technical Support | 6381 | 
+
+ManagerView
+| DepartmentName | ManagerName |
+| -------------- | ----------- |
+| Engineering | Lisa Ellison |
+| Sales | Lisa Ellison |
+| Marketing | Maria Rodriguez |
+| Technical Support | Maria Rodriguez |
+
+
+##### Create View
+```sql
+CREATE VIEW ManagerView
+AS SELECT DepartmentName, EmployeeName AS ManagerName
+   FROM Department, Employee
+   WHERE ManagerID = EmployeeID;
+```
+##### User Query
+```sql
+SELECT ManagerName
+FROM ManagerView
+WHERE DepartmentName = 'Sales'
+```
+
+##### Merged Query, this is basically what is happening under the hood
+```sql
+SELECT Employee AS ManagerName
+FROM Department, Employee
+WHERE DepartmentName = 'Sales' AND ManagerID = EmployeeID;
+```
+Result: returns
+| ManagerName |
+| ----------- |
+| Lisa Ellison |
+
+* A table specified in the view query's FROM clause is called a base table.
+*  Unlike base table data, view table data is not normally stored. Instead, when a view table appears in an SQL statement, the view query is merged with the SQL query. The database executes the merged query against base tables.
+
+* In some databases, view data can be stored. A materialized view is a view for which data is stored at all times. Whenever a base table changes, the corresponding view tables can also change, so materialized views must be refreshed.
+*  To avoid the overhead of refreshing views, MySQL and many other databases do not support materialized views.
+
+##### Terminology
+* A view can be defined on other view tables when the view query FROM clause includes additional view tables. In this case, the additional view tables are not base tables. Base tables are always source tables, created as tables rather than as views.
 
