@@ -667,6 +667,15 @@ AS SELECT FacutlyName AS Professor, DepartmentName AS Assignment
 #### 3.8.3 Querying Views
 * Basically, when creating a view (like above step) you can query that table name directly
   but behind the scenes is actually using a merged query
+* A table specified in the view query's FROM clause is called a base table.
+*  Unlike base table data, view table data is not normally stored. Instead, when a view table appears in an SQL statement, the view query is merged with the SQL query. The database executes the merged query against base tables.
+
+* In some databases, view data can be stored. A materialized view is a view for which data is stored at all times. Whenever a base table changes, the corresponding view tables can also change, so materialized views must be refreshed.
+*  To avoid the overhead of refreshing views, MySQL and many other databases do not support materialized views.
+
+##### Terminology
+* A view can be defined on other view tables when the view query FROM clause includes additional view tables. In this case, the additional view tables are not base tables. Base tables are always source tables, created as tables rather than as views.
+
 
 Department / Employee table
 | Code | DepartmentName | ManagerID | - | EmployeeID | EmployeeName | Salary |
@@ -710,12 +719,4 @@ Result: returns
 | ----------- |
 | Lisa Ellison |
 
-* A table specified in the view query's FROM clause is called a base table.
-*  Unlike base table data, view table data is not normally stored. Instead, when a view table appears in an SQL statement, the view query is merged with the SQL query. The database executes the merged query against base tables.
-
-* In some databases, view data can be stored. A materialized view is a view for which data is stored at all times. Whenever a base table changes, the corresponding view tables can also change, so materialized views must be refreshed.
-*  To avoid the overhead of refreshing views, MySQL and many other databases do not support materialized views.
-
-##### Terminology
-* A view can be defined on other view tables when the view query FROM clause includes additional view tables. In this case, the additional view tables are not base tables. Base tables are always source tables, created as tables rather than as views.
 
