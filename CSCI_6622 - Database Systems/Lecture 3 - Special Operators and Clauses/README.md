@@ -627,6 +627,17 @@ A view table is a table name associated with a SELECT statement, called the view
 CREATE VIEW ViewName [ ( Column1, Column2, ... ) ]
 AS SelectStatement;
 ```
+```sql
+CREATE VIEW <NewViewName>
+AS SELECT <BaseCol1>, <BaseCol2>
+   FROM <BaseTable>
+
+-- example: 
+CREATE VIEW EmployeeView
+AS SELECT EmployeeID, EmployeeName
+   FROM Employee;
+```
+
 * Example: If we have 2 tables and want to create a custom view:
 * Notice EmployeeName column is renamed using ```AS``` to  ManagerName
 ```sql
@@ -667,11 +678,14 @@ AS SELECT FacutlyName AS Professor, DepartmentName AS Assignment
 #### 3.8.3 Querying Views
 * Basically, when creating a view (like above step) you can query that table name directly
   but behind the scenes is actually using a merged query
+* The database converts a user query against a view to a merged query and then executes the merged query. The performance is the same as if the user entered the merged query.
 * A table specified in the view query's FROM clause is called a base table.
 *  Unlike base table data, view table data is not normally stored. Instead, when a view table appears in an SQL statement, the view query is merged with the SQL query. The database executes the merged query against base tables.
 
+##### Materialized Views
 * In some databases, view data can be stored. A materialized view is a view for which data is stored at all times. Whenever a base table changes, the corresponding view tables can also change, so materialized views must be refreshed.
 *  To avoid the overhead of refreshing views, MySQL and many other databases do not support materialized views.
+*  Materialized views improve performance of SELECT statements that refer to the view. However, base table INSERTs, UPDATEs, and DELETEs must refresh materialized views and therefore are slower.
 
 ##### Terminology
 * A view can be defined on other view tables when the view query FROM clause includes additional view tables. In this case, the additional view tables are not base tables. Base tables are always source tables, created as tables rather than as views.
@@ -719,4 +733,26 @@ Result: returns
 | ----------- |
 | Lisa Ellison |
 
+##### Advantages of views
+View tables have several advantages:
 
+* Protect sensitive data. A table may contain sensitive data. Ex: The Employee table contains compensation columns such as Salary and Bonus. A view can exclude sensitive columns but include all other columns. Authorizing users and programmers to access the view but not the underlying table protects the sensitive data.
+
+* Save complex queries. Complex SELECT statements can be saved as a view. Database users can reference the view without writing the SELECT statement.
+
+* Save optimized queries. Often, the same result table can be generated with equivalent SELECT statements. Although the results of equivalent statements are the same, performance may vary. To ensure fast execution, the optimal statement can be saved as a view and distributed to database users.
+
+* For the above reasons, views are supported in all relational databases and are frequently created by database administrators. Database users need not be aware of the difference between view and base tables.
+
+* Example hide the salary from the user
+
+```sql
+CREATE VIEW <NewViewName>
+AS SELECT <BaseCol1>, <BaseCol2>
+   FROM <BaseTable>
+
+-- example: 
+CREATE VIEW EmployeeView
+AS SELECT EmployeeID, EmployeeName
+   FROM Employee;
+```
