@@ -21,6 +21,7 @@
 #### 3.5 Equijoin, self-joins and cross-joins
 #### 3.6 Subqueries
 #### 3.7 Complex Query example
+#### 3.8 View Tables
 
 
 ## 3.1
@@ -615,4 +616,49 @@ INNER JOIN Book AS B ON B.ID = S.BookID
 GROUP BY C.State, S.BookID
 ```
 
+## 3.8 View Tables
+
+ Views restructure table columns and data types without changes to the underlying database design.
+
+A view table is a table name associated with a SELECT statement, called the view query. The CREATE VIEW statement creates a view table and specifies the view name, query, and, optionally, column names. If column names are not specified, column names are the same as in the view query result table.
+```sql
+CREATE VIEW ViewName [ ( Column1, Column2, ... ) ]
+AS SelectStatement;
+```
+* Example: If we have 2 tables and want to create a custom view:
+* Notice EmployeeName column is renamed using ```AS``` to  ManagerName
+```sql
+CREATE VIEW ManagerView
+AS SELECT DepartmentName, EmployeeName AS ManagerName
+    FROM Department, Employee
+    WHERE ManagerID = EmployeeID;
+```
+
+* Example 3: Create a new view ```MathFacultyView``` find all professor teaching math
+Faculty/Department table
+
+| ID | FaultyName | Code | - | Dept.Code | Dept.DeptName |
+| -- | ---------- | ---- | - | --------- | ------------- |
+| 1 | Grayson | ART |   | ART | Art Department | 
+| 2 | Wayne | ART |   | COMP | Computer Science Dept | 
+| 3 | Start | COMP |   | ENG | English Dept | 
+| 4 | Parker | MATH |   | HIST | History Department |
+| 5 | Banner | MATH |   | MATH | Math Dept |
+| 6 | Quinn | MATH |
+| 7 | Grey | NULL | 
+
+MathFacultyView
+| Professor | Assignment |
+| --------- | ---------- |
+| Parker | Math Department |
+| Banner | Math Department |
+| Quinn | Math Department |
+
+Solution:
+```sql
+CREATE VIEW MathFacultyView
+AS SELECT FacutlyName AS Professor, DepartmentName AS Assignment
+   FROM Faculty, Department
+   WHERE Faculty.Code = Department.Code AND Department.Code = 'MATH';
+```
 
