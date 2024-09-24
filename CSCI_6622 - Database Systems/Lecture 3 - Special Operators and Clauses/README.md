@@ -690,6 +690,15 @@ AS SELECT FacutlyName AS Professor, DepartmentName AS Assignment
    FROM Faculty, Department
    WHERE Faculty.Code = Department.Code AND Department.Code = 'MATH';
 ```
+* EXample: Query from 2 tables using ```INNER JOIN``` to link ID from both base tables
+  
+```sql
+CREATE VIEW CountryGeography
+AS SELECT Name, Population, Continent
+   FROM Country
+   INNER JOIN Geography
+   ON ISOCode2 = ID;
+```
 
 #### 3.8.3 Querying Views
 * Basically, when creating a view (like above step) you can query that table name directly
