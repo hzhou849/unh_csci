@@ -24,6 +24,7 @@
 #### 3.8 View Tables
 * 3.8.1 CREATE VIEW
 * 3.8.3 Querying Views
+* 3.8.9 WITH CHECK
 
 
 ## 3.1
@@ -770,4 +771,34 @@ AS SELECT <BaseCol1>, <BaseCol2>
 CREATE VIEW EmployeeView
 AS SELECT EmployeeID, EmployeeName
    FROM Employee;
+```
+#### 3.8.6 - Inserting, Updating and deleting views
+View tables are commonly used in SELECT statements. Using views in INSERT, UPDATE, and DELETE statements is problematic:
+* The INSERT does not specify a primary key value. Since the base table primary key may not be null, the query is invalid.
+  
+* Primary keys. If a base table primary key does not appear in a view, an insert to the view generates a NULL primary key value. Since primary keys may not be NULL, the insert is not allowed.
+
+* Aggregate values. A view query may contain aggregate functions such as AVG() or SUM(). One aggregate value corresponds to many base table values. An update or insert to the view may create a new aggregate value, which must be converted to many base table values. The conversion is undefined, so the insert or update is not allowed.
+
+* Join views. In a join view, foreign keys of one base table may match primary keys of another. A delete from a view might delete foreign key rows only, or primary key rows only, or both the primary and foreign key rows. The effect of the join view delete is undefined and therefore not allowed.
+
+The above examples illustrate just a few of many potential problems of changing data in view tables. As a result, relational databases either disallow or severely limit view table inserts, updates, and deletes. Regardless of specific database limitations, inserts, updates, and deletes to views should be avoided. Views are best for reading data.
+
+* EXAMPLE: If the new view is a combined column alias, if you try to update the value sql will not know how to update the columns ie. If compensate is (Salary + bonus) if you try to update compensation, it wont know which value goes to salary or bonus, so it will be rejected
+
+
+#### 3.8.9 WITH CHECK OPTION
+* ```WITH CHECK OPTION``` prevents inserts and updates that do not satisfy the view quere ```WHERE``` clause.
+  
+```sql
+CREATE VIEW ViewName [ ( Column1, Column2, ... ) ]
+AS SelectStatement
+[ WITH CHECK OPTION ];
+
+--example
+CREATE VIEW <ViewName> (BaseCol1, BaseCol2...)
+AS SELECT *
+   FROM Employee
+   WHERE DepartmentCode = 51
+WITH CHECK OPTION;
 ```
