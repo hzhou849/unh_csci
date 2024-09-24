@@ -228,6 +228,21 @@ SELECT CountryCode, District, COUNT(*)
 FROM <table>
 GROUP BY CountryCode, District;
 ```
+
+* Example 2: Select year and total number of movies for each year
+| Movie |
+| ----- |
+| ID |
+| Title |
+| Genre |
+| RatingCode |
+| Year | 
+```sql
+SELECT Year, COUNT(*)
+FROM Movie
+WHERE Year > 2010
+GROUP BY Year; 
+```
 ### 3.3.5 HAVING Clause
 * Used with GROUP BY clause to filter group results
 ```sql
