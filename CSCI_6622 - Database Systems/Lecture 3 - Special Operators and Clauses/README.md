@@ -325,7 +325,7 @@ INNER JOIN Employee as Manager
 ON Emp.ManagerID = Manager.ID
 ORDER BY Emp.FirstName ASC;
 ```
-* Write a statement that selects lesson datetime, horse ID, and the student's first and last name. Order the results in ascending order by lesson datetime, then by horse ID. Unassigned lesson times (student ID is NULL) should not appear.
+* EXAMPLE 3:  Write a statement that selects lesson datetime, horse ID, and the student's first and last name. Order the results in ascending order by lesson datetime, then by horse ID. Unassigned lesson times (student ID is NULL) should not appear.
 ```sql
 SELECT LessonSchedule.LessonDateTime,
     LessonSchedule.HorseID,
@@ -336,6 +336,22 @@ INNER JOIN LessonSchedule
 ON LessonSchedule.StudentID = Student.ID
 ORDER BY LessonSchedule.LessonDateTime, LessonSchedule.HorseID ASC;
 ```
+
+* EXAMPLE 4: THREE-WAY INNER JOIN - Write a statement that selects a lesson schedule for Feb 1, 2020 with lesson datetimes, student first and last names, and horse registered names. Order the results in ascending order by lesson datetime, then by registered name. Unassigned lesson times (student ID is NULL) must appear in the results.
+
+Hint: Perform a three-way join on LessonSchedule, Student, and Horse. Use the DATE() function to convert datetime to date.
+```sql
+SELECT LessonSchedule.LessonDateTime, Student.FirstName, Student.LastName, Horse.RegisteredName
+FROM LessonSchedule
+LEFT JOIN Student
+ON LessonSchedule.StudentID = Student.ID
+INNER JOIN Horse
+ON LessonSchedule.HorseID = Horse.ID
+WHERE DATE(LessonSchedule.LessonDateTime) = '2020-02-01'
+ORDER BY TIME(LessonSchedule.LessonDateTime), Horse.RegisteredName ASC;
+```
+
+
 
 * FULLJOIN, all unmatched rows will also show as NULL pairings if no match
 ```sql
