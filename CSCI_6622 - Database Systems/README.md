@@ -261,6 +261,12 @@ UPDATE TableName
 SET Column1 = Value1, Column2 = Value2, ...
 WHERE condition;
 ```
+``sql
+UPDATE lab_practice_test.<table> 
+SET `release_year` = '2001' 
+WHERE (<primary_key_film_id> = '2');
+```
+
 
 ## Delete
 * Slower will track records, but is expensive
