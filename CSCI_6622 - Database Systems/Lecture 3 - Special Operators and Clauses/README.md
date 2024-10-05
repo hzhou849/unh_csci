@@ -316,6 +316,7 @@ INNER JOIN table2
 ON Manager=ID;
 ```
 
+
 * INNER JOIN Same talbe
 ```sql
 SELECT Emp.FirstName as Employee , Manager.FirstName as Manager
@@ -323,6 +324,17 @@ FROM Employee as Emp
 INNER JOIN Employee as Manager
 ON Emp.ManagerID = Manager.ID
 ORDER BY Emp.FirstName ASC;
+```
+* Write a statement that selects lesson datetime, horse ID, and the student's first and last name. Order the results in ascending order by lesson datetime, then by horse ID. Unassigned lesson times (student ID is NULL) should not appear.
+```sql
+SELECT LessonSchedule.LessonDateTime,
+    LessonSchedule.HorseID,
+    Student.FirstName,
+    Student.LastName
+FROM Student
+INNER JOIN LessonSchedule
+ON LessonSchedule.StudentID = Student.ID
+ORDER BY LessonSchedule.LessonDateTime, LessonSchedule.HorseID ASC;
 ```
 
 * FULLJOIN, all unmatched rows will also show as NULL pairings if no match
