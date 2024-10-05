@@ -185,7 +185,8 @@ SHOW COLUMNS FROM LessonSchedule;
 ```mysql
 -- Create column with auto-increment
 -- In MySQL, AUTO_INCREMENT may be applied only to primary key columns.
-CREATE TABLE Employee (
+USE <database_schema>
+CREATE TABLE IF NOT EXISTS Employee (
    ID        SMALLINT UNSIGNED AUTO_INCREMENT,
    Name      VARCHAR(60),
    BirthDate DATE,
