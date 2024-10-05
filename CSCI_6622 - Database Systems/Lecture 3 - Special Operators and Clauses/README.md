@@ -602,6 +602,39 @@ WHERE EXISTS
    HAVING COUNT(*) >=3);
 ```
 
+
+* EXAMPLE: COMBINED JOIN AND SUBQUERIES
+* Write a statement that:
+```
++---------------------+
+| Tables_in_zybooksdb |
++---------------------+
+| actor               |
+| film                |
+| film_actor          |
++---------------------+
+```
+```sql
+SELECT t1.last_name, t1.first_name, ROUND(AVG(t1.av1)) as average
+FROM (
+    SELECT actor.last_name, actor.first_name, film_actor.film_id, film.length as av1
+    FROM actor
+    INNER JOIN film_actor
+    ON actor.actor_id = film_actor.actor_id
+    JOIN film
+    ON film_actor.film_id = film.film_id
+) as t1
+GROUP BY t1.last_name, t1.first_name
+ORDER BY average DESC, t1.last_name ASC
+```
+
+Computes the average length of all films that each actor appears in.
+Rounds average length to the nearest minute and renames the result column average.
+Displays last name, first name, and average, in that order, for each actor.
+Sorts the result in descending order by average, then ascending order by last name.
+The statement should exclude films with no actors and actors that do not appear in films.
+
+
 ##### 3.6.9 Flattening Subqueries
 * Many subqueries can be rewritten as a join. Most databases optimize a subquery and outer query separately, whereas joins are optimized in one pass. So joins are usually faster and preferred when performance is a concern.
 
