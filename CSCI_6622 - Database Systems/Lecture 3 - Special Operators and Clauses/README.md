@@ -318,10 +318,11 @@ ON Manager=ID;
 
 * INNER JOIN Same talbe
 ```sql
-SELECT Emp.FirstName, Manager.FirstName
+SELECT Emp.FirstName as Employee , Manager.FirstName as Manager
 FROM Employee as Emp
 INNER JOIN Employee as Manager
-ON Emp.ManagerID = Manager.ID;
+ON Emp.ManagerID = Manager.ID
+ORDER BY Emp.FirstName ASC;
 ```
 
 * FULLJOIN, all unmatched rows will also show as NULL pairings if no match
