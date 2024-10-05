@@ -316,6 +316,14 @@ INNER JOIN table2
 ON Manager=ID;
 ```
 
+* INNER JOIN Same talbe
+```sql
+SELECT Emp.FirstName, Manager.FirstName
+FROM Employee as Emp
+INNER JOIN Employee as Manager
+ON Emp.ManagerID = Manager.ID;
+```
+
 * FULLJOIN, all unmatched rows will also show as NULL pairings if no match
 ```sql
 SELECT Department.Name AS Team,
