@@ -188,7 +188,7 @@ SHOW COLUMNS FROM LessonSchedule;
 USE <database_schema>
 CREATE TABLE IF NOT EXISTS Employee (
    ID        SMALLINT UNSIGNED AUTO_INCREMENT,
-   Name      VARCHAR(60),
+   Name      VARCHAR(60) CHECK (Name IN ('G', 'PG', 'PG-13', 'R')),,
    BirthDate DATE,
    Salary    DECIMAL(7,2),
    PRIMARY KEY (ID)
