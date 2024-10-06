@@ -59,3 +59,46 @@ ON Movie.RatingCode = Rating.Code;
 | Despicable Me               | 2010 | Parental Guidance Suggested |
 | Armed Response              | 2017 | Restricted                  |
 +-----------------------------+------+-----------------------------+
+
+/* Create script */
+/* Create movie database
+
+*/
+-- Create Movie database
+USE lab_3_11_movie_rating;
+
+/* Create and  Insert dataset into move table */
+CREATE TABLE movie (
+    Code            VARCHAR(15) NOT NULL,
+    Description     VARCHAR(64) NOT NULL,
+    PRIMARY KEY (Code)
+);
+
+INSERT INTO movie(Code, Description) VALUES
+('G'    ,  'General Audiences'           ),
+('PG'   ,  'Parental Guidance Suggested' ),
+('PG-13',  'Parents Strongly Cautioned'  ),
+('R'    ,  'Restricted'     );
+
+
+/* Create rating table and data set */
+CREATE TABLE rating (
+    ID              SMALLINT UNSIGNED NOT NULL,
+    Title           VARCHAR(32) NOT NULL,
+    Genre           VARCHAR(16) NOT NULL,
+    RatingCode      VARCHAR(8) NOT NULL,
+    Year            SMALLINT UNSIGNED NOT NULL,
+    PRIMARY KEY (ID)
+);
+
+INSERT INTO rating (ID, Title, Genre, RatingCode, Year) VALUES
+( 1,  'Becoming'                    , 'Documentary', 'PG'  ,  2020),
+( 2,  'Den of Thieves'              , 'Action'     , 'R'   ,  2019),
+( 3,  'Arctic Dogs'                 , 'Family'     , 'PG'  ,  2019),
+( 4,  'Dangerous Lies'              , 'Action'     , 'NULL',  2020),
+( 5,  'All Day and a Night'         , 'Drama'      , 'R'   ,  2020),
+( 6,  'Extraction'                  , 'Action'     , 'R'   ,  2020),
+( 7,  'Madagascar: Escape 2 Africa' , 'Family'     , 'PG'  ,  2008),
+( 8,  'The Willoughbys'             , 'Family'     , 'PG'  ,  2020),
+( 9,  'Despicable Me'               , 'Family'     , 'PG'  ,  2010),
+( 10, 'Armed Response'              , 'Action'     , 'R'   ,  2017); 
