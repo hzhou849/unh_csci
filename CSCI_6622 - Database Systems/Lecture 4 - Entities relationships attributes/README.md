@@ -87,6 +87,34 @@ Example: Attribute instance
 '324A21' - is an individual student record number. Individual values are attribute instances.
 ```
 
+### Database Design
+Complex databases are developed in three phases:
+
+1. __Analysis__ develops an entity-relationship model, capturing data requirements while ignoring implementation details.
+
+2. __Logical design__ converts the entity-relationship model into tables, columns, and keys for a particular database system.
+
+3. __Physical design__ adds indexes and specifies how tables are organized on storage media.
+
+Analysis is particularly important for complex databases with many users when documenting requirements is challenging. For small databases with just a few tables and users, analysis is less important and often omitted.
+Analysis and logical design steps are summarized in the table below. Although these steps are presented in sequence, in practice execution is not always sequential. Often an early step is revisited after a later step is completed.
+
+Physical design is dependent on specific index and table structures, which vary greatly across relational databases. Physical design is discussed elsewhere in this material.
+
+* Analysis steps:
+| Step | Name |
+| 1 | Discover entities, relationships and attributes |
+| 2 | Determine cardinality |
+| 3 | Distinguish strong and weak entities |
+| 4 | Create supertype and subtype entities |
+
+* Logical design steps
+| Step | Name |
+| 5 | Implement entitites |
+| 6 | Implement relationships |
+| 7 | Implement attributes |
+| 8 | Apply Normal Form |
+
 
 
 
