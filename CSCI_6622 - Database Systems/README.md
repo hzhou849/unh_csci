@@ -1,5 +1,15 @@
 # MYSQL Examples
 
+## Return MAX or MIN 
+* You will need to queary the same table twice, first to get the count tally and second to filter for max
+```sql
+SELECT  MAX(t1.Tally) as ct
+FROM (
+	SELECT  Year, COUNT(*) as Tally
+	FROM rating
+	GROUP BY Year) as t1
+```
+
 ## Section 2
 * SELECT
 * Data types
