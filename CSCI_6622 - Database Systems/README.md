@@ -154,6 +154,10 @@ CREATE TABLE Horse (
     BirthDate DATE CHECK (BirthDate >= '2015-01-01'),
     Email VARCHAR(20) UNIQUE, 
     PRIMARY KEY (ID, email)
+
+   /* To allow naming of a PRIMARY KEY constraint, and for defining a PRIMARY KEY constraint on multiple columns, use the following SQL syntax: */
+    -- you can do this primary-key multi-column with constraint
+    CONSTRAINT PK_Person PRIMARY KEY (ID,LastName)
 );
 
 SHOW COLUMNS FROM Horse;
