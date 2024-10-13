@@ -153,6 +153,36 @@ GAB   Mbete   F    13.8
 | ROUND(n, d)	| Returns n rounded to d decimal places	 | ```SELECT ROUND(16.25, 1);``` <br>returns 16.3 |
 | SQRT(n) |	Returns the square root of n	| ```SELECT SQRT(25);``` <br>returns 5 |
 
+* Example SUM: this will sum up all rows selected column field ie. height
+```sql
+SELECT SUM(<column_name>)
+FROM <table>;
+```
+* Example AVG:  and subquery this will calculate all rows of selected column ie. height
+```sql
+SELECT AVG(<column_name>)
+FROM <table>;
+
+-- To get  average within the same table and get horses greater than average height
+/*
++----+----------------+---------------+--------+------------+
+| ID | RegisteredName | Breed         | Height | BirthDate  |
++----+----------------+---------------+--------+------------+
+|  1 | Babe           | Quarter Horse |   15.3 | 2015-02-10 |
+|  2 | Independence   | Holsteiner    |   16.0 | 2011-03-13 |
+|  3 | Ellie          | Saddlebred    |   15.0 | 2016-12-22 |
+|  4 | Thunder        | Paint         |   16.1 | 2019-05-01 |
+|  5 | Alexis         | Egyptian Arab |   15.9 | 2018-02-01 |
+|  6 | Space Man      | Holsteiner    |   18.0 | 2017-09-21 |
++----+----------------+---------------+--------+------------+
+*/
+SELECT Horse.RegisteredName, Horse.Height
+FROM Horse
+WHERE Horse.Height > (
+    SELECT AVG(Height)
+    FROM Horse) 
+ORDER BY Horse.Height ASC;
+```
 * EXample: Compute Column X plus a random number rounded to 3 decimal places for all rows
 ```sql
 ROUND(X + RAND(), 3)
