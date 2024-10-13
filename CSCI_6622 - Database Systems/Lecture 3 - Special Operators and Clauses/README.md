@@ -294,7 +294,7 @@ WHERE Manager=ID;
 ```
 
 ### INNER and FULL Joins
-* INNER JOIN selects only matching left and right table rows.
+* INNER JOIN selects only matching left and right table rows (usually No --NULLS--).
 * FULL JOIN selects all left and right table rows, regardless of match
 * In a FULL JOIN result table, unmatched left table rows appear with NULL values in right table columns, and vice versa.
 
