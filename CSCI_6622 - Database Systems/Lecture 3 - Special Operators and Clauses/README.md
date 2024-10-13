@@ -634,7 +634,62 @@ WHERE EXISTS
 
 
 * EXAMPLE: COMBINED JOIN AND SUBQUERIES
+* The **TRICK** here is to create the **INSIDE** query first to calculate the sum/avg of each actor's film time, then create the **OUTER** query to select from the inner query's
+* The **INNER** query just returns a list of each actor and their lenght for each movie they appear in. It is not grouped or SUM-ed yet.
+* THe **OUTER** query then selects the length and calculates the AVG() from the inner table
+
+* The **INNER** query results - actors have muliple rows
+```
++-----------+------------+---------+--------+
+| last_name | first_name | film_id | length |
++-----------+------------+---------+--------+
+| BOLGER    | VAL        |      10 |     63 |
+| CRAWFORD  | RIP        |       9 |    114 |
+| DEAN      | JUDY       |      10 |     63 |
+| FAWCETT   | BOB        |       2 |     48 |
+| FAWCETT   | BOB        |       3 |     50 |
+| GABLE     | CHRISTIAN  |       1 |     86 |
+| GABLE     | CHRISTIAN  |       9 |    114 |
+| GUINESS   | PENELOPE   |       1 |     86 |
+| KILMER    | SANDRA     |       6 |    169 |
+| MARX      | ELVIS      |       9 |    114 |
+| PALTROW   | KIRSTEN    |       6 |    169 |
+| PECK      | SANDRA     |       1 |     86 |
+| STREEP    | CAMERON    |       3 |     50 |
+| TRACY     | LUCILLE    |       1 |     86 |
+| WAHLBERG  | NICK       |       3 |     50 |
+| WAYNE     | ALEC       |      10 |     63 |
++-----------+------------+---------+--------+
+```
+
+** the **OUTER** table selecting the AVG() from the above table
+```
++-----------+------------+---------+
+| last_name | first_name | average |
++-----------+------------+---------+
+| KILMER    | SANDRA     |     169 |
+| PALTROW   | KIRSTEN    |     169 |
+| CRAWFORD  | RIP        |     114 |
+| MARX      | ELVIS      |     114 |
+| GABLE     | CHRISTIAN  |     100 |
+| GUINESS   | PENELOPE   |      86 |
+| PECK      | SANDRA     |      86 |
+| TRACY     | LUCILLE    |      86 |
+| BOLGER    | VAL        |      63 |
+| DEAN      | JUDY       |      63 |
+| WAYNE     | ALEC       |      63 |
+| STREEP    | CAMERON    |      50 |
+| WAHLBERG  | NICK       |      50 |
+| FAWCETT   | BOB        |      49 |
++-----------+------------+---------+
+```
+
 * Write a statement that:
+* Computes the average length of all films that each actor appears in.
+Rounds average length to the nearest minute and renames the result column average.
+Displays last name, first name, and average, in that order, for each actor.
+Sorts the result in descending order by average, then ascending order by last name.
+The statement should exclude films with no actors and actors that do not appear in films.
 ```
 +---------------------+
 | Tables_in_zybooksdb |
@@ -658,11 +713,7 @@ GROUP BY t1.last_name, t1.first_name
 ORDER BY average DESC, t1.last_name ASC
 ```
 
-Computes the average length of all films that each actor appears in.
-Rounds average length to the nearest minute and renames the result column average.
-Displays last name, first name, and average, in that order, for each actor.
-Sorts the result in descending order by average, then ascending order by last name.
-The statement should exclude films with no actors and actors that do not appear in films.
+
 
 
 ##### 3.6.9 Flattening Subqueries
