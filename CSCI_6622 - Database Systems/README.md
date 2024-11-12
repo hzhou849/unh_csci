@@ -1,5 +1,9 @@
 # MYSQL Examples
-
+## Transactions
+* START TRANSACTION - flag this is the start of a transaction
+* COMMIT - commit changes. No rollback possible after this.
+* ROLLBACK - rolls back to start transaction.
+* 
 ## Return MAX or MIN 
 * You will need to queary the same table twice, first to get the count tally and second to filter for max
 ```sql
