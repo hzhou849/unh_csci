@@ -1,4 +1,32 @@
 ## PL SQL
+## 
+Figure 9.3.3: DECLARE statement.
+DECLARE VariableName Type [ DEFAULT Value ];
+
+Feedback?
+The SET statement assigns a variable with an expression. The variable must be declared prior to the SET statement, and the expression may be any valid SQL expression.
+
+Figure 9.3.4: SET statement.
+SET VariableName = <expression>;
+
+Feedback?
+The IF statement is similar to statements in other programming languages. The statement includes a logical expression and a statement list. If the expression is true, the statements in the list are executed. If the expression is false, the statements are ignored.
+
+IF statements have optional ELSEIF and ELSE clauses. ELSEIF and ELSE clauses are executed when the expression in the IF clause is false, as in other programming languages.
+
+Figure 9.3.5: IF statement.
+IF expression THEN statement list
+[ ELSEIF expression THEN statement list ]
+[ ELSE StatementList ]
+END IF;
+
+Feedback?
+The WHILE statement also includes an expression and a statement list. The statement list repeatedly executes as long as the expression is true. When the expression is false, the WHILE statement terminates, and the statement following END WHILE executes.
+
+Figure 9.3.6: WHILE statement.
+WHILE expression DO
+   statement list
+END WHILE;
 
 ## Cursors
 A cursor is a special variable that identifies an individual row of a result table. Cursors are necessary to process queries that return multiple rows. Cursor syntax in procedural SQL is similar to embedded SQL:
