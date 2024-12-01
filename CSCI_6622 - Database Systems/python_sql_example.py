@@ -18,14 +18,12 @@ def create_connection():
             database='zybooksdb'
         )
     except mysql.connector.Error as err:
-        if err == 1:
-            print ("error")
-        # if err.errno = errorCode.ER_ACCESS_DENIED_ERROR:
-        #     print('Invalid credentials')
-        # elif err.errno == errorcode.ER_BAD_DB_ERROR:
-        #     print('Database not found')
-        # else:
-        #     print('Cannot connect to database: ', err)
+        if err.errno = errorCode.ER_ACCESS_DENIED_ERROR:
+            print('Invalid credentials')
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print('Database not found')
+        else:
+            print('Cannot connect to database: ', err)
 
     return reservationConnection
 
