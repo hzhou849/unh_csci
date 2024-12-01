@@ -29,114 +29,185 @@ update
 * Revised: July 22, 2015 - Added date_modified and operator_name
 
 *****************************************************************/
--- validating data
-  i_count                    INTEGER;
-  i_new_xsequence        INTEGER;
-  
-
---Exception handling Variables
-   i_raise_msg    VARCHAR2 (1000 BYTE);
-   i_raise_code   INTEGER;
+   --Exception handling variables
+   stoo_error           INTEGER;
+   stoo_rowcnt          INTEGER;
+   stoo_errmsg          VARCHAR2 (1000 BYTE);
+   i_raise_msg          VARCHAR2 (1000 BYTE);
+   i_raise_code         INTEGER;
    
-   --Cursor (pulls data from QA staging table)
-  CURSOR major_cleanup_cur IS
-    SELECT id_number, xsequence, major_code1, major_code2  FROM advance.y_degree_upd_stg; 
-
+   --Internal variable
+   i_id_number          VARCHAR2(10 BYTE);
+   i_degree_year        VARCHAR2(4 BYTE);
+   
+   --Flags
+   f_skip               NUMBER;
+   f_found_degree       NUMBER;
+   f_update_made        NUMBER;
+   
+   CURSOR osgoode_cleanup
+   IS (SELECT decode(trim(y.ID_NUMBER), null, ' ', lpad(trim(y.ID_NUMBER), 10, '0')) as "ID_NUMBER"
+        FROM advance.y_temp_inc529116 y);
+        
 BEGIN
 
-    i_count := 0;
-    i_new_xsequence := 0;
+    i_raise_code := -20905;
     
-    --Restore the DEGREES table from backup
-    BEGIN
-		UPDATE advance.degrees
-		SET degrees.major_code1 = (select a.major_code1 from degrees_bak a
-						   where a.id_number =degrees.id_number
-						   and a.xsequence = degrees.xsequence),
+    FOR rec IN osgoode_cleanup 
+    LOOP
 
-		 degrees.major_code2 = (select a.major_code2 from degrees_bak a
-						   where a.id_number =degrees.id_number
-						   and a.xsequence = degrees.xsequence),
-							   
-		 degrees.school_code = (select a.school_code from degrees_bak a
-						   where a.id_number =degrees.id_number
-						   and a.xsequence = degrees.xsequence)                                
-
-
-		WHERE (degrees.id_number, degrees.xsequence) IN (SELECT id_number, xsequence FROM y_degree_upd_stg);
-
+        i_id_number := '';
+        f_skip := 0;
+        f_found_degree := 0;
+        f_update_made := 0;
         
-    EXCEPTION WHEN OTHERS THEN
-        i_raise_msg := 'advance.degrees ROLLBACK ERROR';
-        GOTO l_error;
-    END;
-    
-    
-    BEGIN
-    
-		FOR cur IN major_cleanup_cur LOOP
-		 
-		     --Check to see if entry is >1 
-		     SELECT COUNT (*)
-		     INTO i_count
-		     FROM advance.xcomment_bak a
-		     WHERE a.id_number = cur.id_number
-		     AND a.xsequence = (SELECT  MAX(xsequence) FROM xcomment_bak WHERE id_number = a.id_number  );
-		   
-		     --Get the xsequence from backup +1 ( the new entry we are going to delete)
-		     
-		     --0 = account was not found in XCOMMENT backup --> delete XSEQUENCE 1
-		     IF (i_count = 0) THEN
-			     BEGIN
-				  DELETE  FROM advance.xcomment
-				  WHERE xcomment.id_number = cur.id_number
-				  AND xcomment.xsequence = 1;
-			     END;
-		     
-		     ELSIF (i_count >0) THEN
-		         BEGIN
-				  SELECT MAX (xsequence) +1
-				  INTO i_new_xsequence
-				  FROM advance.xcomment_bak
-				  WHERE id_number = cur.id_number;
-			     
-				  DELETE FROM advance.xcomment
-				  WHERE xcomment.id_number = cur.id_number
-				  AND xcomment.xsequence = i_new_xsequence;
-			     
-			     
-			     EXCEPTION WHEN OTHERS THEN
-				  i_raise_msg :='advance.xcomment ROLLBACK ERROR'; 
-			  
-		     END;
-		     
-		 END IF;
+        --Check for record with empty class_year and pref_clear_year
+        BEGIN
+            SELECT en.id_number
+            INTO i_id_number
+            FROM advance.entity en, advance.entity_record_type ert
+            WHERE en.id_number = ert.id_number
+            AND en.id_number = rec.id_number
+            AND trim(en.pref_class_year) IS NULL
+            AND trim(ert.class_year) IS NULL
+            AND ert.record_type_code = 'AL';
+            
+            IF (SQL%ROWCOUNT <> 0) THEN
+                f_skip := 0;
+            END IF;
+        EXCEPTION
+            WHEN too_many_rows THEN
+                f_skip := 1;
+            WHEN no_data_found THEN
+                f_skip := 1;
+            WHEN others THEN
+                f_skip := 1;    
+        END;
         
+        --If found, check for degree record
+        IF f_skip = 0 THEN
+            BEGIN
+                SELECT d.degree_year
+                INTO i_degree_year
+                FROM advance.degrees d
+                WHERE d.id_number = rec.id_number
+                AND d.school_code = 'LW'
+                AND d.degree_level_code = 'U';
+                
+                IF (SQL%ROWCOUNT <> 0) THEN
+                    f_found_degree := 1;
+                END IF; 
+            EXCEPTION
+                WHEN too_many_rows THEN
+                    f_found_degree := 0;
+                WHEN no_data_found THEN
+                    f_found_degree := 0;
+                WHEN others THEN
+                    f_found_degree := 0;
+            END;
+            
+            --When matching degree is found, update degree year in ENTITY and ENTITY_RECORD_TYPE
+            IF f_found_degree = 1 THEN
+                BEGIN
+                    UPDATE advance.entity
+                        SET pref_class_year = i_degree_year,
+							date_modified = sysdate,
+							operator_name = 'YUBATCH'
+                    WHERE id_number = rec.id_number;
+                    
+                    IF (SQL%ROWCOUNT <> 0) THEN
+                        f_update_made := 1;
+                    END IF;
+                EXCEPTION
+                    WHEN others THEN
+                        f_update_made := 0;
+                        stoo_errmsg := SUBSTR (SQLERRM, 1, 1000);
+                        i_raise_msg := 'Entity update error :' || stoo_errmsg;
+                        GOTO l_error;
+                END;
+                
+                BEGIN
+                    UPDATE advance.entity_record_type
+                        SET class_year = i_degree_year,
+							date_modified = sysdate,
+							operator_name = 'YUBATCH'
+                    WHERE id_number = rec.id_number
+                    AND record_type_code = 'AL';
+                    
+                    IF (SQL%ROWCOUNT <> 0) THEN
+                        f_update_made := 1;
+                    END IF;
+                EXCEPTION
+                    WHEN others THEN
+                        f_update_made := 0;
+                        stoo_errmsg := SUBSTR (SQLERRM, 1, 1000);
+                        i_raise_msg := 'Entity Record Type update error :' || stoo_errmsg;
+                        GOTO l_error;
+                END;
+                
+                --When a successfull update has been made
+                IF f_update_made = 1 THEN
+                    BEGIN
+                        UPDATE advance.y_temp_inc529116
+                            SET status = 'UPDATED',
+                                timestamp = sysdate,
+                                message = 'Successfully updated'
+                        WHERE decode(trim(ID_NUMBER), null, ' ', lpad(trim(ID_NUMBER), 10, '0')) = rec.id_number;
+                    EXCEPTION
+                    WHEN others THEN
+                        stoo_errmsg := SUBSTR (SQLERRM, 1, 1000);
+                        i_raise_msg := 'Update error :' || stoo_errmsg;
+                        GOTO l_error;
+                    END;   
+                END IF;     
+            ELSE
+                BEGIN
+                        UPDATE advance.y_temp_inc529116
+                            SET status = 'EXCEPTION',
+                                timestamp = sysdate,
+                                message = 'Matching DEGREE record not found'
+                        WHERE decode(trim(ID_NUMBER), null, ' ', lpad(trim(ID_NUMBER), 10, '0')) = rec.id_number;
+                EXCEPTION
+                WHEN others THEN
+                    stoo_errmsg := SUBSTR (SQLERRM, 1, 1000);
+                    i_raise_msg := 'Update error :' || stoo_errmsg;
+                    GOTO l_error;
+                END;   
+            END IF;
+            
+        ELSE
+            BEGIN
+                        UPDATE advance.y_temp_inc529116
+                            SET status = 'EXCEPTION',
+                                timestamp = sysdate,
+                                message = 'CLASS_YEAR or PREF_CLASS_YEAR not blank'
+                        WHERE decode(trim(ID_NUMBER), null, ' ', lpad(trim(ID_NUMBER), 10, '0')) = rec.id_number;
+            EXCEPTION
+            WHEN others THEN
+                stoo_errmsg := SUBSTR (SQLERRM, 1, 1000);
+                i_raise_msg := 'Update error :' || stoo_errmsg;
+                GOTO l_error;
+            END;
+                
+        END IF;
+    END LOOP;
+    GOTO l_exit;
 
-    
-         END LOOP;   
-         GOTO l_exit;
-    END;
-    
+     <<l_error>>
+     ROLLBACK;
+     RAISE_APPLICATION_ERROR(i_raise_code, i_raise_msg);
+     RETURN;
 
-    
-
-GOTO l_exit;
-
-    <<l_error>>
-    ROLLBACK;
-    RAISE_APPLICATION_ERROR (i_raise_code, i_raise_msg);
-    RETURN;
-    
-    <<l_exit>>
-    COMMIT;
-    RETURN;
-
+     <<l_exit>>
+     COMMIT;
+     RETURN;
 END;
 /
 
 
+
 -----------------------------SCRIPT ENDS HERE------------------------------------------------------------------------
+
 set termout on
 
 set echo off feedback off
