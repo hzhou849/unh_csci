@@ -8,6 +8,27 @@ set termout off
 -----------------------------SCRIPT BEGINS HERE----------------------------------------------------------------------
 
 DECLARE
+/****************************************************************
+* Remedy: INC529116
+* Author: Zhou Howard
+* Date: June 1, 2015
+* Description: For the list of ID numbers found in the source document under this Remedy
+ID in the EBAS Remedy requests subfolder:
+
+If ENTITY.pref_class_yr = blank/null AND ENTITY_RECORD_TYPE.class.year =
+blank=null, make pref_class_yr and class_year = DEGREE.degree_year where
+DEGREE.school = LW and DEGREE.degree.type = "U".
+
+If pref class yr or class.yr is not blank/null, list in exception report,
+and perform no update
+If there is no DEGREE record where school = LW, , list in exception report,
+and perform no update
+If degree.type is blank/null, list in exception report, and perform no
+update
+
+* Revised: July 22, 2015 - Added date_modified and operator_name
+
+*****************************************************************/
 -- validating data
   i_count                    INTEGER;
   i_new_xsequence        INTEGER;
