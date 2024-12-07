@@ -1,4 +1,15 @@
 ## PL SQL
+
+## Print string with variables
+```sql
+-- Create and assign the variable
+SET @_currentSchema := (SELECT DATABASE());
+SELECT CONCAT('Selected Schema:',  @_currentSchema);
+```
+
+
+
+
 ## 
 Figure 9.3.3: DECLARE statement.
 DECLARE VariableName Type [ DEFAULT Value ];
