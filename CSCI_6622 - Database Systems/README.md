@@ -162,7 +162,7 @@ CREATE TABLE Horse (
    /* To allow naming of a PRIMARY KEY constraint, and for defining a PRIMARY KEY constraint on multiple columns, use the following SQL syntax: */
     -- you can do this primary-key multi-column with constraint
     CONSTRAINT PK_Person PRIMARY KEY (ID,LastName)
-);
+)AUTO_INCREMENT = 1001;
 
 SHOW COLUMNS FROM Horse;
 ```
@@ -200,6 +200,7 @@ SHOW COLUMNS FROM LessonSchedule;
 ```
 
 * Example1: Simple table
+* Create table with auto_incremenet, you can also set the range num  (ie 1001+)
 ```mysql
 -- Create column with auto-increment
 -- In MySQL, AUTO_INCREMENT may be applied only to primary key columns.
@@ -210,7 +211,9 @@ CREATE TABLE IF NOT EXISTS Employee (
    BirthDate DATE,
    Salary    DECIMAL(7,2),
    PRIMARY KEY (ID)
-);
+) AUTO_INCREMENT = 1001;
+-- Alternatively you can set it after
+ALTER TABLE my_table AUTO_INCREMENT = 200;
 
 SHOW TABLES;
 SHOW COLUMNS FROM <my_table>;
