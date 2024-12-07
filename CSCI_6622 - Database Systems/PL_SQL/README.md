@@ -19,6 +19,13 @@ SELECT IF(@_currentSchema LIKE 'final%',
 SELECT IF(@_currentSchema = '%final', 
     'statement is true', 
     'Statement is falseadfasdf');
+
+-- Example results variable
+SET @_result := (SELECT IF(@_currentSchema LIKE 'final%', 
+    'True' , 
+   'False')); 
+SELECT CONCAT ('RESULT: ', @_result);
+
 ```
 
 
