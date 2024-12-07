@@ -10,6 +10,12 @@ SELECT CONCAT('Selected Schema:',  @_currentSchema);
 ## IF Statement
 * SELECT IF(<condition>, <true>, <false>);
 ```
+-- Example true, with LIKE and wildcard matching %:
+SELECT IF(@_currentSchema LIKE 'final%', 
+    'true', 
+    'falseadfasdf'); 
+
+-- Example False:
 SELECT IF(@_currentSchema = '%final', 
     'statement is true', 
     'Statement is falseadfasdf');
