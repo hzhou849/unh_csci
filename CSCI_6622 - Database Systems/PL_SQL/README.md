@@ -7,7 +7,13 @@ SET @_currentSchema := (SELECT DATABASE());
 SELECT CONCAT('Selected Schema:',  @_currentSchema);
 ```
 
-
+## IF Statement
+* SELECT IF(<condition>, <true>, <false>);
+```
+SELECT IF(@_currentSchema = '%final', 
+    'statement is true', 
+    'Statement is falseadfasdf');
+```
 
 
 ## 
