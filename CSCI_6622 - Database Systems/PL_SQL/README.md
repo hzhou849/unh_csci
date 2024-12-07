@@ -8,8 +8,8 @@ SELECT CONCAT('Selected Schema:',  @_currentSchema);
 ```
 
 ## IF Statement
-* SELECT IF(<condition>, <true>, <false>);
-```
+```sql
+-- SELECT IF(<condition>, <true>, <false>);
 -- Example true, with LIKE and wildcard matching %:
 SELECT IF(@_currentSchema LIKE 'final%', 
     'true', 
