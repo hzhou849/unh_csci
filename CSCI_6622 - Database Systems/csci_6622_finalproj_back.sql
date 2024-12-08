@@ -121,7 +121,8 @@ INSERT INTO ShippingOrder (CustomerID, FromAddr, FromState, DestinationAddr, Des
 ;
 COMMIT;
 
--- Create Shipping Manifest
+/* ============================================================================================================== */
+-- CREATE Shipping Manifest
 DROP TABLE IF EXISTS ShippingManifest;
 START TRANSACTION;
 CREATE TABLE IF NOT EXISTS ShippingManifest(
@@ -130,6 +131,10 @@ CREATE TABLE IF NOT EXISTS ShippingManifest(
 
 )AUTO_INCREMENT=900;
 
+
+COMMIT;
+
+/* ============================================================================================================== */
 -- Create Package table
 DROP TABLE IF EXISTS Package;
 START TRANSACTION;
@@ -205,8 +210,8 @@ START TRANSACTION;
 CREATE TABLE Vehicle (
     VehicleID           SMALLINT NOT NULL,
     Carry_capacity      TINYINT DEFAULT 0,
-    LastCheckInState    VARCHAR (2),
-    AvailabilityStatus  VARCHAR(16),
+    LastCheckInState    VARCHAR (2) NOT NULL,
+    AvailabilityStatus  VARCHAR(16) DEFAULT 'AVAILABLE',
 
     PRIMARY KEY (VehicleID),
     CHECK ( LENGTH(LastCheckInState) = 2 ),
@@ -214,4 +219,34 @@ CREATE TABLE Vehicle (
  
 );
 
-Scheduled 
+INSERT INTO Vehicle( LastCheckInState, AvailabilityStatus) VALUES
+    (CT, 'AVAILABLE'),
+    (CT, 'AVAILABLE'), 
+    (MA, 'AVAILABLE'),
+    (MA, 'AVAILABLE'),
+    (NY, 'AVAILABLE'),
+    (NY, 'AVAILABLE'),
+    (CT, 'IN-REPAIR'),
+    (MA, 'IN-REPAIR')
+COMMIT;
+
+
+-- CREATE Scheduled_drive_session
+DROP TABLE IF EXISTS Scheduled_drive_session;
+START TRANSACTION;
+CREATE TABLE Scheduled_drive_session (
+    SessionID       SMALLINT NOT NULL AUTO_INCREMENT,
+    ManifestNum     SMALLINT UNSIGNED,
+    RouteID         SMALLINT UNSIGNED, -- should this be left blank?        
+    StartTime       DATETIME,
+    ArrivedTime     DATETIME DEFAULT NULL,
+    CompletedStatus BOOLEAN,
+
+    PRIMARY KEY (SessionID), 
+    FOREIGN KEY (ManifestNum) REFERENCES ShippingManifest(ManifestNum),
+    FOREIGN KEY (RouteID) REFERENCES Route(RoutID), 
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
+
+
+    
+);
