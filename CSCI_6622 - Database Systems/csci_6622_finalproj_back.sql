@@ -14,6 +14,8 @@ SET @_result := (SELECT IF(@_currentSchema LIKE 'final%',
    'False')); 
 SELECT CONCAT ('RESULT: ', @_result);
 
+
+
 CREATE SCHEMA IF NOT EXISTS final_project_planet_express;
 
 
@@ -38,7 +40,7 @@ CREATE TABLE IF NOT EXISTS Employee(
     CHECK (JobTitle IN ('COURIER', 'MANAGER', 'ADMIN'))
 ) AUTO_INCREMENT=1001;
 
-INSERT INTO Employee (EmployeeID, FirstName, LastName, JobTitle, PhoneExt, Email) VALUES
+INSERT INTO Employee (FirstName, LastName, JobTitle, PhoneExt, Email) VALUES
     ('Philip', 'Fry', 'COURIER', 101, 'pfry@planet_express.com'),
     ('Leela', 'Turanga', 'COURIER', 102, 'lturang@planet_express.com'),
     ('Bender', 'Rodriguez', 'COURIER', 103, 'bRodrig@planet_express.com'),
@@ -49,7 +51,9 @@ INSERT INTO Employee (EmployeeID, FirstName, LastName, JobTitle, PhoneExt, Email
 
 COMMIT;
 
+
 -- Create Customer Table
+DROP TABLE IF EXISTS Customer;
 START TRANSACTION;
 CREATE TABLE IF NOT EXISTS Customer(
     CustomerID      SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -59,11 +63,10 @@ CREATE TABLE IF NOT EXISTS Customer(
     Email           VARCHAR(64) NOT NULL,
     
     PRIMARY KEY (CustomerID),
-    UNIQUE(CustomerID, Email),
-
+    UNIQUE( Email),
     -- Check phone number is 7 characters
-    CHECK(LENGTH(Phone) = 7 )
-) AUTO_INCREMENT = 5001;
+    CHECK(LENGTH(Phone) = 8 )
+) AUTO_INCREMENT=1001;
 
 INSERT INTO Customer (FirstName, LastName, Phone, Email) VALUES
 ('Abner', 'Doubledeal', '827-1111', 'dealOrNoDeal@gmail.com'),
@@ -77,8 +80,6 @@ INSERT INTO Customer (FirstName, LastName, Phone, Email) VALUES
 ('Gary', 'Gygax', '820-3749', 'willGaryYouAllTheWay@dependableMovers.com'),
 ('Hank', 'Aaron', '218-7848', 'hankTheTank@mlb.com')
 ;
-
-COMMIT;
 
 -- Create Order table
 DROP TABLE IF EXISTS ShippingOrder;
@@ -121,20 +122,147 @@ INSERT INTO ShippingOrder (CustomerID, FromAddr, FromState, DestinationAddr, Des
 ;
 COMMIT;
 
+
+
+
+
+
+/* ============================================================================================================== */
+-- Create ROUTE table
+DROP TABLE IF EXISTS Route;
+START TRANSACTION;
+CREATE TABLE Route (
+    RouteID        SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Origin         VARCHAR(2) NOT NULL,
+    Destination    VARCHAR(2) NOT NULL,
+
+    PRIMARY KEY (RouteID),
+    CHECK ( LENGTH(Origin) = 2),
+    CHECK ( LENGTH(Destination) = 2)
+);
+
+INSERT INTO Route(Origin, Destination) VALUES
+    ('CT', 'NY'),
+    ('CT', 'MA'),
+    ('MA', 'CT'),
+    ('MA', 'NY'),
+    ('NY', 'CT'),
+    ('NY', 'MA');
+COMMIT;
+
+
+/* ============================================================================================================== */
+-- CREATE Vehicle Table
+DROP TABLE IF EXISTS Vehicle;
+START TRANSACTION;
+CREATE TABLE Vehicle (
+    VehicleID           SMALLINT NOT NULL AUTO_INCREMENT,
+    Carry_capacity      TINYINT DEFAULT 0,
+    LastCheckInState    VARCHAR (2) NOT NULL,
+    AvailabilityStatus  VARCHAR(16) DEFAULT 'AVAILABLE',
+
+    PRIMARY KEY (VehicleID),
+    CHECK ( LENGTH(LastCheckInState) = 2 ),
+    CHECK ( AvailabilityStatus IN('AVAILABLE', 'UNAVAILABLE', 'IN-REPAIR'))
+ 
+);
+
+INSERT INTO Vehicle( LastCheckInState, AvailabilityStatus) VALUES
+    ('CT', 'AVAILABLE'),
+    ('CT', 'AVAILABLE'), 
+    ('MA', 'AVAILABLE'),
+    ('MA', 'AVAILABLE'),
+    ('NY', 'AVAILABLE'),
+    ('NY', 'AVAILABLE'),
+    ('CT', 'IN-REPAIR'),
+    ('MA', 'IN-REPAIR')
+;
+COMMIT;
+
+
+/* ============================================================================================================== */
+-- CREATE Scheduled_drive_session
+DROP TABLE IF EXISTS Scheduled_drive_session;
+START TRANSACTION;
+CREATE TABLE Scheduled_drive_session (
+    SessionID       SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    -- ManifestNum     SMALLINT UNSIGNED DEFAULT NULL,
+    RouteID         SMALLINT UNSIGNED NOT NULL, 
+    VehicleID       SMALLINT UNSIGNED NOT NULL, 
+    EmployeeID      SMALLINT UNSIGNED NOT NULL,     
+    StartTime       DATETIME NOT NULL,
+    ArrivedTime     DATETIME DEFAULT NULL,
+    CompletedStatus BOOLEAN DEFAULT false,
+
+    PRIMARY KEY (SessionID), 
+    -- FOREIGN KEY (ManifestNum) REFERENCES Cargo_manifest(ManifestNum),
+    FOREIGN KEY (RouteID) REFERENCES Route(RouteID), 
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
+)AUTO_INCREMENT=801;
+COMMIT;
+
+-- Trigger to create Manifest when drive session is created
+DROP TRIGGER IF EXISTS trigger_manifest_insert;
+DELIMITER //
+CREATE TRIGGER trigger_manifest_insert 
+AFTER INSERT on Scheduled_drive_session
+FOR EACH ROW
+BEGIN
+    INSERT INTO Cargo_manifest (DriveSessionID, CreatedDate )
+    VALUES (new.SessionID,new.StartTime );
+END; 
+//
+DELIMITER ;
+
+-- -- Trigger to auto update package status to develivered if drive is completed
+-- DROP TRIGGER IF EXISTS trigger_update_delivery_status
+-- DELIMITER //
+-- CREATE TRIGGER trigger_update_delivery_status
+-- AFTER UPDATE on Scheduled_drive_session
+-- FOR EACH ROW
+-- BEGIN
+--     IF NEW.CompletedStatus = true THEN
+--         UPDATE Package
+--         SET PackageStatus = 'DELIVERED'
+--         WHERE Package.ManifestNum = view
+
+
+-- INSERT INTO Scheduled_drive_session( RouteID, VehicleID, EmployeeID, StartTime) VALUES
+--     (1, 1, 1001, CURRENT_TIMESTAMP()  );
+
 /* ============================================================================================================== */
 -- CREATE Shipping Manifest
-DROP TABLE IF EXISTS ShippingManifest;
+DROP TABLE IF EXISTS Cargo_manifest;
 START TRANSACTION;
-CREATE TABLE IF NOT EXISTS ShippingManifest(
-    ManifestNum     SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT
-    PRIMARY KEY (ManifestNum)
+CREATE TABLE IF NOT EXISTS Cargo_manifest(
+    ManifestNum     SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    DriveSessionID  SMALLINT UNSIGNED NOT NULL,
+    CreatedDate     DATETIME DEFAULT NULL,
+    PRIMARY KEY (ManifestNum),
+    FOREIGN KEY (DriveSessionID) REFERENCES Scheduled_drive_session(SessionID)
 
-)AUTO_INCREMENT=900;
-
+)AUTO_INCREMENT=100;
 
 COMMIT;
 
+-- NOT USING NOW
+-- -- TRIGGER to update the Scheduled_drive_session with the manifest number. 
+-- DELIMITER //
+-- CREATE TRIGGER trigger_update_manifest_scheduled_drive_session
+-- AFTER INSERT on Cargo_manifest
+-- FOR EACH ROW
+-- BEGIN
+--     UPDATE Scheduled_drive_session
+--     SET old.ManifestNum = new.ManifestNum
+--     WHERE Scheduled_drive_session.SessionID = new.DriveSessionID;
+-- END;
+-- //
+-- DELIMITER ;
+
+
 /* ============================================================================================================== */
+
+
 -- Create Package table
 DROP TABLE IF EXISTS Package;
 START TRANSACTION;
@@ -177,76 +305,12 @@ INSERT INTO Package (OrderNum, Length_inch, Width_inch, Height_inch, Weight_lbs)
     (333014, 10, 20, 10, 50), 
     (333015, 12, 12, 8, 13),
     (333015, 10, 15, 6, 12),
-    (333016, 9, 21, 12, 100),
+    (333016, 9, 21, 12, 100)
 
 COMMIT;
-
--- Create ROUTE table
-DROP TABLE IF EXISTS Route;
-START TRANSACTION;
-CREATE TABLE Route (
-    RouteID        SMALLINT NOT NULL AUTO_INCREMENT,
-    Origin         VARCHAR(2) NOT NULL,
-    Destination    VARCHAR(2) NOT NULL,
-
-    PRIMARY KEY (ROUTEID),
-    CHECK ( LENGTH(Origin) = 2),
-    CHECK ( LENGTH(Destination) = 2)
-);
-
-INSERT INTO Route(Origin, Destination) VALUES
-    (CT, NY),
-    (CT, MA),
-    (MA, CT),
-    (MA, NY),
-    (NY, CT),
-    (NY, MA), 
-COMMIT;
+/* ============================================================================================================== */
 
 
--- CREATE Vehicle Table
-DROP TABLE IF EXISTS Vehicle;
-START TRANSACTION;
-CREATE TABLE Vehicle (
-    VehicleID           SMALLINT NOT NULL,
-    Carry_capacity      TINYINT DEFAULT 0,
-    LastCheckInState    VARCHAR (2) NOT NULL,
-    AvailabilityStatus  VARCHAR(16) DEFAULT 'AVAILABLE',
-
-    PRIMARY KEY (VehicleID),
-    CHECK ( LENGTH(LastCheckInState) = 2 ),
-    CHECK ( AvailabilityStatus IN('AVAILABLE', 'UNAVAILABLE', 'IN-REPAIR'))
- 
-);
-
-INSERT INTO Vehicle( LastCheckInState, AvailabilityStatus) VALUES
-    (CT, 'AVAILABLE'),
-    (CT, 'AVAILABLE'), 
-    (MA, 'AVAILABLE'),
-    (MA, 'AVAILABLE'),
-    (NY, 'AVAILABLE'),
-    (NY, 'AVAILABLE'),
-    (CT, 'IN-REPAIR'),
-    (MA, 'IN-REPAIR')
-COMMIT;
 
 
--- CREATE Scheduled_drive_session
-DROP TABLE IF EXISTS Scheduled_drive_session;
-START TRANSACTION;
-CREATE TABLE Scheduled_drive_session (
-    SessionID       SMALLINT NOT NULL AUTO_INCREMENT,
-    ManifestNum     SMALLINT UNSIGNED,
-    RouteID         SMALLINT UNSIGNED, -- should this be left blank?        
-    StartTime       DATETIME,
-    ArrivedTime     DATETIME DEFAULT NULL,
-    CompletedStatus BOOLEAN,
 
-    PRIMARY KEY (SessionID), 
-    FOREIGN KEY (ManifestNum) REFERENCES ShippingManifest(ManifestNum),
-    FOREIGN KEY (RouteID) REFERENCES Route(RoutID), 
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
-
-
-    
-);
