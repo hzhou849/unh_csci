@@ -114,7 +114,7 @@ INSERT INTO ShippingOrder (CustomerID, FromAddr, FromState, DestinationAddr, Des
 (1001, '213 Sterling Ave', 'MA', '123 Saybrook Ave', 'CT',  '2024-09-02 15:23:00'),
 (1007, '78 Marshall Ave', 'NY', '384 RuralCity Rd', 'CT',   '2024-09-13 14:58:00'),
 (1009, '3809 Shoreline St', 'CT', '920 Easy Rd', 'NY',      '2024-10-12 09:22:00'),
-(1001, '213 Sterling Ave', 'MA', '123 Saybrook Ave', 'NY',  '2024-10-12 15:23:00'),
+(1001, '213 Sterling Ave', 'MA', '54th Ave', 'NY',          '2024-10-12 15:23:00'),
 (1010, '421 Longwarf Dr', 'NY', '809 Violet Ave', 'MA',     '2024-11-01 08:28:00'),
 (1004, '93 GreenHedge Dr', 'MA', '922 Melverne Ave', 'CT',  '2024-11-01 010:38:00'),
 (1005, '533 Indian Rd', 'MA', '438 Summer Ave', 'CT',       '2024-11-01 11:33:00'),
@@ -175,7 +175,9 @@ INSERT INTO Vehicle( LastCheckInState, AvailabilityStatus) VALUES
     ('NY', 'AVAILABLE'),
     ('NY', 'AVAILABLE'),
     ('CT', 'IN-REPAIR'),
-    ('MA', 'IN-REPAIR')
+    ('MA', 'IN-REPAIR'),
+    ('CT', 'AVAILABLE'),
+    ('MA', 'AVAILABLE')
 ;
 COMMIT;
 
@@ -226,9 +228,28 @@ DELIMITER ;
 --         SET PackageStatus = 'DELIVERED'
 --         WHERE Package.ManifestNum = view
 
+/* Query used to link Shipping order source/destination to route number:
+ * SELECT * FROM ShippingOrder, Route
+ * WHERE Route.origin = ShippingOrder.FromState
+ * AND DestinationState = Route.Destination
+ * ORDER BY Route.RouteID AND CreatedDate;
+*/
 
--- INSERT INTO Scheduled_drive_session( RouteID, VehicleID, EmployeeID, StartTime) VALUES
---     (1, 1, 1001, CURRENT_TIMESTAMP()  );
+INSERT INTO Scheduled_drive_session( RouteID, VehicleID, EmployeeID, StartTime) VALUES
+    (1, 1, 1001, '2024-07-01 18:00'),
+    (2, 2, 1002, '2024-07-01 18:01'),
+    (5, 5, 1003, '2024-07-01 18:02'),
+    (6, 6, 1004, '2024-07-03 18:15'),
+    (2, 1, 1001, '2024-07-03 18:20'),
+    (3, 3, 1002, '2024-08-12 17:10'),
+    (1, 2, 1002, '2024-08-12 17:12'),
+    (1, 1, 1003, '2024-09-02 17:34'),
+    (3, 4, 1004, '2024-09-02 17:48'),
+    (5, 9, 1001, '2024-09-13 17:08'),
+    (1, 2, 1002, '2024-10-12 17:23'),
+    (4, 10, 1003, '2024-10-12 17:30'),
+    (6, 5, 1004, '2024-11-01 17:02'),
+    (3, 3, 1001, '2024-11-01 17:12');
 
 /* ============================================================================================================== */
 -- CREATE Shipping Manifest
@@ -278,7 +299,7 @@ CREATE TABLE IF NOT EXISTS Package (
 
     PRIMARY KEY (PackageID),
     FOREIGN KEY (OrderNum) REFERENCES ShippingOrder(OrderNum),
-    FOREIGN KEY (Manifest) REFERENCES ShippingManifest(ManifestNum),
+    FOREIGN KEY (ManifestNum) REFERENCES Cargo_manifest(ManifestNum),
     CHECK( PackageStatus IN( 'PENDING', 'IN PROGRESS', 'DELIVERED'))
 
 ) AUTO_INCREMENT=111001;
@@ -305,10 +326,136 @@ INSERT INTO Package (OrderNum, Length_inch, Width_inch, Height_inch, Weight_lbs)
     (333014, 10, 20, 10, 50), 
     (333015, 12, 12, 8, 13),
     (333015, 10, 15, 6, 12),
-    (333016, 9, 21, 12, 100)
+    (333016, 9, 21, 12, 100);
 
 COMMIT;
-/* ============================================================================================================== */
+/* ==============================================================================================================
+ * Queries
+ * ============================================================================================================== 
+ */
+
+/* =========================================================================================================
+ * Part A) i)  Simple query
+ * Simple SELECT query to show orders 
+ */
+ -- MYSQL Query:
+SELECT * FROM ShippingOrder;
+
+/* =========================================================================================================
+ * ii) With ORDER BY
+ * Simple SELECT query using ORDER BY to sort orders by the CustomerID field.
+ *
+ * Example of result:
+ * +----------+------------+-----------+------------------+---------------------+---------+--------+-------------+
+ * | Ordernum | CustomerID | FromState | DestinationState | CreatedDate         | RouteId | Origin | Destination |
+ * +----------+------------+-----------+------------------+---------------------+---------+--------+-------------+
+ * |   333001 |       1006 | CT        | NY               | 2024-07-01 08:23:00 |       1 | CT     | NY          |
+ * |   333002 |       1004 | CT        | MA               | 2024-07-01 08:38:00 |       2 | CT     | MA          |
+ * |   333003 |       1008 | NY        | CT               | 2024-07-01 10:15:00 |       5 | NY     | CT          |
+ * |   333004 |       1008 | NY        | MA               | 2024-07-03 10:18:00 |       6 | NY     | MA          |
+ * |   333005 |       1003 | CT        | MA               | 2024-07-03 08:49:00 |       2 | CT     | MA          |
+ * |   333006 |       1005 | MA        | CT               | 2024-08-12 09:23:00 |       3 | MA     | CT          |
+ * |   333007 |       1006 | CT        | NY               | 2024-08-12 12:12:00 |       1 | CT     | NY          |
+ * |   333008 |       1002 | CT        | NY               | 2024-09-02 15:00:00 |       1 | CT     | NY          |
+ * |   333009 |       1001 | MA        | CT               | 2024-09-02 15:23:00 |       3 | MA     | CT          |
+ * |   333010 |       1007 | NY        | CT               | 2024-09-13 14:58:00 |       5 | NY     | CT          |
+ * |   333011 |       1009 | CT        | NY               | 2024-10-12 09:22:00 |       1 | CT     | NY          |
+ * |   333012 |       1001 | MA        | NY               | 2024-10-12 15:23:00 |       4 | MA     | NY          |
+ * |   333013 |       1010 | NY        | MA               | 2024-11-01 08:28:00 |       6 | NY     | MA          |
+ * |   333014 |       1004 | MA        | CT               | 2024-11-01 10:38:00 |       3 | MA     | CT          |
+ * |   333015 |       1005 | MA        | CT               | 2024-11-01 11:33:00 |       3 | MA     | CT          |
+ * |   333016 |       1001 | MA        | CT               | 2024-11-01 11:41:00 |       3 | MA     | CT          |
+ * +----------+------------+-----------+------------------+---------------------+---------+--------+-------------+
+ */
+
+-- MYSQL Query: 
+SELECT * FROM ShippingOrder, Route
+WHERE Route.origin = ShippingOrder.FromState
+AND DestinationState = Route.Destination
+ORDER BY Route.RouteID AND CreatedDate;
+
+ /* =========================================================================================================
+  * iii) DISTINCT
+  * Query will show all vehicle availability statuses, 
+  * using the Distinct will prevent duplicate rows and only show the type of available states.
+  * 
+  * Example: Without DISTINCT:          EXAMPLE with DISTINCT:
+  * +--------------------+              +--------------------+
+  * | AvailabilityStatus |              | AvailabilityStatus |
+  * +--------------------+              +--------------------+
+  * | AVAILABLE          |              | AVAILABLE          |
+  * | AVAILABLE          |              | IN-REPAIR          |
+  * | AVAILABLE          |              +--------------------+
+  * | AVAILABLE          |        
+  * | AVAILABLE          |        
+  * | AVAILABLE          |        
+  * | IN-REPAIR          |        
+  * | IN-REPAIR          |        
+  * | AVAILABLE          |        
+  * | AVAILABLE          |        
+  * +--------------------+        
+  */
+
+-- MYSQL Query:
+SELECT DISTINCT AvailabilityStatus FROM vehicle;
+
+/* ==========================================================================================================
+ * iv) AND / OR WHERE Clause
+ * This will shipping orders that originate from 'NY' or 'MA' that were created after Oct 01 2024
+ * 
+ *  * Example of result: 
+ * +----------+------------+------------------+-----------+---------------------+
+ *  | Ordernum | customerID | FromAddr         | FromState | CreatedDate         |
+ *  +----------+------------+------------------+-----------+---------------------+
+ *  |   333012 |       1001 | 213 Sterling Ave | MA        | 2024-10-12 15:23:00 |
+ *  |   333013 |       1010 | 421 Longwarf Dr  | NY        | 2024-11-01 08:28:00 |
+ *  |   333014 |       1004 | 93 GreenHedge Dr | MA        | 2024-11-01 10:38:00 |
+ *  |   333015 |       1005 | 533 Indian Rd    | MA        | 2024-11-01 11:33:00 |
+ *  |   333016 |       1001 | 213 Sterling Ave | MA        | 2024-11-01 11:41:00 |
+ *  +----------+------------+------------------+-----------+---------------------+
+ */
+SELECT Ordernum, customerID, FromAddr, FromState, CreatedDate FROM ShippingOrder
+WHERE FromState = 'MA' AND DATE(CreatedDate) >= '2024-10-01'
+OR FromState = 'NY' AND DATE(CreatedDate) >='2024-10-01';
+
+
+ 
+/* ==========================================================================================================
+ * v) Use of 'IN' operator
+ * This statement selects Filters the employee names for 'Philip', 'Hubert' and 'John'
+ * 
+ * Example of result:
+ * +------------+-----------+------------+----------+----------+---------------------------+
+ * | EmployeeID | FirstName | LastName   | JobTitle | PhoneExt | Email                     |
+ * +------------+-----------+------------+----------+----------+---------------------------+
+ * |       1001 | Philip    | Fry        | COURIER  |      101 | pfry@planet_express.com   |
+ * |       1004 | Hubert    | Farnsworth | MANAGER  |      104 | hFarns@planet_express.com |
+ * |       1007 | John      | Zoidberg   | ADMIN    |      107 | jzoid@planet_express.com  |
+ * +------------+-----------+------------+----------+----------+---------------------------+
+ */
+
+-- MYSQL Query:
+SELECT * FROM Employee
+WHERE FirstName IN('Philip', 'Hubert', 'John');
+
+
+/* ==========================================================================================================
+ * vi) Use of 'LIKE' operator:
+ * Search the employee records for an Email that contains the substring 'prfy%' in it. 
+ * 
+ * Example of result: 
+ * +------------+-----------+----------+----------+----------+-------------------------+
+ * | EmployeeID | FirstName | LastName | JobTitle | PhoneExt | Email                   |
+ * +------------+-----------+----------+----------+----------+-------------------------+
+ * |       1001 | Philip    | Fry      | COURIER  |      101 | pfry@planet_express.com |
+ * +------------+-----------+----------+----------+----------+-------------------------+
+ */
+
+ -- MYSQL Query:
+SELECT * FROM Employee 
+WHERE Email LIKE 'pfry%';
+
+
 
 
 
