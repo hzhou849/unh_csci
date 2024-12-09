@@ -242,6 +242,14 @@ WHERE <column> > 5;
 SELECT MIN(Salary)
 FROM <table>;
 
+--- More useful
+SELECT  * 
+FROM Package
+WHERE Weight_lbs = ( 
+				SELECT MIN(Weight_lbs)
+				FROM Package
+                )
+
 -- Return total AVG of all columns
 SELECT AVG(Salary)
 FROM <table>
