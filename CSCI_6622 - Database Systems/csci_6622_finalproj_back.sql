@@ -456,8 +456,385 @@ SELECT * FROM Employee
 WHERE Email LIKE 'pfry%';
 
 
+/* ==========================================================================================================
+ * B1) Aggregate Functions:
+ * Count the total number of orders made by customerID 
+ *
+ * Example of results:
+ * +------------+----------+
+ * | CustomerId | COUNT(*) |
+ * +------------+----------+
+ * |       1001 |        3 |
+ * |       1002 |        1 |
+ * |       1003 |        1 |
+ * |       1004 |        2 |
+ * |       1005 |        2 |
+ * |       1006 |        2 |
+ * |       1007 |        1 |
+ * |       1008 |        2 |
+ * |       1009 |        1 |
+ * |       1010 |        1 |
+ * +------------+----------+
+ */
+
+ -- MYSQL Query:
+SELECT CustomerId, COUNT(*) FROM ShippingOrder
+GROUP BY CustomerID;
+
+/* ==========================================================================================================
+/* B2)  Count the number of drive sessions made by employeeId:
+ * +------------+----------+
+ * | EmployeeID | COUNT(*) |
+ * +------------+----------+
+ * |       1001 |        4 |
+ * |       1002 |        4 |
+ * |       1003 |        3 |
+ * |       1004 |        3 |
+ * +------------+----------+
+ */
+
+ -- MYSQL Query:
+SELECT EmployeeID, COUNT(*) FROM scheduled_drive_session
+GROUP BY EmployeeID;
+
+
+/* ==========================================================================================================
+/* B3)  Find the package that has the least (MIN) weight shipped:
+ * 
+ * Example result:
+ * +-----------+----------+-------------+-------------+------------+-------------+------------+
+ * | PackageID | OrderNum | ManifestNum | Length_inch | Width_inch | Height_inch | Weight_lbs |
+ * +-----------+----------+-------------+-------------+------------+-------------+------------+
+ * |    111017 |   333012 |         111 |           9 |          8 |           2 |          5 |
+ * +-----------+----------+-------------+-------------+------------+-------------+------------+
+ *
+ */
+-- MYSQL Query:
+SELECT  * FROM Package
+WHERE Weight_lbs = ( SELECT MIN(Weight_lbs) FROM Package );
+
+
+/* ==========================================================================================================
+ * C1) SELF JOIN:
+ * Selects all the different the rows of customers that are living in the same state 
+ * Then ordred by customer ID numbers
+ */
+SELECT DISTINCT C1.CustomerID AS C1_ID, 
+C1.FromState AS C1_FromState, 
+C2.CustomerID AS C2_ID, C2.FromState AS C2_FromState
+FROM ShippingOrder AS C1, ShippingOrder AS C2
+WHERE C1.CustomerID != C2.CustomerID
+AND C1.FromState = C2.FromState
+ORDER BY C1.CustomerID ASC, C2.CustomerID ASC;
+
+
+/* ==========================================================================================================
+ * C2) INNER JOIN
+ * This query takes the Scheduled_drive_session table and INNER JOINS Cargo Manifest 
+ * on the sessionID/DriveSessionID to return the manifest number for each 
+ * scheduled drive session, then further joined again match the appropriate shippingOrders/Route
+ * table so we have a final view of SessionID from scheduled_drive_session table, 
+ * RouteID from Route table, ManifestNum from Cargo_manifest and OrderNum from shipping orders table 
+ * to link and cross-reference into one full shipment view
+ */
+SELECT t1.SessionID, t1.RouteID, t1.manifestNum, 
+t2.RouteId, t2. OrderNum, t2.Origin, t2.Destination, t2.createdDate
+FROM ( 
+	SELECT *
+    FROM scheduled_drive_session as S
+    INNER JOIN Cargo_manifest as c
+    ON S.SessionID = c.DriveSessionID 
+	) as t1
+ JOIN
+ ( SELECT * 
+   FROM Route, ShippingOrder 
+	WHERE Route.Origin = ShippingOrder.FromState 
+    AND Route.Destination = ShippingORder.DestinationState
+) AS t2
+ON t1.RouteID = t2.RouteID
+WHERE DATE(t1.StartTime) = DATE(t2.CreatedDate)
+ORDER BY t2.CreatedDate ASC, t2.orderNum ASC;
+
+
+/* ==========================================================================================================
+ * C3) FULL JOIN
+ * In this view, all customers and shipping orders that are related to them are shown 
+ */
+ SELECT Customer.FirstName AS FirstName, shippingOrder.OrderNum AS OrderNum
+FROM Customer
+LEFT JOIN ShippingOrder ON Customer.CustomerID = shippingorder.CustomerID
+UNION
+SELECT Customer.FirstName, shippingOrder.OrderNum
+FROM ShippingOrder
+RIGHT JOIN Customer ON Customer.CustomerID = shippingorder.CustomerID;
+
+
+/* ==========================================================================================================
+ * D) GROUP BY HAVING
+ */
+
+-- SELECT the orders that have 2 or more packages 
+SELECT OrderNum, COUNT(*)
+FROM Package
+GROUP BY OrderNum
+HAVING COUNT(*) >= 2;
+
+
+/* ==========================================================================================================
+ * E) VIEWs
+ */
+
+
+-- VIEW 1:
+
+
+
+-- VIEW 2:
+-- This view is to match the Route number to the shipping orders, based on matching the 
+-- Origin and destination from the route table to the shipping order's delivery.
+CREATE VIEW Route_shipping_view
+AS
+SELECT R.RouteID, R.Origin, R.Destination, SO.customerID, SO.FromState, SO.DestinationState  
+FROM Route as R, ShippingOrder as SO 
+WHERE R.Origin = SO.FromState 
+AND R.Destination = SO.DestinationState;
+
+-- To test the view
+SELECT * FROM Route_shipping_view;
+
+-- VIEW 3:
+-- Since combined shipment view from question C2) is a very complicated query, we will create a view 
+-- so that 'FullshipmentDetailView' can be easily called when needed
+	CREATE VIEW fullshipmentView
+    AS SELECT * FROM (
+	SELECT t1.SessionID, t1.RouteID, t1.manifestNum, 
+	 t2. OrderNum, t2.Origin, t2.Destination, t2.createdDate
+	FROM ( 
+		SELECT *
+		FROM scheduled_drive_session as S
+		INNER JOIN Cargo_manifest as c
+		ON S.SessionID = c.DriveSessionID 
+		) as t1
+	 JOIN
+	 ( SELECT * 
+	   FROM Route, ShippingOrder 
+		WHERE Route.Origin = ShippingOrder.FromState 
+		AND Route.Destination = ShippingORder.DestinationState
+	) AS t2
+	ON t1.RouteID = t2.RouteID
+	WHERE DATE(t1.StartTime) = DATE(t2.CreatedDate)
+	ORDER BY t2.CreatedDate ASC, t2.orderNum ASC
+ ) as v1;
+
+-- To test the view
+SELECT * FROM  fullshipmentView;
+
+
+
+/* ==========================================================================================================
+ *  F 1) TRIGGERS
+ * ThiS trigger will update the 
+ * Trigger Before:
+ * +-----------+----------+-------------+-------------+------------+-------------+------------+---------------+
+ * | PackageID | OrderNum | ManifestNum | Length_inch | Width_inch | Height_inch | Weight_lbs | PackageStatus |
+ * +-----------+----------+-------------+-------------+------------+-------------+------------+---------------+
+ * |    111001 |   333001 |         100 |          18 |         22 |         100 |         78 | PENDING       |
+ * |    111002 |   333001 |         100 |          22 |         10 |          20 |         38 | PENDING       |
+ * |    111003 |   333001 |         100 |         389 |         38 |          12 |        300 | PENDING       |
+ * 
+ * After an UPDATE to the shippingOrder table when OrderStatus is set to 'FULLFILLED':
+ * +-----------+----------+-------------+-------------+------------+-------------+------------+---------------+
+ * | PackageID | OrderNum | ManifestNum | Length_inch | Width_inch | Height_inch | Weight_lbs | PackageStatus |
+ * +-----------+----------+-------------+-------------+------------+-------------+------------+---------------+
+ * |    111001 |   333001 |         100 |          18 |         22 |         100 |         78 | DELIVERED     |
+ * |    111002 |   333001 |         100 |          22 |         10 |          20 |         38 | DELIVERED     |
+ * |    111003 |   333001 |         100 |         389 |         38 |          12 |        300 | DELIVERED     |
+ */
+
+DROP TRIGGER IF EXISTS update_package_status;
+
+DELIMITER //
+CREATE TRIGGER update_package_status 
+AFTER UPDATE ON shippingOrder
+FOR EACH ROW
+BEGIN
+    IF NEW.OrderStatus = 'FULLFILLED' THEN
+        UPDATE Package
+        SET Package.PackageStatus = 'DELIVERED'
+        WHERE Package.OrderNum = OLD.OrderNum;
+	END IF;
+END;
+//
+DELIMITER ;
+
+-- Test Trigger
+UPDATE shippingOrder
+SET 
+	OrderStatus = 'FULLFILLED',
+    CloseDate = '2024-07-01 12:00:00'
+    WHERE OrderNum = 333016;
+
+
+
+/* ==========================================================================================================
+ *  F-2) TRIGGERS
+ * Trigger2 to insert a new  Manifest record when drive session is created
+ */
+DROP TRIGGER IF EXISTS trigger_manifest_insert;
+DELIMITER //
+CREATE TRIGGER trigger_manifest_insert 
+AFTER INSERT on Scheduled_drive_session
+FOR EACH ROW
+BEGIN
+    INSERT INTO Cargo_manifest (DriveSessionID, CreatedDate )
+    VALUES (new.SessionID,new.StartTime );
+END; 
+//
+DELIMITER ;
+
+-- Test Trigger2
+INSERT INTO Scheduled_drive_session( RouteID, VehicleID, EmployeeID, StartTime) VALUES
+    (1, 1, 1001, CURRENT_TIMESTAMP()),
+
+
+
+/* ==========================================================================================================
+ *  F-3) TRIGGERS
+ *  Before Trigger:
+ * This triger updates the ShippingOrder table, which will inturn update the Packages table from the 
+ * subsequent trigger above. 
+ * 
+ * ShippingOrders Table before TRIGGER:
+ * +----------+------------+-----------------------+-----------+------------------+------------------+---------------------+---------------------+-------------+
+ *| OrderNum | CustomerID | FromAddr              | FromState | DestinationAddr  | DestinationState | CreatedDate         | CloseDate           | OrderStatus |
+ *+----------+------------+-----------------------+-----------+------------------+------------------+---------------------+---------------------+-------------+
+ *|   333003 |       1008 | 9829 Archer Ave       | NY        | 104 Whitney Ave  | CT               | 2024-07-01 10:15:00 | NULL                | PENDING     |
+ * 
+ * ShippingOrders Table after TRIGGER from update on 'Scheduled_drive_session' table Status is set to TRUE:
+ * +----------+------------+-----------------------+-----------+------------------+------------------+---------------------+---------------------+-------------+
+| OrderNum | CustomerID | FromAddr              | FromState | DestinationAddr  | DestinationState | CreatedDate         | CloseDate           | OrderStatus |
++----------+------------+-----------------------+-----------+------------------+------------------+---------------------+---------------------+-------------+
+|   333003 |       1008 | 9829 Archer Ave       | NY        | 104 Whitney Ave  | CT               | 2024-07-01 10:15:00 | 2024-07-01 22:29:00 | FULLFILLED  |
+ * 
+ */
+-- TRIGGER 3
+DROP TRIGGER IF EXISTS update_shipping_order_status;
+
+DELIMITER //
+CREATE TRIGGER update_shipping_order_status 
+AFTER UPDATE ON scheduled_drive_session
+FOR EACH ROW
+BEGIN
+    IF NEW.CompletedStatus = true THEN
+        UPDATE ShippingOrder
+        SET ShippingOrder.OrderStatus = 'FULLFILLED',
+        CloseDate = NEW.ArrivedTime
+        WHERE ShippingOrder.OrderNum = (
+            SELECT OrderNum FROM (
+            SELECT t2.OrderNum
+			FROM ( 
+				SELECT *
+				FROM scheduled_drive_session as S
+				INNER JOIN Cargo_manifest as c
+				ON S.SessionID = c.DriveSessionID 
+				) as t1
+			 JOIN
+			 ( SELECT * 
+			   FROM Route, ShippingOrder 
+				WHERE Route.Origin = ShippingOrder.FromState 
+				AND Route.Destination = ShippingORder.DestinationState
+			) AS t2
+			ON t1.RouteID = t2.RouteID
+			WHERE DATE(t1.StartTime) = DATE(t2.CreatedDate) AND t1.SessionID = OLD.SessionID
+			ORDER BY t2.CreatedDate ASC, t2.orderNum ASC
+            )as t3);
+	END IF;
+END;
+//
+DELIMITER ;
+
+-- To test TRIGGER 3 use SessionID where completion status is False
+UPDATE Scheduled_drive_session
+SET CompletedStatus = true,
+ArrivedTime = '2024-07-01 22:29:00'
+WHERE SessionID=804;
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ View 1) Customer to shipping order view
+ 2) route to driveSession etc..
+
+
+/* =================================================================================================== 
+ * Other Important helpful stuff 
+ * ==================================================================================================*/
+-- match shipping order to package ordernum
+Select * from shippingorder, package
+WHERE ShippingOrder.OrderNum = Package.OrderNum;
+
+
+-- final query
+
+SELECT t1.SessionID, t1.RouteID, t1.manifestNum, 
+t2.RouteId, t2. OrderNum, t2.Origin, t2.Destination, t2.createdDate
+FROM ( 
+	SELECT *
+    FROM scheduled_drive_session as S
+    INNER JOIN Cargo_manifest as c
+    ON S.SessionID = c.DriveSessionID 
+	) as t1
+ JOIN
+ ( SELECT * 
+   FROM Route, ShippingOrder 
+	WHERE Route.Origin = ShippingOrder.FromState 
+    AND Route.Destination = ShippingORder.DestinationState
+) AS t2
+ON t1.RouteID = t2.RouteID
+WHERE DATE(t1.StartTime) = DATE(t2.CreatedDate)
+ORDER BY t2.CreatedDate ASC, t2.orderNum ASC;
+
+
+-- Create view to -- Full join to get DriveSession, Cargo_manifest and Route to link together and get manifest list
+	CREATE VIEW fullshipmentView
+    AS SELECT * FROM (
+	SELECT t1.SessionID, t1.RouteID, t1.manifestNum, 
+	 t2. OrderNum, t2.Origin, t2.Destination, t2.createdDate
+	FROM ( 
+		SELECT *
+		FROM scheduled_drive_session as S
+		INNER JOIN Cargo_manifest as c
+		ON S.SessionID = c.DriveSessionID 
+		) as t1
+	 JOIN
+	 ( SELECT * 
+	   FROM Route, ShippingOrder 
+		WHERE Route.Origin = ShippingOrder.FromState 
+		AND Route.Destination = ShippingORder.DestinationState
+	) AS t2
+	ON t1.RouteID = t2.RouteID
+	WHERE DATE(t1.StartTime) = DATE(t2.CreatedDate)
+	ORDER BY t2.CreatedDate ASC, t2.orderNum ASC
+ ) as v1;
+
+ SELECT * FROM Package
+Join FUllshipmentview
+on FUllshipmentview.ordernum = package.ordernum;
