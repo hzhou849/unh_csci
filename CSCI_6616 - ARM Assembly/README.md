@@ -1,6 +1,44 @@
 ## ARM ASSEMBLY
 
+## Build/Compile
+
 ## Common commands
+### as compiler
+```sh
+# Building the object file
+as -o outputFile.o asmfile.s
+
+# Linking the object file to binary executable
+ld -o binaryExec outputFile.o
+```
+
+### Using GCC 
+```sh
+# If you are compiling a c file, you need to generate ASM file
+gcc –S –O0 main.c –o main.s
+
+# create the object file from main.s
+as –o main.o main.s
+
+# create the binary with debug symbols
+gcc –g –O0 main.c –o main
+```
+
+## GDB debug 
+```
+gdb main” and enter
+ Note the terminal output and at the gbd prompt
+ Type ‘h’ and examine the help available
+ Type ‘l’ and note the listing
+ Type ‘b 29’ and ‘r’ this will set a break point at line 29 and run to the break point
+ Type ‘i r’ to examine the registers
+ Type ‘c’ to continue the program
+ Finally type ‘q’ to exit gdb
+
+```
+
+
+
 
 ### MOV/MOVT/MVN
 * MOV is used to move from register to register
