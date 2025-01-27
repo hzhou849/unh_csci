@@ -6,6 +6,7 @@
 * MOV is used to move from register to register
 * MOV - Moves the least significant (lower half byte)
 * MOVT - Moves the MOST significant (TOP half byte)
+* MOVN - Move and perform logical NOT ~. (one's complement)
 Example:
 ```asm
 @ We want to load R2 with hex value 0x4F5D6E3A
