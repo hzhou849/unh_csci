@@ -12,6 +12,13 @@ as -o outputFile.o asmfile.s
 ld -o binaryExec outputFile.o
 ```
 
+## Object dump
+
+```sh
+# -s shows the contents of section dump
+objdump -s -d move_example
+```
+
 ### Using GCC 
 ```sh
 # If you are compiling a c file, you need to generate ASM file
