@@ -36,6 +36,13 @@ gcc –g –O0 –o main main.s
 ```
 
 ## GDB debug 
+| Shortcut | Description |
+| -------- | ----------- |
+| ```s``` | step next line of code |
+| ```b <line>``` | set breakpoint on line |
+| ```r``` | Run |
+| ```c``` | Continue |
+| ```h``` | help |
 ```
 gdb main” and enter
  Note the terminal output and at the gbd prompt
