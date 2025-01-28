@@ -15,6 +15,8 @@ ld -o binaryExec outputFile.o
 ### Using GCC 
 ```sh
 # If you are compiling a c file, you need to generate ASM file
+# -S generate assembly s file
+# -O0 set optimization to 0 so regsiters aren't altered.
 gcc –S –O0 main.c –o main.s
 
 # create the object file from main.s
