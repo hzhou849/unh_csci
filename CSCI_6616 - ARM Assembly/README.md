@@ -89,8 +89,11 @@ gcc –S –O0 main.c –o main.s
 # create the object file from main.s
 as –o main.o main.s
 
+#link
+gcc -o main main.o
+
 # create the binary with debug symbols
-gcc –g –O0 main.c –o main
+gcc –g –O0 –o main main.s
 ```
 
 ## GDB debug 
