@@ -21,7 +21,7 @@ ARM instruction format: |1110|001|1 101| 0| 0000| 0000 |0000 0000 0001|
 in binary: 1110|0001|1010|0000|0001|0000|0000|0010
 ARM: 1110|000|1101| 0| 0000|0001|0000 0000 0010
 1) COndition = E
-2) Operand type = 000
+2) Operand type = 000; means Operand is Register
 3) OPCODE  MOV = 1101
 4) Condition Code = 0
 5) Operand register 0000 N/A
@@ -30,10 +30,10 @@ ARM: 1110|000|1101| 0| 0000|0001|0000 0000 0010
 
 Example 3
 10098:       e3a07001        mov     r7, #1
-BINARY: 1110 0001 1010 0000 0111 0000 0000 0001
-ARM : 1110 000 1101 0 0000 0111 000000000001
+BINARY: 1110 0011 1010 0000 0111 0000 0000 0001
+ARM : 1110 001 1101 0 0000 0111 000000000001
 1) COndition = E
-2) Operand type = 000
+2) Operand type = 001; means operand is value #1
 3) OPCODE  MOV = 1101
 4) Condition Code = 0
 5) Operand register 0000 N/A
