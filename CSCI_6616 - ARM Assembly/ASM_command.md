@@ -7,4 +7,8 @@
 | ---- | ---------------|
 | Branching |           |
 | beq | branch on equal of previous comparison operation, relys on status reg flag | 
+| BNE | Branch not equal |
 | ble | Branch on less than |
+| bge | Branch greater or equal than|
+| blt | Branch LESS than |
+| bgt | Branch Greater than |
