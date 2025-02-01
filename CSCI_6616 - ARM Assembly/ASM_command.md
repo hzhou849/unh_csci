@@ -30,8 +30,14 @@ BEQ _start
   AND R6, #0xFF000000      @ Mask off high-order byte MSB
   LSR R6, #24              @ Logical shift right 24bit positions (0x000000FF)
 ```
-```EOR``` - Exclusive OR (1,0) (0,1)
-```ORR``` - Logical OR (1,0) (0,1), (0,0)
+```EOR``` - Exclusive OR (1,0) (0,1) only is true </br>
+```ORR``` - Logical OR (1,0) (0,1), (1,1) true </br>
+```BIC``` - Bit clear if Rs is 1 and Operand2 true to clear then 0. If operand2 is false, then dont' clear
+```asm
+x0 y0 = xBICy = 0
+x0 y1 = xBICy = 0 (permssion to clear y=1, but x is already 0)
+x1 y0 = xBICy = 1 (y=permission to clear if false)
+x1 y1 = xBICy = 0 (permission to clear y=1)
 ## If Then Else
 ```
 @ If R5 < 10 then else end if
