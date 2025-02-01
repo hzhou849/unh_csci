@@ -23,6 +23,29 @@ CMP R4, #45
 BEQ _start
 ```
 
+## Bitwise operators
+* Rd=Register Destination; Rs=Register Source; Operand2 is input number
+```AND Rd, Rs, Operand2``` - Logical AND Rs AND Operand2, put result in Rd
+```asm
+  AND R6, #0xFF000000      @ Mask off high-order byte MSB
+  LSR R6, #24              @ Logical shift right 24bit positions (0x000000FF)
+```
+```EOR``` - Exclusive OR (1,0) (0,1)
+```ORR``` - Logical OR (1,0) (0,1), (0,0)
+## If Then Else
+```
+@ If R5 < 10 then else end if
+  CMP R5, #10
+    BGE else_clause
+    < do stuff >
+    B endif
+
+else_clause:
+  < else statments >
+
+endif: <continue after the if/then/else>
+```
+
 ## Loops
 
 ### FOR loop
@@ -45,7 +68,9 @@ loop:
 ```
 
 ### While loops
+* 
 ```asm
+@ while X < 5...
 while_loop:
   CMP R4, #5      @ Our while condition if 5-R4 == GE 5?
   BGE loop_done   @ If CMP is >= 5, then we jump to loop_done
