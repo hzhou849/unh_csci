@@ -36,10 +36,21 @@ for_loop:
   BLE for_loop      @ If CMP subtract NE 0, then  R2 <= 10, so branch goto loop
 ```
 ### Reverse FOR loop
-```
+```asm
   MOV R2, #10      @ R2 
 loop:
   @ Using SUBS (subtract) instead of CMP, works the same way
   SUBS R2, #1      @ Increment R2 = R2-1
   BNE loop         @ Keep looping until R2
+```
+
+### While loops
+```asm
+while_loop:
+  CMP R4, #5      @ Our while condition if 5-R4 == GE 5?
+  BGE loop_done   @ If CMP is >= 5, then we jump to loop_done
+  @ perform task here
+  B  loop         @ Jump back to start of loop
+
+loop_done: @ whatever we want to do after while loop
 ```
