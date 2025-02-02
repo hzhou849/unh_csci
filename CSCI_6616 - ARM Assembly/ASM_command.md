@@ -12,6 +12,23 @@
 | bge | Branch greater or equal than|
 | blt | Branch LESS than |
 | bgt | Branch Greater than |
+|  |  |
+
+### STR
+| STR | Description |
+| --- | ----------- |
+| STRB | ```STRB R6, [R1] ``` "Store Register Byte,"  stores the least significant byte (the bottom 8 bits) of a register to a memory location specified by the address calculation within the instruction; essentially, it writes only a single byte of data to memory from a register.  |
+* Example 1:
+```asm
+STRB reg1, [r2]
+```
+contents of r1 is stored at address of [r2]
+* Example 2: with offset 
+```asm
+STRB reg1, [reg2], #offset
+```
+The meaning of this instruction is that the contents of reg1 are stored in memory at the address reg2 + offset.
+<hr>
 
 ### CMP - Compare instruction
 * CMP subtracts operand2 from Rn
