@@ -33,7 +33,7 @@ The meaning of this instruction is that the contents of reg1 are stored in memor
 <hr>
 
 ### CMP - Compare instruction
-* CMP subtracts operand2 from Rn
+* CMP subtracts operand2 from Rn ```<Rn> - <operand2>``` <br>
 ```CMP <Rn>, <Operand2?``` - Rn Register number; Operand2=Number to compare
 #### Example wth branch
 * if Operand2(45) - R4(45)=0 then Z flag is set, so BEQ will be 0/true and allow the branch to jump to _start 
