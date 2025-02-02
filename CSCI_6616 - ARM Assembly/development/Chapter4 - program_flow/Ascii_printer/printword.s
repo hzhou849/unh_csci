@@ -14,7 +14,7 @@
  .global _start							@ Program starting address to link
  
  _start:
-	MOV  R4, #0x12AB 					@ LSB Number to print
+	MOVW  R4, #0x12AB 					@ LSB Number to print
 	MOVT R4, #0xDE65					@ MSB of number to print
 	LDR  R1, =hexstr 					@ load from memory pointer to start of string
 	ADD  R1, #9							@ Start of least significant digit we want memory string+9 address
