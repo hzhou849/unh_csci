@@ -2,7 +2,9 @@
 
 | Command | Description | 
 | ------- | ----------- |
-| MOV | Moves within registers |
+| MOV | Moves within registers LSB |
+| MOVW | Similar to ```MOV``` but LSB restricts to 16-bit word only |
+| MOVT | Moves top MSB bits [MSB|LSB]
 | CMP | Compares r0, #16, takes R0-16 = 0? and updates status register |
 | ---- | ---------------|
 | Branching |           |
