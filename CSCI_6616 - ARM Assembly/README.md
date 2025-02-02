@@ -1,9 +1,9 @@
 ## ARM ASSEMBLY
 
 ## Common commands
-LDR loads from memory into a register </br>
-STR stores register contents into memory </br>
-MOV - Moves between registers only
+```LDR``` loads from memory into a register </br>
+```STR``` stores register contents into memory </br>
+```MOV``` - Moves between registers only
 
 ### as compiler
 ```sh
