@@ -1,5 +1,12 @@
 ## ARM ASSEMBLY
 
+## Segments
+Data segment − It is represented by ```.data``` section and the .bss. The .data section is used to declare the memory region, where data elements are stored for the program. This section cannot be expanded after the data elements are declared, and it remains static throughout the program. <br>
+
+The .bss section is also a static memory section that contains buffers for data to be declared later in the program. This buffer memory is zero-filled. <br>
+
+Code segment − It is represented by ```.text section```. This defines an area in memory that stores the instruction codes. This is also a fixed area.
+
 ## Common commands
 ```LDR``` loads from memory into a register </br>
 ```STR``` stores register contents into memory </br>
