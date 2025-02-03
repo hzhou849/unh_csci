@@ -1,5 +1,11 @@
 ## ARM ASSEMBLY
 
+Add to linker?
+* for ```missing .note.GNU-stack section implies executable stack mean assembly  Error: ```
+```
+-z noexecstack
+```
+
 ## Segments
 Data segment − It is represented by ```.data``` section and the .bss. The .data section is used to declare the memory region, where data elements are stored for the program. This section cannot be expanded after the data elements are declared, and it remains static throughout the program. <br>
 
