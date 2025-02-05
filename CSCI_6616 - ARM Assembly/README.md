@@ -97,7 +97,28 @@ MOVT R2, #0x4F5D
 MOV R1, R2, LSL #1
 ```
 
+## Addressing
+```
+0xFFFF FFFF 0000 0000
+0xFFFF FFFF 0000 0008
+0xFFFF FFFF 0000 0010
+0xFFFF FFFF 0000 0018
+________________________32bits
+0xFFFF FFFF 0000 0020
++32bits
+0xFFFF FFFF 0000 0040 
 
+0000 0000 0010 0000
+0000 0000 0110 0000
+```
+
+
+## .data directive
+```asm
+.data
+inbuff: .space 20 @ declare buffer with size 20
+myword: .word 0x1234567, 0xABCD1234 @ array size word
+```
 ## ARM Instructions
 * execute on one clock cycle
 ```
