@@ -87,6 +87,21 @@ MOVT R2, #0x4F5D
 ```
 
 ### Register and Shift
+* ASR shifts and pads with the sign 1=negative 0=positive
+```
+ASR 1 = 
+1111 1111 1010 101>0
+F     F    A    A              
+>1111 1111 1101 0101
+F     F    D    5   
+
+
+ASR 1=
+1100 111>1
+C      F
+>1110 0111
+E     7
+```
 ```LSL``` - Logical Shift left <br/>
 ```ASR``` - Arithmetic shift right <br/>
 ```ROR``` - Rotate Right<br/>
