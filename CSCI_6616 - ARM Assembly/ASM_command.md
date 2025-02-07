@@ -16,7 +16,15 @@
 | bgt | Branch Greater than |
 |  |  |
 
+### LDR
+* Load from ram/memory into register
+| STR | Description |
+| --- | ----------- |
+| LDR | Load 32-bit wide word | 
+| LDRB | Load a single byte | 
+
 ### STR
+* Store from register to ram/memory
 | STR | Description |
 | --- | ----------- |
 | STRB | ```STRB R6, [R1] ``` "Store Register Byte,"  stores the least significant byte (the bottom 8 bits) of a register to a memory location specified by the address calculation within the instruction; essentially, it writes only a single byte of data to memory from a register.  |
