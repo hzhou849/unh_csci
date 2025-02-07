@@ -133,6 +133,76 @@ ________________________32bits
 .data
 inbuff: .space 20 @ declare buffer with size 20
 myword: .word 0x1234567, 0xABCD1234 @ array size word
+
+```
+
+### Defining memory contents
+* The first line defines 7 bytes all with the same value.
+```asm
+label: .byte 74, 0112, 0b00101010, 0x4a, 0x4a, 'j', 'H'+2
+       .word 0x1234ABCD, -1434
+       .ascii "hello world\n"
+```
+
+#### Types of memory definition
+| Directive | Description |
+| --------- | ----------- |
+| .ascii | A string contained in double quotes |
+| .asciz | A zero-byte terminated ascii string |
+| .byte | 1-byte integers |
+| .double | Double-precision floating-point values |
+| .float | Floating-point values |
+| .octa | 16-byte integers |
+| .quad | 8-byte integers |
+| .short | 2-byte integers |
+| .word | 4-byte integers |
+
+## FILL Repeat
+* If we want to define a larger set of memory, there are a couple of
+mechanisms to do this without having to list and count them all out:
+#### Method 1
+* ie. to fill an array with zeros
+```asm
+.fill repeat, <size>, <values>
+
+@ creates a block of memory with ten 4-byte words all with a value of zero.
+zeros: .fill  10, 4, 0
+```
+
+#### Method 2
+```asm
+rpn: .rept 3
+.byte 0, 1, 2
+.endr
+is translated to
+.byte 0, 1, 2
+.byte 0, 1, 2
+.byte 0, 1, 2
+```
+
+## ASCII Escape character sequence codes
+| Escape | character sequence Description |
+| ------ | ------------------------------ |
+| \b | Backspace (ASCII code 8) |
+| \f | Formfeed (ASCII code 12) |
+| \n | New line (ASCII code 10) |
+| \r | Return (ASCII code 13) |
+| \t | Tab (ASCII code 9) |
+| \ddd | An octal ASCII code (ex \123) |
+| \xdd | A hex ASCII code (ex \x4F) |
+| \\ | The “\” character |
+| \” |The double quote character |
+| \anything-else | anything-else |
+
+
+## LDR STR
+The LDR and STR instructions use post-indexed addressing to update their address registers.
+
+STR instructions store a word in memory.
+LDR instructions load a word from memory.
+
+
+
 ```
 ## ARM Instructions
 * execute on one clock cycle
@@ -198,7 +268,3 @@ the details, but this is the basic idea.
 
 
 ###
-The LDR and STR instructions use post-indexed addressing to update their address registers.
-
-STR instructions store a word in memory.
-LDR instructions load a word from memory.
