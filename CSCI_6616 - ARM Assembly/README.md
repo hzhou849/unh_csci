@@ -5,7 +5,7 @@
 | ----------- | ----------- |
 | 0x30 | 0-9 |
 | 0x41 to 0x5A | A-Z |
-| 0x61 to 0x&A | a-z |
+| 0x61 to 0x7A | a-z |
 
 Add to linker?
 * for ```missing .note.GNU-stack section implies executable stack mean assembly  Error: ```
