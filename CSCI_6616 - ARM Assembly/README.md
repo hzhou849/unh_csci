@@ -178,7 +178,7 @@ mechanisms to do this without having to list and count them all out:
 #### Method 1
 * ie. to fill an array with zeros
 ```asm
-.fill repeat, <size>, <values>
+.fill <repeat_num_cycles>, <size_bytes>, <values>
 
 @ creates a block of memory with ten 4-byte words all with a value of zero.
 zeros: .fill  10, 4, 0
