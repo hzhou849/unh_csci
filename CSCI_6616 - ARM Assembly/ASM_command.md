@@ -21,7 +21,8 @@
 | STR | Description |
 | --- | ----------- |
 | LDR | Load 32-bit wide word | 
-| LDRB | Load a single byte | 
+| LDRB | Load a unsigned single byte |
+| LDRSB | Load signed single byte |
 
 ### STR
 * Store from register to ram/memory
