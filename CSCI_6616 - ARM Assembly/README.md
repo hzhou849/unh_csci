@@ -312,6 +312,20 @@ LDR R2, [R1, R3, LSL #2]!  @ Updates R1 with the value calculated.
 ```
 
 ### LDR Post-index addressing
+* THink pre/post increment, consume the value then update (post) vs update value then increment(pre-inc)
+* Recall post-indexed addressing, the data is retrieved first using the base register, then any offset shifting and adding is done
+* Example: Load R1 with the memory pointed to by R2, then do R2=R2+R3
+```asm
+LDR R1, [R2] R3
+```
+* Example 2: Load R1 with the memory pointed to by R2, then do R2=R2+2 (post increment)
+```asm
+LDR R1, [R2], #2
+```
+* Ex.3 Load R1 with memory pointed at by R2, then do R2=R2 + (R3 shifted 2 Left)
+```asm
+LDR R1, [R2], R3, LSL #2
+```
 
 
 ## ARM Instructions
