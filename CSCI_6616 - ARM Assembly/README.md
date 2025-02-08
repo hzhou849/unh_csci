@@ -332,6 +332,20 @@ LDR R1, [R2], R3, LSL #2
 ```
 
 
+### LDR /STR - Double registers
+* You can store double-word (64-bits) by using ```LDRD STRD```
+* Takes TWO registes as paramets
+Example: Load and storing double word:
+```asm
+LDR R1, =mydword
+LDRD R2, R3, [R1] @ store pointer address contents (deref.) R1 into R2 &R3
+STRD R2, R3, [R1] @ Load R2 & R3 back into R1
+
+.data
+mydword:  .DWORD 0x1234567887654321
+```
+
+
 ## ARM Instructions
 * execute on one clock cycle
 ```
