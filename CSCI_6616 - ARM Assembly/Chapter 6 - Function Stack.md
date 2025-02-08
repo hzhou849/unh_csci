@@ -13,6 +13,12 @@
 push {reglist}; Push onto current stack pointer address
 pop {R0-R4, R6, R9-R12}; pop at current SP address and store into reglist
 ```
+![image](https://github.com/user-attachments/assets/fce4a2bf-8f08-40b7-adf6-ee036b5f16f3)
+
+* The downside is bandwidth between the CPU and memory is limited, so
+PUSHing and POPing more registers does take extra execution cycles. The
+trade-off in speed vs. maintainability is a subjective decision depending on
+the circumstances.
 
 ## Branch with Link
 * ```LR``` R14 Link register used to store current address+1 so we have a return point when using ```BL``` branch with link
@@ -51,3 +57,44 @@ myfunc2:
   @ <do stuff>    
   BX LR          @ jump back what is in LR=AA08  stack: {0xAA01}
 ```
+
+## Return values 
+* Simply assign return values to R0, R1, R2, R3, or push them onto the stack if more are neeeded, once returned from function, just pop them from the stack
+
+## Register management convention for functions
+| Register | Description |
+| -------- | ----------- |
+| R0 - R3 | Used for function args/params; My be used for anything freely. If calling routine needs to save them, it must save them manually |
+| R4 - R12 | Can be used freely by the called routine, but if it is responsible for saving them. Calling routine can assume these registers are intact |
+| SP | used freely by called routine; The routine must pop the same number times it pushes so it is intact for the calling routine |
+| LR | Called routine must preseve this as disccussed above |
+| CPSR | Neither routine can make any assuptions about the CPSR; this is abstracted to function |
+
+## Summary of the function call Algorithm
+#### Calling routine
+1. If we need any of R0-R4, save them
+2. Move first four params into R0-R4
+3. Push any additional params onto stack
+4. Use BL to call the function
+5. Evaluate the return code in R0
+6. Restore any of R0-R4  taht we saved.
+
+#### Called function
+1. Push LR and R4-R12 on to the stack
+2. Do our work
+3. Put our return code into R0
+4. Pop LR and R4-R12
+5. Use BX instuctions to return execution to caller
+
+
+
+
+
+
+
+
+
+
+
+
+  
