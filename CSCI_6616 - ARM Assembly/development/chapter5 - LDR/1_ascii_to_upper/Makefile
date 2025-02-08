@@ -1,33 +1,37 @@
 # --------------------------------------------------------------------------------------------
-# Makefile for project 2
+# Makefile GCC ver
 # CSCI 6616 - ARM Assembly
-# Howard Zhou
-#
 # --------------------------------------------------------------------------------------------
 
-PROJECT_NAME = p2_counter_64k
+PROJECT_NAME= ascii_to_upper
 OBJS = $(PROJECT_NAME).o
 
 $(info [+] - Compiling project: $(PROJECT_NAME))
 
 ifdef DEBUG
 	BUILD = gcc
-	DEBUG_FLAG = -g
+	DEBUG_FLAG = "-g -O0"
 	OUTPUT_FILE = debug_build_$(PROJECT_NAME)
 else
 	BUILD = ld
-	DEBUG_FLAG =
+	DEBUG_FLAG = 
 	OUTPUT_FILE = $(PROJECT_NAME)
-endif 
+endif
 
-# Build the object files with as
-%.o: %.s
-	as $(DEBUG_FLAG) -o $@ $<
+# Build the object files with as compiler
+# %.s - wildcard for any .s file
+# $<  - symbol for source file
+# $@  - symbol for output file
+# <output>.o : <input>.s
+%.o : %.s
+	as $(DEBUG_FLAG) $< -o $@
 
-# linking 
 $(OUTPUT_FILE) : $(OBJS)
-	$(BUILD) $(DEBUG_FLAG) -O0 -o $(OUTPUT_FILE) $(OBJS)
+	# ld $(DEBUG_FLAG) -o$(OUTPUT_FILE) $(OBJS)
+	# for gcc 
+	$(BUILD) $(DEBUG_FLAG) -O0 -o$(OUTPUT_FILE) $(OBJS)
 
 clean:
 	$(info [!] - Cleaning up all build files)
 	rm $(OBJS) $(OUTPUT_FILE) debug_build_$(PROJECT_NAME)
+

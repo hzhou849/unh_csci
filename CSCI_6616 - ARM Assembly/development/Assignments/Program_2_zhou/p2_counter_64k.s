@@ -8,7 +8,6 @@
  * 
  */
 
-@ .section  .note.GNU-stack, “ ”, @progbits
 .section .text								@ Defines memory that stores instructions
 .global main								@ Defines memory entry point 
 
@@ -31,5 +30,4 @@ exit:
 	SVC 0									@ Interupt to execute syscall
 
 
-@ .section    .note.GNU-stack, "", @progbits
 
