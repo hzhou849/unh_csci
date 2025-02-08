@@ -26,6 +26,7 @@ Code segment − It is represented by ```.text section```. This defines an area 
 ```MOV``` - Moves between registers only
 
 ### as compiler
+* NOTE: when using this method, GDB will not be reliable
 ```sh
 # Building the object file
 as -o outputFile.o asmfile.s
@@ -42,6 +43,8 @@ objdump -s -d move_example
 ```
 
 ### Using GCC 
+* Works better with GDB
+* your asm file must have ```.global main``` and function ```main``` as gcc requires main function to be the entry way
 ```sh
 # If you are compiling a c file, you need to generate ASM file
 # -S generate assembly s file
