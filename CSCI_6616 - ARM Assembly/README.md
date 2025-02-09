@@ -58,6 +58,17 @@ gcc -o main main.o
 gcc –g –O0 –o main main.s
 ```
 
+* To remedy warning:
+```sh 
+/usr/bin/ld: warning: main.o: missing .note.GNU-stack section implies executable stack
+/usr/bin/ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+.section	.note.GNU-stack,"",%progbits
+```
+* add this line before ```.end```
+```asm
+.section	.note.GNU-stack,"",%progbits
+```
+
 ## GDB debug 
 | Shortcut | Description |
 | -------- | ----------- |
