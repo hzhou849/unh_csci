@@ -23,10 +23,10 @@ the circumstances.
 ## Branch with Link
 * ```LR``` R14 Link register used to store current address+1 so we have a return point when using ```BL``` branch with link
 * ```BX``` required to return to what is currently in the ```LR``` register. 
-* ```BL``` Stores the instruction of the next line in the ```LR``` register, then jumps to function
+* ```BL``` Stores the instruction of the next line LR= (PC+1) in the ```LR``` register, then jumps to function
 Example:
 ```asm
-BL myfunc        @ Stores the address of next line Move instrcution in the LR register, jump to myfunc
+BL myfunc        @ Stores the address of next line Move LR= (PC+1)instrcution in the LR register, jump to myfunc
 MOV R1, #4       @ < this adddress is stored in LR 
 @ <some other code...>
 
