@@ -16,6 +16,14 @@
 | bgt | Branch Greater than |
 |  |  |
 
+### Condition Code	Meaning with cmp	Status of Flags
+EQ	Equal	Z==1
+NE	Not Equal	Z==0
+GT	Signed Greater Than	(Z==0) && (N==V)
+LT	Signed Less Than	N!=V
+GE	Signed Greater Than or Equal	N==V
+LE	Signed Less Than or Equal	(Z==1)
+
 ### LDR
 * Load from ram/memory into register
 | STR | Description |
