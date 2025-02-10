@@ -64,7 +64,9 @@ gcc –g –O0 –o main main.s
 /usr/bin/ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
 .section	.note.GNU-stack,"",%progbits
 ```
-* add this line before ```.end```
+1. Can be disbled at linking stage with 
+```–no-warn-exec-stack ``` flag
+2. add this line before ```.end```
 ```asm
 .section	.note.GNU-stack,"",%progbits
 ```
