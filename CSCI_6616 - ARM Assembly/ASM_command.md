@@ -42,7 +42,7 @@ LE	Signed Less Than or Equal	(Z==1)
 STRB R1, [R2]
 ```
 
-## Pre/POST increment pointers
+## Pre/POST increment pointers - POST will save the new incremented address pointed to
 * YOu must store the original Register address or re-assign the pointer address again to reset the adddress increments
 * Example 2: with offset  post-increment address
 ```asm
@@ -51,7 +51,7 @@ STRB reg1, [reg2], #offset   @ +1 from previous
 ```
 The meaning of this instruction is that the contents of reg1 are stored in memory at the address reg2 + offset.
 
-* PRE-increment adddress
+* PRE-increment adddress - DOES NOT keep stored changes to pointer
 ```asm
 STRB reg1, [reg2, #offset]  @ the offset is incremented for this use only not saved
 ```
