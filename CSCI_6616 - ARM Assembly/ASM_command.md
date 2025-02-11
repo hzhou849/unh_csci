@@ -42,6 +42,8 @@ LE	Signed Less Than or Equal	(Z==1)
 STRB R1, [R2]
 ```
 
+## Pre/POST increment pointers
+* YOu must store the original Register address or re-assign the pointer address again to reset the adddress increments
 * Example 2: with offset  post-increment address
 ```asm
 STRB reg1, [reg2], #offset   @ store then increment reg2 address+n
