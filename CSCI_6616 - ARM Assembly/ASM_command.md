@@ -26,6 +26,7 @@ LE	Signed Less Than or Equal	(Z==1)
 
 ### LDR
 * Load from ram/memory into register
+* using ```LDRB``` or ```STRB``` will adjust the endian need to confirm????
 | STR | Description |
 | --- | ----------- |
 | LDR | Load 32-bit wide word | 
@@ -48,6 +49,9 @@ STRB R1, [R2]
 ```asm
 STRB reg1, [reg2], #offset   @ store then increment reg2 address+n
 STRB reg1, [reg2], #offset   @ +1 from previous
+
+@ to reset address on [reg2]
+ldr reg2, =var
 ```
 The meaning of this instruction is that the contents of reg1 are stored in memory at the address reg2 + offset.
 
