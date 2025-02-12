@@ -188,6 +188,8 @@ label: .byte 74, 0112, 0b00101010, 0x4a, 0x4a, 'j', 'H'+2
 | .quad | 8-byte integers |
 | .short | 2-byte integers |
 | .word | 4-byte integers |
+| .fill <repeat>, <size>, <value> |  an array, fills size * n with value |
+|.space <size> | Fill variable with size n |
 
 ## FILL Repeat
 * If we want to define a larger set of memory, there are a couple of
