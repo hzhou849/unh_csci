@@ -45,6 +45,16 @@ LE	Signed Less Than or Equal	(Z==1)
 STRB R1, [R2]
 ```
 
+## ```!``` Write back ( increment and save)
+* When the address is calculated by the adds and shifts, the result is usually thrown
+away after we’ve loaded the register.
+* However When performing a loop, it is handy to keep the calculated address. This saves us doing a separate ADD on our
+index register.
+* The syntax for this is to put an exclamation mark (!) after the
+instruction, then the Assembler will set the bit in the generated instruction
+asking the CPU to save the calculated address, thus
+  ```LDR R2, [R1, R3, LSL #2]!```
+
 ## Pre/POST increment pointers - POST will save the new incremented address pointed to
 * YOu must store the original Register address or re-assign the pointer address again to reset the adddress increments
 * Example 2: with offset  post-increment address
