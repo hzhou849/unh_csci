@@ -1,5 +1,7 @@
 ## ARM Commands
 
+* ! ldm r0!, {r5-r8}      @ recover and post increment r0?
+
 | Command | Description | 
 | ------- | ----------- |
 | MOV | Moves within registers LSB |
@@ -46,9 +48,20 @@ STRB R1, [R2]
 ## Pre/POST increment pointers - POST will save the new incremented address pointed to
 * YOu must store the original Register address or re-assign the pointer address again to reset the adddress increments
 * Example 2: with offset  post-increment address
+* 
 ```asm
 STRB reg1, [reg2], #offset   @ store then increment reg2 address+n
 STRB reg1, [reg2], #offset   @ +1 from previous
+
+Example1:
+@ R2 = 0x0001
+STRB R1, [R2], #1    @ R1 = R2(0x0001) +1; R1=0x0002
+STRB R1, [R2], #1    @ R1 = 0002+1;
+
+you can also write pre-increment, it does the same thing as post
+and will save the base address increments
+STRB R1, [R2, #1]! == STRB R1, [R2], #1 
+
 
 @ to reset address on [reg2]
 ldr reg2, =var
