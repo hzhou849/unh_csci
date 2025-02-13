@@ -184,8 +184,8 @@ before generating the compiled code to make the code more readable.
 sum_func: 
 	PUSH {R4-R12, LR}			@ Function convention to save all other registers from prev function first,
 	@ Now we expand stack SP-12 becuase R4-R12, LR is stored at original SP address.
-	SUB SP, #12					@ increase the stack size maek Room for three 32-bit values 4bytes *3=12bytes
-	STR R0, [SP, #VAR1] 		@ Save passed-in param.
+	SUB SP, #12				@ increase the stack size maek Room for three 32-bit values 4bytes *3=12bytes
+	STR R0, [SP, #VAR1] 			@ Save passed-in param.
 	STR R1, [SP, #VAR2]			@ save second parameter
 
 @ Do a bunch of other work, but don't change SP
@@ -196,7 +196,7 @@ STR R6, [SP, #SUM]				@ Store R6 into #SUM variable
 
 @ On end of function, we close out the function:
 LDR R0, [SP, #SUM]				@ Load sum to return value
-ADD SP, #12						@ Release local vars on the stack
+ADD SP, #12					@ Release local vars on the stack
 POP {R4-R12, PC}				@ Restore regs adnd trun 
 ```
 
