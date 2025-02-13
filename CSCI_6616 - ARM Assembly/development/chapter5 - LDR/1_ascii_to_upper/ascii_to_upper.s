@@ -36,7 +36,7 @@ loop: @ Loop until byte pointed to by R1 is non-zero
 	SUB R5, #('a' -'A')					@ R5= R5 - (0x7A;97d - 0x5A;65d); => 32
 
 cont: @ endif
-	STRB R5, [R3], #1					@ Store char byte to deref[R3] or outstr post incre R3++
+	STRB R5, [R3], #1					@ Store char byte to deref[R3] or outstr post incre R3++ *how postinc go back to zero offset again?
 	CMP R5, #0							@ if Not equal null terminator, keep looping 
 	BNE loop
 

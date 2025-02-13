@@ -1,7 +1,7 @@
 /* ==========================================================================================
  * CSCI_6616 - ARM Assembly Programming
  * 
- * Project: Program 3 32bit counter to 64k
+ * Project: Program 3 Decimal to binary converter
  * Name: Howard Zhou
  *
  * Description:
@@ -33,7 +33,7 @@ main:
 	SVC 0								@ interrupt to execute syscall
 
 l1:
-	LDR R1, =inbuff					@ pointer address for input buffer load into R1
+	LDR R1, =inbuff						@ pointer address for input buffer load into R1
 	MOV R2, #4							@ Read one char + '\n' to capture enter
 	MOV R0, #0							@ set read from stdin
 	MOV R7, #3							@ linux service set to read
@@ -52,7 +52,7 @@ convert:
 	MOV R7, #4							@ linux service call for write
 	SVC 0								@ execute syscall
 
-	LDR R1, =inbuff					@ pointer to read from input buffer 
+	LDR R1, =inbuff						@ pointer to read from input buffer 
 	MOV R2, R5
 	ADD R2, #1							@ buffer includes 1extra chars + '\n' newline
 	MOV R4, #0x0
@@ -62,7 +62,6 @@ convert:
 	SVC 0								@ execute syscall
 
 	@ Perform conversion
-	@ LDR R1, =inbuff1
 	CMP R5, #1
 	BEQ one_digit
 	CMP R5, #2
@@ -124,20 +123,14 @@ dec_to_bin:
 convert_bits:
 	CMP R7, #0							@ Loop until R7 is 0
 	BEQ print_binary
-
 	SUB R7, R7, #1
 	TST R6, #1							@ AND & operation on R5 lSB
 	ROR R6, R6, #1						@ shift and rotate to test next bit
 	BEQ bit0							@ EQ (z=0) so bit is 0
 	BNE bit1							@ NE (z=0) so bit is 1
 
-	@ Uncomment if you want to store bits in register
-	@ ADDNE R3, R3, #1					@ if AND op is NE (z=0) means not zero so it is binary 1
-	@ ROR R0, R0, #1						@ >> 1 and wrap to left to make big-endian
-	
-	@ THis is to store bits in stdout buffer
-
 bit0:
+	@ THis is to store bits in stdout buffer
 	MOV R3, #0x30						@ store an ascii '0' 0x30;48d
 	STRB R3, [R1, R4]					@ store bit 0 in output buffer
 	SUB R4, R4, #1						@ decrement counter
@@ -151,9 +144,6 @@ bit1:
 	@ Done, branch to print
 	BL print_binary
 
-
-
-
 print_binary:
 	MOV R3, R0							@ Save the results of the binary bits in R3
 
@@ -166,7 +156,7 @@ print_binary:
 	LDR R1, =outbuff					@ R0 is the decimal num pointer address for input buffer load into R1
 	MOV R3, #0x0A						@ store '\n' for better formatting
 	STRB R3, [R1, #13]
-	MOV R2, #14						@ Read one char + '\n' to capture enter
+	MOV R2, #14							@ Read one char + '\n' to capture enter
 	MOV R0, #1							@ set read from stdin
 	MOV R7, #4							@ linux service 4=write
 	SVC 0								@ interrupt to execute syscall
@@ -178,15 +168,10 @@ print_binary:
 	MOV R7, #1							@ Service code 1=exit
 	SVC 0						
 
-
-
 count_check: @ Count char and check
-	@ R0 = Return value count of valid ascii number
-	MOV R0, #0						    @ zero the counter
+	MOV R0, #0						    @ R0 = Return value count of valid ascii number
 
 cnt_loop:
-	@ CMP R0, #3							@ If we reached our max string count, return to LR
-	@ BEQ convert						
 	LDRB R3, [R1, R0]					@ load the count offset
 	CMP R3, #0x0A						@ check for \n which is user input
 	BEQ convert
@@ -197,9 +182,6 @@ cnt_loop:
 	ADD R0, #1							@ else, increment valid count +1	
 	B cnt_loop
 
-
-
-
 print_nan:
 	LDR R1, =prompt_nan
 	MOV R2, #44						@ Lenght of this string
@@ -209,18 +191,14 @@ print_nan:
 	B main
 
 
-exit:
-
-
 .data 
 	inbuff: .space 20 					@ allocate buffer memory 20bytes
-	inbuff1: .ascii "123\n"				@ test ascii string
+	@ inbuff1: .ascii "123\n"			@ test ascii string used for GDB to bypass stdin
 	outbuff: .fill 20, 1, 0				@ create a 20byte string filled with NULL
 	prompt: .ascii ">"					@ declare ascii variable for prompt char
 	prompt_nan: .asciz "Invalid entry, please enter number (0-999).\n" @ 44bytes
 	msg_decimal: .asciz "\ndecimal: "   @ 11 bytes
 	msg_binary: .asciz "\nBinary: "		@ 10 bytes
-	@ inbuff: .asciz "1234"
 
 .section .note.GNU-stack, "", %progbits
 .end
