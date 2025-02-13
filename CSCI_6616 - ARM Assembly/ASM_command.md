@@ -68,8 +68,8 @@ Example1:
 STRB R1, [R2], #1    @ R1 = R2(0x0001) +1; R1=0x0002
 STRB R1, [R2], #1    @ R1 = 0002+1;
 
-you can also write pre-increment, it does the same thing as post
-and will save the base address increments
+@ you can also write pre-increment, it does the same thing as post
+@ and will save the base address increments
 STRB R1, [R2, #1]! == STRB R1, [R2], #1 
 
 
