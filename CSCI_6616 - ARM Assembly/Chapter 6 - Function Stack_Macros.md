@@ -161,7 +161,9 @@ of a function and ```POP`` them at the end.
 * Adds them then stores sum in variable SUM
 
 
-## Macros ```.EQU```
+## Macros 
+
+### ```.EQU``` For variables
 * similar to ```#define``` macros in c
 *.EQU Assembler directive allows us to define symbols that will be substituted by the Assembler
 before generating the compiled code to make the code more readable. 
@@ -200,8 +202,51 @@ ADD SP, #12					@ Release local vars on the stack
 POP {R4-R12, PC}				@ Restore regs adnd trun 
 ```
 
+## Macro .include blocks
+ * Assembler creates a copy of the code in each place where it is called,
+   substituting any parameters. Alternative to using a function
+ * The macro doesn't generate code, it just defines macro for assembler to hard insert 
+   to where it is called making source file larger 
+ * There is NO object generation .o file just included by the file that uses it in the .include call
+ 
+ * Why use if makes file bigger? performance! Branching is expensive because we have to restart the execution pipeline.
+ * We also eliminate push pop calls to save registers 
+ * Try to only use R0-R3 registers in macro so there is no conflict and avoids complications
+
+Calling file
+```asm
+
+ .include "uppermacro.s"
+ .global main
+ 
+main: 
+	toupper tststr buffer	@ call our macro here, code is replaced with toupper block
+```
+
+Macro definition file
+```asm
+@ Macro directive: .Macro <macro_name> <param1>, <param2>...
+@ params used must be specified with '\param'
+ .MACRO		toupper instr, outstr
+	LDR	R0, =\instr
+	LDR R1, =\outstr
+	MOV R2, R1
+
+@ Function labels must be numerical in macros and use 'f' and 'b' to refer
+@ forward, backwards reference
+1:
+	CMP R3, #'z'			@ is letter > 'z'
+	BGT 2f				@ For macro we must use 2f=2 foward/after this line
+
+2: 
+	STRB R3, [R1], #1		@ store char to output str; R1 address is incremented & saved.
+	CMP R3, #0			@ check for null terminator '\0'
+	BNE 1b				@ Jump to 1(b=before/prev)
+	SUB R0, R1, R2			@ get the length by subtracting pointers
 
 
+.ENDM
+```
 
 
 
