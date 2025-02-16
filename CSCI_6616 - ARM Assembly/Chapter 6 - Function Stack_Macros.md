@@ -8,6 +8,7 @@ function can use these for any other purpose modifying
 them freely. If the calling<source_func> routine needs them saved, it
 must save them itself. <br>
 ```LR``` - Link register; The called routine must preserve this address. <br>
+
 ```R4 to R12 ``` - These can be used freely by the called routine,
 but if it is responsible for saving them. That means the
 calling routine can assume these registers are intact. <br>
@@ -17,6 +18,7 @@ routine must POP the stack the same number of times
 that it PUSHes, so it is intact for the calling routine.<br>
 
 ```R0``` return value <br>
+
 ```CPSR:``` Neither routine can make any assumptions
 about the CPSR. As far as the called routine is
 concerned, all the flags are unknown; similarly, they
