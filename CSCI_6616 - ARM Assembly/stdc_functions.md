@@ -3,7 +3,7 @@
 * Scanf registers:
 ```
  R0: pointer to var containing format specifier %d, %c %h etc..
- R1: input data buffer to store char (requires actual char value not pointer ie 0x31='1'
+ R1: dereferences pointer value of input data buffer to store char (requires actual char value not pointer ie 0x31='1'
 ```
 
 * Printf registers
