@@ -14,7 +14,7 @@
  */
 
 .section .text
-.global toupper
+.global toupper	@ **** Global declaration allow other files to call this routine
 toupper:
 	PUSH {R4-R5}					@ Save the registers we used previously
 	@ optionally we can push LR if we want here too
