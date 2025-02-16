@@ -2,6 +2,7 @@
 * example to use scanf/printf
 * Scanf registers:
 ```
+* loads one char per execution, if multiple required, you must use in loop
  R0: pointer to var containing format specifier %d, %c %h etc..
  R1: dereferences pointer value of input data buffer to store char (requires actual char value not pointer ie 0x31='1'
 ```
