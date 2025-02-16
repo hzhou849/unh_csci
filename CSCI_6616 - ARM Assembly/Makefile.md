@@ -1,6 +1,8 @@
 ## Makefile for ASM
 
 #### Best version so far
+* Should handle multiple source files
+* clean works to cleanup all objects and binary executables
 * must use ```as``` builder to build object first with debug flag othewise GDB will not work
 ```make
 # --------------------------------------------------------------------------------------------
