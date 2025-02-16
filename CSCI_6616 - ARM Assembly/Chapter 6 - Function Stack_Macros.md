@@ -1,5 +1,34 @@
 ## Functions and Stack
 
+## Function register management convention
+#### Register function conventions
+
+```R0-R3``` - These are the function parameters. The
+function can use these for any other purpose modifying
+them freely. If the calling<source_func> routine needs them saved, it
+must save them itself. <br>
+```LR``` - Link register; The called routine must preserve this address. <br>
+```R4 to R12 ``` - These can be used freely by the called routine,
+but if it is responsible for saving them. That means the
+calling routine can assume these registers are intact. <br>
+
+```SP:``` This can be freely used by the called routine. The
+routine must POP the stack the same number of times
+that it PUSHes, so it is intact for the calling routine.<br>
+
+```R0``` return value <br>
+```CPSR:``` Neither routine can make any assumptions
+about the CPSR. As far as the called routine is
+concerned, all the flags are unknown; similarly, they
+are unknown to the caller when the function returns.<br>
+
+```asm
+1. PUSH: {LR, R4-R12}  @ registers to save on stack from caller
+     < do some work> 
+2. POP : {LR, R4-R12}  @ restore registers to former state
+3. Use BX to return to caller function stored in LR
+```
+
 ### Stacks
 * ```push``` Adds element to the area
 * '''pop'''' Returns and remove the element most recently added
@@ -80,13 +109,6 @@ myfunc2:
 6. Restore any of R0-R4  taht we saved.
 
 #### Called function
-Register function conventions
-```asm
-1. PUSH: {LR, R4-R12}  @ registers to save on stack from caller
-     < do some work> 
-2. POP : {LR, R4-R12}  @ restore registers to former state
-3. Use BX to return to caller function stored in LR
-```
 1. Push LR and R4-R12 on to the stack
 2. Do our work
 3. Put our return code into R0
