@@ -80,6 +80,13 @@ myfunc2:
 6. Restore any of R0-R4  taht we saved.
 
 #### Called function
+Register function conventions
+```asm
+1. PUSH: {LR, R4-R12}  @ registers to save on stack from caller
+     < do some work> 
+2. POP : {LR, R4-R12}  @ restore registers to former state
+3. Use BX to return to caller function stored in LR
+```
 1. Push LR and R4-R12 on to the stack
 2. Do our work
 3. Put our return code into R0
