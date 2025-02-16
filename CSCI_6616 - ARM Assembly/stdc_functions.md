@@ -6,7 +6,46 @@
  R0: pointer to var containing format specifier %d, %c %h etc..
  R1: dereferences pointer value of input data buffer to store char (requires actual char value not pointer ie 0x31='1'
 ```
+* In ARM assembly, when using scanf (or any other C standard input function), the newline character \n (ASCII 0x0A) remains in the input buffer after a user presses Enter. This happens because scanf reads the user input and stops at the first whitespace character (such as a space, tab, or newline). It leaves the newline (\n) in the input buffer, which can interfere with subsequent input operations.
 
+To handle this and flush the buffer (i.e., to remove the leftover newline), you have a couple of options. Here are some strategies:
+1. Consume the newline explicitly after reading the input
+One common way to flush the newline is to consume it manually by reading the input buffer after calling scanf. You can do this using a function like getchar() or reading directly from the standard input stream.
+```c
+#include <stdio.h>
+
+int main() {
+    char buffer[100];
+    
+    // Read input using scanf
+    scanf("%99s", buffer);
+    
+    // Flush the buffer by reading the newline
+    while (getchar() != '\n') {
+        // Keep reading until the newline character
+    }
+
+    // Now you can safely use the input for further operations
+    printf("Input received: %s\n", buffer);
+    
+    return 0;
+}
+
+```
+
+3. Flush stdin in ARM Assembly (Approximated Solution)
+In ARM assembly, if you're interfacing directly with C library functions like scanf, you would typically need to call a system function to flush the input buffer or manually process the input.
+
+For example, you can invoke getchar() after your scanf call to clear the buffer, as shown in the C code above, by calling the appropriate system call in ARM assembly.
+
+You can write assembly code like this (assuming you're familiar with using system calls):
+
+```asm
+Copy
+    MOV     R0, #0           // File descriptor for stdin
+    BL      getchar          // Call getchar() to discard the newline
+This would loop and discard all characters until the newline is consumed, ensuring that the buffer is flushed.
+```
 * Printf registers
 ```
  R0: contains address of string data var to print'
