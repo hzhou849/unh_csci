@@ -3,7 +3,7 @@
 * Scanf registers:
 ```
  R0: pointer to var containing format specifier %d, %c %h etc..
- R1: input data buffer to store char
+ R1: input data buffer to store char (requires actual char value not pointer ie 0x31='1'
 ```
 
 * Printf registers
@@ -25,8 +25,8 @@ main:
 	BL scanf
 
 	LDR R0, =result
-	LDR R2, =input_data_buf
-	LDR R1, [R2]			@ dereference R2 and place in R1
+	LDR R2, =input_data_buf @ loads address of input-data_buf
+	LDR R1, [R2]			@ dereference R2 to get actual 'char' and place in R1. 
 	BL printf
 
 	MOV R0, #0				@ exit return code
@@ -35,7 +35,7 @@ main:
 
 .data
 .word 	@ 32bit align all variables
-result: .asciz	"input data = 0x%x\n"    @ print hex value from input char
+result: .asciz	"input data = %x\n"
 prompt: .asciz	"Enter value > "
 in_format_specifer: .asciz "%c"
 input_data_buf: .space 4, 0 @ Reserve 4 bytes and fill with zeros
