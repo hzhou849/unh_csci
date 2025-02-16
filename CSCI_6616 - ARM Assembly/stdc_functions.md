@@ -9,7 +9,8 @@
 
 * Printf registers
 ```
- R0: contains address of string data var to print
+ R0: contains address of string data var to print'
+ R1-R?: args varibles used to print in string above
 ```
 ```asm
 .section .text
