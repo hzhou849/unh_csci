@@ -24,7 +24,7 @@ that it PUSHes, so it is intact for the calling routine.<br>
 about the CPSR. As far as the called routine is
 concerned, all the flags are unknown; similarly, they
 are unknown to the caller when the function returns.<br>
-
+* Example 
 ```asm
 1. PUSH: {LR, R4-R12}  @ registers to save on stack from caller
      < do some work> 
