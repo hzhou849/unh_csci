@@ -156,3 +156,9 @@ while_loop:
 
 loop_done: @ whatever we want to do after while loop
 ```
+
+## Negative numbers
+* quickest way to check for negative is subtract 0 by ```num```
+* ``` SUB R1=0, #5``` should equal =-5
+* Test for negative number using TST and 0x8.. as mask```TST R0, #0x80000000```
+* now you can perfrom add/subtract operations
