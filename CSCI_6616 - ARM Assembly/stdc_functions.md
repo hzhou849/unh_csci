@@ -70,6 +70,11 @@ main:
 	LDR R1, [R2]			@ dereference R2 to get actual 'char' and place in R1. 
 	BL printf
 
+	@ if using scanf a extra '\n' char from user hitting enter will be captured which causes the next time 
+	@ you run scanf (ie loop) to automatically run by itself again 
+	@call getchar to counter_act scanf's issue with '\n' capture. this will flush the buffer
+	BL getchar	
+
 	MOV R0, #0				@ exit return code
 	MOV R7, #1				@ 1=exit service code
 	SVC 0
