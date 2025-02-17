@@ -160,5 +160,23 @@ loop_done: @ whatever we want to do after while loop
 ## Negative numbers
 * quickest way to check for negative is subtract 0 by ```num```
 * ``` SUB R1=0, #5``` should equal =-5
-* Test for negative number using TST and 0x8.. as mask```TST R0, #0x80000000```
+* Test for negative number using TST and 0x8.. as mask
+```asm
+TST R0, #0x80000000
+```
 * now you can perfrom add/subtract operations
+
+### Converting to negative or positive
+#### Option 1: RSB
+```RSB``` - reverse subtraction, basically performs ```(0 - <num>)``` = ```-num``` (or positive if ```-(-num)= +num```
+```asm
+RSB R0, R0, #0   ; R0 = 0 - R0 (effectively R0 = -R0)  
+```
+#### Option 2: ```MVN``` then ```ADD 1```
+* since we know to convert to negative/positive we 1) flip bits then 2) add 1
+* ```MVN``` - move negated will flip bits of register value, then we add 1 after
+```asm
+@ You can use the MVN instruction to negate the value in the register (take the two's complement), then add 1 manually to get the positive value.
+MVN R1, R0       ; R1 = NOT R0 (bitwise negation)
+ADD R1, R1, #1   ; R1 = R1 + 1 (two's complement)
+```
