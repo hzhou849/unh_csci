@@ -33,7 +33,7 @@ int main() {
 
 ```
 
-3. Flush stdin in ARM Assembly (Approximated Solution)
+#### 3. Flush stdin in ARM Assembly (Approximated Solution)
 In ARM assembly, if you're interfacing directly with C library functions like scanf, you would typically need to call a system function to flush the input buffer or manually process the input.
 
 For example, you can invoke getchar() after your scanf call to clear the buffer, as shown in the C code above, by calling the appropriate system call in ARM assembly.
@@ -46,7 +46,8 @@ Copy
     BL      getchar          // Call getchar() to discard the newline
 This would loop and discard all characters until the newline is consumed, ensuring that the buffer is flushed.
 ```
-* Printf registers
+
+## Printf registers
 ```
  R0: contains address of string data var to print'
  R1-R?: args varibles used to print in string above
