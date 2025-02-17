@@ -6,7 +6,7 @@
  R0: pointer to var containing format specifier %d, %c %h etc..
  R1: dereferences pointer value of input data buffer to store char (requires actual char value not pointer ie 0x31='1'
 ```
-* In ARM assembly, when using scanf (or any other C standard input function), the newline character \n (ASCII 0x0A) remains in the input buffer after a user presses Enter. This happens because scanf reads the user input and stops at the first whitespace character (such as a space, tab, or newline). It leaves the newline (\n) in the input buffer, which can interfere with subsequent input operations.
+* In ARM assembly, when using scanf (or any other C standard input function), the newline character \n (ASCII 0x0A) remains in the input buffer after a user presses Enter. ```This happens because scanf reads the user input and stops at the first whitespace character (such as a space, tab, or newline). It leaves the newline (\n) in the input buffer```, which can interfere with subsequent input operations.
 
 To handle this and flush the buffer (i.e., to remove the leftover newline), you have a couple of options. Here are some strategies:
 1. Consume the newline explicitly after reading the input
