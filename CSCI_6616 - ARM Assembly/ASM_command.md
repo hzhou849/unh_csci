@@ -16,7 +16,7 @@
 | bge | Branch greater or equal than|
 | blt | Branch LESS than |
 | bgt | Branch Greater than |
-|  |  |
+| BMI | Branch if minus; test with: ```TST R0, #0x80000000```  |
 
 ### Condition Code	Meaning with cmp	Status of Flags
 EQ	Equal	Z==1
