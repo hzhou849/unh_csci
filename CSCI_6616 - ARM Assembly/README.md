@@ -22,6 +22,13 @@ Code segment − It is represented by ```.text section```. This defines an area 
 
 
 ## Build / Compiling
+* a empty line is required at the end of file after ```.end```
+* Otherwise you will get thi message when tyring to compile
+```
+addOp.s: Assembler messages:
+addOp.s: Warning: end of file not at end of a line; newline inserted
+```
+
 ### ```as``` compiler
 * NOTE: when using this method, GDB will not be reliable
 ```sh
