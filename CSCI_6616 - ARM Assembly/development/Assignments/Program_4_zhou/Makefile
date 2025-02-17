@@ -11,7 +11,8 @@ PROJECT_NAME := p4_calc
 # SRCS := addOps.s calc.s menu.s subOps.s
 # SRCS := $(wildcard *.s)
 TARGET_OBJ := $(PROJECT_NAME).o
-SRCS := calc.s menu.s addOp.s
+# src:= <main()> must be first file
+SRCS := calc.s menu.s addOp.s subOp.s
 OBJS := $(patsubst %.s, %.o, $(SRCS))
 CXX := gcc
 

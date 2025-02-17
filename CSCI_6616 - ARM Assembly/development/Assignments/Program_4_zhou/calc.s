@@ -78,28 +78,30 @@ retry:
 
 	CMP R6, #OPTION_1					@ if addition, branch to add()
 	BEQ opt1
-	
 	CMP R6, #OPTION_2					@ elif 2=subract, branch to subtract()
-	BEQ errmsg
-	@ BEQ subOps
-	
+	BEQ opt2
 	CMP R6, #OPTION_3					@ elif 3=multiply, not implemented
 	BEQ errmsg
-	
-	CMP R6, #OPTION_4				@ elif 4=divide, not implemented										
+	CMP R6, #OPTION_4					@ elif 4=divide, not implemented										
 	BEQ errmsg
-	
 	CMP R6, #OPTION_5					@ elif 5= exit
 	BEQ exit
 
+	B errmsg							@ else, if invalid entry, goto errmsg
+
 opt1: @ Addition
 	BL getOperands
-	LDRB R1, [R4]							@ addOp arg1=copy operand 1 into R1
-	LDRB R2, [R5]							@ addOp arg2=R2	
-	BL addOp
+	LDR R1, [R4]							@ addOp arg1=copy operand 1 into R1
+	LDR R2, [R5]							@ addOp arg2=R2	
+	BL addOp							
 	B main
 	
 opt2: @ Subtraction
+	BL getOperands
+	LDR R1, [R4]							@ addOp arg1=copy operand 1 into R1
+	LDR R2, [R5]							@ addOp arg2=R2	
+	BL subOp							
+	B main
 
 opt3:
 	@ TODO: later implementation
@@ -123,10 +125,10 @@ getOperands:
 	MOV R0, #0					@ 0=FD for stdin
 	BL getchar					@ flush whitespace in buffer left by scanf
 	LDR R0, =opStr			@ String essage wtih variable to be printed
-	LDR R4, =operand1			@ load operand2 address; R4=operand1
+	LDR R4, =operand1			@ load operand address; R4=operand1
 	MOV R1, #1					@ arg1: operand count
-	LDRB R2, [R4]				@ arg2: defrence and get oprand1 value; prints %x
-	LDRB R3, [R4]				@ arg3: same to print %d value
+	LDR R2, [R4]				@ arg2: defrence and get oprand1 value; prints %x
+	LDR R3, [R4]				@ arg3: same to print %d value
 	BL printf
 
 		@ //3 - get input - operand2
@@ -141,8 +143,8 @@ getOperands:
 	LDR R0, =opStr				@ String essage wtih variable to be printed
 	LDR R5, =operand2			@ load operand2 address; R5=operand2
 	MOV R1, #2					@ arg1: operand count
-	LDRB R2, [R5]				@ arg2: defrence and get oprand1 value; prints %x
-	LDRB R3, [R5]				@ arg3: same to print %d value
+	LDR R2, [R5]				@ arg2: defrence and get oprand1 value; prints %x
+	LDR R3, [R5]				@ arg3: same to print %d value
 	BL printf
 	POP {LR}					@ Restore LR from stack 
 	BX LR						@ return
@@ -164,11 +166,11 @@ exit:
 	opStr: .asciz	"Operand[%d] = 0x%x; %dd\n"
 	result: .asciz  ""
 	opPrompt: .asciz	"\nEnter operand %d > "
-	errStr: .asciz  "Option not implemented yet. Try again...\n"
-	in_format_specifer: .asciz "%d"
+	errStr: .asciz  "\nOption selected not recognized. Try again...\n"
+	in_format_specifer: .asciz "%ld"
 	inBuffer: .space 4, 0 @ Reserve 4 bytes and fill with zeros
-	operand1: .space 4, 0 @ Reserve 4 bytes and fill with zeros
-	operand2: .space 4, 0 @ Reserve 4 bytes and fill with zeros
+	operand1: .word 0x12345678  @ Reserve 4 bytes and fill with zeros
+	operand2: .word 0x12345678 @ Reserve 4 bytes and fill with zeros
 
 .section .note.GNU-stack, "", %progbits		@ disable GNU stack warning
 .end
