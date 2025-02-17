@@ -12,67 +12,38 @@
 		- This assignment will focus on implementing the menu system along and the add or subtract selection.
 		- floating-point capability added to this application later.
 
-		The example below shows the required menu system illustrating the operation of the add and subtract selections.
-		In addition, the exit selection operation is illustrated.
-
-		Note your implementation must handle negative numbers for integers.
-
-		Make sure to use functions to implement this application.
-
-		Here is the menu system required.
-
-		Calculator App
-
-		1-Add
-
-		2-Subtract
-
-		3-Multiply
-
-		4-Divide
-
-		5-Exit
-
-		Enter Choice > 1
-
-		Enter Operand 1 > 2
-
-		Enter Operant 2 > 2
-
-		2+2=4
-
-		5-Exit
-
-		Enter Choice > 5
-
-		Application Exit!
-
 
 		Write syscalls
 		R0 - 0=stdin; 1=stdout; 3=stderr
 		R2 - stores length of string
 		R7 - linux service 3=read; 4=write
 
+		R0-R3 - Temprory work registers
+		R4 - Operand1
+		R5 - Operand2
+		R6 -  
+
+		@ Scanf registers:
+		 R0: pointer to var containing format specifier %d, %c %h etc..
+		 R1: input data buffer to store char ( requires actual char value ie 0x31 = '1')
+		
+		@ Printf registers
+		 R0: contains address of string data var to print
+		 R1..R?: args used for variable print
  * ========================================================================================== 
  */
 
-@ Scanf registers:
-@ R0: pointer to var containing format specifier %d, %c %h etc..
-@ R1: input data buffer to store char ( requires actual char value ie 0x31 = '1')
-@
-@ Printf registers
-@ R0: contains address of string data var to print
-@ R1..R?: args used for variable print
+
 
 @ function includes: menus.s, addOps.s, subOpbs.s
 
 @ Define our variables
 .EQU _EXIT_CODE, 1
-.EQU OPTION_1, 0x31
-.EQU OPTION_2, 0x32
-.EQU OPTION_3, 0x33
-.EQU OPTION_4, 0x34
-.EQU OPTION_5, 0x35
+.EQU OPTION_1, 1
+.EQU OPTION_2, 2
+.EQU OPTION_3, 3
+.EQU OPTION_4, 4
+.EQU OPTION_5, 5
 
 .global main
 .section .text
@@ -81,59 +52,105 @@
 main:
 	BL menu_print				@ print menu; calls menu::menu_print()
 
-
-	// 2 - get input
-	@ Scanf
 retry:
-	LDR R0, =in_format_specifer
-	LDR R1, =input_data_buf
-
-	BL scanf
-	@ if using scanf a extra '\n' char from user hitting enter will be captured which causes the next time 
-	@ you run scanf (ie loop) to automatically run by itself again 
-	@call getchar to counter_act scanf's issue with '\n' capture. this will flush the buffer
-	BL getchar					
-	
-	
-	
+	// 2 - get input -menu option
+	LDR R0, =in_format_specifer	@ Set the format specifier (%d)
+	LDR R1, =operand1
+	BL scanf					@ call scanf to get value into R1 buffer
+	BL getchar					@ flush whitespace in buffer left by scanf				
+	// Load the value from scanf into R6
+	LDR R4, =operand1			@ loads address of input-data_buf; R4=operand1
+	LDR R6, [R4]				@ Arg1: dereference R2 to get actual 'char' and place in R1.
 
 
-	// Load the value from scanf into R1
-	LDR R0, =result
-	LDR R2, =input_data_buf 	@ loads address of input-data_buf
-	LDR R1, [R2]				@ dereference R2 to get actual 'char' and place in R1. 
-	BL printf
+	/* Debug only */
+	@ MOV R6, #1
+	@ MOV R4, #8
+	@ MOV R5, #9
 
-	MOV R4, #5
-	ADD R4, R4, #5
-	SUB R4, R4, #12
+	@ MOV R4, #5
+	@ ADD R4, R4, #5
+	@ SUB R4, R4, #12
 	
 	
 
 	// 3 - check what is selected by user
-	// if 1,2 = add subtract jump
-	// if 2,3 = print message, feature not implemented yet
-	// if 5 = exit
 
-	CMP R4, #OPTION_1					@ if addition, branch to add()
-	@ BEQ addOps
+	CMP R6, #OPTION_1					@ if addition, branch to add()
+	BEQ opt1
 	
-	CMP R4, #OPTION_2					@ elif 2=subract, branch to subtract()
+	CMP R6, #OPTION_2					@ elif 2=subract, branch to subtract()
+	BEQ errmsg
 	@ BEQ subOps
 	
-	CMP R4, #OPTION_3					@ elif 3=multiply, not implemented
+	CMP R6, #OPTION_3					@ elif 3=multiply, not implemented
 	BEQ errmsg
 	
-	CMP R4, #OPTION_4				@ elif 4=divide, not implemented										
+	CMP R6, #OPTION_4				@ elif 4=divide, not implemented										
 	BEQ errmsg
 	
-	CMP R4, #OPTION_5					@ elif 5= exit
+	CMP R6, #OPTION_5					@ elif 5= exit
 	BEQ exit
+
+opt1: @ Addition
+	BL getOperands
+	LDRB R1, [R4]							@ addOp arg1=copy operand 1 into R1
+	LDRB R2, [R5]							@ addOp arg2=R2	
+	BL addOp
+	B main
 	
+opt2: @ Subtraction
+
+opt3:
+	@ TODO: later implementation
+opt4:
+	@ TODO: later implementation
+
+
+getOperands:
+	PUSH {LR}					@ Save LR on stack 
+	// Get operand1
+	@ //3 - get input - operand2
+	
+	// Print prompt
+	LDR R0, =opPrompt			@ load op prompt string
+	MOV R1, #1					@ arg for operand 1 
+	BL printf					@ print operand prompt str
+
+	LDR R0, =in_format_specifer	@ Set the format specifier (%d)
+	LDR R1, =operand1			
+	BL scanf					@ call scanf to get value into R1 buffer
+	MOV R0, #0					@ 0=FD for stdin
+	BL getchar					@ flush whitespace in buffer left by scanf
+	LDR R0, =opStr			@ String essage wtih variable to be printed
+	LDR R4, =operand1			@ load operand2 address; R4=operand1
+	MOV R1, #1					@ arg1: operand count
+	LDRB R2, [R4]				@ arg2: defrence and get oprand1 value; prints %x
+	LDRB R3, [R4]				@ arg3: same to print %d value
+	BL printf
+
+		@ //3 - get input - operand2
+	LDR R0, =opPrompt			@ load op prompt string
+	MOV R1, #2					@ arg for operand 1 
+	BL printf					@ print operand prompt str
+	LDR R0, =in_format_specifer	@ Set the format specifier (%d)
+	LDR R1, =operand2			
+	BL scanf					@ call scanf to get value into R1 buffer
+	MOV R0, #0					@ 0=FD for stdin
+	BL getchar					@ flush whitespace in buffer left by scanf
+	LDR R0, =opStr				@ String essage wtih variable to be printed
+	LDR R5, =operand2			@ load operand2 address; R5=operand2
+	MOV R1, #2					@ arg1: operand count
+	LDRB R2, [R5]				@ arg2: defrence and get oprand1 value; prints %x
+	LDRB R3, [R5]				@ arg3: same to print %d value
+	BL printf
+	POP {LR}					@ Restore LR from stack 
+	BX LR						@ return
+
+
 errmsg: 
 	LDR R0, =errStr				@ load error string for printf
 	BL printf
-	
 	B main					@ go back to top(main)
 
 exit:
@@ -144,11 +161,14 @@ exit:
 
 .data
 .word 	@ 32bit align all variables
-	result: .asciz	"input data = %x\n"
-	prompt: .asciz	"Enter value > "
+	opStr: .asciz	"Operand[%d] = 0x%x; %dd\n"
+	result: .asciz  ""
+	opPrompt: .asciz	"\nEnter operand %d > "
 	errStr: .asciz  "Option not implemented yet. Try again...\n"
-	in_format_specifer: .asciz "%c"
-	input_data_buf: .space 4, 0 @ Reserve 4 bytes and fill with zeros
+	in_format_specifer: .asciz "%d"
+	inBuffer: .space 4, 0 @ Reserve 4 bytes and fill with zeros
+	operand1: .space 4, 0 @ Reserve 4 bytes and fill with zeros
+	operand2: .space 4, 0 @ Reserve 4 bytes and fill with zeros
 
 .section .note.GNU-stack, "", %progbits		@ disable GNU stack warning
 .end

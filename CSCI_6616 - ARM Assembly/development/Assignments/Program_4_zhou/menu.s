@@ -16,6 +16,44 @@
 	Enter choice > 2
 	input data = 32
 	Application Exit!
+
+
+	
+		The example below shows the required menu system illustrating the operation of the add and subtract selections.
+		In addition, the exit selection operation is illustrated.
+
+		Note your implementation must handle negative numbers for integers.
+
+		Make sure to use functions to implement this application.
+
+		Here is the menu system required.
+
+		Calculator App
+
+		1-Add
+
+		2-Subtract
+
+		3-Multiply
+
+		4-Divide
+
+		5-Exit
+
+		Enter Choice > 1
+
+		Enter Operand 1 > 2
+
+		Enter Operant 2 > 2
+
+		2+2=4
+
+		5-Exit
+
+		Enter Choice > 5
+
+		Application Exit!
+
 * ==========================================================================================
 */
 

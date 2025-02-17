@@ -13,8 +13,9 @@
  * 0x61(97d) - 7A(122d) = 'a' to 'z'
  */
 
-.section .text
 .global toupper	@ **** Global declaration allow other files to call this routine
+.section .text
+
 toupper:
 	PUSH {R4-R5}					@ Save the registers we used previously
 	@ optionally we can push LR if we want here too
