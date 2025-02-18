@@ -28,23 +28,18 @@
 
 subOp:
     PUSH {R4, R5, LR}			@ Save any previous values from caller()
-    
-    @ Note: operands are only 1-byte in size 
-    @ Operand1 
+    // Process Operand1 
     MOV R4, R1					@ assign operand1 to R4
-    @ SXTB R4, R4				@ Sign extend number into 32-bit
     TST R4, #0x80000000			@ Check if operand 1 is a negative num
     BEQ sub_cont				@ positive num; if Zero flag is set, branch to cont for operand2
     MOV R3, #0					@ SUBNE requires constant value to subtract
     MVN R4, R4					@ convert op1 to positive; get R4, compliment 
-
     ADD R4, R4, #1				@ add 1 to get twos comp
     SUBNE R4, R3, R4			@ If TST N=1(!= 0), convert to proper negative number
 
 sub_cont:
-    // Operand2
+    // Process Operand2
     MOV R5, R2					@ assign operand2 to R5
-	@ SXTB R5, R5				@ Sign extend number into 32-bit
     TST R2, #0x80000000			@ Check if operand 2 is a negative num
     BEQ sub_sub					@ positive num; if zero flag is set, branch to add
     MOV R3, #0					@ SUBNE requires constant value to subtract
@@ -59,11 +54,8 @@ sub_sub:
     SUB R3, R4, R5				@ Add store to R1 which is arg1 for printf
     LDR R0, =subOp_result		@ string output arg1:operand1; arg2=op2; arg3=result
     BL printf
-
     POP {R4, R5, LR}			@ Restore caller() register values and LR
-    
     BX LR						@ return to main caller()
-
 
 
 .data
