@@ -7,7 +7,7 @@
 # --------------------------------------------------------------------------------------------
 
 # TARGET
-PROJECT_NAME := p4_calc
+PROJECT_NAME := p5_calc
 # SRCS := $(wildcard *.s)
 SRCS := calc.s menu.s addOp.s subOp.s
 TARGET_OBJ := $(PROJECT_NAME).o
@@ -28,7 +28,7 @@ $(OBJS) : $(SRCS)
 	as -g $^ -o $(TARGET_OBJ)
 
 $(PROJECT_NAME): $(OBJS)
-	$(CXX) -g -O0 -o $(PROJECT_NAME) $(TARGET_OBJ)
+	$(CXX) -march="armv7-a" -g -O0 -o $(PROJECT_NAME) $(TARGET_OBJ)
 
 clean:
 	$(info [!] Cleaning up previous built objects...)
