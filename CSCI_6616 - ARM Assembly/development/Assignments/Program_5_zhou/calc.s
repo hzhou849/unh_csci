@@ -90,7 +90,8 @@ opt1: @ Addition
 	MOV R1, R4					@ addOp arg1=operand1
 	MOV R2, R5					@ addOp arg2=operand2
 	MOV R4, R3					@ arg4 = decimal_flag
-	BL addOp					@ Branch to addOp.s 
+	BL addOp					@ Branch to addOp.s; return result in R0 
+	BL convertQ					@ Convert to Qformat;Uses result R0 from addOp as arg1
 	B main						@ Restart main loop
 	
 opt2: @ Subtraction
@@ -105,6 +106,54 @@ opt3:
 opt4:
 	@ TODO: later implementation
 
+convertQ: @ Convert to Q8.8 format; R0: input arg decimal number to convert
+// Shift bits to outBuffer to print
+	// 1011.1100 0000
+
+	PUSH {R4-R8, LR}
+	MOV R4, R0					@ Move decimal result into R4 for processing
+	MOV R3, #17					@ 8bits + '.' + 8bits_fraction = 17 chars
+	MOV R5, #16					@ output buffer is 0-index; 17-1 = 0to16
+	LDR R1, =outBuffer			@ output string to write to
+
+	convert_bits:
+		CMP R3, #0				@ loop until R3 count is 0
+		BEQ print_binary
+		CMP R3, #9				@ at this position, insert '.' decimal point
+		BEQ insert_dec		
+	cont:
+		SUB R3, R3, #1			@ decrement overall count
+		TST R4, #1				@ test AND mask 0x1 to test LSB on result
+		LSR R4, R4, #1			@ right shift for next bit
+		BEQ bit0				@ EQ (z=0) so bit is 0
+		BNE bit1					@ NE (z=0) so bit is 1
+		
+	bit0:
+		MOV R0, #0x30			@ ascii '0' 0x30;48d
+		STRB R0, [R1, R3]		@ write '0' to output buffer 
+		@ SUB R5, R5, #1			@ decrement counter
+		B convert_bits
+	
+	bit1:
+		MOV R0, #0x31			@ ascii '1' 0x31;49d
+		STRB R0, [R1, R3]		@ write '1' to output buffer 
+		@ SUB R5, R5, #1			@ decrement counter
+		B convert_bits
+
+	insert_dec:
+		MOV R0, #'.'			
+		SUB R3, R3, #1			@ move to the next slot so not to overwrite last value in buffer
+		STRB R0, [R1, R3]		@ write '.' to outbuffer
+		B cont					@ resume writing bits
+
+	print_binary:
+		LDR R0, =result_msg
+		LDR R1, =outBuffer
+		BL printf
+	
+	POP {R4-R8, LR}
+	BX LR
+		
 
 getOperands: @ Get operands from user input
 			 @ Returns: R0 operand1 
@@ -273,13 +322,15 @@ exit:
 	errStr: .asciz  "\nOption selected not recognized. Try again...\n"
 	
 	menu_fmt_specifer: .asciz "%d"
-	opr_fmt_specifer: .asciz "%s"	@ used for float
+	opr_fmt_specifer: .asciz "%s"		@ used for float
 	
-	menuOpt:  .space 4, 0		@ 4 bytes, zero initialized
-	operand1: .space 32, 0   	@ Needs to be big enough for string  Reserve 32 bytes and fill with zeros
-	operand2: .space 32, 0 		@ Reserve 4bytes and fill with zeros
+	menuOpt:  	 .space 4, 0				@ 4 bytes, zero initialized
+	operand1: 	 .space 32, 0   			@ Needs to be big enough for string  Reserve 32 bytes and fill with zeros
+	operand2: 	 .space 32, 0 				@ Reserve 4bytes and fill with zeros
 	option_buff: .space 8, 0
-	numBuffer:  .space 64, 0	@ 4 bytes, zero initialized
+	numBuffer:   .space 64, 0			@ 4 bytes, zero initialized
+	result_msg:  .asciz "Q8.8: %s\n"
+	outBuffer: 	 .space 24, 0			@ final result string to printf
 
-.section .note.GNU-stack, "", %progbits		@ disable GNU stack warning
+.section .note.GNU-stack, "", %progbits	@ disable GNU stack warning
 .end
