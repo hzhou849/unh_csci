@@ -187,9 +187,8 @@ start_convert: @ Args: R1=input_operand;
 
 	MOV R0, #0					@ R0 = Byte iterator count
 	LDRB R2, [R1]				@ Load first byte of operand string
-	CMP R2, #'-'				@ check for '-' (45d; 0x2D)
-
 	// If '-' == true, set flag and increment to next character
+	CMP R2, #'-'				@ check for '-' (45d; 0x2D)
 	MOVEQ R7, #1				@ assign R7 negative flag =1 if '-' found
 	ADDEQ R0, R0, #1			@ increment iterator
 
@@ -211,8 +210,6 @@ start_convert: @ Args: R1=input_operand;
 		B dec_check					@ go back to top of loop
 
 	check_done: 
-		// -- move final values to R0, R1... 
-		
 		//if decimal found and R0 is greater than 2nd byte, B errmsg
 		CMP R8, #1					@ check if we found a decimal at position 2?
 		BNE str_dec					@ continue to convert numbers
@@ -250,16 +247,12 @@ start_convert: @ Args: R1=input_operand;
 		BL atoi						@ call atoi to convert the string to decimal number
 									@ R0 should have the decimal result now
 		MOV R4, R0					@ Move whole number into reserved R4 register
-
-		// Test print conversion
-		LDR R0, =result
+		LDR R0, =result				@ Test result by printing to terminal
 		MOV R1, R4
 		BL printf
-
-		//					
 		MOV R0, R4					@ Move the whole number converted operand to R0 to be returned
-		POP {R4-R8, LR}
-		BX LR
+		POP {R4-R8, LR}				@ restore registers from stack
+		BX LR					 	@ Return to getOperands()	
 
 errmsg: 
 	LDR R0, =errStr				@ load error string for printf
@@ -282,10 +275,9 @@ exit:
 	menu_fmt_specifer: .asciz "%d"
 	opr_fmt_specifer: .asciz "%s"	@ used for float
 	
-	@ strBuffer: .space 20, 0 @ Reserve 4 bytes and fill with zeros
-	menuOpt:  .space 4, 0	@ 4 bytes, zero initialized
-	operand1: .space 32, 0   @ Needs to be big enough for string  Reserve 32 bytes and fill with zeros
-	operand2: .space 32, 0  @ Reserve 4bytes and fill with zeros
+	menuOpt:  .space 4, 0		@ 4 bytes, zero initialized
+	operand1: .space 32, 0   	@ Needs to be big enough for string  Reserve 32 bytes and fill with zeros
+	operand2: .space 32, 0 		@ Reserve 4bytes and fill with zeros
 	option_buff: .space 8, 0
 	numBuffer:  .space 64, 0	@ 4 bytes, zero initialized
 
