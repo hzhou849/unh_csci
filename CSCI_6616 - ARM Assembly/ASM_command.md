@@ -24,12 +24,17 @@
 | SXTB | sign extend pad with sign a number to 32bit (only works if num is <32bit, otherwise will trncate)R4, R4 |
 
 ### Condition Code	Meaning with cmp	Status of Flags
-EQ	Equal	Z==1
-NE	Not Equal	Z==0
-GT	Signed Greater Than	(Z==0) && (N==V)
-LT	Signed Less Than	N!=V
-GE	Signed Greater Than or Equal	N==V
-LE	Signed Less Than or Equal	(Z==1)
+| Comamnd | Description | 
+| ------- | ----------- |
+| EQ |	Equal	Z==1 |
+| NE |	Not Equal	Z==0 |
+| GT |	Signed Greater Than	(Z==0) && (N==V) |
+| LT |	Signed Less Than	N!=V |
+| GE |	Signed Greater Than or Equal	N==V |
+| LE |	Signed Less Than or Equal	(Z==1) |
+
+
+## CPSR - Status register
 
 ### LDR
 * Load from ram/memory into register
