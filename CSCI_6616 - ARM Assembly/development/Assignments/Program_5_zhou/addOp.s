@@ -57,11 +57,11 @@ add_add:
     MOV R2, R5					@ store operand2 in printf arg2 to be printed
     ADD R3, R4, R5				@ Add store to R1 which is arg1 for printf; r3 will hold the result
     LDR R0, =addOp_result		@ string output arg1:operand1; arg2=op2; arg3=result
-	PUSH {R3}					@ save sum, printf will clear this register
+	PUSH {R3}					@ save sum, in case printf will clear this register
     BL printf
     POP {R3}					@ restore sum back into R3
 	
-	// 11.75 in Q8.8 should be 1011.1100
+	// Converting to Q8.8 so scale to 2^8 = num * 256
 	// Achieve this by mul sum * 256
 	// Since the sum has been scaled we need to divide by 100 to get the correct binary decimal place
 	MOV R0, #SCALE_FACTOR		@ move scale factor to R0
@@ -70,14 +70,13 @@ add_add:
 	// insert scaled printout here too
 	MOV R0, #DIVISOR_CORRECTION	@ #100 to correct scale/decimal 
 	UDIV R4, R1, R0				@ R2 = SUM/ 100
-
-
-	LDR R0, =afterDivide 		@ Load str msg
-	MOV R1, R4					@ load divide result for printf
-	BL printf
+	
+	@ LDR R0, =afterDivide 		@ Load str msg
+	@ MOV R1, R4					@ load divide result for printf
+	@ BL printf
 
 	MOV R0, R4					@ load result in R0 for return 
-	POP {R4-R8, LR}			@ Restore caller() register values and LR
+	POP {R4-R8, LR}				@ Restore caller() register values and LR
     BX LR						@ return to main caller()
 
 

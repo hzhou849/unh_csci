@@ -27,7 +27,7 @@
 .section .text
 
 subOp:
-    PUSH {R4, R5, LR}			@ Save any previous values from caller()
+    PUSH {R4-R8, LR}			@ Save any previous values from caller()
     // Process Operand1 
     MOV R4, R1					@ assign operand1 to R4
     TST R4, #0x80000000			@ Check if operand 1 is a negative num
@@ -53,13 +53,32 @@ sub_sub:
     MOV R2, R5					@ store operand2 in printf's arg2 to be printed
     SUB R3, R4, R5				@ Add store to R1 which is arg1 for printf
     LDR R0, =subOp_result		@ string output arg1:operand1; arg2=op2; arg3=result
-    BL printf
-    POP {R4, R5, LR}			@ Restore caller() register values and LR
+	PUSH {R3}					@ save result in case we loose R3
+    BL printf					
+	POP {R3}
+
+
+	// Converting to Q8.8 so scale to 2^8 = num * 256
+	// Since the sum has been scaled we need to divide by 100 to get the correct binary decimal place
+	MOV R0, #SCALE_FACTOR		@ move scale factor to R0
+	MUL R1, R3, R0				@ Sum * 256
+
+	// insert scaled printout here too
+	MOV R0, #DIVISOR_CORRECTION	@ #100 to correct scale/decimal 
+	UDIV R4, R1, R0				@ R2 = SUM/ 100
+	
+	@ LDR R0, =sub_afterDivide 	@ Load str msg
+	@ MOV R1, R4					@ load divide result for printf
+	@ BL printf
+
+	MOV R0, R4					@ load result in R0 for return 
+    POP {R4-R8, LR}				@ Restore caller() register values and LR
     BX LR						@ return to main caller()
 
 
 .data
 .word		@ 32bit align all variables
-subOp_result: .asciz	"%d - %d = %d"		@str: arg1=<op1>; arg2=<op2>; arg3=result
+	subOp_result: .asciz	"%d - %d = %d\n"		@str: arg1=<op1>; arg2=<op2>; arg3=result
+	sub_afterDivide: 	.asciz "After divide /100: %d\n"
 .section	.note.GNU-stack, "",%progbits
 .end

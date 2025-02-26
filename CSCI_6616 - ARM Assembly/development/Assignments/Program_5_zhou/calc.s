@@ -96,9 +96,16 @@ opt1: @ Addition
 	
 opt2: @ Subtraction
 	BL getOperands
-	LDR R1, [R4]				@ addOp arg1=copy operand 1 into R1
-	LDR R2, [R5]				@ addOp arg2=R2	
+	MOV R7, R2					@ update negative_flag
+	MOV R8, R3					@ update decimal point
+	MOV R4, R0					@ update R4=operand1
+	MOV R5, R1					@ update R5=operand2
+	
+	MOV R1, R4					@ addOp arg1=operand1
+	MOV R2, R5					@ addOp arg2=operand2
+	MOV R4, R3					@ arg4 = decimal_flag
 	BL subOp					@ branch to subOp.s
+	BL convertQ					@ Convert to Qformat;Uses result R0 from addOp as arg1
 	B main						@ restart main loop
 
 opt3:
@@ -107,9 +114,7 @@ opt4:
 	@ TODO: later implementation
 
 convertQ: @ Convert to Q8.8 format; R0: input arg decimal number to convert
-// Shift bits to outBuffer to print
-	// 1011.1100 0000
-
+	// Shift bits to outBuffer to print
 	PUSH {R4-R8, LR}
 	MOV R4, R0					@ Move decimal result into R4 for processing
 	MOV R3, #17					@ 8bits + '.' + 8bits_fraction = 17 chars
@@ -157,13 +162,6 @@ convertQ: @ Convert to Q8.8 format; R0: input arg decimal number to convert
 
 getOperands: @ Get operands from user input
 			 @ Returns: R0 operand1 
-
-	// 1. Get operands are now string types
-
-	// 2. Parse to check for decimal 
-	   // check negative char in MSB byte1, 
-	   // check for decimals 
-	// if decimal convert integer portion 
 
 	PUSH {R4-R8, LR}			@ Save LR on stack 
 	
@@ -271,11 +269,6 @@ start_convert: @ Args: R1=input_operand;
 		BGT errmsg					@ if iterator is > position2, error. Decimal too high
 	str_dec:
 		// Convert ascii to decimal; 0x30|48d =0; to 0x39|57d
-
-		@ // 1. start conversion, check R7 if this is a neg number, R0 iterator
-		@ // will start at 1, else 0
-		@ CMP R7, #0					@ Check if R7 is 0=positive number
-		@ MOV R0, #0					@ Init iterator starts at 0
 		LDR R6, =numBuffer			@ R6 will be the tempbuffer to put parsed chars
 		
 		parse_loop:
@@ -296,9 +289,11 @@ start_convert: @ Args: R1=input_operand;
 		BL atoi						@ call atoi to convert the string to decimal number
 									@ R0 should have the decimal result now
 		MOV R4, R0					@ Move whole number into reserved R4 register
-		LDR R0, =result				@ Test result by printing to terminal
-		MOV R1, R4
-		BL printf
+		
+		@ LDR R0, =result				@ Test result by printing to terminal
+		@ MOV R1, R4
+		@ BL printf
+		
 		MOV R0, R4					@ Move the whole number converted operand to R0 to be returned
 		POP {R4-R8, LR}				@ restore registers from stack
 		BX LR					 	@ Return to getOperands()	
