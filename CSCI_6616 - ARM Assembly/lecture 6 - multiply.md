@@ -13,6 +13,24 @@ Basic multiplication (mul).
 * smulbb, smulbt, smultb, etc.: Signed multiplication variants.
 * umull, smlal, etc.: Variants for long multiplication or accumulating with signed and unsigned operands.
 
+```asm
+ @ Example multiple 32 bit with smull
+    .text
+    .global _start
+
+_start:
+    mov r0, #10       ; r0 = 10 (signed)
+    mov r1, #-5       ; r1 = -5 (signed)
+
+    smull r2, r3, r0, r1  ; r2:r3 = r0 * r1, signed multiplication
+
+    ; After execution:
+    ; r2 = -50 (lower 32 bits of the result)
+    ; r3 = 0 (upper 32 bits of the result, because the result fits in 32 bits)
+    ; The full result of 10 * (-5) is -50.
+    
+```
+
 4. Beware of the Limitations for Each!
 * Each ARM multiply instruction has certain limitations, and understanding these is crucial for using them effectively. Some important limitations might include:
 
