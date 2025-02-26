@@ -4,6 +4,10 @@
 
 | Command | Description | 
 | ------- | ----------- |
+| ADD ```<option>``` | ie ADDEQ add if previous compare eq0 then add |
+| SUB ```<option>```| |
+| SUBS | Subtract and update status registers |
+| ---- | ---------------|
 | MOV | Moves within registers LSB |
 | MOVW | Similar to ```MOV``` but LSB restricts to 16-bit word only |
 | MOVT | Moves top MSB bits [MSB|LSB]
