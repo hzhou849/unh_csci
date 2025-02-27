@@ -34,6 +34,8 @@ BL scanf			@ branch scanf call
 ```
 
 ## Print output - stdio
+
+## Print output - printf()
 #### Registers args
 * output string = ```"messages include: %d %c"```
 R0: ```=<output_string>``` pointer to output string variable <br>
