@@ -7,7 +7,7 @@
 ```asm
 ```
 
-### .data directive strings trick for size
+## Calculate size of string using .data directive strings trick for size
 *
 * you can use ```.``` this is special Assembler variable that contains
 the current address the assembler is on as it works.
@@ -19,8 +19,6 @@ myStr = the start address is 0x0002 to 0x0x008
 @ Math operation performed: [(.) - myStr]
 so 0009 - 0002 = 7 (bytes: 2,3,4, 5,6,7,8) = length of myStr=7
 ```
-
-* How does it know current address is right after stirng??? is it because of .myStr_size declaration after string?
 * What happens if we declare myStr_size after anoter variable will the size be correct?
 * Assuming this is calculated at compile time??? need to test this!!!!!!
   
