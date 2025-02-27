@@ -1,14 +1,29 @@
 ## STDIO
 
-## STDIN
+## Read Input -  STDIN
 * using ASM stdin
-* R0: 1=stdio
-* R1: =```<input_buffer>```
+* R0: ```0=stdin``` - read mode
+* R1: ```=<input_buffer>``` - allow enough size in input buffer for '\n' or will overflow
+* R2: ```<length_of_string>``` - Note: +1 for '\n' 
+* R7: ```3``` - Linux service code 3=read mode
 ```asm
+		MOV R0, #0			@ set read from: 0=stdin
+		LDR R1, =inbuffer	@ load input buffer into R1
+		MOV R2, #2			@ Read n char + '\n'
+		MOV R7, #3			@ Linux service code 3=read mode
+		SVC 0				@ syscall execute
 ```
 
+## Read input - scanf
+* With scanf this will simplify the code alot more
+* Sometimes might capture extra character, allow extra buffer size for '\n' or '\0'
+* if '\n' is captured by mistake and causing auto enter issues use:
+```asm
+MOV R0, #0    @ 0=FD for stdin
+BL getchar    @ flush whitespace in buffer left by scanf
+
+
 ## Calculate size of string using .data directive strings trick for size
-*
 * you can use ```.``` this is special Assembler variable that contains
 the current address the assembler is on as it works.
 * In this case, the current address right after the string itself
