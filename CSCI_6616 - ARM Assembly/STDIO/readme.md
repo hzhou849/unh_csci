@@ -1,7 +1,7 @@
 ## STDIO
 
 ## Read Input -  STDIN
-* using ASM stdin
+#### Register args
 * R0: ```0=stdin``` - read mode
 * R1: ```=<input_buffer>``` - allow enough size in input buffer for '\n' or will overflow
 * R2: ```<length_of_string>``` - Note: +1 for '\n' 
@@ -15,13 +15,23 @@
 ```
 
 ## Read input - scanf
-* With scanf this will simplify the code alot more
+#### Register args
+R0: ```=<format_specifier>``` <br>
+R1: ```=<input_buffer``` <br>
+
+* With scanf this will simplify the code alot more 
 * Sometimes might capture extra character, allow extra buffer size for '\n' or '\0'
 * if '\n' is captured by mistake and causing auto enter issues use:
 ```asm
 MOV R0, #0    @ 0=FD for stdin
 BL getchar    @ flush whitespace in buffer left by scanf
-
+```
+* example - scanf
+```asm
+LDR R0, =<format_specifier>	@ %s, %d, %c etc...
+LDR R1, =<inputBuffer>		@ pointer to .data variable
+BL scanf			@ branch scanf call
+```
 
 ## Calculate size of string using .data directive strings trick for size
 * you can use ```.``` this is special Assembler variable that contains
