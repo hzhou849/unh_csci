@@ -33,6 +33,24 @@ LDR R1, =<inputBuffer>		@ pointer to .data variable
 BL scanf			@ branch scanf call
 ```
 
+## Print output - stdio
+#### Registers args
+* output string = "messages include: %d %c"
+R0: ```=<output_string>``` pointer to output string variable <br>
+R1: ```arg1``` arg for output_string <br>
+Rx: ```arg<x>``` <br>
+* example:
+```asm
+LDR R0, =opStr		@ String message wtih variable to be printed
+MOV R1, #1		@ arg1: operand counter
+MOV R2, R4		@ arg2: derefence and get oprand1 value; prints %c
+BL printf
+.data
+.word 	@ 32bit align all variables
+	opStr: .asciz	"Operand[%d] = str: %s\n"
+```
+
+
 ## Calculate size of string using .data directive strings trick for size
 * you can use ```.``` this is special Assembler variable that contains
 the current address the assembler is on as it works.
