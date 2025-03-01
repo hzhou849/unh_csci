@@ -35,7 +35,7 @@ BL scanf			@ branch scanf call
 
 ## Print output - stdout,stderr
 #### Registers:
-R0: ```<output_mode>```		@ 1=stdout, 0=stdin 3=stderr <br>
+R0: ```<output_mode>```		@ 1=stdout, 0=stdin 2=stderr <br>
 R1: ```=<output_string>```	@ output buffer string <br>
 R2: ```<length of buffer>```	
 R7: ```<linux service code=4>``` @ 4=write 3=read <br>
