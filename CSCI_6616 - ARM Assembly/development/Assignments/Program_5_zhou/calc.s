@@ -172,8 +172,8 @@ getOperands: @ Get operands from user input
 	LDR R0, =opr_fmt_specifer	@ Set the format specifier (%s)
 	LDR R1, =operand1			
 	BL scanf					@ call scanf to get value into R1 buffer
-	@ MOV R0, #0					@ 0=FD for stdin
-	@ BL getchar					@ flush whitespace in buffer left by scanf
+	@ MOV R0, #0				@ 0=FD for stdin
+	@ BL getchar				@ flush whitespace in buffer left by scanf
 
 	// Print operand1
 	LDR R0, =opStr				@ String message wtih variable to be printed
@@ -189,8 +189,8 @@ getOperands: @ Get operands from user input
 	LDR R0, =opr_fmt_specifer	@ Set the format specifier (%s)
 	LDR R1, =operand2			
 	BL scanf					@ call scanf to get value into R1 buffer
-	@ MOV R0, #0					@ 0=FD for stdin
-	@ BL getchar					@ flush whitespace in buffer left by scanf
+	@ MOV R0, #0				@ 0=FD for stdin
+	@ BL getchar				@ flush whitespace in buffer left by scanf
 
 	// Print operand1
 	LDR R0, =opStr				@ String message wtih variable to be printed

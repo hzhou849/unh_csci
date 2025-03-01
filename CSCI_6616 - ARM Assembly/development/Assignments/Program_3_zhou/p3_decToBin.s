@@ -15,7 +15,7 @@
  * 4.  Render the converted input back out to STDOUT.
  *
  * Write syscalls
- * R0 - 0=stdin; 1=stdout; 3=stderr
+ * R0 - 0=stdin; 1=stdout; 2=stderr
  * R2 - stores length of string
  * R7 - linux service 3=read; 4=write
 
