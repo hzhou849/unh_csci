@@ -33,7 +33,13 @@ LDR R1, =<inputBuffer>		@ pointer to .data variable
 BL scanf			@ branch scanf call
 ```
 
-## Print output - stdio
+## Print output - stdout,stderr
+#### Registers:
+R0: ```<output_mode>```		@ 1=stdout, 0=stdin 3=stderr
+R1: ```=<output_string>```	@ output buffer string
+R2: ```<length of buffer>```	
+R7: ```<linux service code=4>``` @ 4=write 3=read
+SVC 0 				@ execution interrupt for syscall
 
 ## Print output - printf()
 #### Registers args
