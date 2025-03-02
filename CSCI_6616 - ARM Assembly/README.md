@@ -276,7 +276,9 @@ is translated to
 * set(1); Clear=0
 | Bit | Flag | Description |
 | 31 | N | Negative: set(1) if signed value is negative and clear(0) if positive |
-| 30 | Z | Zero 
+| 30 | Z | Zero: set(1) if result is zero; clear if result is non-zero |
+| 29 | C | Carry: set(1) - addition has overflow, subtraction if borrow; shifting holds last bit shifted out |
+| 28 | V | OverFlow: if signed overflow has occured; or instruction might use this for setting error |
 ![image](https://github.com/user-attachments/assets/08b70527-4e09-4c2d-af95-4e4554a6ac0f)
 
 
@@ -288,15 +290,28 @@ is translated to
 ## ARM Instructions
 * execute on one clock cycle
 * fixed 32bit instruction
+  
+| Bit [31:28] | [27:25] | [24:21] | [20] | [19:16] | [15:12] | [11:0] |
+| ------------| ------- | ------- | ---- | ------- | ------- | ------ | 
+| Condition | Operand_type | OpCode | set condition | Operand Register | Destination Register | Immediate Operand |
 
+| Operation | Bit Position | # of bits | Description |
+| --------- | ------------ | --------- | ----------- |
+| Condition | 31: 28 | 4bits | All instructions start with 0xE = 1110 | 
+| Operand_type | 27:25 | 3bits | 000=operand is register; 001=operand is immediate | 
+| OpCode | 24:21 | 4 | Operation instruction; ie ADD, 1101=MOV, etc | 
+| Set Condition | 20 | 1 | bit indicating if we should update CPSR register. Set if want following instructino to affect branch instructions |
+| Operand Reg | 19:16 | 4 | Operand register Rn number|
+| Desitination Reg | 15:12 | 4 | Destination Rd register number |
+| Immediate Operand | 11:00 | 12bits | Data values - put direct value here instead of using another register to store it | 
 
 ```
 / example break down:
-HEX: 0xE3a00001 0: e3a00001 mov r0, #1
+HEX: 0xE3a00001 0: e3a00001  mov r0, #1
 BINARY: 1110|0011|1010|0000|0000|0000| 0000|0001|
 ARM instruction format: |1110|001|1 101| 0| 0000| 0000 |0000 0000 0001|  
 1) CONDITION = E = All instructions start with 0xe = 1110 [4 bits; 31-28]
-2) OPERAND type  = 001 [3 bits; 27-25]
+2) OPERAND type  = 001 [3 bits; 27-25] = will be using immediate operand
 3) OPCODE = 1101 MOV 		[4 bits; 24-21]
 4) Set Condition code =0  [1 bit; 20]
 5) Operand Register = R0=0000 [4bits; 19-16]
