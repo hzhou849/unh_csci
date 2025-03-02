@@ -260,11 +260,36 @@ is translated to
 | \anything-else | anything-else |
 
 
+## ARm registers
+| Registers | Name | Description |
+| --------- | ------ |----------- |
+| R0 - R3 | |arguments/results |
+| R4 - R10 |  | Local variables in function |
+| R11  | FP | Coding C convenetion uses this for Frame Pointer |
+| R12 | IP | Intra-procedure call; It is often used for temporary computations or as an intermediate register | 
+| R13 | SP | Stack pointer |
+| R14 | LR | Link Register used in conjunction with ```BL``` to return from |
+| R15 | PC | Program counter | 
+| CPSR | Status  | CurrentProgramStatusRegister |
+
+##### CPSR bit map:
+* set(1); Clear=0
+| Bit | Flag | Description |
+| 31 | N | Negative: set(1) if signed value is negative and clear(0) if positive |
+| 30 | Z | Zero 
+![image](https://github.com/user-attachments/assets/08b70527-4e09-4c2d-af95-4e4554a6ac0f)
+
+
+![image](https://github.com/user-attachments/assets/9d0480a1-6ba9-4e80-a8bc-87ffb3db4ee6)
+
 
 
 
 ## ARM Instructions
 * execute on one clock cycle
+* fixed 32bit instruction
+
+
 ```
 / example break down:
 HEX: 0xE3a00001 0: e3a00001 mov r0, #1
