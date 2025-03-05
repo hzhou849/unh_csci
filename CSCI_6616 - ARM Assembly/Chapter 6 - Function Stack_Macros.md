@@ -245,7 +245,36 @@ POP {R4-R12, PC}				@ Restore regs adnd trun
  * We also eliminate push pop calls to save registers 
  * Try to only use R0-R3 registers in macro so there is no conflict and avoids complications
 
-Calling file
+Macro example with registers
+```asm
+.global main @expose entry
+
+@=========================================================================
+@define macro with name and params
+.MACRO testBranch cc,reg, b2
+	cmp \reg, #0 		@macro body element inserts reg param
+	b \cc \b2 		@macro body element inserts cc & b2 param
+.ENDM
+@=========================================================================
+@entry
+main:	mov r0,#0
+
+testBranch ne,r0,cont 	@macro invoked with params
+@ simulates cmp r0,#0
+@ bne cont
+
+testBranch eq,r0,cont 	@macro invoked with params
+@cmp r0,#0
+@beq cont
+
+cont: 	mov r0,#0 		@call exit service
+ 	mov r7,#1
+	svc 0
+
+.end
+```
+
+Calling file  - Macro example with memory variables
 ```asm
 
  .include "uppermacro.s"
@@ -253,6 +282,12 @@ Calling file
  
 main: 
 	toupper tststr buffer	@ call our macro here, code is replaced with toupper block
+
+@ NOTE: the variables are in the calling function, not the macro definition?
+ .data
+ tststr:	.asciz	"this is our Test String that we will convert.\n"
+ tststr2:	.asciz	"A second string to uppercase!!\n"
+ buffer:	.fill 255, 1, 0
 ```
 
 Macro definition file
