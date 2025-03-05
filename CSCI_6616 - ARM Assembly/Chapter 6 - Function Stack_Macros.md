@@ -251,15 +251,15 @@ Macro example with registers
 
 @=========================================================================
 @define macro with name and params
-.MACRO testBranch cc,reg, b2
+.MACRO testBranch condCode,reg, b2
 	cmp \reg, #0 		@macro body element inserts reg param
-	b \cc \b2 		@macro body element inserts cc & b2 param
+	b \condCode \b2		@macro body element inserts cc & b2 param
 .ENDM
 @=========================================================================
 @entry
 main:	mov r0,#0
 
-testBranch ne,r0,cont 	@macro invoked with params
+testBranch ne,r0,cont 	@macro invoked with params, they are literally passed as face value
 @ simulates cmp r0,#0
 @ bne cont
 
