@@ -15,6 +15,8 @@
 @ raa 2/26/25 added conditional execution
 @
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+@ Professor's shit code, see /math_functions/modN.s for my version
 .global modN
 .text
 modN:	mov r4,#0	@N starts at 0

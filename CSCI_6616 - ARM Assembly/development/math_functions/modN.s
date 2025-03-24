@@ -7,8 +7,8 @@ File modN.s
 			 subtraction
 
 @Registers
-R0 - contains number
-R1 - mod
+R0 - operand 1contains number (dividend)
+R1 - mod (divisor)
 
 @ Returns
 R0 - Remainder
@@ -39,6 +39,7 @@ cont:	SUB R0, R1			@ R0 = R0(number)-R1(mod) ie 20 mod 4
 
 		CMP R0, #0			@ Check a second time if number is 0 or <0
 		BEQ done			@ if number is even division ==0, done
+		// WE only enter here if <0
 		ADD R0, R1			@ Add back the mod number, because we subtracted too far
 		SUB R4, #1			@ Roll back the count bc we went too far
 		

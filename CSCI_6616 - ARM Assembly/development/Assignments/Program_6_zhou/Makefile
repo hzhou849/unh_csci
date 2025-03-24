@@ -1,15 +1,15 @@
 # --------------------------------------------------------------------------------------------
 # Makefile GCC ver
 # CSCI 6616 - ARM Assembly
-# Project: P5 - Calculater add/subtract
+# Project: P5 - Ring Buffer
 # 
 # @brief: Multiple file compilation
 # --------------------------------------------------------------------------------------------
 
 # TARGET
-PROJECT_NAME := p5_calc
+PROJECT_NAME := p6_ring_buffer
 # SRCS := $(wildcard *.s)
-SRCS := calc.s menu.s addOp.s subOp.s
+SRCS := main.s menu.s modN.s
 TARGET_OBJ := $(PROJECT_NAME).o
 OBJS := $(patsubst %.s, %.o, $(SRCS))
 CXX := gcc
