@@ -59,8 +59,23 @@ BL printf
 .word 	@ 32bit align all variables
 	opStr: .asciz	"Operand[%d] = str: %s\n"
 ```
-
-
+### extra variables with stack prinf
+```
+  LDR R0, =status_str
+    MOV R1, R5              @ arg1= status(R5)
+    MOV R2, R7              @ arg2= head(R7)
+    MOV R3, R8              @ arg3= tail(R8) is always last postion written +1
+    // Printf arg R1-R3 is full, need to push to stack
+    MOV R4, #CAPACITY_SIZE  @ arg5= Total_capacity_size
+    PUSH {R4}               @ Push capcity size value to stack 
+    MOV R4, R6              @ arg4= current size(R6)
+    PUSH {R4}               @ push to stack for output
+    @ R5 = arg5
+    @ PUSH {R5-R8}
+    BL printf
+    ADD SP, SP, #8          @ delete the 2 x(4bytes) values pushed into stack
+#status_str: .asciz "\nBuffer status: [%d]; Head_offset:[+%d]; tail_offset: [+%d]; size [%d]/total_capacity: [%d]\n"
+```
 ## Calculate size of string using .data directive strings trick for size
 * you can use ```.``` this is special Assembler variable that contains
 the current address the assembler is on as it works.
