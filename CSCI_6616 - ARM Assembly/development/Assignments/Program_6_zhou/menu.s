@@ -41,11 +41,27 @@ menu_print_exit: @ print the menu exit msg
 	POP {LR}						@ restore LR
 	BX LR							@ return to caller()
 
+menu_print_write_full:
+	PUSH {R4-R12, LR}
+	LDR R0, =menu_str_full
+	BL printf
+    POP {R4-R12, LR}
+	BX LR
+
+menu_print_empty:
+	PUSH {R4-R12, LR}
+	LDR R0, =menu_str_empty
+	BL printf
+    POP {R4-R12, LR}
+	BX LR
+
 
 .data
 .word @ 32 bit align all variables
-	menu_str_options: 	.asciz "\nRing Buffer App:\n\n1) Write \n2) Read \n3) Check buffer state \n4) Initialize buffer to 0 \n5) Exit\n"
+	menu_str_options: 	.asciz "\nRing Buffer App:\n1) Write \n2) Read \n3) Check buffer state \n4) Initialize buffer to 0 \n5) Exit\n"
 	menu_str_prompt:    .asciz "Enter choice > "
 	menu_str_exit:		.asciz "Application exit!\n"
+	menu_str_full:		.asciz "\n [!] WRITE FAILED - ring buffer full\n"
+    menu_str_empty:     .asciz "\n [!] READ FAILED - buffer empty\n"
 .end
 

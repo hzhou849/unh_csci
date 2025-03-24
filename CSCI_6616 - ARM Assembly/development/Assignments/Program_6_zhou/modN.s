@@ -46,20 +46,20 @@ modN:   @ Takes R0 as arg1; R1(arg2)= totalCapcity
     
     
 cont:// If R1-R0 == 0, we are done; else keep looping
-    SUB R3, R5, R6  	@ curPos - totalCapacity 
+    SUB R5, R5, R6  	@ curPos - totalCapacity 
     ADD R4, #1          @ Increment counter +1
-    CMP R3, #0          @ Check if R3 == 0
+    CMP R5, #0          @ Check if R3 == 0
     BGT cont            @ if R3 > 0, repeat
 
-    CMP R3, #0          @ If we are here, we are either R3 =< 0
+    CMP R5, #0          @ If we are here, we are either R3 =< 0
     BEQ done            @ If we R3 == 0, branch to done
 
     // Only here if R3 <0
-    ADD R3, R6          @ Oversubtracted into <0, add back capacity value
+    ADD R5, R6          @ Oversubtracted into <0, add back capacity value
     SUB R4, #1          @ undo the count/remainder
 
 done: 
-    MOV R0, R3          @ Copy the count/remainder back as the return value
+    MOV R0, R5          @ Copy the count/remainder back as the return value
     POP {R4-R8, LR }    @ restore values
     BX LR               @ return to main()  
 
