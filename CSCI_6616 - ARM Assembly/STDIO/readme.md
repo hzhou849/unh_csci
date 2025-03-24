@@ -60,7 +60,7 @@ BL printf
 	opStr: .asciz	"Operand[%d] = str: %s\n"
 ```
 ### extra variables with stack prinf
-```
+```arm
   LDR R0, =status_str
     MOV R1, R5              @ arg1= status(R5)
     MOV R2, R7              @ arg2= head(R7)
