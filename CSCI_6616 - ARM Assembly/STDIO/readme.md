@@ -42,6 +42,8 @@ R7: ```<linux service code=4>``` @ 4=write 3=read <br>
 SVC 0 				@ execution interrupt for syscall <br>
 
 ## Print output - printf()
+* Printf will modify R0-R3, LR so they need to be saved
+* If you need more args, R4 must be pushed to stack for additional arguments
 #### Registers args
 * output string = ```"messages include: %d %c"```
 R0: ```=<output_string>``` pointer to output string variable <br>
