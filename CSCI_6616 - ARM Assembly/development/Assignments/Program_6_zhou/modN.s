@@ -36,13 +36,9 @@
 
 modN:   @ Takes R0 as arg1; R1(arg2)= totalCapcity
     PUSH {R4-R8, LR}
+    MOV R4, #0          @ counter N; init=0
     MOV R5, R0          @ Copy curPos
     MOV R6, R1          @ copy capacity size
-
-    @ // 1 - check if the number a mod b; a > b? If not, no need to perform mod
-    @ CMP R0, R1      	@ Compare currPointer > totalCapacity?
-    @ BLE done        	@ If currPointer <= totalCapacity, skip no need to perform mod
-    MOV R4, #0          @ counter N; init=0
     
     
 cont:// If R1-R0 == 0, we are done; else keep looping

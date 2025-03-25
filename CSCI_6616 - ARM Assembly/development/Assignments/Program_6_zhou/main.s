@@ -154,7 +154,6 @@ opt1:   @ Write to tail
     BL restart
 
 opt2:   @ Read from head
-    // update new head by incrementing by 1; head=(head+1) % capacity
 
     // 0 check to see if size is 
     MOV R0, R6              @ copy size to R0
@@ -163,13 +162,12 @@ opt2:   @ Read from head
     BLEQ menu_print_empty   @ if empty, print error message
     BLEQ opt3               @ if empty, print status and restart loop
 
-    // get read head index(R7)
+    // read head index(R7)
     MOV R3, R7              @ Copy current Head ptr into R3
     LDR R0, =buffer
     LDR R2, [R0, R3]
 
-    // 2 dequeue and print element
-    @  read_value: .asciz "Read value from head: %d; value: [%d]\n"
+    // dequeue and print element
     LDR R0, =read_value     @ load read_value string
     MOV R1, R3              @ arg1= head_offset value
                             @ arg2= R2 read value already loaded
@@ -179,7 +177,7 @@ opt2:   @ Read from head
     MOV R1, #0
     STR R1, [R0, R7]        @ write a 0/null to current head position
 
-    // Update/increment head pointer
+    // update new head by incrementing by 1; head=(head+1) % capacity
     ADD R7, #4              @ increment head +4bytes
     MOV R0, R7              @ arg1= head ptr to R0 to be passed in mod()
     MOV R1, #CAPACITY_SIZE  @ arg2= capacity_size to mod
@@ -277,7 +275,7 @@ exit:
     input_fmt_specifier:.asciz "%x"     @ format specifier for scanf input
 
     buffer:   .space 4096, 0          @ 32bits=4bytes*1024 = 4096bytes 
-    @ buffer:     .space 64, 0            @ 32bits=4bytes*8 = 32bytes+4(last word) = 36bytes minimum
+    @ buffer:     .space 64, 0            @ DEbug buffer; 32bits=4bytes*8 = 32bytes+4(last word) = 36bytes minimum
 
     read_value: .asciz "\nRetrieved value from head_offset: +%d; value: [%x]\n"
     print_value:.asciz "[%d] value: %d\n" 
