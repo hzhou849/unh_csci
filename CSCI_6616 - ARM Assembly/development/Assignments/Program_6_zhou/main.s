@@ -54,8 +54,8 @@
 .EQU OPTION_5_EXIT,  5
  
 
-.global main
 .section .text
+.global main
 
 main:
     MOV R5, #0
