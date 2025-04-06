@@ -6,7 +6,7 @@
 * Single must be converted to .double 64 in order for printf to work
 * You can only pass one argument starting at ```{r2, R3}```, next argment will have
   to be pushed to the stack to print properly 
-```
+```asm
     MOV R1, #CHAR_A
     /// Printf requires singles to be converted to doubles starting at R2
     
