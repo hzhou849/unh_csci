@@ -9,7 +9,7 @@
 # TARGET
 PROJECT_NAME := p7_vector
 # SRCS := $(wildcard *.s)
-SRCS := main.s menu.s
+SRCS := main.s menu.s factoral.s taylor.s
 TARGET_OBJ := $(PROJECT_NAME).o
 OBJS := $(patsubst %.s, %.o, $(SRCS))
 CXX := gcc

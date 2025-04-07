@@ -61,6 +61,12 @@
 
 
 main:
+    // Debug testing functions
+    MOV R0, #4
+    VMOV S0, #2
+    BL get_sin
+    
+    //=================================
     MOV R5, #0
     MOV R6, #0                  @ Current size
     MOV R7, #0                  @ Initialize head
@@ -118,6 +124,12 @@ opt1:
                                     @ Write the value to memory as well
     LDR R0, =f_a_magnitude          @ load variable to use for write
     VSTR.f32 S5, [R0]               @ write A mag value to f_a_magnitude in memory
+
+    @ //======= test factoral
+    @ VMOV S0, S5
+    @ BL factoral
+    @ BL debug_print_result           @ test print; input s0=arg float
+    //======================
     B restart                       @ return to menu
 
 opt2:   
@@ -169,7 +181,7 @@ opt6:
 opt7:   
 ///\ Print Vector Sum
                                     @ [ convert angle to rads= angle * pi/180 ]
-    MOV R0, =rad_conversion_val     @ load radian conversion constant into R0
+    LDR R0, =rad_conversion_val     @ load radian conversion constant into R0
     VLDR.f32 S0, [R0] 
 
     @ TO get total length of angle
@@ -178,6 +190,10 @@ opt7:
     @ Bx = B * cos(b)
     @ By = B * sin(b)
 
+    /// seperate file
+    @ implement factoral,
+    @ setup taylor series for sin  might require recursion?
+    @ setup taylor series for cos
 
 opt8:   ///\ Exit
     BL exit                 @ Branch to exit
@@ -199,7 +215,7 @@ exit:
 
 
 .data
-@ required for each variable initialized to ensure it will line up with a 4byte boundary
+@ required for each variable initialized to ensure it will line up with a 4byte boundary address
 .align 4 @ 32bit align all variables
     menu_opt:           .space 4,0     @ Buffer to store stdin menu option selection 
     menu_fmt_specifer:  .asciz "%d"     @ Format specifier for menu option stdin
@@ -214,6 +230,7 @@ exit:
     f_a_angle:          .single 0.0
     f_b_magnitude:      .single 0.0
     f_b_angle:          .single 0.0
+    calc_result:        .single 0.0
     rad_conversion_val: .single 0.017453292
     f2: .single 3.14 
 
