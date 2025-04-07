@@ -61,12 +61,29 @@
 
 
 main:
+
+    //******************************************************
     // Debug testing functions
-    MOV R0, #4
-    VMOV S0, #2
-    BL get_sin
+    @ MOV R0, #4
+    LDR R0, =test_value
+    VLDR.f32 S0, [R0] 
+    BL get_sin                      @ answer in rad; need to rad * 57.2957795 to covert to angle
+
+
+
+    // test factoral
+    @ BL factoral
+    BL debug_print_result           @ test print; input s0=arg float
+
+    LDR R0, =test_value
+    VLDR.f32 S0, [R0] 
+
+    BL get_cos
+    BL debug_print_result           @ test print; input s0=arg float
+
     
-    //=================================
+    //******************************************************
+
     MOV R5, #0
     MOV R6, #0                  @ Current size
     MOV R7, #0                  @ Initialize head
@@ -125,11 +142,7 @@ opt1:
     LDR R0, =f_a_magnitude          @ load variable to use for write
     VSTR.f32 S5, [R0]               @ write A mag value to f_a_magnitude in memory
 
-    @ //======= test factoral
-    @ VMOV S0, S5
-    @ BL factoral
-    @ BL debug_print_result           @ test print; input s0=arg float
-    //======================
+    
     B restart                       @ return to menu
 
 opt2:   
@@ -165,24 +178,41 @@ opt3:
 opt4:   ///\ Enter B Angle
 opt5:   ///\ Print A Magnitude & Angle
     MOV R0, #CHAR_A                 @ copy 'A' to R0
-    VMOV.f32 S0, S5                 @ Copy A Magnitude value to S0
-    VMOV.f32 S1, S6                 @ copy A angle value to S1
+    LDR R4, =f_a_magnitude
+    LDR R5, =f_a_angle
+    VLDR.f32 S0, [R4]                 @ Copy A Magnitude value to S0
+    VLDR.f32 S1, [R5]                 @ copy A angle value to S1
     BL menu_print_values
     B restart
 
 opt6:   
 ///\ Print B Magnitude & Angle
     MOV R0, #CHAR_B                 @ copy 'A' to R0
-    VMOV.f32 S0, S7                 @ Copy A Magnitude value to S0
-    VMOV.f32 S1, S8                 @ copy A angle value to S1
+    LDR R4, =f_b_magnitude
+    LDR R5, =f_b_angle
+    VLDR.f32 S0, [R4]                 @ Copy A Magnitude value to S0
+    VLDR.f32 S1, [R5]                @ copy A angle value to S1
     BL menu_print_values
     B restart
 
 opt7:   
-///\ Print Vector Sum
+///\ Print Vector Sum 
+/// S5: A Magnitude;     S6: A Angle
+/// S7: B Magnitude;     S8: B Angle
                                     @ [ convert angle to rads= angle * pi/180 ]
-    LDR R0, =rad_conversion_val     @ load radian conversion constant into R0
+    LDR R0, =rad_convert_val     @ load radian conversion constant into R0
     VLDR.f32 S0, [R0] 
+
+    LDR R1, =f_a_angle
+    VLDR.f32 S0, [R1]               @ load A angle into s0 to pass for get_sin
+    BL get_sin                      @ answer in rad; need to rad * 57.2957795 to covert to angle
+    BL debug_print_result           @ test print; input s0=arg float
+
+    LDR R1, =f_a_angle
+    VLDR.f32 S0, [R1]               @ load A angle into s0 to pass for get_sin
+    BL get_cos                      @ answer in rad; need to rad * 57.2957795 to covert to angle
+    BL debug_print_result           @ test print; input s0=arg float
+    B restart
 
     @ TO get total length of angle
     @ Ax = A*Cos(a)  
@@ -225,16 +255,18 @@ exit:
 
 .align 4  @ required for each variable initialized to ensure it will line up with a 4byte boundary
     // In order for printf to work you must keep the values in single/double precision variables
-    input_buffer:       .single 0.0     @ input buffer for scanf
+    input_buffer:       .single 0.0             @ input buffer for scanf
     f_a_magnitude:      .single 0.0
     f_a_angle:          .single 0.0
     f_b_magnitude:      .single 0.0
     f_b_angle:          .single 0.0
     calc_result:        .single 0.0
-    rad_conversion_val: .single 0.017453292
-    f2: .single 3.14 
+    rad_convert_val:    .single 0.017453292     @ angle * rad_convert_val = radians
+    angle_convert_val:  .single 57.2958         @ radian * angle_convert_val = angles
+    test_value:          .single 3.0
 
-.section .note.GNU-stack, "", %progbits     @ disable GNU stack warning
+
+.section .note.GNU-stack, "", %progbits          @ disable GNU stack warning
 .end
 
 
