@@ -39,6 +39,12 @@ main:
     VLDR.F32 S4, [R3]   @ Load f4 into S4; 0.001
     VLDR.F32 S5, [R4]   @ Load f5 into S5; -0.001
 
+    ///\ When moving a Interger from a General Purpose reg to S register float
+    /// you have to convert it after otherwise it will be a zero in memory
+    MOV R7, #3
+    VMOV.f32 S0, R7                 @ set the factorial arg =3
+    VCVT.f32.S32 S0, S0             @ S0=0.0 unless convert interger S0  into float
+
     /// Now we can perform operations using the vfpu
 
     ///\ Subtract:

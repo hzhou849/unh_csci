@@ -36,13 +36,13 @@
 ///\ Calculate the value from input S0=N
 factoral:
     PUSH {R4-R12, LR}           @ Save Gen purpose regs values to stack
-    B loop
+    BL loop
     POP {R4-R12, LR}
     BX LR                       @ return to calling function with result in S0
 
 loop:
     VMOV.f32 S1, S0             @ copy value passed in by prev calculation input N
-    VMOV R7, S1                 @ vStack is prone to memory mis-alignment, copy to GP reg for stability
+    VMOV R7, S1                 @ vStack is prone to memory mis-alignment, copy to GP reg for stabilityr
     PUSH {R7, LR}               @ save the LR for this iteration
     VMOV.f32 S2, #1.0
     VSUB.f32 S0, S1, S2         @ vsubtract N-1; vsub no imeediate value support
