@@ -201,15 +201,21 @@ opt7:
 /// S7: B Magnitude;     S8: B Angle
                                     @ [ convert angle to rads= angle * pi/180 ]
     LDR R0, =rad_convert_val     @ load radian conversion constant into R0
-    VLDR.f32 S0, [R0] 
-
+    VLDR.f32 S1, [R0] 
     LDR R1, =f_a_angle
-    VLDR.f32 S0, [R1]               @ load A angle into s0 to pass for get_sin
+    VLDR.f32 S2, [R1]               @ load A angle into s0 to pass for get_sin
+    // Multiply to get ang*conversion = radians
+    VMUL.f32 S0, S1, S2             @ s0 = rad_convert * inputAngle
+
+
     BL get_sin                      @ answer in rad; need to rad * 57.2957795 to covert to angle
     BL debug_print_result           @ test print; input s0=arg float
 
+    LDR R0, =rad_convert_val     @ load radian conversion constant into R0
+    VLDR.f32 S1, [R0] 
     LDR R1, =f_a_angle
-    VLDR.f32 S0, [R1]               @ load A angle into s0 to pass for get_sin
+    VLDR.f32 S2, [R1]               @ load A angle into s0 to pass for get_sin
+    VMUL.f32 S0, S1, S2             @ s0 = rad_convert * inputAngle
     BL get_cos                      @ answer in rad; need to rad * 57.2957795 to covert to angle
     BL debug_print_result           @ test print; input s0=arg float
     B restart
@@ -263,7 +269,7 @@ exit:
     calc_result:        .single 0.0
     rad_convert_val:    .single 0.017453292     @ angle * rad_convert_val = radians
     angle_convert_val:  .single 57.2958         @ radian * angle_convert_val = angles
-    test_value:          .single 3.0
+    test_value:          .single 3.14159
 
 
 .section .note.GNU-stack, "", %progbits          @ disable GNU stack warning

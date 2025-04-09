@@ -25,13 +25,13 @@
         notes: * must convert values from GP regs to float otherwise will not show up in memory
         VMOV.f32 S0, R7                 @ set the factorial arg =2
     VCVT.f32.S32 S0, S0             @ convert interger R7 into float; will disappear from memory if skipped
-
-    cos(2) = -0.4161; code: -0.4222222
-    sin(2) = approx 0.9093; code: 0.907936
+        
+    cos(2) = -0.4161468;    code:  -0.416147
+    sin(2) =  0.909297426;  code:  0.909297
 * ==========================================================================================
 */   
 
-.EQU NUM_ITERATIONS, 6            @ # of iterations to run taylor series 0-index so +1(more for accuracy)
+.EQU NUM_ITERATIONS, 16            @ # of iterations to run taylor series 0-index so +1(more for accuracy)
 .EQU SIN_MULTIPLE, 3
 .EQU COS_MULTIPLE, 2
 
@@ -113,38 +113,79 @@ get_cos:
     ADD R6, #4                      @ tval_list++; manually update R8 offset +4, since vstr cannot do post inc.
     B cos_loop                      @ run another loop of taylor sin(x)n+1
 
+///\ Calculate: sin(x) or cos(x) = tval1 - tval2 + tval3 - tval4 +... 
+//   16 iterations seems to be the sweet spot 
 t_done:
-///\ Calculate: sin(x) or cos(x) = tval1 - tval2 + tval3 - tval4 +
-
-    LDR R6, =tval_list              @ reload values at 0 offset
-    VLDR.f32 S1, [R6]               @ retrieve n0
-    ADD R6, #4                      @ manual add +4 because vops does not support increment
-    VLDR.f32 S2, [R6]               @ retrieve n1
-    ADD R6, #4
-    VLDR.f32 S3, [R6]               @ retrieve n2
-    ADD R6, #4
-    VLDR.f32 S4, [R6]               @ retrieve n3
-    ADD R6, #4
-    VLDR.f32 S5, [R6]               @ retrieve n3
-    ADD R6, #4
-    VLDR.f32 S6, [R6]               @ retrieve n3
-    ADD R6, #4
-    VLDR.f32 S7, [R6]               @ retrieve n3
-    ADD R6, #4
-    VLDR.f32 S8, [R6]               @ retrieve n3
-
+    MOV R1, #1                      @ count # of iterations to run loop, start at 1
+    MOV R0, #0                      @ set operation toggle 0=subtract; odd=add
+    LDR R6, =tval_list
+    VLDR.f32 S1, [R6]
+    ADD R6, #4                      @ incrment address counter
+    VLDR.f32 S2, [R6]
+    ADD R6, #4                      @ increment address counter
     VSUB.f32 S0, S1, S2             @ s0 = val1-val2
-    VADD.f32 S0, S0, S3             @ s0 = (val1-val2) +val3
-    VSUB.f32 s0, s0, s4             @ s0 = [(val1-val2) +val3] -val4
-    VADD.f32 s0, s0, s5             @ s0 = [(val1-val2) +val3 -val4 ] + val5
-    VSUB.f32 s0, s0, s6             @ s0 = [(val1-val2) +val3 -val4  + val5] -val6
+    ADD R0, #1                      @ increment R0 count for next iteration =1(next op is add)
+    // Loop here
+t_calc_loop:
+    CMP R1, #NUM_ITERATIONS          @ while R1 <= NUM_ITERATIONS
+    BGT t_calc_done
+    ANDS R2, R0, #1                 @ and R2 & 0x01 to check if odd or even
+    ADD R0, #1                      @ increment R0 count for next iteration
+    ADD R1, #1                      @ increment R1 count for next iteration
+    // fetch data
+    VLDR.f32 S1, [R6]               @ fetch the element in R6 
+    ADD R6, #4                      @ increment R6 pointer for next read
+    BEQ t_subract                   @ if 0&1=0; subtract
+    BNE t_add                       @ not equal zero  so 1&1=1; ADD  
+    t_subract:
+    VSUB.f32 S0, S0, S1             @ s0 = val1-val2
+    B t_calc_loop
+    t_add:
+    VADD.f32 S0, S0, S1             @ s0 = (val1-val2) +val3
+    B t_calc_loop
+
+    @ LDR R6, =tval_list              @ reload values at 0 offset
+    @ VLDR.f32 S1, [R6]               @ retrieve n0
+    @ ADD R6, #4                      @ manual add +4 because vops does not support increment
+    @ VLDR.f32 S2, [R6]               @ retrieve n1
+    @ ADD R6, #4
+    @ VLDR.f32 S3, [R6]               @ retrieve n2
+    @ ADD R6, #4
+    @ VLDR.f32 S4, [R6]               @ retrieve n3
+    @ ADD R6, #4
+    @ VLDR.f32 S5, [R6]               @ retrieve n3
+    @ ADD R6, #4
+    @ VLDR.f32 S6, [R6]               @ retrieve n3
+    @ ADD R6, #4
+    @ VLDR.f32 S7, [R6]               @ retrieve n3
+    @ ADD R6, #4
+    @ VLDR.f32 S8, [R6]               @ retrieve n3
+    @ ADD R6, #4
+    @ VLDR.f32 S9, [R6]               @ retrieve n3
+    @ ADD R6, #4
+    @ VLDR.f32 S10, [R6]               @ retrieve n3
+    @ ADD R6, #4
+    @ VLDR.f32 S11, [R6]               @ retrieve n3
+    @ ADD R6, #4
+    @ VLDR.f32 S12, [R6]               @ retrieve n3
+
+    @ VSUB.f32 S0, S1, S2             @ s0 = val1-val2
+    @ VADD.f32 S0, S0, S3             @ s0 = (val1-val2) +val3
+    @ VSUB.f32 s0, s0, s4             @ s0 = [(val1-val2) +val3] -val4
+    @ VADD.f32 s0, s0, s5             @ s0 = [(val1-val2) +val3 -val4 ] + val5
+    @ VSUB.f32 s0, s0, s6             @ s0 = [(val1-val2) +val3 -val4  + val5] -val6
     @ VADD.f32 s0, s0, s7             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6] + val7
-    @ VSUB.f32 s0, s0, s7             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7]- val8
+    @ VSUB.f32 s0, s0, s8             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7]- val8
+    @ VSUB.f32 s0, s0, s9             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8] + val9
+    @ VSUB.f32 s0, s0, s10             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8 + val9] -val10 
+    @ VSUB.f32 s0, s0, s11             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8 + val9 -val10] + val 11
+    @ VSUB.f32 s0, s0, s12             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8 + val9 -val10 + val11] -val12
+    @ VSUB.f32 s0, s0, s13             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8 + val9 -val10 + val11 -val12]
+    @ VSUB.f32 s0, s0, s14             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8 + val9 -val10 + val11 -val12
+    @ VSUB.f32 s0, s0, s15             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8 + val9 -val10 + val11 -val12
 
-    @ VADD.f32 S3, S2, S3
-    @ VSUB.f32 S3, S0, S4
-    @ VSUB.f32 S0, S1, S3
 
+t_calc_done:
     ///\ return S0 with result
     POP {R4-R12, LR}
     BX LR
@@ -176,7 +217,10 @@ t_exit:
     tval3:        .single 0.0
     tval4:        .single 0.0
     tval5:        .single 0.0
-    tval_list:    .single 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+    tval_list:    
+        .rept 32 
+            .single 0.0 
+        .endr
     input_radian:    .single 0.0
     curr_total: .single 0.0
 .end
