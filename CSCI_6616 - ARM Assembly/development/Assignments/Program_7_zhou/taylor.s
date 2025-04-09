@@ -13,6 +13,9 @@
         - Calculate cos(x)
         cos(x) =  E=(-1)^n * x^(2n) / (2n)! 
 
+        - Arctan(x) for x <1
+        arctan(x) = (-1)^n * x^(2n+1) / 2n+1 
+
     Registers:
         @Local:
             R0: N
@@ -33,24 +36,25 @@
 
 .EQU NUM_ITERATIONS, 16            @ # of iterations to run taylor series 0-index so +1(more for accuracy)
 .EQU SIN_MULTIPLE, 3
+.EQU ARCTAN_MULTIPLE, 3
 .EQU COS_MULTIPLE, 2
 
 .global get_sin, get_cos
 .section .text
 
-
+///\ Caculate sin(x) taylor series
 get_sin:
     PUSH {R4-R12, LR}               @ Save caller() reg values & LR
     LDR R4, =input_radian
     VSTR.f32 S0, [R4]               @ save the input radian to memory
     VMOV.f32 S4, S0                 @ free up s0 for calculations
 
-    ///\ series N0  = x(Radians)
+    // series N0  = x(Radians)
     LDR R6, =tval_list              @ list to store results
     VSTR.f32 S4, [R6]               @ store n0 = x into tval_list, post increment+4 for next
     ADD R6, #4                      @ tval_list++; manual add becuase VSTR does not support post-inc
     
-    ///\ series N1 to N3 = x^3/3! to x^7/7!
+    // series N1 to N3 = x^3/3! to x^7/7!
     MOV R7, #SIN_MULTIPLE           @ start n1=3 of taylor series
     MOV R2, #1                      @ iterations counter; start at n=1
   sin_loop:
@@ -66,8 +70,6 @@ get_sin:
     LDR R0, =temp1
     VLDR.f32 S1, [R0]               @ fetch x^3 result from temp1 in memory
     VDIV.f32 S2, S1, S0             @ s2 = x^3/3!
-    @ LDR R0, =temp2
-    @ VSTR.f32 S2, [R0]
     ADDS R2, #1                     @ increment counter +1
     ADDS R7, #2                     @ increment n+2 for 3,5,7... 
     VSTR.f32 S2, [R6]               @ write result to tval_list +offset(+4)
@@ -102,16 +104,48 @@ get_cos:
     VMOV.f32 S0, R7                 @ set the factorial arg =2
     VCVT.f32.S32 S0, S0             @ convert interger R7 into float; will disappear from memory if skipped
     BL factoral                     @ get 2!; result in S0
-    LDR R0, =temp1
+    LDR R0, =temp1                  @ we have our base saved
     VLDR.f32 S1, [R0]               @ fetch x^2 result from temp1 in memory
     VDIV.f32 S2, S1, S0             @ s2 = x^2/2!
-    @ LDR R0, =temp2                  
-    @ VSTR.f32 S2, [R0]
     ADDS R2, #1                     @ increment counter +1
     ADDS R7, #2                     @ increment n+2 for 2,4,6... 
     VSTR.f32 S2, [R6]               @ write result to tval_list +offset(+4)
     ADD R6, #4                      @ tval_list++; manually update R8 offset +4, since vstr cannot do post inc.
     B cos_loop                      @ run another loop of taylor sin(x)n+1
+
+///\ Calculate arctan(x) taylor series
+get_arctan:
+    PUSH {R4-R12, LR}               @ Save caller() reg values & LR
+    LDR R4, =input_radian
+    VSTR.f32 S0, [R4]               @ save the input radian to memory
+    VMOV.f32 S4, S0                 @ free up s0 for calculations
+
+    // series N0  = x(Radians)
+    LDR R6, =tval_list              @ list to store results
+    VSTR.f32 S4, [R6]               @ store n0 = x into tval_list, post increment+4 for next
+    ADD R6, #4                      @ tval_list++; manual add becuase VSTR does not support post-inc
+    
+    // series N1 to N3 = x^3/3 to x^7/7....x^2n+1/2n+1
+    MOV R7, #ARCTAN_MULTIPLE        @ start n1=3 of taylor series
+    MOV R2, #1                      @ iterations counter; start at n=1
+  arctan_loop:
+    CMP R2,#NUM_ITERATIONS
+    BEQ t_done                      @ we are finshed with this iteration
+    MOV R0, R7                      @ set exponent n=3
+    BL get_power                    @ get power, result in S0
+    LDR R0, =temp1
+    VSTR.f32 S0, [R0]               @ store x^3 into temp1
+    VMOV.f32 S0, R7                 @ set the base 2n+1; ie. arg =3
+    VCVT.f32.S32 S0, S0             @ convert interger R7 into float
+    LDR R0, =temp1
+    VLDR.f32 S1, [R0]               @ fetch x^3 result from temp1 in memory
+    VDIV.f32 S2, S1, S0             @ s2 = x^3/3!
+    ADDS R2, #1                     @ increment counter +1
+    ADDS R7, #2                     @ increment n+2 for 3,5,7... 
+    VSTR.f32 S2, [R6]               @ write result to tval_list +offset(+4)
+    ADD R6, #4                      @ tval_list++; manually update R8 offset +4, since vstr cannot do post inc.
+    B arctan_loop    
+
 
 ///\ Calculate: sin(x) or cos(x) = tval1 - tval2 + tval3 - tval4 +... 
 //   16 iterations seems to be the sweet spot 
@@ -144,46 +178,6 @@ t_calc_loop:
     VADD.f32 S0, S0, S1             @ s0 = (val1-val2) +val3
     B t_calc_loop
 
-    @ LDR R6, =tval_list              @ reload values at 0 offset
-    @ VLDR.f32 S1, [R6]               @ retrieve n0
-    @ ADD R6, #4                      @ manual add +4 because vops does not support increment
-    @ VLDR.f32 S2, [R6]               @ retrieve n1
-    @ ADD R6, #4
-    @ VLDR.f32 S3, [R6]               @ retrieve n2
-    @ ADD R6, #4
-    @ VLDR.f32 S4, [R6]               @ retrieve n3
-    @ ADD R6, #4
-    @ VLDR.f32 S5, [R6]               @ retrieve n3
-    @ ADD R6, #4
-    @ VLDR.f32 S6, [R6]               @ retrieve n3
-    @ ADD R6, #4
-    @ VLDR.f32 S7, [R6]               @ retrieve n3
-    @ ADD R6, #4
-    @ VLDR.f32 S8, [R6]               @ retrieve n3
-    @ ADD R6, #4
-    @ VLDR.f32 S9, [R6]               @ retrieve n3
-    @ ADD R6, #4
-    @ VLDR.f32 S10, [R6]               @ retrieve n3
-    @ ADD R6, #4
-    @ VLDR.f32 S11, [R6]               @ retrieve n3
-    @ ADD R6, #4
-    @ VLDR.f32 S12, [R6]               @ retrieve n3
-
-    @ VSUB.f32 S0, S1, S2             @ s0 = val1-val2
-    @ VADD.f32 S0, S0, S3             @ s0 = (val1-val2) +val3
-    @ VSUB.f32 s0, s0, s4             @ s0 = [(val1-val2) +val3] -val4
-    @ VADD.f32 s0, s0, s5             @ s0 = [(val1-val2) +val3 -val4 ] + val5
-    @ VSUB.f32 s0, s0, s6             @ s0 = [(val1-val2) +val3 -val4  + val5] -val6
-    @ VADD.f32 s0, s0, s7             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6] + val7
-    @ VSUB.f32 s0, s0, s8             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7]- val8
-    @ VSUB.f32 s0, s0, s9             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8] + val9
-    @ VSUB.f32 s0, s0, s10             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8 + val9] -val10 
-    @ VSUB.f32 s0, s0, s11             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8 + val9 -val10] + val 11
-    @ VSUB.f32 s0, s0, s12             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8 + val9 -val10 + val11] -val12
-    @ VSUB.f32 s0, s0, s13             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8 + val9 -val10 + val11 -val12]
-    @ VSUB.f32 s0, s0, s14             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8 + val9 -val10 + val11 -val12
-    @ VSUB.f32 s0, s0, s15             @ s0 = [(val1-val2) +val3 -val4  + val5 -val6 + val7- val8 + val9 -val10 + val11 -val12
-
 
 t_calc_done:
     ///\ return S0 with result
@@ -191,7 +185,7 @@ t_calc_done:
     BX LR
 
 
-get_power: // S0=base; R0=exponent(N)
+get_power: // S4=base; R0=exponent(N)
     VMOV.f32 S0, #1                 @ initial multiplication is 1x base
     power_loop:
     CMP R0, #0                      @ while (N>0)
@@ -205,7 +199,6 @@ get_power: // S0=base; R0=exponent(N)
 t_exit:
     POP { R4-R12, LR}               @ restore registers
     BX LR
-
 
     
 .data

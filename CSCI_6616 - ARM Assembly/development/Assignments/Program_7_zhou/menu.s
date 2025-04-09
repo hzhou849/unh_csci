@@ -86,16 +86,29 @@ debug_print_result:
     POP {R0-R12, LR}
     BX LR                           @ return to calling function
 
+debug_print_calc:
+///\ print input S0 value
+    PUSH {R0-R12, LR}
+   
+    VCVT.f64.f32 D1, S0             @ repeat for angle value
+    LDR R0, =double_buffer
+    VSTR.f64 D1, [R0] 
+    LDM R0, {R2, R3}
 
+    LDR R0, =debug_calc_str          @ Load the print string
+    BL printf                        @ now we can finally print
+    POP {R0-R12, LR}
+    BX LR                            @ return to calling function
 
 
 .data
 .word @ 32 bit align all variables
-	menu_str_options: 	.asciz "\nVector Computation App:\n\n1) Enter A Magnitude \n2) Enter B Magnitude \n3) Enter A Angle \n4) Enter B Angle \n5) Print A Mangnitude & Angle \n6) Print B Magnitude & Angle \n7) Print Vector Sum \n8) Exit\n"
+	menu_str_options: 	.asciz "\n\nVector Computation App:\n\n1) Enter A Magnitude \n2) Enter B Magnitude \n3) Enter A Angle \n4) Enter B Angle \n5) Print A Mangnitude & Angle \n6) Print B Magnitude & Angle \n7) Print Vector Sum \n8) Exit\n"
 	menu_str_prompt:    .asciz "Enter choice > "
 	menu_str_exit:		.asciz "Application exit!\n"
     value_str:          .asciz "[+] Input values: (%c) =  Magnitude[ %f ]; Angle[ %f]\n" 
-    debug_str:          .asciz "\n[+] Debug float: %f\n"
+    debug_str:          .asciz "\n[+] Debug float : %f\n"
+    debug_calc_str:          .asciz "\n[+] Debug calculation: %f\n"
 
 .align 4
     double_buffer:      .double 0.0
