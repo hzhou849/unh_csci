@@ -1,13 +1,13 @@
 # --------------------------------------------------------------------------------------------
 # Makefile GCC ver
 # CSCI 6616 - ARM Assembly
-# Project: P7 vectors
+# Project:  P8 - Projectile Kinematics Max height/range
 # 
 # @brief: Multiple file compilation
 # --------------------------------------------------------------------------------------------
 
 # TARGET
-PROJECT_NAME := p7_vector
+PROJECT_NAME := p8_projectile
 # SRCS := $(wildcard *.s)
 SRCS := main.s menu.s factoral.s taylor.s
 TARGET_OBJ := $(PROJECT_NAME).o
