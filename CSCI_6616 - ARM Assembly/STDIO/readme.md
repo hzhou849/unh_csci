@@ -76,6 +76,21 @@ BL printf
     ADD SP, SP, #8          @ delete the 2 x(4bytes) values pushed into stack
 #status_str: .asciz "\nBuffer status: [%d]; Head_offset:[+%d]; tail_offset: [+%d]; size [%d]/total_capacity: [%d]\n"
 ```
+
+## How to split long string messages with one variable:
+* To create a new line in code if message is too long
+* string type wll be ```.ascii``` not ```z```
+* ensure you need to manually align a null terminator byte \0 at the end
+```asm
+.data
+.word @ 32 bit align all variables
+	menu_str_options: 	
+        	.ascii "\n\nVector Computation App:\n\n1) Enter A Magnitude \n2) Enter B Magnitude \n3) Enter A Angle \n4) Enter B Angle \n"
+        	.ascii "5) Print A Mangnitude & Angle \n6) Print B Magnitude & Angle \n7) Print Vector Sum \n8) Exit\n"
+        	.byte 0  @ Null terminator to end the string
+	menu_str_prompt:    .asciz "Enter choice > "
+	menu_str_exit:		.asciz "Application exit!\n"
+```
 ## Calculate size of string using .data directive strings trick for size
 * you can use ```.``` this is special Assembler variable that contains
 the current address the assembler is on as it works.
