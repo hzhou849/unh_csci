@@ -125,24 +125,82 @@ restart:
 
     ///\ 3) We need max height; We know t2 is max time, therfore
     /// (t2-t1)/2 = tm; The time of max height
+    LDR R0, =t2                     @ not necessary, to reload, just good habbit
+    VLDR.f32 S1, [R0]               @ load t2 value in S1
+    VMOV S2, #2.0                   @ we need to divide t2 by 2
+    VDIV.f32 S0, S1, S2             @ perform s0= s1/2
+    LDR R0, =tm
+    VSTR.f32 S0, [R0]               @ save value tm into memory
+
+
+    ///\ 4) Find height at tm; 
     // y(t) = t * Voy -(0.5) * g * t^2 
+    //y(tm) = tm * Voy - [(0.5) * 9.8m * (tm)^2]
+    LDR R0, =tm
+    VLDR.f32 S1, [R0]               @ load S1 = tm
+    LDR R0, = Voy
+    VLDR.f32 S2, [R0]               @ load S2 = Voy
+    LDR R0, =gravity               
+    VLDR.f32 S3, [R0]               @ load S3 = gravity(9.8m/s^2)
+    VMOV S4, #0.5                   @ formula constant
+    VMUL.f32 S8, S1, S2             @ S8 = tm * Voy; Solve first half of equation
+    VMUL.f32 S9, S4, S3             @ S9= 0.5*9.8; Solve 2nd half of equation
+    VMUL.f32 S10, S1, S1            @ S10 = tm *tm; (tm^2)
+    VMUL.f32 S9, S9, S10            @ combine into S9
+    VSUB.f32 S0, S8, S9            @ S0 = S8(1st)-2nd(S9)
+    LDR R0, =max_height
+    VSTR.f32 S0, [R0]               @ save max_height into memory
 
 
     ///\ 4) Find max distance (x) when t=t2
     // x(t2) = Vox * t2
+    LDR R0, =Vox
+    VLDR S1, [R0]                   @load S1=Vox
+    LDR R0, =t2
+    VLDR S2, [R0]                   @ load S2=t2
+    VMUL.f32 S0, S1, S2             @ S0 = s1 *s2
+    LDR R0, =max_range
+    VSTR.f32 S0, [R0]               @ save max_range in memory
 
+    ///\ 5) Print results args S0=max_height; s1=max_range
+    LDR R0, =max_height
+    VLDR.f32 S0, [R0]
+    LDR R1, =max_range
+    VLDR.f32 S1, [R1]
+    BL menu_print_values
 
-
-    
-
-
-
+    B continue                      @ call continue function
     
     B exit
 
+continue:
+    LDR R0, =menu_str_cont          @ load string arg to print
+    BL menu_print                   @ print the options menu and prompt char
+
+    //  Get intial velocity
+    LDR R0, =menu_fmt_specifier    @ Set the menu option input format specifier %c
+    LDR R1, =menu_opt           @ buffer to store stdin
+    PUSH {R1}                       @ calling BL will erase R1
+    BL scanf                        @ get use input Initial velocity 
+    BL getchar                      @ flush the whitespace left by scanf
+    POP {R1}                        @ pop R1 to have input buffer address again
+    LDRB R0, [R1]   @ also save the value in memory
+    
+    CMP R0, #0x59                   @ 'Y'=0x59; 0x76 'N'=0x4E; 0x6E
+    BEQ restart                     @ If Y restart
+    CMP R0, #0x79                   @ if 'y' restart
+    BEQ restart
+    CMP R0, #0x4E                   @ if 'N' 
+    BEQ exit
+    CMP R0, #0x6E
+    BEQ exit
+    B continue                      @ else ask again 
+
+    
 
 
-result_out:  // R0=arg1 str to print
+result_out:  
+///\ quick debug to print test values R0=arg1 str to print
     PUSH {R0-R12, LR}
     VCVT.f64.f32 D1, S0             @ convert input to double
     LDR R6, =temp_double            @ load double variable buffer
@@ -151,8 +209,6 @@ result_out:  // R0=arg1 str to print
     BL printf                       @ R0 is already set to output string
     POP {R0-R12, LR}
     BX LR
-
-
     BL debug_print_result           @ test print; input s0=arg float
     B restart
 
@@ -167,22 +223,24 @@ exit:
 @ required for each variable initialized to ensure it will line up with a 4byte boundary address
 .align 4 @ 32bit align all variables
     menu_opt:           .space 4,0      @ Buffer to store stdin menu option selection 
-    menu_fmt_specifer:  .asciz "%d"     @ Format specifier for menu option stdin
+    menu_fmt_specifier:  .asciz "%c"     @ Format specifier for menu option stdin
     scanf_prompt:       .asciz "Enter value > "
     input_fmt_specifier:.asciz "%f"     @ format specifier for scanf input
 
 .align 4  @ required for each variable initialized to ensure it will line up with a 4byte boundary
     // In order for printf to work you must keep the values in single/double precision variables
-    rad_convert_val:    .single 0.017453292     @ angle * rad_convert_val = radians
+    rad_convert_val:        .single 0.017453292     @ angle * rad_convert_val = radians
+    gravity:                .single 9.8 @m/s^2
 
     input_buffer:           .single 0.0             @ input buffer for scanf
     initial_velocity_ms:    .single 0.0
     launch_angle_deg:       .single 0.0
     Vox:                    .single 0.0
     Voy:                    .single 0.0
-    gravity:                .single 9.8 @m/s^2
     t2:                     .single 0.0
     tm:                     .single 0.0
+    max_height:             .single 0.0
+    max_range:              .single 0.0
 
     temp_double: .double 0.0
    

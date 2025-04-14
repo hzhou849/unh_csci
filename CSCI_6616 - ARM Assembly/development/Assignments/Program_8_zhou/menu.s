@@ -47,33 +47,34 @@ menu_print_exit:
 	BX LR							@ return to caller()
 
 menu_print_values: 
-///\ Print values R0=CHAR; S0=Magnitude; S1=Angle
-    PUSH {R4-R12, LR}               @ save register values
-    MOV R1, R0                      @ load Char byte into R1
+///\ Print values S0=MaxHeight; S1=MaxRange
+    PUSH {R4-R12, LR}               @ Save register values
+    @ SUB SP, SP, #8                  @ Ensure 8-byte stack alignment
 
-    VCVT.f64.f32 D1, S0             @ convert S0(magnitude) to a double in D1
-    LDR R0, =double_buffer          @ load double variable into R0
-    VSTR.f64 D1, [r0]               @ Write D1 into double_buffer variable
-    LDM R0, {R2, R3}                @ Load R0(double_buffer) across R2 and R3 (32+32bit)
+    VCVT.f64.f32 D1, S0             @ Convert S0 (MaxHeight) to double in D1
+    LDR R0, =double_buffer          @ Load double_buffer address
+    VSTR.f64 D1, [R0]               @ Store D1 into double_buffer
+    LDM R0, {R2, R3}                @ Load double_buffer into R2 and R3
 
-     // Value 2 - Angle
-    VCVT.f64.f32 D1, S1             @ repeat for angle value
-    LDR R0, =double_buffer
-    VSTR.f64 D1, [R0] 
-    LDM R0, {R6, R7}
-    PUSH {R6, R7}                   @ additional values need to pushed to the stack to print
+    VCVT.f64.f32 D1, S1             @ Convert S1 (MaxRange) to double in D1
+    LDR R0, =double_buffer          @ Load double_buffer address
+    VSTR.f64 D1, [R0]               @ Store D1 into double_buffer
+    LDM R0, {R4, R5}                @ Load double_buffer into R4 and R5
 
-    LDR R0, =value_str              @ Load the print string
-    BL printf                       @ now we can finally print
-    POP {R6, R7}                    @ clear from the stack to prevent crashing
-    POP {R4-R12, LR}
-    BX LR                           @ return to calling function
+    PUSH {R4-R5}           @ Push MaxRange and MaxHeight onto the stack
+
+    LDR R0, =value_str              @ Load the format string
+    BL printf                       @ Call printf
+    POP {R4-R5}
+    @ ADD SP, SP, #16                 @ Clean up the stack (4 registers = 16 bytes)
+    POP {R4-R12, LR}                @ Restore register values
+    BX LR                           @ Return to caller
 
 debug_print_result:
 ///\ print input S0 value
     PUSH {R0-R12, LR}
    
-    VCVT.f64.f32 D1, S0             @ repeat for angle value
+    VCVT.f64.f32 D1, S0             
     LDR R0, =double_buffer
     VSTR.f64 D1, [R0] 
     LDM R0, {R2, R3}
@@ -87,7 +88,7 @@ debug_print_calc:
 ///\ print input S0 value
     PUSH {R0-R12, LR}
    
-    VCVT.f64.f32 D1, S0             @ repeat for angle value
+    VCVT.f64.f32 D1, S0            
     LDR R0, =double_buffer
     VSTR.f64 D1, [R0] 
     LDM R0, {R2, R3}
@@ -104,12 +105,14 @@ debug_print_calc:
         .ascii "\n\nProjectile Kinematics Computation App:\n"
         .ascii "\nEnter Initial Velocity m/s: "
         .byte 0  @ Null terminator to end the string
+    value_str:          .asciz "\nMax Height: [ %f ]\nMax Range:  [ %f ]\n" 
     menu_str_prompt2:   .asciz "\nEnter launch angle degrees: "
 	menu_str_prompt:    .asciz " > "
-	menu_str_exit:		.asciz "\n[!] Application exit!\n"
-    value_str:          .asciz "[+] Input values: (%c) =  Magnitude[ %f ]; Angle[ %f]\n" 
+	menu_str_exit:		.asciz "\n[!] Application exit!\n\n"
     debug_str:          .asciz "\n[+] Debug float : %f\n"
     debug_calc_str:     .asciz "\n[+] Debug calculation: %f\n"
+    menu_str_cont:      .asciz "\nContinue? (Y/N): "
+
 
 .align 4
     double_buffer:      .double 0.0
