@@ -59,6 +59,9 @@ restart:
     LDR R0, =menu_str_prompt1       @ load string arg to print
     BL menu_print                   @ print the options menu and prompt char
     BL write_buffer
+    BL write_buffer
+    BL read_buffer
+    BL read_buffer
 
 exit:
     LDR R0, =menu_str_exit          @ load exit message
