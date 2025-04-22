@@ -53,11 +53,14 @@ main:
     MOV R7, # 0                      @ Initialize head
     MOV R8, # 0                      @ Iniitalize tail
 
+    BL sp_start
+
 restart:
 
     // 1 - Print inital prompt
     LDR R0, =menu_str_prompt1       @ load string arg to print
     BL menu_print                   @ print the options menu and prompt char
+    BL sp_start
     BL write_buffer
     BL write_buffer
     BL read_buffer
