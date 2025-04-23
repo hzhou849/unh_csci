@@ -53,6 +53,10 @@ main:
     MOV R7, # 0                      @ Initialize head
     MOV R8, # 0                      @ Iniitalize tail
 
+    // TODO::
+    // 1) convert range to float
+    // 2) check how to store decimal value to buffer? can the ring buffer be a single? or just aligned by 4?
+
     BL sp_start
 
 restart:

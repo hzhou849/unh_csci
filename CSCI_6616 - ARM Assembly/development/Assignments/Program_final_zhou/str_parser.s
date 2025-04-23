@@ -76,19 +76,18 @@ sp_search:
     B sp_parse_field            @ keep parsing
 
     wsp_found:                  @ whitespace is found
-    @ LDRB R2, [R6], #1            @ this read should now have a ' ', next should be a number
-    CMP R9, #2                  @ if fields 0,1=int; 2,3=float
-    LDR R1, =num_index_address
-    STR R6, [R1]                @ save the current index with the numbers into memory
-    BLT convert_integer         @ R9 = 0 or 1 convert int
+    CMP R9, #2                  @ if fields Target(0),Track#(1)=int; Range(2),Az(3),Ele(4)=float
+    LDR R1, =num_index_address  @ **** TODO: delete not needed
+    STR R6, [R1]                @ *** TODO: delete save the current index with the numbers into memory
+    BLE convert_integer         @ R9 = 0 or 1 convert int **testing range here
     @ BGE convert_float           @ R0 >=2 convert to float
 
 convert_integer:
-/// \ Fields 0=target, 1=track# are integers
+/// \Fields 0=target, 1=track# are integers
+/// \Return R5 - result ineger
 // Read is first performed and pushed into stack since we dont know how 
 // large the number is to convert. Ie 154 is push to stack 4-5-1 so 
 // can multiply them by the number of 10^n accordingly
-// Return R5 - result ineger
 
     LDRB R2, [R6], #1            @ read the current byte,
     CMP R2, #'}'
@@ -111,12 +110,16 @@ convert_integer:
     SUB R8, R8, #1              @ decrement digit counter
     B build_integer             @ repeat until done
 
-  // Integer is done
+  // Integer is done, write to memory
+  // R9 - param[in] key used to determin which part of buffer to write to 
   write_int:
     CMP R9, #0                  @ Target# field
     BEQ store_target
-    CMP R9, #1                  @ this is a track number
+    CMP R9, #1                  @ Write track number
     BEQ store_track            
+    CMP R9, #2                  @ Write Range
+    BEQ store_range  
+    TODO:: range needs to be converted to float since it will be multiplied.          
 
   store_target:
     LDR R0, =parsed_buffer      @ store the target number in the buffer
@@ -126,6 +129,11 @@ convert_integer:
   store_track:
     LDR R0, =parsed_buffer      @ store the track number in the buffer
     STRH R5, [R0, #OFFSET_TRACKNUM]
+    B int_done
+
+  store_range:
+    LDR R0, =parsed_buffer      @ store the track number in the buffer
+    STR R5, [R0, #OFFSET_RANGE]
     B int_done
 
   int_done:
@@ -150,8 +158,18 @@ not_found:
     B sp_done
 
 get_multiplier:
-/// \ R8 param[in] - the count of digit position
-// returns R0 - the 10s multiplier based on position
+/// Gets the proper 10^n place for the digit postion
+/// \param[in] R3 - the count of digit position
+/// \returns   R0 - the 10s multiplier based on position
+//  Did not implement with loop because 0 digits and ones are exception cases
+    CMP R3, #7
+    MOVEQ R0, #0x4240   @ 100,000 is too large for MOV 
+    MOVTEQ R0, #0xF
+    CMP R3, #6
+    MOVEQ R0, #0x86A0   @ 10,000 is too large for MOV
+    MOVTEQ R0, #0x1
+    CMP R3, #5
+    MOVEQ R0, #10000
     CMP R3, #4
     MOVEQ R0, #1000
     CMP R3, #3
