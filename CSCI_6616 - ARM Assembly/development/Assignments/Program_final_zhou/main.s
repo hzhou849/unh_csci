@@ -53,6 +53,10 @@ main:
     MOV R7, # 0                      @ Initialize head
     MOV R8, # 0                      @ Iniitalize tail
 
+   
+    BL load_data
+    B exit
+
     // TODO::
     // 1) convert range to float
     // 2) check how to store decimal value to buffer? can the ring buffer be a single? or just aligned by 4?
@@ -80,6 +84,7 @@ exit:
 .data
 @ required for each variable initialized to ensure it will line up with a 4byte boundary address
 .align 4 @ 32bit align all variables
+    buffertest: .space 16, 0
     @ menu_opt:           .space 4,0      @ Buffer to store stdin menu option selection 
     @ menu_fmt_specifier:  .asciz "%c"     @ Format specifier for menu option stdin
     @ scanf_prompt:       .asciz "Enter value > "

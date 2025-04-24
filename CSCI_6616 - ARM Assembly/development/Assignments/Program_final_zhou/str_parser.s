@@ -19,17 +19,17 @@
         Total = 16bytes per track = 200tracks * 16bytes = 3200 bytes size in memory
 
     Input registers:
-        R0 = input string track record
+        R0 param[in] - pointer to input string track record
 
-    Local Registers:
+    Assigned Registers:
         R5 - Buffer status regsiter
-        R6 - Current size
+        R6 - Input string we are processing
         R9 - Field category: 
            0 = target
            1 = track#
            2 = range
-           0 = Azimuth
-           1 = Elevation
+           3 = Azimuth
+           4 = Elevation
 
  * ==========================================================================================
  */
@@ -43,9 +43,10 @@
 .section .text
 
 sp_start:
-/// \ Ideally input R0=input_string; R1=target label
+/// \ Ideally input R0=input_string
     PUSH {R4-R12, LR}
-    LDR R6, =input_string               
+    MOV R6, R0                  @ Load the input string into R6 for processing
+    @ LDR R6, =input_string               
     LDR R1, =target_label
     MOV R9, #0                  @ field counter 0-4; Five categories
     MOV R8, #0
@@ -76,11 +77,61 @@ sp_search:
     B sp_parse_field            @ keep parsing
 
     wsp_found:                  @ whitespace is found
+    MOV R8, #0                  @ reset counter for converting counter
     CMP R9, #2                  @ if fields Target(0),Track#(1)=int; Range(2),Az(3),Ele(4)=float
     LDR R1, =num_index_address  @ **** TODO: delete not needed
     STR R6, [R1]                @ *** TODO: delete save the current index with the numbers into memory
-    BLE convert_integer         @ R9 = 0 or 1 convert int **testing range here
-    @ BGE convert_float           @ R0 >=2 convert to float
+    BLE convert_integer         @ R9 = 0,1,2  convert int 
+    BGT convert_float           @ R0 >=2 convert to float
+
+convert_float:
+/// \Converts ascii number to floats
+/// Fields 3=Azimuth; 4=elevation
+/// Read is first performed then pushed into stack since we dont
+/// know how large the number is to convert. There for we can 
+/// multiply them with the correct 10^n to get the position
+
+    LDRB R2, [R6], #1           @ read current byte
+    CMP R2, #'.'
+    CMP R2, #'}'
+    MOVEQ R3, #0                @ R3 will be counter used to construct the digit position
+    BEQ build_float
+    SUB R2, R2, #'0'            @ quick way to convert ascii to integer
+
+
+
+
+  build_float:
+    CMP R8, #0                  @ while R8 > 0
+    BEQ write_to_mem
+    ADD R3, #1                  @ increment digit position index
+    POP {R2}                    @ pop 2-1- . -5 -4
+    CMP R2, #'.'                @ if we got radix, we have fraction
+    BEQ constuct_frac           @ skip to construct fraction
+    BL get_multiplier           @ arg R3=current digit index; return= R0 multiplier 10^n
+    MUL R1, R2, R0              @ R1 = R2 * multiplier[R0]
+    ADD R5, R1                  @ R5 += R1 accumulate number segment
+    SUB R8, R8, #1
+
+  construct_frac:
+  // Construct the fraction portion and convert to float
+  // We have fraction, we need to reset R3 back to 0 to process integer portion after
+  // R8 is still decremented for when we go back out to process the integer portion after
+  // We also need to reset r5=0 when were done 
+    MOV R3, #0                  @ Reset R3 digit index since we have the fraction portion
+    SUB R8, R8, #1              @ We still need to decrement R8 to keep the stack count aligned
+    VMOV.f32 S0, R5             @ Move R5 into S0 float register
+    VCVT.f32.s32 S0, S0         @ convert S0 to signed float32; required to work
+    VMOV S1, #100               
+    VDIV.f32 S2, S0, S1         @ S2 = S0/100 to get 0.xx fraction 
+    LDR R0, =fraction_f
+    VSTR.f32 S2, [R0]           @ store fraction to memery
+    MOV R5, #0                  @ we need to reset this to process integer after
+    B build_float               @ resume back to build integer portion
+  
+
+  // reset r5 to zero when done
+
 
 convert_integer:
 /// \Fields 0=target, 1=track# are integers
@@ -100,8 +151,8 @@ convert_integer:
 
   // Completed the current field read, reconstruct number
   build_integer:
-    CMP R8, #0                  @ While R8 >=0
-    BEQ write_int
+    CMP R8, #0                  @ While R8 > 0
+    BEQ write_to_mem
     ADD R3, #1                  @ increment digit position index
     POP {R2}                    @ pop 4-5-1 from stack
     BL get_multiplier           @ arg R3=current index;  return r0=multiplier
@@ -112,14 +163,14 @@ convert_integer:
 
   // Integer is done, write to memory
   // R9 - param[in] key used to determin which part of buffer to write to 
-  write_int:
+  write_to_mem:
     CMP R9, #0                  @ Target# field
     BEQ store_target
     CMP R9, #1                  @ Write track number
     BEQ store_track            
     CMP R9, #2                  @ Write Range
     BEQ store_range  
-    TODO:: range needs to be converted to float since it will be multiplied.          
+    @ TODO:: range needs to be converted to float since it will be multiplied.          
 
   store_target:
     LDR R0, =parsed_buffer      @ store the target number in the buffer
@@ -132,17 +183,15 @@ convert_integer:
     B int_done
 
   store_range:
-    LDR R0, =parsed_buffer      @ store the track number in the buffer
+    LDR R0, =parsed_buffer      @ store Range as float in the buffer
     STR R5, [R0, #OFFSET_RANGE]
+    
+
     B int_done
 
   int_done:
     ADD R9, #1                  @ increment Field counter(R9) +1
     B sp_search                 @ start the next field
-
-
-    
-
 
 
 sp_done:
@@ -186,6 +235,9 @@ get_multiplier:
 .data
     num_index_address: .word 0
     parsed_buffer: .space 16, 0  @ Buffer per track is 16bytes
+.align 4
+    fratcion_f:      .single 0.0
+    integer_f:       .single 0.0
 
 .word @ 32bit align for strings
     input_string: .asciz "{TARGET#: 154}{TRACK#: 0}{RANGE: 120000}{AZIMUTH: 45.00}{ELEVATION: 30.00}"

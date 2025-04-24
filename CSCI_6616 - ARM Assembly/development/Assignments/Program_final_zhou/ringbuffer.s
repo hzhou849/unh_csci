@@ -83,7 +83,7 @@ write_buffer:   /// \Write to buffer
     ADD R0, R0, R8              @ r0 = bufferAddres + tailOffset
 
 
-    // Write sample data
+    // Write sample datas
     MOV R1, #1              @ Target#
     MOV R2, #8              @ Track number
     MOV R3, #12000          @ range#
@@ -93,10 +93,11 @@ write_buffer:   /// \Write to buffer
     VCVT.f32.s32 S0, S0
     VMOV.f32 S1, R5         @ Elevation
     VCVT.f32.s32 S1, S1
+    // Perfrom write
     STRH R1, [R0, #OFFSET_TARGET]   @ STRH store 2 byteswrite to buffer @tail_offset(R8)
-    STRH R2, [R0, #OFFSET_TRACKNUM] @ store 2 bytes
-    STR R3, [R0, #OFFSET_RANGE]
-    VSTR.f32 S0, [R0, #OFFSET_AZIMUTH]
+    STRH R2, [R0, #OFFSET_TRACKNUM] @ store 2 bytes tracking number
+    STR R3, [R0, #OFFSET_RANGE]     @ 4bytes
+    VSTR.f32 S0, [R0, #OFFSET_AZIMUTH]  
     VSTR.f32 S1, [R0, #OFFSET_ELEVATION]
     
     // Update the current_size counter by +1 and store in memory
@@ -154,6 +155,13 @@ read_buffer: /// \Read from buffer
     LDRH R1, [R0, #OFFSET_TARGET]       @ half-word only 2bytes
     LDRH R2, [R0, #OFFSET_TRACKNUM]     @ half-word only
     LDR R3, [R0, #OFFSET_RANGE]
+    @  MOV R1, #1000  @ example of converting int to float
+    @ MOV R0, #100
+    @ MUL R2, R1, R0
+    @ LDR R0, =buffertest
+    @ STR R2, [R0, #OFFSET_RANGE]
+    @ VLDR.f32 S0, [R0, #OFFSET_RANGE]
+    @ VCVT.f32.s32 S0, S0             @ the conversion is a must to work
     VLDR.f32 S4, [R0, #OFFSET_AZIMUTH]
     VLDR.f32 S5, [R0, #OFFSET_ELEVATION]
 
