@@ -52,6 +52,7 @@ sp_start:
     MOV R8, #0
     MOV R4, #1                  @ multiplier start at 1
 
+
 sp_search:
 /// \ Start parsing through the string to extract numbers for each category.
 // Looking for '{' to start set and '}' to end each field 
@@ -84,34 +85,37 @@ sp_search:
     BLE convert_integer         @ R9 = 0,1,2  convert int 
     BGT convert_float           @ R0 >=2 convert to float
 
+
 convert_float:
-/// \Converts ascii number to floats
+/// 1) extracts each ascii char and Converts ascii number to floats
+/// 2) pushes to stack and converts to float numbers
 /// Fields 3=Azimuth; 4=elevation
 /// Read is first performed then pushed into stack since we dont
 /// know how large the number is to convert. There for we can 
 /// multiply them with the correct 10^n to get the position
 
     LDRB R2, [R6], #1           @ read current byte
-    CMP R2, #'.'
     CMP R2, #'}'
     MOVEQ R3, #0                @ R3 will be counter used to construct the digit position
-    BEQ build_float
-    SUB R2, R2, #'0'            @ quick way to convert ascii to integer
+    BEQ convert_fl_digit
+    CMP R2, #'.'                @ if R2 = '.' we dont want to convert this value we need it
+    SUBNE R2, R2, #'0'            @ quick way to convert ascii to integer
+    PUSH {R2}                   @ push number into stack for correct processing
+    ADD R8, #1                  @ increment counter to track number of digits
+    B convert_float             @ 
 
-
-
-
-  build_float:
+  convert_fl_digit:
     CMP R8, #0                  @ while R8 > 0
-    BEQ write_to_mem
+    BEQ write_to_mem            
     ADD R3, #1                  @ increment digit position index
     POP {R2}                    @ pop 2-1- . -5 -4
     CMP R2, #'.'                @ if we got radix, we have fraction
-    BEQ constuct_frac           @ skip to construct fraction
+    BEQ construct_frac           @ skip to construct fraction
     BL get_multiplier           @ arg R3=current digit index; return= R0 multiplier 10^n
     MUL R1, R2, R0              @ R1 = R2 * multiplier[R0]
     ADD R5, R1                  @ R5 += R1 accumulate number segment
     SUB R8, R8, #1
+    B convert_fl_digit          @ repeat for remainder of digits
 
   construct_frac:
   // Construct the fraction portion and convert to float
@@ -122,20 +126,19 @@ convert_float:
     SUB R8, R8, #1              @ We still need to decrement R8 to keep the stack count aligned
     VMOV.f32 S0, R5             @ Move R5 into S0 float register
     VCVT.f32.s32 S0, S0         @ convert S0 to signed float32; required to work
-    VMOV S1, #100               
+    MOV R0, #100                @ sreg dont allow arbitrary #imm values, must load 
+    VMOV.f32 S1, R0             @ load #100 into S1
+    VCVT.f32.s32 S1, S1         @ convert data to float              
     VDIV.f32 S2, S0, S1         @ S2 = S0/100 to get 0.xx fraction 
-    LDR R0, =fraction_f
-    VSTR.f32 S2, [R0]           @ store fraction to memery
+    @ not needed??LDR R0, =fraction_f
+    @ VSTR.f32 S2, [R0]           @ store fraction to memery 
     MOV R5, #0                  @ we need to reset this to process integer after
-    B build_float               @ resume back to build integer portion
-  
-
-  // reset r5 to zero when done
+    B convert_fl_digit               @ resume back to build integer portion
 
 
 convert_integer:
-/// \Fields 0=target, 1=track# are integers
 /// \Return R5 - result ineger
+// Fields 0=target, 1=track# are integers
 // Read is first performed and pushed into stack since we dont know how 
 // large the number is to convert. Ie 154 is push to stack 4-5-1 so 
 // can multiply them by the number of 10^n accordingly
@@ -143,14 +146,14 @@ convert_integer:
     LDRB R2, [R6], #1            @ read the current byte,
     CMP R2, #'}'
     MOVEQ R3, #0                @ R3 will be used in build_integer funciton to count digit position
-    BEQ build_integer
+    BEQ convert_int_digit
     SUB R2, R2, #'0'            @ quick way to convert ascii to integer
     PUSH {R2}                   @ push the number to stack to get the correct order
     ADD R8, #1                  @ counter to keep track                     
     B convert_integer           @ repeat for next digit
 
   // Completed the current field read, reconstruct number
-  build_integer:
+  convert_int_digit:
     CMP R8, #0                  @ While R8 > 0
     BEQ write_to_mem
     ADD R3, #1                  @ increment digit position index
@@ -159,17 +162,21 @@ convert_integer:
     MUL R1, R2, R0              @ R1 = R2 * multiplier[R0]
     ADD R5, R1                  @ R5 += R1
     SUB R8, R8, #1              @ decrement digit counter
-    B build_integer             @ repeat until done
+    B convert_int_digit             @ repeat until done
 
-  // Integer is done, write to memory
-  // R9 - param[in] key used to determin which part of buffer to write to 
   write_to_mem:
+  /// \param[in] R9 - key used to determin which part of buffer to write to 
+  /// Integer is done, write to memory
     CMP R9, #0                  @ Target# field
     BEQ store_target
     CMP R9, #1                  @ Write track number
     BEQ store_track            
     CMP R9, #2                  @ Write Range
-    BEQ store_range  
+    BEQ store_range
+    CMP R9, #3                  @ Write Azimuth
+    BEQ store_azimuth
+    CMP R9, #4                  @ write Elevation
+    BEQ store_elevation  
     @ TODO:: range needs to be converted to float since it will be multiplied.          
 
   store_target:
@@ -185,8 +192,26 @@ convert_integer:
   store_range:
     LDR R0, =parsed_buffer      @ store Range as float in the buffer
     STR R5, [R0, #OFFSET_RANGE]
-    
+    B int_done
 
+  store_azimuth:
+    /// \param[in] R5 - As of now holds integer portion
+    /// \param[in] S2 - fractional portion (converted s32)
+    VMOV.f32 S1, R5             @ copy R5 int to S1
+    VCVT.f32.s32 S1, S1         @ convert the value into single
+    VADD.f32 S0, S1, S2         @ add to combine s0=int + 0.frac
+    LDR R0, =parsed_buffer
+    VSTR.f32 S0, [R0, #OFFSET_AZIMUTH]
+    B int_done
+
+  store_elevation:
+    /// \param[in] R5 - integer portion
+    /// \param[in] S2 - fractional poriton (converted s32)
+    VMOV.f32 S1, R5             @ copy R5 int to S1
+    VCVT.f32.s32 S1, S1         @ convert the value into single
+    VADD.f32 S0, S1, S2         @ add to combine s0=int + 0.frac
+    LDR R0, =parsed_buffer
+    VSTR.f32 S0, [R0, #OFFSET_ELEVATION] 
     B int_done
 
   int_done:
@@ -234,9 +259,9 @@ get_multiplier:
 
 .data
     num_index_address: .word 0
-    parsed_buffer: .space 16, 0  @ Buffer per track is 16bytes
 .align 4
-    fratcion_f:      .single 0.0
+    parsed_buffer: .space 16, 0  @ Buffer per track is 16bytes
+    fraction_f:      .single 0.0
     integer_f:       .single 0.0
 
 .word @ 32bit align for strings
