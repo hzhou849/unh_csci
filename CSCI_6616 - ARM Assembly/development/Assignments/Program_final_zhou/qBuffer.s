@@ -3,10 +3,10 @@
     Project: Final Project - Jarvis Tactical Data Processor
     Name: Howard Zhou
 
-    File: ringbuffer.s
+    File: qBuffer.s
 
     Description:
-        - Circular ring buffer to read/write data as needed for TDP 
+        - Circular buffer queue to read/write data as needed for TDP 
         - Need to store up to 200tracks in memory . Up to 20 targets * 10 tracks each
         -
     Data Format: each track contains:
@@ -17,15 +17,18 @@
         - Elevation: float 4 bytes
         Total = 16bytes per track = 200tracks * 16bytes = 3200 bytes size in memory
 
+    
     Local Registers:
         R5 - Buffer status regsiter
         R6 - Current size
 
-        R0 = target
-        R1 = track#
-        r2 = range
-        S0 = Azimuth
-        S1 = Elevation
+
+        // Write sample datas
+    MOV R1, #1              @ Target#
+    MOV R2, #8              @ Track number
+    MOV R3, #12000          @ range#
+    MOV R4, #45             @ Azimuth
+    MOV R5, #30             @ elevation
 
     ascii command string
     {TRAGET#}{TRACK#: N}{RANGE: R}{AZIMUTH: AZ}{ELEVATION: EL}
@@ -40,17 +43,21 @@
 
 .EQU OFFSET_TARGET,    0            @ 2bytes; w/r must be half-word
 .EQU OFFSET_TRACKNUM,  2            @ 2bytes; w/r must be half-word
-.EQU OFFSET_RANGE,     4
-.EQU OFFSET_AZIMUTH,   8
-.EQU OFFSET_ELEVATION, 12
+.EQU OFFSET_RANGE,     4            @ 4bytes WORD
+.EQU OFFSET_AZIMUTH,   8            @ 4byte float
+.EQU OFFSET_ELEVATION, 12           @ 4byte float
 
 
-.global write_buffer, read_buffer
+.global write_queue, read_queue
 .section .text
 
 
-write_buffer:   /// \Write to buffer
-    PUSH {R4-R12, LR}
+write_queue:   
+/// \load data into circular buffer 
+/// \param[in] R0 =parsed_buffer - memory variable with parsed track data
+
+    PUSH {R4-R12, LR}           @ backup current registers
+    MOV R9, R0                  @ copy the address of =parsed_buffer to get track data later
 
     // initial check to see if buffer if full
     LDR R0, =b_status           @ get buffer status value
@@ -83,22 +90,38 @@ write_buffer:   /// \Write to buffer
     ADD R0, R0, R8              @ r0 = bufferAddres + tailOffset
 
 
-    // Write sample datas
-    MOV R1, #1              @ Target#
-    MOV R2, #8              @ Track number
-    MOV R3, #12000          @ range#
-    MOV R4, #45             @ Azimuth
-    MOV R5, #30             @ elevation
-    VMOV.f32 S0, R4         @ Azimuth
-    VCVT.f32.s32 S0, S0
-    VMOV.f32 S1, R5         @ Elevation
-    VCVT.f32.s32 S1, S1
+    // Load data and write to circular buffer
+    // Recall R9 =parsed_buffer address
+    // Assignment: 
+    //              R1 = target  2bytes HWORD
+    //              R2 = track#  2bytes HWORD
+    //              R3 = range      4bytes WORD
+    //              S0 = Azimuth    4bytes float
+    //              S1 = Elevation  4bytes float
+    LDRH R1, [R9, #OFFSET_TARGET]    
+    LDRH R2, [R9, #OFFSET_TRACKNUM]
+    LDR  R3, [R9, #OFFSET_RANGE]
+    VLDR.f32 S0, [R9, #OFFSET_AZIMUTH]
+    VLDR.f32 S1, [R9, #OFFSET_ELEVATION]
+
+    @ MOV R1, #1              @ Target#
+    @ MOV R2, #8              @ Track number
+    @ MOV R3, #12000          @ range#
+    @ MOV R4, #45             @ Azimuth
+    @ MOV R5, #30             @ elevation
+    @ VMOV.f32 S0, R4         @ Azimuth
+    @ VCVT.f32.s32 S0, S0
+    @ VMOV.f32 S1, R5         @ Elevation
+    @ VCVT.f32.s32 S1, S1
     // Perfrom write
     STRH R1, [R0, #OFFSET_TARGET]   @ STRH store 2 byteswrite to buffer @tail_offset(R8)
     STRH R2, [R0, #OFFSET_TRACKNUM] @ store 2 bytes tracking number
     STR R3, [R0, #OFFSET_RANGE]     @ 4bytes
     VSTR.f32 S0, [R0, #OFFSET_AZIMUTH]  
     VSTR.f32 S1, [R0, #OFFSET_ELEVATION]
+
+    VLDR.f32 S5, [R0, #OFFSET_AZIMUTH]
+    VLDR.f32 S6, [R0, #OFFSET_ELEVATION]
     
     // Update the current_size counter by +1 and store in memory
     LDR R0, =b_curr_size
@@ -136,7 +159,7 @@ write_buffer:   /// \Write to buffer
     LDR R1, [R0]
     B b_tx_done
 
-read_buffer: /// \Read from buffer
+read_queue: /// \Read from buffer
     PUSH {R4-R12, LR}
 
     // Check to see if buffer is empty first
@@ -213,6 +236,7 @@ buffer_read_empty:
 
 
 .data
+.align 4
     buffer:         .space CAPACITY_SIZE_BYTES, 0    @ reserve 3200 bytes for the buffer
     b_curr_size:    .word 0 
     b_head:         .word 0

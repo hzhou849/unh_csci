@@ -37,12 +37,12 @@
 .EQU OFFSET_TRACKNUM,  2            @ 2bytes; w/r must be half-word
 .EQU OFFSET_RANGE,     4
 .EQU OFFSET_AZIMUTH,   8
-.EQU OFFSET_ELEVATION, 12
+.EQU OFFSET_ELEVATION, 12           @ hex 0x0C
 
-.global sp_start
+.global str_parser
 .section .text
 
-sp_start:
+str_parser:
 /// \ Ideally input R0=input_string
     PUSH {R4-R12, LR}
     MOV R6, R0                  @ Load the input string into R6 for processing
@@ -130,8 +130,6 @@ convert_float:
     VMOV.f32 S1, R0             @ load #100 into S1
     VCVT.f32.s32 S1, S1         @ convert data to float              
     VDIV.f32 S2, S0, S1         @ S2 = S0/100 to get 0.xx fraction 
-    @ not needed??LDR R0, =fraction_f
-    @ VSTR.f32 S2, [R0]           @ store fraction to memery 
     MOV R5, #0                  @ we need to reset this to process integer after
     B convert_fl_digit               @ resume back to build integer portion
 
@@ -177,22 +175,21 @@ convert_integer:
     BEQ store_azimuth
     CMP R9, #4                  @ write Elevation
     BEQ store_elevation  
-    @ TODO:: range needs to be converted to float since it will be multiplied.          
 
   store_target:
     LDR R0, =parsed_buffer      @ store the target number in the buffer
     STRH R5, [R0, #OFFSET_TARGET]
-    B int_done 
+    B restart_parser 
 
   store_track:
     LDR R0, =parsed_buffer      @ store the track number in the buffer
     STRH R5, [R0, #OFFSET_TRACKNUM]
-    B int_done
+    B restart_parser
 
   store_range:
     LDR R0, =parsed_buffer      @ store Range as float in the buffer
     STR R5, [R0, #OFFSET_RANGE]
-    B int_done
+    B restart_parser
 
   store_azimuth:
     /// \param[in] R5 - As of now holds integer portion
@@ -202,7 +199,7 @@ convert_integer:
     VADD.f32 S0, S1, S2         @ add to combine s0=int + 0.frac
     LDR R0, =parsed_buffer
     VSTR.f32 S0, [R0, #OFFSET_AZIMUTH]
-    B int_done
+    B restart_parser
 
   store_elevation:
     /// \param[in] R5 - integer portion
@@ -212,15 +209,16 @@ convert_integer:
     VADD.f32 S0, S1, S2         @ add to combine s0=int + 0.frac
     LDR R0, =parsed_buffer
     VSTR.f32 S0, [R0, #OFFSET_ELEVATION] 
-    B int_done
+    B sp_done                   @ this is the last field so we are done
 
-  int_done:
+  restart_parser:
     ADD R9, #1                  @ increment Field counter(R9) +1
     B sp_search                 @ start the next field
 
 
 sp_done:
     POP {R4-R12, LR}
+    LDR R0, =parsed_buffer      @ return address R0=parsed_buffer
     BX LR
     
 not_found:

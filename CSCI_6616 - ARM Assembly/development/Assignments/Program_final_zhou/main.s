@@ -61,19 +61,13 @@ main:
     // 1) convert range to float
     // 2) check how to store decimal value to buffer? can the ring buffer be a single? or just aligned by 4?
 
-    BL sp_start
 
 restart:
 
     // 1 - Print inital prompt
     LDR R0, =menu_str_prompt1       @ load string arg to print
     BL menu_print                   @ print the options menu and prompt char
-    BL sp_start
-    BL write_buffer
-    BL write_buffer
-    BL read_buffer
-    BL read_buffer
-
+   
 exit:
     LDR R0, =menu_str_exit          @ load exit message
     BL printf               

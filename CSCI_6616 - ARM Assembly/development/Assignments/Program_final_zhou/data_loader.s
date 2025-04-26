@@ -19,12 +19,10 @@
         - Elevation: float 4 bytes
         Total = 16bytes per track = 200tracks * 16bytes = 3200 bytes size in memory
 
-    Input registers:
-        R0 param[in] - pointer to input string track record
 
     Local Registers:
-        R5 - Buffer status regsiter
-        R6 - Current size
+        R5 - Current counter
+        R6 - File descriptor
         R9 - Field category: 
            0 = target
            1 = track#
@@ -45,23 +43,29 @@ load_data:
     LDR R0, =file_name
     LDR R1, =read_mode
     BL fopen                    @ create the file descripter
-    MOV R4, R0                 @ Save file pointer to R4
+    MOV R6, R0                  @ Save file pointer to R4
+    MOV R5, #0                  @ counter for lines loaded
 
 read_loop:
     // fgets(buffer, 256, f); fetch line
     LDR R0, =line_buffer        @ buffer to load data into
     MOV R1, #256                @ size of buffer
-    MOV R2, R4                  @ file pointer file.txt* (this address gets updated after each fgets call)
+    MOV R2, R6                  @ file pointer file.txt* (this address gets updated after each fgets call)
     BL fgets
     CMP R0, #0                  @ R0 is the return value. 0=EOF
     BEQ end_loop
 
-    // Parse the data
-    BL sp_start                 @ arg R0=track data string to parse           
+    // Call str_parser.s to parse the data
+    /// \Returns: R0 return address =parsed_buffer
+    BL str_parser               @ arg R0=track data string to parse 
+
+    // Calls qBuffer::write_queue Load the parsed data into the queue buffer
+    BL write_queue              @ taks R0 = parsed string datga          
 
     // Print the file 
     LDR R0, =output_str
-    LDR R1, =line_buffer
+    MOV R1, R6                  @ current counter
+    LDR R2, =line_buffer        @ current string loaded
     BL printf
 
     B read_loop
@@ -78,7 +82,7 @@ file_name:  .asciz "track_data.txt"
 read_mode:  .asciz "r"
 line_buffer:    .space 256, 0
 fgets_fmt_specifier:      .asciz "%s"
-output_str:     .asciz "Read line: %s\n"
+output_str:     .asciz " %d) Data loaded: %s\n"
 
 
 
