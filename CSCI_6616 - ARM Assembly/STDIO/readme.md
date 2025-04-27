@@ -60,6 +60,8 @@ BL printf
 	opStr: .asciz	"Operand[%d] = str: %s\n"
 ```
 ### extra variables with stack prinf
+* any arg after R3 must be pushed to the stack where ```printf``` will pull from there
+* Be careful of order in stack LIFO, so it will print last in first
 ```asm
   LDR R0, =status_str
     MOV R1, R5              @ arg1= status(R5)
@@ -73,8 +75,41 @@ BL printf
     @ R5 = arg5
     @ PUSH {R5-R8}
     BL printf
+    POP {R4}...	            @ you can pop the data to delete or add SP shown below:
     ADD SP, SP, #8          @ delete the 2 x(4bytes) values pushed into stack
 #status_str: .asciz "\nBuffer status: [%d]; Head_offset:[+%d]; tail_offset: [+%d]; size [%d]/total_capacity: [%d]\n"
+```
+
+## Printf with floats 
+* All floats must be converted to ```doubles```.
+```
+.data 
+.word @32 bit 
+    test_print: .asciz "Target: %d; Track: %d; Range: %d; Azimuth: %f; Elevation %f\n"
+.align 4
+	double_buffer: .double 0.0
+
+
+    // ** after R3 arg, you need to push to stack in order to print
+    // Note print from stack is LIFO so you need to reverse azimuth and elevation
+    MOV R1, R4                          @ load arg1
+    MOV R2, R5                          @ load arg2
+    MOV R3, R6                          @ load arg3
+    VCVT.f64.f32 d0, s1                 @ Printf requires floats to be doubles
+    LDR R0, =double_buffer2             @ temp double buffer to hold for conversion
+    VSTR.f64 D0, [R0]                   @ write double to memory
+    LDM R0, {R4, R5}                    @ load double spread into 2x32bit regs 4 &5
+
+    VCVT.f64.f32 d1, s2
+    VSTR.f64 D1, [R0]
+    LDM R0, {R6, R7}
+    PUSH {R6, R7}                       @ stack if LIFO PUSH  arg5 first
+    PUSH {R4, R5}                       @ push arg4 (this is read first bc it is top)
+    LDR R0, =test_print
+    bl printf
+
+    POP {R6, R7}                        @ remove arg 5 from stack
+    POP {R4,R5}                         @ remove arg 4 from stack 
 ```
 
 ## How to split long string messages with one variable:
