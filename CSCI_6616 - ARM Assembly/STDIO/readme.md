@@ -82,7 +82,7 @@ BL printf
 
 ## Printf with floats 
 * All floats must be converted to ```doubles```.
-```
+```asm
 .data 
 .word @32 bit 
     test_print: .asciz "Target: %d; Track: %d; Range: %d; Azimuth: %f; Elevation %f\n"
