@@ -23,13 +23,6 @@
         R6 - Current size
 
 
-        // Write sample datas
-    MOV R1, #1              @ Target#
-    MOV R2, #8              @ Track number
-    MOV R3, #12000          @ range#
-    MOV R4, #45             @ Azimuth
-    MOV R5, #30             @ elevation
-
     ascii command string
     {TRAGET#}{TRACK#: N}{RANGE: R}{AZIMUTH: AZ}{ELEVATION: EL}
  * ==========================================================================================
@@ -61,15 +54,15 @@ write_queue:
 
     // initial check to see if buffer if full
     LDR R0, =b_status           @ get buffer status value
-    STR R5, [R0]
+    LDR R5, [R0]
     CMP R5, #1                  @ Check status register
     BLEQ buffer_write_full      @ print full message
    
 
     // Get current specs
     LDR R0, =b_curr_size        @ get current size count from memory
-    LDR R3, [R0]                 @ copy current size count into R3
-    LDR R0, =b_head              @ current head index
+    LDR R3, [R0]                @ copy current size count into R3
+    LDR R0, =b_head             @ current head index
     LDR R7, [R0]
     
 
@@ -82,37 +75,24 @@ write_queue:
     BL modN                     @ returns tail(R0)=remainder value
     MOV R8, R0                  @ copy tail offset mod into R8; this is the offset we need
 
-    // Retrieve data from input buffer
-    // N/A now
-
     // calculate tail buffer address at offset(R8) in bytes
-    LDR R0, =buffer             @ load the buffer to R0 for writing
-    ADD R0, R0, R8              @ r0 = bufferAddres + tailOffset
-
-
     // Load data and write to circular buffer
     // Recall R9 =parsed_buffer address
     // Assignment: 
-    //              R1 = target  2bytes HWORD
-    //              R2 = track#  2bytes HWORD
-    //              R3 = range      4bytes WORD
-    //              S0 = Azimuth    4bytes float
-    //              S1 = Elevation  4bytes float
+    //   R1 = target  2bytes HWORD
+    //   R2 = track#  2bytes HWORD
+    //   R3 = range      4bytes WORD
+    //   S0 = Azimuth    4bytes float
+    //   S1 = Elevation  4bytes float
+    LDR R0, =buffer                 @ load the buffer to R0 for writing
+    ADD R0, R0, R8                  @ r0 = bufferAddres + tailOffset
     LDRH R1, [R9, #OFFSET_TARGET]    
     LDRH R2, [R9, #OFFSET_TRACKNUM]
     LDR  R3, [R9, #OFFSET_RANGE]
     VLDR.f32 S0, [R9, #OFFSET_AZIMUTH]
     VLDR.f32 S1, [R9, #OFFSET_ELEVATION]
 
-    @ MOV R1, #1              @ Target#
-    @ MOV R2, #8              @ Track number
-    @ MOV R3, #12000          @ range#
-    @ MOV R4, #45             @ Azimuth
-    @ MOV R5, #30             @ elevation
-    @ VMOV.f32 S0, R4         @ Azimuth
-    @ VCVT.f32.s32 S0, S0
-    @ VMOV.f32 S1, R5         @ Elevation
-    @ VCVT.f32.s32 S1, S1
+
     // Perfrom write
     STRH R1, [R0, #OFFSET_TARGET]   @ STRH store 2 byteswrite to buffer @tail_offset(R8)
     STRH R2, [R0, #OFFSET_TRACKNUM] @ store 2 bytes tracking number
@@ -120,6 +100,7 @@ write_queue:
     VSTR.f32 S0, [R0, #OFFSET_AZIMUTH]  
     VSTR.f32 S1, [R0, #OFFSET_ELEVATION]
 
+    // Test data is written successfully by loading it for debugger read
     VLDR.f32 S5, [R0, #OFFSET_AZIMUTH]
     VLDR.f32 S6, [R0, #OFFSET_ELEVATION]
     
@@ -129,20 +110,12 @@ write_queue:
     ADD R6, #1                  @ increment currentSize  +1
     STR R6, [R0]                @ write the new size back into memory
 
-    @ // Check to update status bit. We dont increment tail if tail ==head
-    @ CMP R6, #CAPACITY_SIZE      @ check if current size == total capacity slots?
-    @ BLT b_skip                  @ if not skip
-    @ LDR R0, =b_status           @ buffer if full, update to =1
-    @ MOV R1, #1
-    @ LDR R1, [R0]                @ set b_status =1 (full)
-    
     // Check to update status bit. We dont increment tail if tail ==head
     CMP R6, #CAPACITY_SIZE      @ check if current size == total capacity slots?
     LDREQ R0, =b_status         @ buffer if full, update to =1
     MOVEQ R1, #1
     LDREQ R1, [R0]              @ set b_status =1 (full)
 
-    @ b_skip:
     // Update tail to new position Tail slot+1 = [(Head + currentSize) % total_capcity] * 16bytes
     MOV R3, R6                  @ move current size into R3
     LSL R3, R3, #4              @ lshift4 = * 16
@@ -157,6 +130,7 @@ write_queue:
     LDR R0, =b_status           @ if head == tail, buffer full, set flag =1
     MOV R1, #1
     LDR R1, [R0]
+
     B b_tx_done
 
 read_queue: /// \Read from buffer
@@ -173,22 +147,23 @@ read_queue: /// \Read from buffer
     LDR R7, [R0]                        @ R7 = head offset(bytes)
     LDR R0, =buffer
     ADD R0, R0, R7                      @ R0 = bufferAddr + headOffset
-
-    // Read head data at offset
     LDRH R1, [R0, #OFFSET_TARGET]       @ half-word only 2bytes
     LDRH R2, [R0, #OFFSET_TRACKNUM]     @ half-word only
     LDR R3, [R0, #OFFSET_RANGE]
-    @  MOV R1, #1000  @ example of converting int to float
-    @ MOV R0, #100
-    @ MUL R2, R1, R0
-    @ LDR R0, =buffertest
-    @ STR R2, [R0, #OFFSET_RANGE]
-    @ VLDR.f32 S0, [R0, #OFFSET_RANGE]
-    @ VCVT.f32.s32 S0, S0             @ the conversion is a must to work
     VLDR.f32 S4, [R0, #OFFSET_AZIMUTH]
     VLDR.f32 S5, [R0, #OFFSET_ELEVATION]
 
+    // Save this track record to return buffer
+    PUSH {R0}                           @ save this head offset to call back after
+    LDR R0, =ret_track_buffer
+    STRH R1, [R0, #OFFSET_TARGET]
+    STRH R2, [R0, #OFFSET_TRACKNUM]
+    STR R3, [R0, #OFFSET_RANGE]
+    VSTR.f32 S4, [R0, #OFFSET_AZIMUTH]
+    VSTR.f32 S5, [R0, #OFFSET_ELEVATION]
+
     // Dequeue (write 0/null) and increment head +1slot(16bytes)
+    POP {R0}                            @ restore LDR R0, =buffer + R7 headOffset
     MOV R1, #0
     STRH R1, [R0, #OFFSET_TARGET]
     STRH R1, [R0, #OFFSET_TRACKNUM]
@@ -214,7 +189,10 @@ read_queue: /// \Read from buffer
     MOVEQ R5, #0                @ if status ==1 we will perform the next 2 steps
     LDREQ R5, [R0]              @ clear the buffer full status flag
 
-    B b_tx_done                      
+    LDR R0, =ret_track_buffer    @ return track data buffer 
+    B b_tx_done 
+
+
 
 b_tx_done:
     POP {R4-R12, LR}
@@ -237,10 +215,11 @@ buffer_read_empty:
 
 .data
 .align 4
-    buffer:         .space CAPACITY_SIZE_BYTES, 0    @ reserve 3200 bytes for the buffer
+    buffer:         .space CAPACITY_SIZE_BYTES, 0   @ reserve 3200 bytes for the buffer
     b_curr_size:    .word 0 
     b_head:         .word 0
-    b_status:       .word 0  
+    b_status:       .word 0
+    ret_track_buffer: .space 16, 0               @ Return buffer to store retreived track record  
 
 @ .align 4
 @     scanf_ind:  .space 4,0          @ input buffer for scanf %d
@@ -250,11 +229,11 @@ buffer_read_empty:
 
     b_scanf_fmt_d:          .asciz "%d"
     b_scanf_fmt_f:          .asciz "%f"
-    b_scanf_p1_target:      .asciz "Enter Target#: "
-    b_scanf_p2_track:       .asciz "Track#: "
-    b_scanf_p3_range:       .asciz "Range#: "
-    b_scanf_p4_azimuth:     .asciz "Azimuth: "
-    b_scanf_p5_elevation:   .asciz "Elevation: "
+    @ b_scanf_p1_target:      .asciz "Enter Target#: "
+    @ b_scanf_p2_track:       .asciz "Track#: "
+    @ b_scanf_p3_range:       .asciz "Range#: "
+    @ b_scanf_p4_azimuth:     .asciz "Azimuth: "
+    @ b_scanf_p5_elevation:   .asciz "Elevation: "
 
     b_status_str:           .asciz "\nBuffer status: [%d]; Head_offset:[+%d]; tail_offset: [+%d]; size/total_capacity: %d of %d\n"
     b_str_write_full:       .asciz "\n [!] WRITE FAILED - buffer full\n"

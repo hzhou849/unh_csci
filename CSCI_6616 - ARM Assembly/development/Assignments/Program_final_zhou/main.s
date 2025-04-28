@@ -40,6 +40,12 @@
 @ .EQU CHAR_A, 0x41   @ Ascii "A"
 @ .EQU CHAR_B, 0x42   @ Ascii "B"
 
+.EQU OPTION_1_EXECUTE, 1
+@ .EQU OPTION_2_READ,  2
+@ .EQU OPTION_3_CHECK, 3
+@ .EQU OPTION_4_INIT,  4
+.EQU OPTION_5_EXIT,  5
+
 
 .section .text
 .global main
@@ -54,8 +60,6 @@ main:
     MOV R8, # 0                      @ Iniitalize tail
 
    
-    BL load_data
-    B exit
 
     // TODO::
     // 1) convert range to float
@@ -65,8 +69,29 @@ main:
 restart:
 
     // 1 - Print inital prompt
-    LDR R0, =menu_str_prompt1       @ load string arg to print
+    LDR R0, =menu_str_main_menu     @ load  string arg to print
     BL menu_print                   @ print the options menu and prompt char
+
+    // 2 - get user input
+    LDR R0, =menu_fmt_specifier      @ set menu option format specifier %c
+    LDR R1, =menu_opt               @ buffer to store stdin
+    PUSH {R1}                       @ save this since c calls alter R1
+    BL scanf
+    BL getchar                      @ flush whitespace left by scanf
+    POP {R1}                        @ retrieve menu_opt address
+    LDR R0, [R1]                    @ load user input char data
+
+
+    // Check the menu option selected
+    CMP R0, #OPTION_1_EXECUTE
+    BEQ opt1
+    CMP R0, #OPTION_5_EXIT
+    BEQ exit
+
+opt1: /// \Execute
+    BL load_data                    @ loads data from text file into queue
+    BL calc_track_data
+    B exit
    
 exit:
     LDR R0, =menu_str_exit          @ load exit message
@@ -79,8 +104,8 @@ exit:
 @ required for each variable initialized to ensure it will line up with a 4byte boundary address
 .align 4 @ 32bit align all variables
     buffertest: .space 16, 0
-    @ menu_opt:           .space 4,0      @ Buffer to store stdin menu option selection 
-    @ menu_fmt_specifier:  .asciz "%c"     @ Format specifier for menu option stdin
+    menu_opt:           .space 4,0      @ Buffer to store stdin menu option selection 
+    menu_fmt_specifier:  .asciz "%d"     @ Format specifier for menu option stdin
     @ scanf_prompt:       .asciz "Enter value > "
     @ input_fmt_specifier:.asciz "%f"     @ format specifier for scanf input
 

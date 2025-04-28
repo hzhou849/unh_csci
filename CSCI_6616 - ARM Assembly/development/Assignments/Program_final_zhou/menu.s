@@ -99,10 +99,38 @@ debug_print_calc:
     BX LR                            @ return to calling function
 
 
+ @ @ // FOr printf 
+    @ @ // ** after R3 arg, you need to push to stack in order to print
+    @ @ // Note print from stack is LIFO so you need to reverse azimuth and elevation
+    @ MOV R1, R4                          @ load arg1
+    @ MOV R2, R5                          @ load arg2
+    @ MOV R3, R6                          @ load arg3
+    @ VCVT.f64.f32 d0, s1                 @ Printf requires floats to be doubles
+    @ LDR R0, =double_buffer2             @ temp double buffer to hold for conversion
+    @ VSTR.f64 D0, [R0]                   @ write double to memory
+    @ LDM R0, {R4, R5}                    @ load double spread into 2x32bit regs 4 &5
+
+    @ VCVT.f64.f32 d1, s2
+    @ VSTR.f64 D1, [R0]
+    @ LDM R0, {R6, R7}
+    @ PUSH {R6, R7}                       @ stack if LIFO PUSH  arg5 first
+    @ PUSH {R4, R5}                       @ push arg4 (this is read first bc it is top)
+    @ LDR R0, =test_print
+    @ bl printf
+
+    @ //  MEthod 1
+    @ ADD SP, #16                         @ delete 2x(8bytes 64bit) pushed into stack
+    @ // method 2
+    @ @ POP {R6, R7}                        @ remove arg 5 from stack
+    @ @ POP {R4,R5}                         @ remove arg 4 from stack 
+
+
 .data
 .word @ 32 bit align all variables
-	menu_str_prompt1: 	
+	menu_str_main_menu: 	
         .ascii "\n\nFinal Project - Jarvis 2025 Tactical Data Processor:\n"
+        .ascii "\n1) execute\n"
+        .ascii "5) exit\n"
         .byte 0  @ Null terminator to end the string
     value_str:          .asciz "\nMax Height: [ %f ]m\nMax Range:  [ %f ]m\n" 
     menu_str_prompt2:   .asciz "\nEnter launch angle degrees: "

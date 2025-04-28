@@ -64,10 +64,11 @@ read_loop:
 
     // Print the file 
     LDR R0, =output_str
-    MOV R1, R6                  @ current counter
+    MOV R1, R5                  @ current counter
     LDR R2, =line_buffer        @ current string loaded
     BL printf
 
+    ADD R5, #1                  @ increment loop counter
     B read_loop
 
 end_loop:
