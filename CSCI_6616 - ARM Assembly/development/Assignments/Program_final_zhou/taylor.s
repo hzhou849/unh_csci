@@ -18,7 +18,7 @@
 
     Registers:
         @input args: 
-            S0: value x to calculate
+           param[in] S0: value x to calculate
 
         @return: S0 - the calculated value
 
@@ -40,8 +40,10 @@
 .global get_sin, get_cos
 .section .text
 
-///\ Caculate sin(x) taylor series
 get_sin:
+/// \Caculate sin(x) taylor series
+/// \param[in] R0: x value to calculate
+/// \Returns: R0 sin(x) result
     PUSH {R4-R12, LR}               @ Save caller() reg values & LR
     LDR R4, =input_radian
     VSTR.f32 S0, [R4]               @ save the input radian to memory
@@ -76,8 +78,10 @@ get_sin:
 
    
 
-///\ Calculate cos(x) taylor series
 get_cos:
+/// \ Calculate cos(x) taylor series
+/// \param[in] R0: x value to calculate
+/// \Returns: R0 sin(x) result
     PUSH {R4-R12, LR}               @ Save caller() reg values & LR
     LDR R4, =input_radian
     VSTR.f32 S0, [R4]               @ save the input radian to memory
@@ -111,8 +115,10 @@ get_cos:
     ADD R6, #4                      @ tval_list++; manually update R8 offset +4, since vstr cannot do post inc.
     B cos_loop                      @ run another loop of taylor sin(x)n+1
 
-///\ Calculate arctan(x) taylor series
 get_arctan:
+///\ Calculate arctan(x) taylor series
+/// \param[in] R0: x value to calculate
+/// \Returns: R0 sin(x) result
     PUSH {R4-R12, LR}               @ Save caller() reg values & LR
     LDR R4, =input_radian
     VSTR.f32 S0, [R4]               @ save the input radian to memory

@@ -9,7 +9,7 @@
 # TARGET
 PROJECT_NAME := fp_jarvis_tdp
 # SRCS := $(wildcard *.s)
-SRCS := main.s menu.s modN.s qBuffer.s str_parser.s data_loader.s calcData.s
+SRCS := main.s taylor.s factoral.s menu.s modN.s qBuffer.s str_parser.s data_loader.s calcData.s 
 TARGET_OBJ := $(PROJECT_NAME).o
 OBJS := $(patsubst %.s, %.o, $(SRCS))
 CXX := gcc

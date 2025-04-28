@@ -67,7 +67,6 @@ main:
 
 
 restart:
-
     // 1 - Print inital prompt
     LDR R0, =menu_str_main_menu     @ load  string arg to print
     BL menu_print                   @ print the options menu and prompt char
@@ -89,11 +88,18 @@ restart:
     BEQ exit
 
 opt1: /// \Execute
+/// Loads data and processes track data for every entry until list is finished
     BL load_data                    @ loads data from text file into queue
-    BL calc_track_data
+  next_track: 
+    @ BL check_empty                  @ check if head is empty just call =b_curr_size
+    CMP R0, #1
+    BEQ restart                     @ branch back to restart application
+    BL calc_track_data              @ return R0 status 0=ok; 1=error
+    @ BL print_fire_output            @ [in] R0: 1=bad_data
+
     B exit
    
-exit:
+exit: /// \Exit and quit application
     LDR R0, =menu_str_exit          @ load exit message
     BL printf               
     MOV R0, #0                      @ Set the return code

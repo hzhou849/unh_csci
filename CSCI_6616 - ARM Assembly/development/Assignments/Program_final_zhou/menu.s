@@ -70,6 +70,11 @@ menu_print_values:
     POP {R4-R12, LR}                @ Restore register values
     BX LR                           @ Return to caller
 
+print_fire_output: 
+    // placeholder to print output data later
+    PUSH {R4-R12, LR}
+    BX LR
+
 debug_print_result:
 ///\ print input S0 value
     PUSH {R0-R12, LR}
