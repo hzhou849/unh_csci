@@ -108,8 +108,11 @@ BL printf
     LDR R0, =test_print
     bl printf
 
-    POP {R6, R7}                        @ remove arg 5 from stack
-    POP {R4,R5}                         @ remove arg 4 from stack 
+    //  MEthod 1
+    ADD SP, #16                         @ delete 2x(8bytes 64bit) pushed into stack
+    // method 2
+    @ POP {R6, R7}                        @ remove arg 5 from stack
+    @ POP {R4,R5}                         @ remove arg 4 from stack 
 ```
 
 ## How to split long string messages with one variable:
