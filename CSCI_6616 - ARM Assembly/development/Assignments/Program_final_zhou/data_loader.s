@@ -83,7 +83,7 @@ file_name:  .asciz "track_data.txt"
 read_mode:  .asciz "r"
 line_buffer:    .space 256, 0
 fgets_fmt_specifier:      .asciz "%s"
-output_str:     .asciz " %d) Data loaded: %s\n"
+output_str:     .asciz " %d) Data loaded: %s"
 
 
 

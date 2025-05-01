@@ -7,7 +7,7 @@
 
     Description:
         - Circular buffer queue to read/write data as needed for TDP 
-        - Need to store up to 200tracks in memory . Up to 20 targets * 10 tracks each
+        - Stores up to 200tracks in memory . Up to 20 targets * 10 tracks each
         -
     Data Format: each track contains:
         - Target#:  2byte

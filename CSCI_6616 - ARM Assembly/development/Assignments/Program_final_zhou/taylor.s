@@ -200,9 +200,10 @@ get_power: // S4=base; R0=exponent(N)
     power_done:
     BX LR
 
-t_exit:
-    POP { R4-R12, LR}               @ restore registers
-    BX LR
+@ t_exit:
+    
+@     POP { R4-R12, LR}               @ restore registers
+@     BX LR
 
     
 .data
