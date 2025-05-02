@@ -1,27 +1,15 @@
 /* ==========================================================================================
-	CSCI_6616 - ARM Assembly Programming
-	Project: Program P8 - Projectile Kinematics Max height/range
-	Name: Howard Zhou
+    CSCI_6616 - ARM Assembly Programming
+    Project: Final Project - Jarvis Tactical Data Processor
+    Name: Howard Zhou
  
 	File: menu.s
  
  	Description:
-		- Prints the menu to terminal
+		- Terminal manager that handles outputs to the teriminal
 	
-	Sample: 
-	Projectile Kinematics Computation App:
-
-    1) Enter Initial Velocity in m/s: 10.5
-    2) Enter Launch Angle in degrees: 45
-    Max Height: 2.81m
-    Max Range: 11.247m
-    
-    Continue?(Y/N):N
-    Enter choice > 1
-    Enter value > 7
 * ==========================================================================================
 */
-
 
 
 @ Allow external calls
@@ -29,7 +17,9 @@
 .section .text
 
 menu_print: 
-///\ print the menu string loaded into R0
+/// \print the menu string loaded into R0
+/// \param[in] R0: address of string buffer to be printed
+
 	PUSH {R4-R12, LR}				@ Save caller() reg values &LR
 	BL printf						@ call cstd printf for stdout
 	LDR R0, =menu_str_prompt		@ load the prompt string
@@ -48,6 +38,7 @@ menu_print_exit:
 
 menu_print_values: 
 ///\ Print values S0=MaxHeight; S1=MaxRange
+
     PUSH {R4-R12, LR}               @ Save register values
     @ SUB SP, SP, #8                  @ Ensure 8-byte stack alignment
 
@@ -104,31 +95,54 @@ debug_print_calc:
     BX LR                            @ return to calling function
 
 
- @ @ // FOr printf 
-    @ @ // ** after R3 arg, you need to push to stack in order to print
-    @ @ // Note print from stack is LIFO so you need to reverse azimuth and elevation
-    @ MOV R1, R4                          @ load arg1
-    @ MOV R2, R5                          @ load arg2
-    @ MOV R3, R6                          @ load arg3
-    @ VCVT.f64.f32 d0, s1                 @ Printf requires floats to be doubles
-    @ LDR R0, =double_buffer2             @ temp double buffer to hold for conversion
-    @ VSTR.f64 D0, [R0]                   @ write double to memory
-    @ LDM R0, {R4, R5}                    @ load double spread into 2x32bit regs 4 &5
 
-    @ VCVT.f64.f32 d1, s2
-    @ VSTR.f64 D1, [R0]
-    @ LDM R0, {R6, R7}
-    @ PUSH {R6, R7}                       @ stack if LIFO PUSH  arg5 first
-    @ PUSH {R4, R5}                       @ push arg4 (this is read first bc it is top)
-    @ LDR R0, =test_print
-    @ bl printf
 
-    @ //  MEthod 1
-    @ ADD SP, #16                         @ delete 2x(8bytes 64bit) pushed into stack
-    @ // method 2
-    @ @ POP {R6, R7}                        @ remove arg 5 from stack
-    @ @ POP {R4,R5}                         @ remove arg 4 from stack 
 
+menu_test_fire_print: 
+    /// \R0 - status; 0=okay; 1=bad data  
+    /// \R1 - Target num
+    /// \S0 - Azimuth
+    /// \S1 - Elevation
+    /// \S2 - Fire engagement time
+    PUSH {R4-R12, LR}
+
+    VMOV.f32 S8, S0
+    VMOV.f32 S9, S1
+    VMOV.f32 S10, S2
+    
+    // R1 already is load arg1 target
+
+    // Load S0 Azimuth for write 
+    VCVT.f64.f32 d0, s8                @ Printf requires floats to be doubles
+    LDR R0, =double_buffer             @ temp double buffer to hold for conversion
+    VSTR.f64 D0, [R0]                   @ write double to memory
+    LDM R0, {R2, R3}                    @ load double spread into 2x32bit regs 4 &5
+
+    // Load S1 Eleveation
+    VCVT.f64.f32 d1, s9
+    VSTR.f64 D1, [R0]
+    LDM R0, {R4, R5}
+
+    // Load S1 Eleveation
+    VCVT.f64.f32 d2, s10
+    VSTR.f64 D2, [R0]
+    LDM R0, {R6, R7}
+
+
+    PUSH {R6, R7}                       @ stack if LIFO PUSH  arg5 first
+    PUSH {R4, R5}                       @ push arg4 (this is read first bc it is top)
+    LDR R0, =str_fire
+    bl printf
+
+    POP {R6,R7}                        @ remove arg 5 from stack
+    POP {R4,R5}                         @ remove arg 4 from stack 
+    @ ADD SP, SP # 16                     @ Alternatively add 4*4bytes R4-R7 pushed into stack to delete 
+
+    POP {R4-R12, LR}
+    BX LR
+
+
+    
 
 .data
 .word @ 32 bit align all variables
@@ -140,10 +154,12 @@ debug_print_calc:
     value_str:          .asciz "\nMax Height: [ %f ]m\nMax Range:  [ %f ]m\n" 
     menu_str_prompt2:   .asciz "\nEnter launch angle degrees: "
 	menu_str_prompt:    .asciz " > "
-	menu_str_exit:		.asciz "\n[!] Application exit!\n\n"
+	menu_str_exit:		.asciz "\n[!] Application exited successfully!\n\n"
     debug_str:          .asciz "\n[+] Debug float : %f\n"
     debug_calc_str:     .asciz "\n[+] Debug calculation: %f\n"
-    menu_str_cont:      .asciz "\nContinue? (Y/N): "
+    test_print: .asciz "Target: %d; Track: %d; Range: %d; Azimuth: %f; Elevation %f\n"
+    str_fire:           .asciz "{TARGET#: %d}{AZIMUTH: %.2f}{ELEVATION: %.2f}{FIRE @ %f}\n"
+
 
 
 .align 4

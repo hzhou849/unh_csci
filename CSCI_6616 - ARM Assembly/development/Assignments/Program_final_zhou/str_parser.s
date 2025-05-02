@@ -18,9 +18,6 @@
         - Elevation: float 4 bytes
         Total = 16bytes per track = 200tracks * 16bytes = 3200 bytes size in memory
 
-    Input registers:
-        R0 param[in] - pointer to input string track record
-
     Assigned Registers:
         R5 - Buffer status regsiter
         R6 - Input string we are processing
@@ -30,7 +27,11 @@
            2 = range
            3 = Azimuth
            4 = Elevation
+    Input registers:
+        R0 param[in] - pointer to input string track record
 
+    Returns :
+        R0 = memory address of stored parsed track record
  * ==========================================================================================
  */
 .EQU OFFSET_TARGET,    0            @ 2bytes; w/r must be half-word

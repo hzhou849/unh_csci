@@ -16,26 +16,29 @@
         - Elevation: float 4 bytes
         Total = 16bytes per track = 200tracks * 16bytes = 3200 bytes size in memory
 
-    
-    Local Registers:
-        R4
-        R5
-        R6
-        R7
-        R8
-        R9
 
     Returns: 
         R0 - Status 0=ok; 1=error range is negative no fire data
+        R1 - last target
+        S0 - last Azimuth
+        S1 - last elevation
+        S2 - fire engagement time
 
  * ==========================================================================================
  */
+
+.EQU OFFSET_OUT_TARGET,     0
+.EQU OFFSET_OUT_AZIMUTH,    4
+.EQU OFFSET_OUT_ELEVATION,  8
+.EQU OFFSET_OUT_FIRE,       12
 
  .global calc_track_data
  .section .text
 
 calc_track_data:
-    PUSH {R4-R12, LR}               @ save caller data to stack
+    LDR R0, =calc_data_lr
+    STR LR, [R0]                        @ Save LR to memory, more reliable
+    
     //  get track[1] data
     // \Call qBuffer::read_queue
     // \Returns R0 - address to ret_track_buffer
@@ -96,14 +99,14 @@ calc_track_data:
     // S2: T1 elevation radian
     // S7: T1 Range
     
-    // step 1 - convert azimuth and elevation to rads for calcuation (degree * (pi /180))
+    // Part 1 - convert azimuth and elevation to rads for calcuation (degree * (pi /180))
     // Convert azimuth elevation to radians
     LDR R0, =rad_convert_val            @ load radian conversion constant
     VLDR.f32 S0, [R0]                   @ S0 = 0.017453292 (pi/180)
     VMUL.f32 S1, S8, S0                 @ S1 =  t1_azimuth * rad_convert_val
     VMUL.f32 S2, S9, S0                 @ S2 = t1_eleveation * rad_convert_val
 
-    // step 2: Calculate position (X, Y, Z axis) for both tracks
+    // Part 2: Calculate position (X, Y, Z axis) for both tracks
     // Z = Range * sin(elevation)
     // Y = Range * cos(elevation) * sin(Azimuth)
     // X = Range * cos(elevation) * cos(Azimuth)
@@ -206,7 +209,7 @@ calc_track_data:
     
 
 
-    // step 3: Calculate velocity (Vx, Vy, Vz)
+    // Part 3: Calculate velocity (Vx, Vy, Vz)
     // Vx = (X2 - X1) / 1 = m/s
     // Vy = (Y2 - Y1) / 1 = m/s
     // Vz = (X2 - X1) / 1 = m/s
@@ -229,7 +232,7 @@ calc_track_data:
     LDR R0, =Z2
     VLDR.f32 S6, [R0]                   @ load S6 = Z2
 
-    // Division is skipped, since we are dividing by 1 for all velocities
+    // Division is skipped, since we are just dividing by 1 for all velocities
     // Vx = (X2 - X1) / 1 = m/s; 
     VSUB.f32 S0, S4, S1
     LDR R0, =Vx
@@ -254,68 +257,152 @@ calc_track_data:
     VPOP.f32 {S2}                       @ retrieve Vy = S3 from stack
     VPOP.f32 {S1}                       @ retrieve Vx = S3 from stack
 
-    VMUL.f32 S4, S1, S1                 @ S0 = Vx^2
-    VMUL.f32 S5, S2, S2                 @ S0 = Vy^2
-    VMUL.f32 S6, S3, S3                 @ S0 = Vz^2
+    VMUL.f32 S4, S1, S1                 @ S4 = Vx^2
+    VMUL.f32 S5, S2, S2                 @ S5 = Vy^2
+    VMUL.f32 S6, S3, S3                 @ S6 = Vz^2
 
     VADD.f32 S0, S4, S5                 @ S0 = Vx^2 + Vy^2
     VADD.f32 S0, S0, S6                 @ S0 += Vz^2
-
-    VSQRT.f32 S0
+    VSQRT.f32 S0, S0                    @ get sqrt(S0)
+    LDR R0, =calc_velocity
+    VSTR.f32 S0, [R0]                   @ save V into memory
     
 
 
-    // Step 4: Distance to engagement Zone
+    // Part 4: Distance to engagement Zone
     // Assume missle launches from (0,0,0)
-    // Distance between two points = Sqrt(X^2 + Y^2 + Z^2) 
+    // Using the last position (Lx, Ly, Lz) in this case X2, Y2, Z2
+    // Distance between two points = Sqrt(LX^2 + LY^2 + LZ^2) 
     // if >= 100,000 otherwise it is already inside the engagement zone
     // Engagement zone is 100,000m or 100km
-    // distance from enagement edge = D - 100,000 = 105,000 - 100,000 = -5000m
-    // negative means target it already inside the engagment zone
-    // 
+    // ie. distance from enagement edge = D - 100,000 = 118000 - 100,000 = 18000m
+    // NOTE: negative means target it already inside the engagment zone
+    
 
+    // retrieve X2, Y2, Z2 from memory
+    // Load X2, Y2, Z2 data
+    LDR R0, =X2
+    VLDR.f32 S1, [R0]                   @ load S4 = X2
+    LDR R0, =Y2
+    VLDR.f32 S2, [R0]                   @ load S5 = Y2
+    LDR R0, =Z2
+    VLDR.f32 S3, [R0]                   @ load S6 = Z2
 
+    // Calculate Distance of closest point to engagement zone
+    // Distance to engagement zone = sqrt(X2^2 + Y2^2 + Z^2) - R
+    // R = Engagment zone is 100,000m or 100km
+    VMUL.f32 S4, S1, S1                 @ S4 = X2^2
+    VMUL.f32 S5, S2, S2                 @ S5 = Y2^2
+    VMUL.f32 S6, S3, S3                 @ S6 = Z2^2
+
+    VADD.f32 S0, S4, S5                 @ S0 = S4 + S5
+    VADD.f32 S0, S0, S6                 @ S0 += S6
+    VSQRT.f32 S0, S0                    @ sqrt(S0)
+
+    LDR R0, =engagement_zone_m          @ load engagementzone distance
+    VLDR.f32 S1, [R0]                   @ from memory (100,000m) 
+
+    VSUB.f32 S2, S0, S1                 @ S2= engageDistance - ClosestXYZ meters
+    LDR R0, =d_to_edge                  
+    VSTR.f32 S2, [R0]                   @ store distance to edge to memory
 
 
 
     // Step 5: Caclulate the time to intercept
-    // T = d_edge / V  = xSeconds
-    //
+    // T = d_to_edge / calc_velocity  = xSeconds
     // The Stark Viper travels 10km/s meaning in order to reach 100km
     // it will require 10seconds
-    //
-    // Engagement time = T - 10 = 1.77s - 10s = -8.23seconds
+    // Engagement time = T - 10 = xs - 10s = x seconds
     // *Negative means its already inside and too late to fire
 
-    // Output: {TARGET#: 1}{AZIMUTH:46.00}{ELEVATION: 30.50}{FIRE @ x.x}
+    LDR R0, =d_to_edge
+    VLDR.f32 S1, [R0]                   @ load S1 = distance to edge value
+    LDR R0, =calc_velocity
+    VLDR.f32 S2, [R0]                   @ load S2 = calculated velocity 
+
+    // T = d_to_edge(m)/calc_velocity(m/s) = x seconds
+    VDIV.f32 S0, S1, S2                 @ s0 = s1/s2
+
+    // Engagement time of the Stark viper is 10s to reach engagement zone (100km)
+    LDR R0, =stark_viper_engage_time
+    VLDR.f32 S3, [R0]
+    VSUB.f32 S0, S0, S3                 @ Engagement time S0 = T - 10sec
+    LDR R0, =engagement_t
+    VSTR.f32 S0, [R0]                   @ store engagment time to memory
+    B prep_ret_data
+
+
+
+
+/// \Return values:
+/// \R0 - status; 0=okay; 1=bad data  
+/// \R1 - Target num
+/// \S0 - Azimuth
+/// \S1 - Elevation
+/// \S2 - Fire engagement time
+
 bad_pair:
-    MOV R0, #1          @ return R0=1 : bad data error
+/// \Sets R1 Return code to 1 and zeros out all  all return registers R0,R1 S0-S2
+    MOV R0, #1        @ return R0=1 : bad data error
+    MOV R1, #0
+    VMOV.f32 S0, R1 
+    VCVT.f32.s32 S0, S0
+    VMOV.f32 S1, R1
+    VCVT.f32.s32 S1, S1
+    VMOV.f32 S2, R1
+    VCVT.f32.s32 S2, S2
+    B exit_calc       
+
+prep_ret_data:  
+/// \Prepare the return data in proper return registers
+
+    LDR R0, =last_target
+    LDR R1, [R0]            @ R1 = Retrieve this target number
+    LDR R0, =last_azimuth
+    VLDR.f32 S0, [R0]       @ S0 = retrieve last azimuth
+    LDR R0, =last_elevation 
+    VLDR.f32 S1, [R0]       @ S1 = retrieve last eleveation
+    LDR R0, =engagement_t
+    VLDR.f32 S2, [R0]       @ s2 = fire engagement time
+    MOV R0, #0              @ set R0 = return code ok
+    B exit_calc
 
 exit_calc:
-    POP {R4-R12, LR}
+    // Output: {TARGET#: 1}{AZIMUTH:46.00}{ELEVATION: 30.50}{FIRE @ x.x}
+    LDR R4, =calc_data_lr
+    LDR LR, [R4]            @ Restore LR from memory
     BX LR 
-
-
 
 
  .data
  .align 4
-    rad_convert_val:        .single 0.017453292     @ angle * rad_convert_val = radians
-    double_buffer2:  .double 0.0
-   
+    // constant values
+    calc_data_lr: .word 0                       @ Store LR pointer address
+    rad_convert_val:    .single 0.017453292      @ angle * rad_convert_val = radians
+    engagement_zone_m:  .single 100000.0         @ enagagement zone distance (meters)
+    stark_viper_engage_time: .single 10.0         @ missle travels 10km/s so 10secs = 100km
+    double_buffer2:     .double 0.0
+
+    // Track 1 coordinates
     X1:             .single 0.0
     Y1:             .single 0.0
     Z1:             .single 0.0
 
+    // Track 2 coordinates
     X2:             .single 0.0
     Y2:             .single 0.0
     Z2:             .single 0.0
 
+    // Velocities variables
     Vx:             .single 0.0
     Vy:             .single 0.0
     Vz:             .single 0.0
-    
 
+    calc_velocity:   .single 0.0
+    d_to_edge:       .single 0.0
+    engagement_t:     .single 0.0
+    
+    // last track record data
     last_target:      .word 0
     last_track_num:   .word 0
     last_range:       .single 0.0
@@ -323,7 +410,7 @@ exit_calc:
     last_elevation:   .single 0.0
 
 .word @32 bit 
-    test_print: .asciz "Target: %d; Track: %d; Range: %d; Azimuth: %f; Elevation %f\n"
+   
 
 
 

@@ -49,22 +49,13 @@
 
 .section .text
 .global main
-
-.fpu neon-fp-armv8                 @ required to let assembler know to use FPU
-
+.fpu neon-fp-armv8                  @ required to let assembler know to use FPU
 
 main:
     MOV R5, #0
-    MOV R6, # 0                      @ Current size
-    MOV R7, # 0                      @ Initialize head
-    MOV R8, # 0                      @ Iniitalize tail
-
-   
-
-    // TODO::
-    // 1) convert range to float
-    // 2) check how to store decimal value to buffer? can the ring buffer be a single? or just aligned by 4?
-
+    MOV R6, # 0                     @ Current size
+    MOV R7, # 0                     @ Initialize head
+    MOV R8, # 0                     @ Iniitalize tail
 
 restart:
     // 1 - Print inital prompt
@@ -72,7 +63,7 @@ restart:
     BL menu_print                   @ print the options menu and prompt char
 
     // 2 - get user input
-    LDR R0, =menu_fmt_specifier      @ set menu option format specifier %c
+    LDR R0, =menu_fmt_specifier     @ set menu option format specifier %c
     LDR R1, =menu_opt               @ buffer to store stdin
     PUSH {R1}                       @ save this since c calls alter R1
     BL scanf
@@ -87,20 +78,20 @@ restart:
     CMP R0, #OPTION_5_EXIT
     BEQ exit
 
-opt1: /// \Execute
-/// Loads data and processes track data for every entry until list is finished
+opt1:  /// \ Execute
+    // Loads data and processes track data for every entry until list is finished
     BL load_data                    @ loads data from text file into queue
   next_track: 
     @ BL check_empty                  @ check if head is empty just call =b_curr_size
     CMP R0, #1
     BEQ restart                     @ branch back to restart application
     BL calc_track_data              @ return R0 status 0=ok; 1=error
-    @ BL print_fire_output            @ [in] R0: 1=bad_data
+    BL menu_test_fire_print            @ [in] R0: 1=bad_data
 
     B exit
    
 exit: /// \Exit and quit application
-    LDR R0, =menu_str_exit          @ load exit message
+    LDR R0, =menu_str_exit          @ load exit message from menu.s
     BL printf               
     MOV R0, #0                      @ Set the return code
     MOV R7, #1                      @ 1= Linux service exit
