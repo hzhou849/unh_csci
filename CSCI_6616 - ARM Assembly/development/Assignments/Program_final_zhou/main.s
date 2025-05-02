@@ -9,39 +9,16 @@
        
         - Jarvis 2025 Tactical Data processor
         - Application received input data from buffer of enemy trajectory
-        - Calculate intercepting path to fire missle defence
+          Calculates intercepting path to fire missle defence
+        - main file to kick off process
 
-
-    Formulas used:
-
-
-
-
-    @ Write syscalls
-        R0 - 0=stdin; 1=stdout; 3=stderr
-        R2 - stores length of string
-        R7 - linux service 3=read; 4=write
-
-
-    @ Scanf registers:
-        R0: pointer to var containing format specifier %d, %c %h etc..
-        R1: input data buffer to store char ( requires actual char value ie 0x31 = '1')
-    
-    @ Printf registers:
-        R0: contains address of string data var to print
-        R1..R?: args used for variable print
 
  * ========================================================================================== 
  */
 
-@ Function includes menu.s 
-
-@ Define Constants
-@ .EQU CHAR_A, 0x41   @ Ascii "A"
-@ .EQU CHAR_B, 0x42   @ Ascii "B"
 
 .EQU OPTION_1_EXECUTE, 1
-@ .EQU OPTION_2_READ,  2
+.EQU OPTION_2_READ,  2
 @ .EQU OPTION_3_CHECK, 3
 @ .EQU OPTION_4_INIT,  4
 .EQU OPTION_5_EXIT,  5
@@ -78,17 +55,23 @@ restart:
     CMP R0, #OPTION_5_EXIT
     BEQ exit
 
-opt1:  /// \ Execute
-    // Loads data and processes track data for every entry until list is finished
+opt1: /// \ Execute the TDP 
+/// Loads data and processes track data for every entry until list is finished
+
     BL load_data                    @ loads data from text file into queue
   next_track: 
-    @ BL check_empty                  @ check if head is empty just call =b_curr_size
-    CMP R0, #1
+    BL get_queue_size              @ check if queue current size is empty
+    CMP R0, #0
     BEQ restart                     @ branch back to restart application
     BL calc_track_data              @ return R0 status 0=ok; 1=error
-    BL menu_test_fire_print            @ [in] R0: 1=bad_data
+    BL menu_test_fire_print         @ call menu.s 
 
-    B exit
+
+    B next_track                    @ repeat for next record
+    @ B exit
+
+opt2: /// \ Read Output fire queue
+    B restart
    
 exit: /// \Exit and quit application
     LDR R0, =menu_str_exit          @ load exit message from menu.s

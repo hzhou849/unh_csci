@@ -36,30 +36,6 @@ menu_print_exit:
 	POP {LR}						@ restore LR
 	BX LR							@ return to caller()
 
-menu_print_values: 
-///\ Print values S0=MaxHeight; S1=MaxRange
-
-    PUSH {R4-R12, LR}               @ Save register values
-    @ SUB SP, SP, #8                  @ Ensure 8-byte stack alignment
-
-    VCVT.f64.f32 D1, S0             @ Convert S0 (MaxHeight) to double in D1
-    LDR R0, =double_buffer          @ Load double_buffer address
-    VSTR.f64 D1, [R0]               @ Store D1 into double_buffer
-    LDM R0, {R2, R3}                @ Load double_buffer into R2 and R3
-
-    VCVT.f64.f32 D1, S1             @ Convert S1 (MaxRange) to double in D1
-    LDR R0, =double_buffer          @ Load double_buffer address
-    VSTR.f64 D1, [R0]               @ Store D1 into double_buffer
-    LDM R0, {R4, R5}                @ Load double_buffer into R4 and R5
-
-    PUSH {R4-R5}           @ Push MaxRange and MaxHeight onto the stack
-
-    LDR R0, =value_str              @ Load the format string
-    BL printf                       @ Call printf
-    POP {R4-R5}
-    @ ADD SP, SP, #16                 @ Clean up the stack (4 registers = 16 bytes)
-    POP {R4-R12, LR}                @ Restore register values
-    BX LR                           @ Return to caller
 
 print_fire_output: 
     // placeholder to print output data later
@@ -99,13 +75,14 @@ debug_print_calc:
 
 
 menu_test_fire_print: 
-    /// \R0 - status; 0=okay; 1=bad data  
-    /// \R1 - Target num
-    /// \S0 - Azimuth
-    /// \S1 - Elevation
-    /// \S2 - Fire engagement time
+/// \param[in] R0 - status; 0=okay; 1=bad data  
+/// \param[in] R1 - Target num
+/// \param[in] S0 - Azimuth
+/// \param[in] S1 - Elevation
+/// \param[in] S2 - Fire engagement time
     PUSH {R4-R12, LR}
-
+    MOV R8, R0                          @ backup R0 for later
+    MOV R9, R1                          @ backup R1 for later
     VMOV.f32 S8, S0
     VMOV.f32 S9, S1
     VMOV.f32 S10, S2
@@ -136,8 +113,10 @@ menu_test_fire_print:
 
     POP {R6,R7}                        @ remove arg 5 from stack
     POP {R4,R5}                         @ remove arg 4 from stack 
-    @ ADD SP, SP # 16                     @ Alternatively add 4*4bytes R4-R7 pushed into stack to delete 
+    @ ADD SP, SP # 16                  @ Alternatively add 4*4bytes R4-R7 pushed into stack to delete 
 
+    MOV R0, R8                          @ Restore R0 and R1 registers
+    MOV R1, R9
     POP {R4-R12, LR}
     BX LR
 
@@ -151,8 +130,6 @@ menu_test_fire_print:
         .ascii "\n1) execute\n"
         .ascii "5) exit\n"
         .byte 0  @ Null terminator to end the string
-    value_str:          .asciz "\nMax Height: [ %f ]m\nMax Range:  [ %f ]m\n" 
-    menu_str_prompt2:   .asciz "\nEnter launch angle degrees: "
 	menu_str_prompt:    .asciz " > "
 	menu_str_exit:		.asciz "\n[!] Application exited successfully!\n\n"
     debug_str:          .asciz "\n[+] Debug float : %f\n"

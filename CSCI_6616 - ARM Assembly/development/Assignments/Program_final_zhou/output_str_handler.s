@@ -6,16 +6,14 @@
     File: output_data_handler.s
 
     Description:
-        - Takes 
+        - Takes fire data and encodes into output string buffer
+        - Enqueues into fire queue
+        - Allows read functionality to see what is written in the queue
         - {TARGET#: %d}{AZIMUTH: %.2f}{ELEVATION: %.2f}{FIRE @ %f}\n
-        - Parser used to extract track data
+
 
     Data Format: each track contains:
-        - Target#:  2byte
-        - Range:    4bytes, 32-bit
-        - Azimuth:  float 4bytes
-        - Elevation: float 4 bytes
-        Total = 16bytes per track = 200tracks * 16bytes = 3200 bytes size in memory
+        - An array of 128bytes * 20 slots
 
     Assigned Registers:
     
@@ -30,85 +28,51 @@
  * ==========================================================================================
  */
 
+.EQU FQ_RECORD_SiZE,     128          @ Each element in buffer is 128bytes
+.EQU FQ_CAPACITY_SIZE,    20          @ Total of 20 slots 
+.EQU FQ_CAPACITY_BYTES, 2560          @ 20 slots * 128 = 2560 bytes
 
-menu_test_fire_print: 
-    /// \R1 - Target num
-    /// \S0 - Azimuth
-    /// \S1 - Elevation
-    /// \S2 - Fire engagement time
-    PUSH {R4-R12, LR}
+.global push_fire_queue, read_fire_queue
+.section .text
 
-    VMOV.f32 S10, S0
-    VMOV.f32 S11, S1
-    VMOV.f32 S12, S2
-    
-    // R1 already is load arg1 target
-    MOV R3, R1                          @snprintf starts  arg at R3
+encode_fire_data:
+/// \ take the data values and encodes it into the fire format
+/// "{TARGET#: %d}{AZIMUTH: %.2f}{ELEVATION: %.2f}{FIRE @ %f}\n"
+    PUSH {R4-R12, LR}               @ backup current registers
 
-    // Load S0 Azimuth for write 
-    VCVT.f64.f32 d0, s10                @ Printf requires floats to be doubles
-    LDR R0, =double_buffer             @ temp double buffer to hold for conversion
-    VSTR.f64 D0, [R0]                   @ write double to memory
-    LDM R0, {R4, R5}                    @ load double spread into 2x32bit regs 4 &5
-
-    // Load S1 Eleveation
-    VCVT.f64.f32 d1, s11
-    VSTR.f64 D1, [R0]
-    LDM R0, {R6, R7}
-
-    // Load S1 Eleveation
-    VCVT.f64.f32 d2, s12
-    VSTR.f64 D2, [R0]
-    LDM R0, {R8, R9}
-
-
-    PUSH {R8, R9}                       @ stack if LIFO PUSH  arg6 first
-    PUSH {R6, R7}                       @ stack if LIFO PUSH  arg5 first
-    PUSH {R4, R5}                       @ push arg4 (this is read first bc it is top)
-
-    
-   
-
-    LDR R0, =str_buffer                 @ R0 = string buffer to write/store R2 into
-    MOV R1, #128                       @ R1 = size of the write
-    LDR R2, = str_fire                  @ R2 = the string to write
-    bl snprintf
-
-
-    LDR R0, =str_buffer                 @ R0 = string buffer to write/store R2 into
-    ADD R0, #128
-    MOV R1, #128                       @ R1 = size of the write
-    MOV R3, #8
-    LDR R2, = str_fire                  @ R2 = the string to write
-    bl snprintf
-
-    pop {R8, R9}
-    POP {R6,R7}                        @ remove arg 5 from stack
-    POP {R4,R5}                         @ remove arg 4 from stack 
-    @ ADD SP, SP # 16                     @ Alternatively add 4*4bytes R4-R7 pushed into stack to delete 
-
- // Print buffer 1
-    LDR R0, =str_buffer_addr
-    LDR R1, =str_buffer                 @ get the buffer address of this record
-    BL printf
-
-    LDR R0, =str_buffer
-    BL printf
-
-    
-    // print buffer 2
-    LDR R0, =str_buffer_addr
-    LDR R1, =str_buffer                 @ get the buffer address of this record
-    ADD R1, #128                        @ +offset for string 2
-    BL printf
-    LDR R0, =str_buffer
-    ADD R0, #128
-    BL printf
-
-    POP {R4-R12, LR}
+    POP {R4-R12, LR}                
     BX LR
 
+push_fire_queue:
 
-  .data
-.word @ 32 bit align all variables
-    str_buffer:          .space 256  
+    PUSH {R4-R12, LR}               @ backup current registers
+    MOV R9, R0                      @ copy address of fire track record buffer
+
+    // Get current specs
+    LDR R0, =fq_curr_size           
+    LDR R3, [R0]                    @ copy current size in R3
+    LDR R0, =fq_head               
+    LDR R7, [R0]                    @ R7 =get current head index
+
+    // Calculate Tail offset to write  = [( Head + currentSize ) % total_capacity] * TrackSize
+    LSL R3, R3, #7                  @ get currentSize in bytes = multiply size slots *string_Size(128b); 
+                                    @ left shit 7= *128
+    ADD R8, R7, R3                  @ head + (current_size *128)
+    MOV R0, R8                      @ curPosition(dividend)
+    MOV R1, #FQ_CAPACITY_SIZE       @ capcity_slots(divisor)
+    LSL R1, R1, #7                  @ Multiply capacity(slots) by 128  to get total bytes
+    BL modN                         @ returns tail(R0)=remainder value
+    MOV R8, R0                      @ copy tail offset mod into R8, this is the offset we need
+
+    // encode data into temp buffer
+
+    // write the data at offset R8(tail)
+
+
+
+
+.data
+.align 4
+    buffer:         .space FQ_CAPACITY_BYTES, 0      @ reserve 20 * 128bytes for fire string output
+    fq_curr_size:   .word 0
+    fq_head:        .word 0

@@ -32,7 +32,6 @@
 .EQU TRACK_SIZE, 16                 @ Bytes modified to 16 for bitwise 2^4
 .EQU CAPACITY_SIZE, 200             @ 200 slots 
 .EQU CAPACITY_SIZE_BYTES, 3200      @ 200 slots * 16bytes
-.EQU MULTIPLE_FACTOR, 4
 
 .EQU OFFSET_TARGET,    0            @ 2bytes; w/r must be half-word
 .EQU OFFSET_TRACKNUM,  2            @ 2bytes; w/r must be half-word
@@ -215,6 +214,15 @@ buffer_read_empty:
     POP {R4-R12, LR}
     B b_tx_done
 
+get_queue_size:
+/// \ Gets the current size of the queue
+/// \Returns: R0 = size of the queue
+    PUSH {R4-R12, LR}
+    LDR R1, =b_curr_size
+    LDR R0, [R1]
+    POP {R4-R12, LR}
+    BX LR
+
 
 .data
 .align 4
@@ -229,14 +237,6 @@ buffer_read_empty:
 @     scanf_inf:  .single 0.0         @ input buffer for scanf %f floats
 
 .word @32bit align for strings
-
-    b_scanf_fmt_d:          .asciz "%d"
-    b_scanf_fmt_f:          .asciz "%f"
-    @ b_scanf_p1_target:      .asciz "Enter Target#: "
-    @ b_scanf_p2_track:       .asciz "Track#: "
-    @ b_scanf_p3_range:       .asciz "Range#: "
-    @ b_scanf_p4_azimuth:     .asciz "Azimuth: "
-    @ b_scanf_p5_elevation:   .asciz "Elevation: "
 
     b_status_str:           .asciz "\nBuffer status: [%d]; Head_offset:[+%d]; tail_offset: [+%d]; size/total_capacity: %d of %d\n"
     b_str_write_full:       .asciz "\n [!] WRITE FAILED - buffer full\n"
