@@ -70,9 +70,9 @@ read_loop:
 
     ADD R5, #1                  @ increment loop counter
 
-    // Added sleep to make simulate data coming every second
-    MOV R0, #1
-    BL sleep
+    @ // Added sleep to make simulate data coming every second
+    @ MOV R0, #1
+    @ BL sleep
 
     B read_loop
 

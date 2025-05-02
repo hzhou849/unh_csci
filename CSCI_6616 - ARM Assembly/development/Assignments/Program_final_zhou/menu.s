@@ -121,6 +121,18 @@ menu_test_fire_print:
     BX LR
 
 
+ // Debug test print  if working
+debug_print_fire_record:
+/// \param[in] R0: string of fire record
+    PUSH {R0-R12,  LR}
+    MOV R1, R0                      @ copy the address of str_encoded %x
+    MOV R2, R0                      @ copy the address again for %s output
+    LDR R0, =test_print_fire_record @ 
+    BL printf
+
+    POP {R0-R12, LR}
+    BX LR
+
     
 
 .data
@@ -136,6 +148,7 @@ menu_test_fire_print:
     debug_calc_str:     .asciz "\n[+] Debug calculation: %f\n"
     test_print: .asciz "Target: %d; Track: %d; Range: %d; Azimuth: %f; Elevation %f\n"
     str_fire:           .asciz "{TARGET#: %d}{AZIMUTH: %.2f}{ELEVATION: %.2f}{FIRE @ %f}\n"
+    test_print_fire_record: .asciz "memory: 0x%x; %s\n"
 
 
 

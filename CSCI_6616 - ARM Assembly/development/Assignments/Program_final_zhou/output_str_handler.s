@@ -38,12 +38,64 @@
 encode_fire_data:
 /// \ take the data values and encodes it into the fire format
 /// "{TARGET#: %d}{AZIMUTH: %.2f}{ELEVATION: %.2f}{FIRE @ %f}\n"
-    PUSH {R4-R12, LR}               @ backup current registers
+/// \param[in] R1 - last target
+/// \param[in] S0 - last Azimuth
+/// \param[in] S1 - last elevation
+/// \param[in] S2 - fire engagement time
+///
+/// \Return: R0 address of encoded str buffer
 
-    POP {R4-R12, LR}                
+    PUSH {R4-R12, LR}               @ backup current registers
+    
+    // Move value to unassigned registers to free up required reg
+    MOV R3, R1                      @ Move target_num to R3 for first ouput arg
+    VMOV.f32 S10, S0                @ move Azimuth to S10
+    VMOV.f32 S11, S1                @ move elevation to S11
+    VMOV.f32 S12, S2                @ move fire engage time to S12
+    
+    // Load S10 Azimuth for write
+    VCVT.f64.f32 D0, S10            @ printf requires floats be doubles
+    LDR R0, =convert_d_buffer       @ temp buffer to hold float for conversion
+    VSTR.f64 D0, [R0]               @ write double to memory
+    LDM R0, {R4, R5}                @ load double spread into 2x32bit regs R4 & R5
+                                    @ doubles are reg pairs {0,1}, {2,3}
+                                    @ After R3, printf requires these values pushed
+                                    @ into the stack 
+    // Load S11 elevation
+    VCVT.f64.f32 D1, S11
+    LDR R0, =convert_d_buffer 
+    VSTR.f64 D1, [R0]
+    LDM R0, {R6, R7}
+
+    // Load S12 Fire engagement time
+    VCVT.f64.f32 D2, S12          
+    LDR R0, =convert_d_buffer      
+    VSTR.f64 D2, [R0]              
+    LDM R0, {R8, R9}                
+
+    
+    // Push in reverse order into stack for printf
+    PUSH {R8, R9}                   @ stack if LIFO push arg6 first
+    PUSH {R6, R7}                   @ stack if LIFO push arg5 first
+    PUSH {R4, R5}                   @ push arg4 (this is read first)
+
+    LDR R0, =str_encoded            @ output buffer for R2 string
+    MOV R1, #FQ_RECORD_SiZE         @ size of this write
+    LDR R2, =str_data_fmt           @ the string to write
+    BL snprintf
+
+    // Delete or pop prior data from stack
+    @ POP {R8, R9}
+    @ POP {R6, R7}
+    @ POP {R4, R5}
+    ADD SP, SP, #24                 @ delete 4bytes*6 =24 bytes of data from stack
+
+    POP {R4-R12, LR}       
+    LDR R0, =str_encoded            @ set the return value R0 = str_encoded address         
     BX LR
 
 push_fire_queue:
+    /// \param[in] R0: String of encoded fire data
 
     PUSH {R4-R12, LR}               @ backup current registers
     MOV R9, R0                      @ copy address of fire track record buffer
@@ -63,16 +115,35 @@ push_fire_queue:
     LSL R1, R1, #7                  @ Multiply capacity(slots) by 128  to get total bytes
     BL modN                         @ returns tail(R0)=remainder value
     MOV R8, R0                      @ copy tail offset mod into R8, this is the offset we need
+    LDR R0, =fq_tail
+    STR R8, [R0]                    @ backup the tail data
 
-    // encode data into temp buffer
 
-    // write the data at offset R8(tail)
+    // enqueue data at offset R8(tail) to fire queue
+    LDR R0, =fire_queue              @ load the fire queue buffer
+    ADD R0, R0, R8                  @ set R0= fire_queue + tail_offset
+    // Setup snprintf 
+    MOV R1, #FQ_RECORD_SiZE         @ set size of write
+    MOV R2, R9                      @ copy address of encoded track fire data
+    BL snprintf
+
+    POP {R4-R12, LR}
+    BX LR
+
+
+    
 
 
 
 
 .data
+.word
+    str_data_fmt:        .asciz "{TARGET#: %d}{AZIMUTH: %.2f}{ELEVATION: %.2f}{FIRE @ %f}"
+
 .align 4
-    buffer:         .space FQ_CAPACITY_BYTES, 0      @ reserve 20 * 128bytes for fire string output
+    fire_queue:    .space FQ_CAPACITY_BYTES, 0    @ reserve 20 * 128bytes for fire string output
+    str_encoded:    .space 128, 0                  @ string to store encoded string data
     fq_curr_size:   .word 0
     fq_head:        .word 0
+    fq_tail:        .word 0
+    convert_d_buffer:   .double 0.0

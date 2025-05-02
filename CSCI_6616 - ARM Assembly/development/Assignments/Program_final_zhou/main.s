@@ -64,7 +64,9 @@ opt1: /// \ Execute the TDP
     CMP R0, #0
     BEQ restart                     @ branch back to restart application
     BL calc_track_data              @ return R0 status 0=ok; 1=error
-    BL menu_test_fire_print         @ call menu.s 
+    BL encode_fire_data             @ encode the fire data first so we don't lose it 
+    @ BL menu_test_fire_print         @ call menu.s  don't print this yet encode first
+    BL debug_print_fire_record
 
 
     B next_track                    @ repeat for next record
