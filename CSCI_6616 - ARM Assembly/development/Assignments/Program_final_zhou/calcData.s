@@ -396,7 +396,7 @@ exit_calc:
 
 
  .data
-    dequeue_str: .asciz "Retrieving data from input buffer @: %x for target: %d; track: %d\n"
+    dequeue_str: .asciz "Retrieving data from input buffer @: 0x%x for target: %d; track: %d\n"
 
  .align 4
     // constant values

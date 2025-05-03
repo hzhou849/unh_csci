@@ -37,7 +37,6 @@
 
 encode_fire_data:
 /// \ take the data values and encodes it into the fire format
-/// "{TARGET#: %d}{AZIMUTH: %.2f}{ELEVATION: %.2f}{FIRE @ %f}\n"
 /// \param[in] R1 - last target
 /// \param[in] S0 - last Azimuth
 /// \param[in] S1 - last elevation
@@ -95,6 +94,7 @@ encode_fire_data:
     BX LR
 
 push_fire_queue:
+    /// \ Enqueues the fire record into the cicular buffer, will overwrite wrap around after 20 inputs
     /// \param[in] R0: String of encoded fire data
 
     PUSH {R4-R12, LR}               @ backup current registers
@@ -118,16 +118,16 @@ push_fire_queue:
     LDR R0, =fq_tail
     STR R8, [R0]                    @ backup the tail data
 
-
     // enqueue data at offset R8(tail) to fire queue
     LDR R0, =fire_queue              @ load the fire queue buffer
     ADD R0, R0, R8                  @ set R0= fire_queue + tail_offset
+    LDR R4, =fq_last_tail
+    STR R0, [R4]
     // Setup snprintf 
     MOV R1, #FQ_RECORD_SiZE         @ set size of write
     MOV R2, R9                      @ copy address of encoded track fire data
     BL snprintf
 
-    /// TODO: *** check memory is written correctly
     LDR R0, =str_push_msg
     BL printf
     LDR R0, =fire_queue
@@ -140,35 +140,139 @@ push_fire_queue:
     ADD R6, #1
     STR R6, [R0]
 
-    @ // Update tail to new position; Tail slot+1 = [(head+currentSize) % total_capacity] * 128bytes
-    @ MOV R3, R6
-    @ LSL R3, R3, #7                  @left shift by 7 = *128
-    @ LDR R0, =fq_head
-    @ LDR R7, [R0]                    @ get current head
-    @ ADD R8, R7, R3                  @ tail = head + current size byte offset
-
-
-
-
-
+ 
     POP {R4-R12, LR}
     BX LR
 
 
+pop_fire_queue:
+    /// \ Pop/dequeues the fire queue record from the circular queue 
+    /// and updates the head
+    /// \ Returns R0: Last retrieved record
+    PUSH {R4-R12, LR}
+
+    LDR R0, =fq_curr_size           @ check if queue empty
+    LDR R3, [R0]
+    CMP R3, #0
+    BEQ fq_read_empty               @ if empty, quit
+
+    LDR R0, =fq_head
+    LDR R7, [R0]                    @ load the current head offset
+    LDR R0, =fire_queue
+    ADD R0, R0, R7                  @ add fire_queue +head offset to get read address
+    LDR R1, =fq_head_last_fired
+    STR R0, [R1]                    @ save the last fired address
+
+    // R0 is set as fq+offset to write
+    // Print the data out and save the current record in str_encoded to be returned (if needed)
+    PUSH {R0, R1}                   @ save these address for after
+    MOV R2, R0                      @ copy the record to R2
+    MOV R1, R0                      @ copy this address to be printed out as %x
+    LDR R0, =fq_send_fire_str 
+    BL printf
+    
+    LDR R0, =str_encoded
+    MOV R1, #FQ_RECORD_SiZE
+    MOV R2, R0                      @ copy the current record @R0 into R2 
+    BL snprintf
+    POP {R0, R1}                    @ retrieve bufferOffset address
+
+
+    // Delete the record 
+    // R0 is already set to write address
+    MOV R1, #FQ_RECORD_SiZE         @ set the write size
+    LDR R2, =fq_str_empty_slot      @ set the output string
+    BL snprintf
+
+    // Increment head size
+    ADD R7, #FQ_RECORD_SiZE         @ increment the headsize by +128bytes(+1 slot)
+    LDR R0, =fq_head
+    STR R7, [R0]                    @ write the new head offset to memory
+
+    LDR R0, =fq_curr_size            @ decrement current size counter
+    LDR R6, [R0]
+    SUB R6, #1
+    STR R6, [R0]                    @ save new value in memory 
+
+    LDR R0, =str_encoded            @ return R0 the current popped fire record
+    
+    POP {R4-R12, LR}
+    BX LR
+
+
+peek_fire_queue:
+    /// \prints out all records in the fire queue
+
+    PUSH {R4-R12, LR}
+    // Load head address and print all records 
+    LDR R9, =fire_queue                 @ R9 = fire queue start address
+    LDR R0, =fq_head                    @ retrieve current head position
+    LDR R4, [R0]
+    ADD R5, R9, R4                      @ R5 = current head 
+    ADD R8, R9, #FQ_CAPACITY_BYTES      @ R8 = fire queue end address
+    MOV R7, R9                          @ R7 = current firequeue address
+    MOV R6, #0                          @ current counter
+    LDR R0, =fq_last_tail           
+    LDR R4, [R0]                        @ get last tail write address
+
+  fq_loop:
+    CMP R7, R8                          @ check if we reached the end
+    BEQ fq_loop_done
+    LDR R0, =fq_str_peek_info
+    MOV R1, R6                          @ arg1: output counter
+    MOV R2, R7                          @ arg2: current print address
+    MOV R3, R7                          @ arg3: current string record
+    BL printf
+    CMP R7, R5                          @ check if this is head
+    LDREQ R0, =fq_head_lbl              @ print head label
+    BLEQ printf
+    CMP R7, R4
+    LDREQ R0, =fq_last_tail_lbl         @ print last tail written label
+    BLEQ printf
+    LDR R0, =fq_new_line                @ print '\n'
+    BL printf
+    
+    ADD R7, R7, #FQ_RECORD_SiZE        @ increment current address +128 for next record
+    ADD R6, #1                          @ increment loop counter
+    B fq_loop
+
     
 
+
+fq_read_empty:
+    PUSH {R4-R12, LR}
+    LDR R0, =fq_str_empty
+    BL printf
+    POP {R4-R12, LR}
+    B b_tx_done
+    
+fq_loop_done:
+    POP {R4-R12, LR}
+    BX LR
 
 
 
 .data
 .word
     str_push_msg:        .asciz "Enqueue fire data @ - "
-    str_data_fmt:        .asciz "{TARGET#: %d}{AZIMUTH: %.2f}{ELEVATION: %.2f}{FIRE @ %f}\n"
+    str_data_fmt:        .asciz "{TARGET#: %d}{AZIMUTH: %.2f}{ELEVATION: %.2f}{FIRE @ %f}"
+    fq_str_empty:        .asciz "\n [!] No fire records found - buffer empty\n"
+    fq_str_pop:          .asciz "[+] Fire issued @: 0x%x; %s\n"
+    fq_str_empty_slot:   .asciz "[ Empty Slot ]"
+    fq_str_peek_info:    .asciz "%d) @0x%x: %s"
+    fq_str_current_head:  .asciz "\n\nFire queue records: "
+    fq_head_lbl:          .asciz " ->[HEAD]"
+    fq_last_tail_lbl:    .asciz " ->[Last TAIL written]"
+    fq_new_line:         .asciz "\n"
+    fq_send_fire_str:    .asciz "\n[>] Sending fire record@: 0x%x -  %s \n\n"
 
 .align 4
     fire_queue:    .space FQ_CAPACITY_BYTES, 0    @ reserve 20 * 128bytes for fire string output
     str_encoded:    .space 128, 0                  @ string to store encoded string data
     fq_curr_size:   .word 0
     fq_head:        .word 0
+    fq_head_address: .word 0
+    fq_head_last_fired: .word 0
     fq_tail:        .word 0
+    fq_last_tail:    .word 0
     convert_d_buffer:   .double 0.0

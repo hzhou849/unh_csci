@@ -149,7 +149,6 @@ write_queue:
     B b_tx_done
 
 read_queue: /// \Read from buffer
-    // ** TODO: add head read  address printout  return it to R1
     PUSH {R4-R12, LR}
 
     // Check to see if buffer is empty first

@@ -18,9 +18,8 @@
 
 
 .EQU OPTION_1_EXECUTE, 1
-.EQU OPTION_2_READ,  2
-@ .EQU OPTION_3_CHECK, 3
-@ .EQU OPTION_4_INIT,  4
+.EQU OPTION_2_PEEK,  2
+.EQU OPTION_3_POP, 3
 .EQU OPTION_5_EXIT,  5
 
 
@@ -52,6 +51,10 @@ restart:
     // Check the menu option selected
     CMP R0, #OPTION_1_EXECUTE
     BEQ opt1
+    CMP R0, #OPTION_2_PEEK
+    BEQ opt2
+    CMP R0, #OPTION_3_POP
+    BEQ opt3
     CMP R0, #OPTION_5_EXIT
     BEQ exit
 
@@ -67,15 +70,16 @@ opt1: /// \ Execute the TDP
     BEQ restart                     @ branch back to restart application
     BL calc_track_data              @ return R0 status 0=ok; 1=error
     BL encode_fire_data             @ encode the fire data first so we don't lose it 
-    @ BL menu_test_fire_print         @ call menu.s  don't print this yet encode first
-    @ BL debug_print_fire_record
-    BL push_fire_queue
-
+    BL push_fire_queue              @ push the fire record into the fire buffer
     B next_track                    @ repeat for next record
-    @ B exit
 
-opt2: /// \ Read Output fire queue
+opt2: /// \Peek Output fire queue
+    BL peek_fire_queue
     B restart
+
+opt3: /// \ Pop from fire queue
+    BL pop_fire_queue
+    B opt2
    
 exit: /// \Exit and quit application
     LDR R0, =menu_str_exit          @ load exit message from menu.s
