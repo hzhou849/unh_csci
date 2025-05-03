@@ -59,6 +59,8 @@ opt1: /// \ Execute the TDP
 /// Loads data and processes track data for every entry until list is finished
 
     BL load_data                    @ loads data from text file into queue
+    LDR R0, =next_op_str    
+    BL printf
   next_track: 
     BL get_queue_size              @ check if queue current size is empty
     CMP R0, #0
@@ -66,8 +68,8 @@ opt1: /// \ Execute the TDP
     BL calc_track_data              @ return R0 status 0=ok; 1=error
     BL encode_fire_data             @ encode the fire data first so we don't lose it 
     @ BL menu_test_fire_print         @ call menu.s  don't print this yet encode first
-    BL debug_print_fire_record
-
+    @ BL debug_print_fire_record
+    BL push_fire_queue
 
     B next_track                    @ repeat for next record
     @ B exit
@@ -84,30 +86,16 @@ exit: /// \Exit and quit application
 
 .data
 @ required for each variable initialized to ensure it will line up with a 4byte boundary address
-.align 4 @ 32bit align all variables
+.word 4 @ 32bit align all variables
     buffertest: .space 16, 0
     menu_opt:           .space 4,0      @ Buffer to store stdin menu option selection 
     menu_fmt_specifier:  .asciz "%d"     @ Format specifier for menu option stdin
+    next_op_str:          .asciz "\nExtracting track records from input queue to calculate fire engagement time...\n\n"
     @ scanf_prompt:       .asciz "Enter value > "
     @ input_fmt_specifier:.asciz "%f"     @ format specifier for scanf input
 
-.align 4  @ required for each variable initialized to ensure it will line up with a 4byte boundary
-    // In order for printf to work you must keep the values in single/double precision variables
-    
-    @ rad_convert_val:        .single 0.017453292     @ angle * rad_convert_val = radians
-    @ gravity:                .single 9.8 @m/s^2
 
-    @ input_buffer:           .single 0.0             @ input buffer for scanf
-    @ initial_velocity_ms:    .single 0.0
-    @ launch_angle_deg:       .single 0.0
-    @ Vox:                    .single 0.0
-    @ Voy:                    .single 0.0
-    @ t2:                     .single 0.0
-    @ tm:                     .single 0.0
-    @ max_height:             .single 0.0
-    @ max_range:              .single 0.0
 
-    @ temp_double: .double 0.0
    
 
 

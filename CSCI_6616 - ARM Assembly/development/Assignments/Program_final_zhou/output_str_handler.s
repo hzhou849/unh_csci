@@ -127,6 +127,30 @@ push_fire_queue:
     MOV R2, R9                      @ copy address of encoded track fire data
     BL snprintf
 
+    /// TODO: *** check memory is written correctly
+    LDR R0, =str_push_msg
+    BL printf
+    LDR R0, =fire_queue
+    ADD R0, R0, R8                  @ add the this tail offset
+    BL debug_print_fire_record
+
+    // Update the current size counter by +1 and store in memory
+    LDR R0, =fq_curr_size
+    LDR R6, [R0]
+    ADD R6, #1
+    STR R6, [R0]
+
+    @ // Update tail to new position; Tail slot+1 = [(head+currentSize) % total_capacity] * 128bytes
+    @ MOV R3, R6
+    @ LSL R3, R3, #7                  @left shift by 7 = *128
+    @ LDR R0, =fq_head
+    @ LDR R7, [R0]                    @ get current head
+    @ ADD R8, R7, R3                  @ tail = head + current size byte offset
+
+
+
+
+
     POP {R4-R12, LR}
     BX LR
 
@@ -138,7 +162,8 @@ push_fire_queue:
 
 .data
 .word
-    str_data_fmt:        .asciz "{TARGET#: %d}{AZIMUTH: %.2f}{ELEVATION: %.2f}{FIRE @ %f}"
+    str_push_msg:        .asciz "Enqueue fire data @ - "
+    str_data_fmt:        .asciz "{TARGET#: %d}{AZIMUTH: %.2f}{ELEVATION: %.2f}{FIRE @ %f}\n"
 
 .align 4
     fire_queue:    .space FQ_CAPACITY_BYTES, 0    @ reserve 20 * 128bytes for fire string output

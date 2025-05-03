@@ -39,6 +39,9 @@
 load_data:
     PUSH {R4-R12, LR}
     
+    LDR R0, =loading_str
+    BL printf
+
     //  FILE *f = fopen ("input.txt", "r");
     LDR R0, =file_name
     LDR R1, =read_mode
@@ -60,12 +63,14 @@ read_loop:
     BL str_parser               @ arg R0=track data string to parse 
 
     // Calls qBuffer::write_queue Load the parsed data into the queue buffer
-    BL write_queue              @ taks R0 = parsed string datga          
+    BL write_queue              @ taks R0 = parsed string data
+    LDR R0, =b_tail             @ get the last tail write address
+    LDR R2, [R0]                  @ copy last input queue write address          
 
     // Print the file 
     LDR R0, =output_str
     MOV R1, R5                  @ current counter
-    LDR R2, =line_buffer        @ current string loaded
+    LDR R3, =line_buffer        @ current string loaded
     BL printf
 
     ADD R5, #1                  @ increment loop counter
@@ -84,11 +89,12 @@ end_loop:
 
 
 .data
+loading_str:    .asciz "\nLoading tracking data into queue....\n"
 file_name:  .asciz "track_data.txt"
 read_mode:  .asciz "r"
 line_buffer:    .space 128, 0
 fgets_fmt_specifier:      .asciz "%s"
-output_str:     .asciz " %d) Data loaded: %s"
+output_str:     .asciz " %d) Input queue addr: 0x%x:  %s"
 
 
 

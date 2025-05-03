@@ -43,6 +43,17 @@ calc_track_data:
     // \Call qBuffer::read_queue
     // \Returns R0 - address to ret_track_buffer
     BL read_queue                       @ Get track 1; Returns R0=ret_track_buffer
+    PUSH {R0}                           @save this R0 address 
+    MOV R5, R0                          @ save this address for printf below
+    LDR R0, =dequeue_str                @ print dequeue message
+    LDR R2, =b_head_address
+    LDR R1, [R2]                        @ get the last head address
+    LDRH R2, [R5, #OFFSET_TARGET]
+    LDRH R4, [R5, #OFFSET_TRACKNUM]
+    MOV R3, R4
+    BL printf
+    POP {R0}
+
     LDRH R4, [R0, #OFFSET_TARGET]
     LDRH R5, [R0, #OFFSET_TRACKNUM]
     LDR R6,  [R0, #OFFSET_RANGE]
@@ -55,6 +66,16 @@ calc_track_data:
 
     //  get track[2] data
     BL read_queue                       @ Get track 2; Returns R0=ret_track_buffer
+     PUSH {R0}                           @save this R0 address 
+    MOV R5, R0                          @ save this address for printf below
+    LDR R0, =dequeue_str                @ print dequeue message
+    LDR R2, =b_head_address
+    LDR R1, [R2]                        @ get the last head address
+    LDRH R2, [R5, #OFFSET_TARGET]
+    LDRH R3, [R5, #OFFSET_TRACKNUM]
+    BL printf
+    POP {R0}
+
     LDRH R7, [R0, #OFFSET_TARGET]
     LDRH R8, [R0, #OFFSET_TRACKNUM]
     LDR R9,  [R0, #OFFSET_RANGE]
@@ -375,6 +396,8 @@ exit_calc:
 
 
  .data
+    dequeue_str: .asciz "Retrieving data from input buffer @: %x for target: %d; track: %d\n"
+
  .align 4
     // constant values
     calc_data_lr: .word 0                       @ Store LR pointer address

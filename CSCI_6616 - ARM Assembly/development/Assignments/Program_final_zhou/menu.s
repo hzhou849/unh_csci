@@ -139,7 +139,7 @@ debug_print_fire_record:
 .word @ 32 bit align all variables
 	menu_str_main_menu: 	
         .ascii "\n\nFinal Project - Jarvis 2025 Tactical Data Processor:\n"
-        .ascii "\n1) execute\n"
+        .ascii "\n1) execute\n2) display fire output buffer\n"
         .ascii "5) exit\n"
         .byte 0  @ Null terminator to end the string
 	menu_str_prompt:    .asciz " > "
@@ -148,7 +148,7 @@ debug_print_fire_record:
     debug_calc_str:     .asciz "\n[+] Debug calculation: %f\n"
     test_print: .asciz "Target: %d; Track: %d; Range: %d; Azimuth: %f; Elevation %f\n"
     str_fire:           .asciz "{TARGET#: %d}{AZIMUTH: %.2f}{ELEVATION: %.2f}{FIRE @ %f}\n"
-    test_print_fire_record: .asciz "memory: 0x%x; %s\n"
+    test_print_fire_record: .asciz "Queue address: 0x%x; %s\n"
 
 
 

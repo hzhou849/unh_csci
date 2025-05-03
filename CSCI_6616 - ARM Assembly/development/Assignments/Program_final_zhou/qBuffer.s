@@ -22,6 +22,8 @@
         R5 - Buffer status regsiter
         R6 - Current size
 
+        Return R0: last write address
+
 
     ascii command string
     {TRAGET#}{TRACK#: N}{RANGE: R}{AZIMUTH: AZ}{ELEVATION: EL}
@@ -87,6 +89,8 @@ write_queue:
     //   S1 = Elevation  4bytes float
     LDR R0, =buffer                 @ load the buffer to R0 for writing
     ADD R0, R0, R8                  @ r0 = bufferAddres + tailOffset
+    LDR R1, =b_tail
+    STR R0, [R1]                    @ save the tail to memory to be returned later
     LDRH R1, [R9, #OFFSET_TARGET]    
     LDRH R2, [R9, #OFFSET_TRACKNUM]
     LDR  R3, [R9, #OFFSET_RANGE]
@@ -101,9 +105,9 @@ write_queue:
     VSTR.f32 S0, [R0, #OFFSET_AZIMUTH]  
     VSTR.f32 S1, [R0, #OFFSET_ELEVATION]
 
-    // Test data is written successfully by loading it for debugger read
-    VLDR.f32 S5, [R0, #OFFSET_AZIMUTH]
-    VLDR.f32 S6, [R0, #OFFSET_ELEVATION]
+    @ // Test data is written successfully by loading it for debugger read
+    @ VLDR.f32 S5, [R0, #OFFSET_AZIMUTH]
+    @ VLDR.f32 S6, [R0, #OFFSET_ELEVATION]
     
     // Update the current_size counter by +1 and store in memory
     LDR R0, =b_curr_size
@@ -117,7 +121,8 @@ write_queue:
     MOVEQ R1, #1
     LDREQ R1, [R0]              @ set b_status =1 (full)
 
-    // Update tail to new position Tail slot+1 = [(Head + currentSize) % total_capcity] * 16bytes
+    // Check if we are full and set status bit if full
+    // check if  new position (Tail slot+1)  is full = [(Head + currentSize) % total_capcity] * 16bytes
     MOV R3, R6                  @ move current size into R3
     LSL R3, R3, #4              @ lshift4 = * 16
     LDR R0, =b_head
@@ -126,12 +131,21 @@ write_queue:
     MOV R0, R8                  @ currPos(dividend)
     MOV R1, #CAPACITY_SIZE_BYTES
     BL modN                     @ r0 = return tail value
-    CMP R7, R0                  @ check if head(r7) == new tail(R0)
+    CMP R7, R0
+    // check if head(r7) == new tail(R0)                
+    // Return the last write queue address 
+    @ LDRNE R1, =b_tail
+    @ LDRNE R0, [R1]                @ retreive the last tail write
     BNE b_tx_done               @ if head != tail, we are fine, skip
-    LDR R0, =b_status           @ if head == tail, buffer full, set flag =1
+    
+    // @ if head == tail, buffer full, set flag =1 then exit
+    LDR R0, =b_status           
     MOV R1, #1
-    LDR R1, [R0]
+    STR R1, [R0]
 
+    // Return the last write queue address 
+    @ LDR R1, =b_tail
+    @ LDR R0, [R1]                @ retreive the last tail write
     B b_tx_done
 
 read_queue: /// \Read from buffer
@@ -149,6 +163,8 @@ read_queue: /// \Read from buffer
     LDR R7, [R0]                        @ R7 = head offset(bytes)
     LDR R0, =buffer
     ADD R0, R0, R7                      @ R0 = bufferAddr + headOffset
+    LDR R1, =b_head_address
+    STR R0, [R1]                         @ save the b_head_address for later
     LDRH R1, [R0, #OFFSET_TARGET]       @ half-word only 2bytes
     LDRH R2, [R0, #OFFSET_TRACKNUM]     @ half-word only
     LDR R3, [R0, #OFFSET_RANGE]
@@ -229,6 +245,8 @@ get_queue_size:
     buffer:         .space CAPACITY_SIZE_BYTES, 0   @ reserve 3200 bytes for the buffer
     b_curr_size:    .word 0 
     b_head:         .word 0
+    b_head_address:         .word 0
+    b_tail:         .word 0
     b_status:       .word 0
     ret_track_buffer: .space 16, 0               @ Return buffer to store retreived track record  
 
