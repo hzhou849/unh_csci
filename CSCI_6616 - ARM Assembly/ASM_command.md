@@ -167,6 +167,7 @@ while_loop:
 loop_done: @ whatever we want to do after while loop
 ```
 
+
 ## Negative numbers
 * quickest way to check for negative is subtract 0 by ```num```
 * ``` SUB R1=0, #5``` should equal =-5
@@ -190,3 +191,4 @@ RSB R0, R0, #0   ; R0 = 0 - R0 (effectively R0 = -R0)
 MVN R1, R0       ; R1 = NOT R0 (bitwise negation)
 ADD R1, R1, #1   ; R1 = R1 + 1 (two's complement)
 ```
+
